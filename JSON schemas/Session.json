@@ -12,42 +12,13 @@
       "type": "string",
       "description": "Name of the session"
     },
-    "experimentName": {
-      "type": "string",
-      "description": "Name of the experiment"
-    },
-    "participantId": {
-      "type": "string",
-      "description": "ID of the participant"
-    },
-    "date": {
-      "type": "string",
-      "format": "date-time",
-      "description": "Date and time of the session"
-    },
-    "duration": {
-      "type": "number",
-      "description": "Duration of the session in seconds"
-    },
-    "conditions": {
-      "type": "object",
-      "description": "Experimental conditions"
-    },
-    "results": {
-      "type": "object",
-      "description": "Session results"
-    },
     "loops": {
       "type": "array",
       "description": "Loops used in the session",
       "items": {
         "$ref": "Loop.json"
       }
-    },
-    "notes": {
-      "type": "string",
-      "description": "Session notes"
     }
   },
-  "required": ["id", "name", "experimentName", "participantId"]
+  "required": ["id", "name", "loops"]
 }

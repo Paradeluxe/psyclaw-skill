@@ -14,30 +14,37 @@
     },
     "nReps": {
       "type": "integer",
-      "description": "Number of repetitions",
+      "description": "Number of repetitions on the entire stimList",
       "default": 1
     },
-    "conditionsFile": {
-      "type": "string",
-      "description": "Path to conditions file"
-    },
-    "conditions": {
+    "varList": {
       "type": "array",
-      "description": "Array of condition dictionaries",
       "items": {
-        "type": "object"
-      }
+        "$ref": "Var.json"
+      },
+      "allOf": [
+        {
+          "if": {
+            "minItems": 2
+          },
+          "then": {
+            "allOf": [
+              {
+                "items": {
+                  "minItems": { "$data": "0/0/length" },
+                  "maxItems": { "$data": "0/0/length" }
+                }
+              }
+            ]
+          }
+        }
+      ]
     },
-    "method": {
+    "randomization": {
       "type": "string",
       "description": "Method for selecting conditions",
       "enum": ["random", "sequential", "fullRandom"],
       "default": "sequential"
-    },
-    "isTrials": {
-      "type": "boolean",
-      "description": "Whether this is a trials loop",
-      "default": true
     },
     "components": {
       "type": "array",
@@ -50,18 +57,6 @@
           { "$ref": "Audio.json" }
         ]
       }
-    },
-    "currentRep": {
-      "type": "integer",
-      "description": "Current repetition number"
-    },
-    "currentTrial": {
-      "type": "integer",
-      "description": "Current trial number"
-    },
-    "currentCondition": {
-      "type": "object",
-      "description": "Current condition"
     }
   },
   "required": ["id", "name"]

@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "Sessions",
-  "description": "Array of PsychoPy sessions",
+  "title": "Experiment",
+  "description": "Array of PsychoPy experiments",
   "type": "array",
   "items": {
     "$ref": "Session.json"
