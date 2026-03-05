@@ -20,25 +20,10 @@
     "varList": {
       "type": "array",
       "items": {
-        "$ref": "Var.json"
-      },
-      "allOf": [
-        {
-          "if": {
-            "minItems": 2
-          },
-          "then": {
-            "allOf": [
-              {
-                "items": {
-                  "minItems": { "$data": "0/0/length" },
-                  "maxItems": { "$data": "0/0/length" }
-                }
-              }
-            ]
-          }
-        }
-      ]
+        "$ref": "Var.json",
+        "minItems": { "$data": "2/nReps" },
+        "maxItems": { "$data": "2/nReps" }
+      }
     },
     "randomization": {
       "type": "string",
