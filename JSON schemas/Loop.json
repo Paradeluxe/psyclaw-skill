@@ -18,12 +18,25 @@
       "default": 1
     },
     "varList": {
-      "type": "array",
-      "items": {
-        "$ref": "Var.json",
-        "minItems": { "$data": "2/nReps" },
-        "maxItems": { "$data": "2/nReps" }
-      }
+      "oneOf": [
+        {
+          "type": "array",
+          "description": "Direct array of Var objects",
+          "items": {
+            "$ref": "Var.json"
+          }
+        },
+        {
+          "type": "array",
+          "description": "Placeholder list when Var objects cannot be generated directly",
+          "items": {
+            "type": "string",
+            "description": "Placeholder string representing a Var object to be filled later"
+          }
+        }
+      ],
+      "minItems": { "$data": "1/nReps" },
+      "maxItems": { "$data": "1/nReps" }
     },
     "randomization": {
       "type": "string",
