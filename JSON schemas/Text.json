@@ -13,8 +13,23 @@
       "description": "Name of the text component"
     },
     "text": {
-      "type": "string",
-      "description": "Text content to display"
+      "oneOf": [
+        {
+          "type": "string",
+          "description": "Text content to display"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "$var": {
+              "type": "string",
+              "description": "Variable name from varList"
+            }
+          },
+          "required": ["$var"]
+        }
+      ],
+      "description": "Text content to display or variable reference"
     },
     "font": {
       "type": "string",

@@ -13,27 +13,102 @@
       "description": "Name of the slider component"
     },
     "label": {
-      "type": "string",
-      "description": "Label for the slider"
+      "oneOf": [
+        {
+          "type": "string",
+          "description": "Label for the slider"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "$var": {
+              "type": "string",
+              "description": "Variable name from varList"
+            }
+          },
+          "required": ["$var"]
+        }
+      ],
+      "description": "Label for the slider or variable reference"
     },
     "startValue": {
-      "type": "number",
-      "description": "Initial value of the slider",
+      "oneOf": [
+        {
+          "type": "number",
+          "description": "Initial value of the slider"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "$var": {
+              "type": "string",
+              "description": "Variable name from varList"
+            }
+          },
+          "required": ["$var"]
+        }
+      ],
+      "description": "Initial value of the slider or variable reference",
       "default": 0.0
     },
     "minValue": {
-      "type": "number",
-      "description": "Minimum value of the slider",
+      "oneOf": [
+        {
+          "type": "number",
+          "description": "Minimum value of the slider"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "$var": {
+              "type": "string",
+              "description": "Variable name from varList"
+            }
+          },
+          "required": ["$var"]
+        }
+      ],
+      "description": "Minimum value of the slider or variable reference",
       "default": 0.0
     },
     "maxValue": {
-      "type": "number",
-      "description": "Maximum value of the slider",
+      "oneOf": [
+        {
+          "type": "number",
+          "description": "Maximum value of the slider"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "$var": {
+              "type": "string",
+              "description": "Variable name from varList"
+            }
+          },
+          "required": ["$var"]
+        }
+      ],
+      "description": "Maximum value of the slider or variable reference",
       "default": 1.0
     },
     "stepSize": {
-      "type": "number",
-      "description": "Step size for the slider",
+      "oneOf": [
+        {
+          "type": "number",
+          "description": "Step size for the slider"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "$var": {
+              "type": "string",
+              "description": "Variable name from varList"
+            }
+          },
+          "required": ["$var"]
+        }
+      ],
+      "description": "Step size for the slider or variable reference",
       "default": 0.01
     },
     "pos": {

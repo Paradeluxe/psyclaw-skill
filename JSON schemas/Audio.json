@@ -13,14 +13,44 @@
       "description": "Name of the audio component"
     },
     "filePath": {
-      "type": "string",
-      "description": "Path to the audio file (recommended format: .wav)"
+      "oneOf": [
+        {
+          "type": "string",
+          "description": "Path to the audio file (recommended format: .wav)"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "$var": {
+              "type": "string",
+              "description": "Variable name from varList"
+            }
+          },
+          "required": ["$var"]
+        }
+      ],
+      "description": "Path to the audio file or variable reference"
     },
     "volume": {
-      "type": "number",
-      "description": "Volume level (0.0 to 1.0)",
-      "minimum": 0.0,
-      "maximum": 1.0,
+      "oneOf": [
+        {
+          "type": "number",
+          "description": "Volume level (0.0 to 1.0)",
+          "minimum": 0.0,
+          "maximum": 1.0
+        },
+        {
+          "type": "object",
+          "properties": {
+            "$var": {
+              "type": "string",
+              "description": "Variable name from varList"
+            }
+          },
+          "required": ["$var"]
+        }
+      ],
+      "description": "Volume level (0.0 to 1.0) or variable reference",
       "default": 1.0
     },
     "stereo": {
@@ -29,8 +59,23 @@
       "default": true
     },
     "loops": {
-      "type": "integer",
-      "description": "Number of loops (0 for once, -1 for infinite)",
+      "oneOf": [
+        {
+          "type": "integer",
+          "description": "Number of loops (0 for once, -1 for infinite)"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "$var": {
+              "type": "string",
+              "description": "Variable name from varList"
+            }
+          },
+          "required": ["$var"]
+        }
+      ],
+      "description": "Number of loops (0 for once, -1 for infinite) or variable reference",
       "default": 0
     },
     "hamming": {
@@ -39,18 +84,63 @@
       "default": true
     },
     "audioEngine": {
-      "type": "string",
-      "description": "Audio engine to use",
-      "enum": ["SoundPTB", "SoundDevice", "SoundPyo", "SoundPygame"],
+      "oneOf": [
+        {
+          "type": "string",
+          "description": "Audio engine to use",
+          "enum": ["SoundPTB", "SoundDevice", "SoundPyo", "SoundPygame"]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "$var": {
+              "type": "string",
+              "description": "Variable name from varList"
+            }
+          },
+          "required": ["$var"]
+        }
+      ],
+      "description": "Audio engine to use or variable reference",
       "default": "SoundPTB"
     },
     "audioDevice": {
-      "type": "string",
-      "description": "Name of the audio device to use"
+      "oneOf": [
+        {
+          "type": "string",
+          "description": "Name of the audio device to use"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "$var": {
+              "type": "string",
+              "description": "Variable name from varList"
+            }
+          },
+          "required": ["$var"]
+        }
+      ],
+      "description": "Name of the audio device to use or variable reference"
     },
     "duration": {
-      "type": "number",
-      "description": "Duration of the audio in seconds"
+      "oneOf": [
+        {
+          "type": "number",
+          "description": "Duration of the audio in seconds"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "$var": {
+              "type": "string",
+              "description": "Variable name from varList"
+            }
+          },
+          "required": ["$var"]
+        }
+      ],
+      "description": "Duration of the audio in seconds or variable reference"
     },
     "isPlaying": {
       "type": "boolean",
