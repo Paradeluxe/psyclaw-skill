@@ -1,0 +1,92 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Text",
+  "description": "PsychoPy Text component for displaying text",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "integer",
+      "description": "Unique identifier for the text component"
+    },
+    "name": {
+      "type": "string",
+      "description": "Name of the text component"
+    },
+    "text": {
+      "type": "string",
+      "description": "Text content to display"
+    },
+    "font": {
+      "type": "string",
+      "description": "Font family",
+      "default": "Arial"
+    },
+    "fontSize": {
+      "type": "number",
+      "description": "Font size in pixels",
+      "default": 24
+    },
+    "color": {
+      "type": "array",
+      "description": "Text color in RGB format (0-1)",
+      "items": {
+        "type": "number",
+        "minimum": 0,
+        "maximum": 1
+      },
+      "minItems": 3,
+      "maxItems": 4,
+      "default": [1.0, 1.0, 1.0]
+    },
+    "pos": {
+      "type": "array",
+      "description": "Position on screen (-1 to 1)",
+      "items": {
+        "type": "number"
+      },
+      "minItems": 2,
+      "maxItems": 2,
+      "default": [0.0, 0.0]
+    },
+    "alignHoriz": {
+      "type": "string",
+      "description": "Horizontal alignment",
+      "enum": ["left", "center", "right"],
+      "default": "center"
+    },
+    "alignVert": {
+      "type": "string",
+      "description": "Vertical alignment",
+      "enum": ["top", "center", "bottom"],
+      "default": "center"
+    },
+    "bold": {
+      "type": "boolean",
+      "description": "Whether text is bold",
+      "default": false
+    },
+    "italic": {
+      "type": "boolean",
+      "description": "Whether text is italic",
+      "default": false
+    },
+    "underline": {
+      "type": "boolean",
+      "description": "Whether text is underlined",
+      "default": false
+    },
+    "opacity": {
+      "type": "number",
+      "description": "Text opacity (0-1)",
+      "minimum": 0,
+      "maximum": 1,
+      "default": 1.0
+    },
+    "wrapWidth": {
+      "type": "number",
+      "description": "Width at which text should wrap",
+      "default": -1
+    }
+  },
+  "required": ["id", "name", "text"]
+}

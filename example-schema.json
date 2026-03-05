@@ -1,0 +1,89 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Person Schema",
+  "description": "A schema for describing person information",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "integer",
+      "description": "Unique identifier for the person"
+    },
+    "name": {
+      "type": "string",
+      "description": "Full name of the person",
+      "minLength": 2,
+      "maxLength": 100
+    },
+    "email": {
+      "type": "string",
+      "description": "Email address of the person",
+      "format": "email"
+    },
+    "age": {
+      "type": "integer",
+      "description": "Age of the person",
+      "minimum": 0,
+      "maximum": 120
+    },
+    "isActive": {
+      "type": "boolean",
+      "description": "Whether the person is active",
+      "default": true
+    },
+    "gender": {
+      "type": "string",
+      "description": "Gender of the person",
+      "enum": ["male", "female", "other"]
+    },
+    "address": {
+      "type": "object",
+      "description": "Address information",
+      "properties": {
+        "street": {
+          "type": "string",
+          "description": "Street address"
+        },
+        "city": {
+          "type": "string",
+          "description": "City"
+        },
+        "country": {
+          "type": "string",
+          "description": "Country"
+        },
+        "zipCode": {
+          "type": "string",
+          "description": "ZIP code"
+        }
+      },
+      "required": ["street", "city", "country"]
+    },
+    "phoneNumbers": {
+      "type": "array",
+      "description": "List of phone numbers",
+      "items": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["home", "work", "mobile"]
+          },
+          "number": {
+            "type": "string",
+            "description": "Phone number"
+          }
+        },
+        "required": ["type", "number"]
+      }
+    },
+    "hobbies": {
+      "type": "array",
+      "description": "List of hobbies",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    }
+  },
+  "required": ["id", "name", "email"]
+}

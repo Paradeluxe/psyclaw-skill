@@ -1,0 +1,120 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Slider",
+  "description": "PsychoPy Slider component for user input",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "integer",
+      "description": "Unique identifier for the slider component"
+    },
+    "name": {
+      "type": "string",
+      "description": "Name of the slider component"
+    },
+    "label": {
+      "type": "string",
+      "description": "Label for the slider"
+    },
+    "startValue": {
+      "type": "number",
+      "description": "Initial value of the slider",
+      "default": 0.0
+    },
+    "minValue": {
+      "type": "number",
+      "description": "Minimum value of the slider",
+      "default": 0.0
+    },
+    "maxValue": {
+      "type": "number",
+      "description": "Maximum value of the slider",
+      "default": 1.0
+    },
+    "stepSize": {
+      "type": "number",
+      "description": "Step size for the slider",
+      "default": 0.01
+    },
+    "pos": {
+      "type": "array",
+      "description": "Position on screen (-1 to 1)",
+      "items": {
+        "type": "number"
+      },
+      "minItems": 2,
+      "maxItems": 2,
+      "default": [0.0, 0.0]
+    },
+    "size": {
+      "type": "array",
+      "description": "Size of the slider (width, height)",
+      "items": {
+        "type": "number"
+      },
+      "minItems": 2,
+      "maxItems": 2,
+      "default": [1.0, 0.1]
+    },
+    "color": {
+      "type": "array",
+      "description": "Slider color in RGB format (0-1)",
+      "items": {
+        "type": "number",
+        "minimum": 0,
+        "maximum": 1
+      },
+      "minItems": 3,
+      "maxItems": 4,
+      "default": [1.0, 1.0, 1.0]
+    },
+    "textColor": {
+      "type": "array",
+      "description": "Text color in RGB format (0-1)",
+      "items": {
+        "type": "number",
+        "minimum": 0,
+        "maximum": 1
+      },
+      "minItems": 3,
+      "maxItems": 4,
+      "default": [1.0, 1.0, 1.0]
+    },
+    "font": {
+      "type": "string",
+      "description": "Font family",
+      "default": "Arial"
+    },
+    "fontSize": {
+      "type": "number",
+      "description": "Font size in pixels",
+      "default": 18
+    },
+    "labels": {
+      "type": "array",
+      "description": "Labels for the slider",
+      "items": {
+        "type": "string"
+      }
+    },
+    "tickMarks": {
+      "type": "array",
+      "description": "Positions of tick marks (0-1)",
+      "items": {
+        "type": "number",
+        "minimum": 0,
+        "maximum": 1
+      }
+    },
+    "readOnly": {
+      "type": "boolean",
+      "description": "Whether the slider is read-only",
+      "default": false
+    },
+    "currentValue": {
+      "type": "number",
+      "description": "Current value of the slider"
+    }
+  },
+  "required": ["id", "name"]
+}

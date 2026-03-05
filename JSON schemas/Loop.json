@@ -1,0 +1,68 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Loop",
+  "description": "PsychoPy Loop component for repeating trials",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "integer",
+      "description": "Unique identifier for the loop"
+    },
+    "name": {
+      "type": "string",
+      "description": "Name of the loop"
+    },
+    "nReps": {
+      "type": "integer",
+      "description": "Number of repetitions",
+      "default": 1
+    },
+    "conditionsFile": {
+      "type": "string",
+      "description": "Path to conditions file"
+    },
+    "conditions": {
+      "type": "array",
+      "description": "Array of condition dictionaries",
+      "items": {
+        "type": "object"
+      }
+    },
+    "method": {
+      "type": "string",
+      "description": "Method for selecting conditions",
+      "enum": ["random", "sequential", "fullRandom"],
+      "default": "sequential"
+    },
+    "isTrials": {
+      "type": "boolean",
+      "description": "Whether this is a trials loop",
+      "default": true
+    },
+    "components": {
+      "type": "array",
+      "description": "Components to include in the loop",
+      "items": {
+        "oneOf": [
+          { "$ref": "Slider.json" },
+          { "$ref": "Text.json" },
+          { "$ref": "Video.json" },
+          { "$ref": "Audio.json" }
+        ]
+      }
+    },
+    "currentRep": {
+      "type": "integer",
+      "description": "Current repetition number"
+    },
+    "currentTrial": {
+      "type": "integer",
+      "description": "Current trial number"
+    },
+    "currentCondition": {
+      "type": "object",
+      "description": "Current condition"
+    }
+  },
+  "required": ["id", "name"]
+}

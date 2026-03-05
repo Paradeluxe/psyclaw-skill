@@ -1,0 +1,81 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Video",
+  "description": "PsychoPy Video component for playing video",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "integer",
+      "description": "Unique identifier for the video component"
+    },
+    "name": {
+      "type": "string",
+      "description": "Name of the video component"
+    },
+    "filePath": {
+      "type": "string",
+      "description": "Path to the video file"
+    },
+    "size": {
+      "type": "array",
+      "description": "Size of the video (width, height)",
+      "items": {
+        "type": "number"
+      },
+      "minItems": 2,
+      "maxItems": 2
+    },
+    "pos": {
+      "type": "array",
+      "description": "Position on screen (-1 to 1)",
+      "items": {
+        "type": "number"
+      },
+      "minItems": 2,
+      "maxItems": 2,
+      "default": [0.0, 0.0]
+    },
+    "opacity": {
+      "type": "number",
+      "description": "Video opacity (0-1)",
+      "minimum": 0,
+      "maximum": 1,
+      "default": 1.0
+    },
+    "loop": {
+      "type": "boolean",
+      "description": "Whether to loop the video",
+      "default": false
+    },
+    "volume": {
+      "type": "number",
+      "description": "Volume level (0.0 to 1.0)",
+      "minimum": 0.0,
+      "maximum": 1.0,
+      "default": 1.0
+    },
+    "startTime": {
+      "type": "number",
+      "description": "Start time of the video in seconds",
+      "default": 0.0
+    },
+    "stopTime": {
+      "type": "number",
+      "description": "Stop time of the video in seconds"
+    },
+    "autoPlay": {
+      "type": "boolean",
+      "description": "Whether to automatically play the video",
+      "default": true
+    },
+    "isPlaying": {
+      "type": "boolean",
+      "description": "Whether the video is currently playing"
+    },
+    "isFinished": {
+      "type": "boolean",
+      "description": "Whether the video has finished playing"
+    }
+  },
+  "required": ["id", "name", "filePath"]
+}

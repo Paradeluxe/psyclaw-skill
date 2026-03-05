@@ -1,0 +1,65 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Audio",
+  "description": "PsychoPy Audio component for audio playback",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "integer",
+      "description": "Unique identifier for the audio component"
+    },
+    "name": {
+      "type": "string",
+      "description": "Name of the audio component"
+    },
+    "filePath": {
+      "type": "string",
+      "description": "Path to the audio file (recommended format: .wav)"
+    },
+    "volume": {
+      "type": "number",
+      "description": "Volume level (0.0 to 1.0)",
+      "minimum": 0.0,
+      "maximum": 1.0,
+      "default": 1.0
+    },
+    "stereo": {
+      "type": "boolean",
+      "description": "Whether to use stereo playback",
+      "default": true
+    },
+    "loops": {
+      "type": "integer",
+      "description": "Number of loops (0 for once, -1 for infinite)",
+      "default": 0
+    },
+    "hamming": {
+      "type": "boolean",
+      "description": "Whether to apply Hanning window (smooth onset/offset)",
+      "default": true
+    },
+    "audioEngine": {
+      "type": "string",
+      "description": "Audio engine to use",
+      "enum": ["SoundPTB", "SoundDevice", "SoundPyo", "SoundPygame"],
+      "default": "SoundPTB"
+    },
+    "audioDevice": {
+      "type": "string",
+      "description": "Name of the audio device to use"
+    },
+    "duration": {
+      "type": "number",
+      "description": "Duration of the audio in seconds"
+    },
+    "isPlaying": {
+      "type": "boolean",
+      "description": "Whether the audio is currently playing"
+    },
+    "isFinished": {
+      "type": "boolean",
+      "description": "Whether the audio has finished playing"
+    }
+  },
+  "required": ["id", "name", "filePath"]
+}
