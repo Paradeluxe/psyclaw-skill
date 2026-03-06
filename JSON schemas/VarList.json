@@ -1,0 +1,25 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "VarList",
+  "description": "PsychoPy Variable List base schema",
+  "oneOf": [
+    {
+      "type": "array",
+      "description": "Array of variable name strings",
+      "items": { "type": "string" }
+    },
+    {
+      "type": "array",
+      "description": "Array of numeric values",
+      "items": { "type": "number" }
+    },
+    {
+      "type": "array",
+      "description": "Placeholder string representing a Var object to be filled later",
+      "items": { 
+        "type": "string",
+        "pattern": "^<placeholder>$"
+      }
+    }
+  ]
+}

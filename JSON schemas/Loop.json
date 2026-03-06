@@ -12,29 +12,20 @@
       "type": "string",
       "description": "Name of the loop"
     },
+    "description": {
+      "type": "string",
+      "description": "Description of the stimuli content"
+    },
     "nReps": {
       "type": "integer",
       "description": "Number of repetitions on the entire stimList",
       "default": 1
     },
-    "varList": {
-      "oneOf": [
-        {
-          "type": "array",
-          "description": "Direct array of Var objects",
-          "items": {
-            "$ref": "Var.json"
-          }
-        },
-        {
-          "type": "array",
-          "description": "Placeholder list when Var objects cannot be generated directly",
-          "items": {
-            "type": "string",
-            "description": "Placeholder string representing a Var object to be filled later"
-          }
-        }
-      ],
+    "varLists": {
+      "type": "array",
+      "items": {
+        "$ref": "Var.json"
+      },
       "minItems": { "$data": "1/nReps" },
       "maxItems": { "$data": "1/nReps" }
     },
@@ -57,5 +48,5 @@
       }
     }
   },
-  "required": ["id", "name"]
+  "required": ["id", "name", "description", "nReps", "varList"]
 }
