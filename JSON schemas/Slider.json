@@ -12,11 +12,14 @@
       "type": "string",
       "description": "Name of the slider component"
     },
-    "label": {
+    "ticks": {
       "oneOf": [
         {
-          "type": "string",
-          "description": "Label for the slider"
+          "type": "array",
+          "description": "Ticks on the scale (e.g. [1, 2, 3, 4, 5])",
+          "items": {
+            "type": "number"
+          }
         },
         {
           "type": "object",
@@ -29,9 +32,31 @@
           "required": ["$var"]
         }
       ],
-      "description": "Label for the slider or variable reference"
+      "description": "Ticks on the scale or variable reference"
     },
-    "startValue": {
+    "labels": {
+      "oneOf": [
+        {
+          "type": "array",
+          "description": "Labels for the slider",
+          "items": {
+            "type": "string"
+          }
+        },
+        {
+          "type": "object",
+          "properties": {
+            "$var": {
+              "type": "string",
+              "description": "Variable name from varList"
+            }
+          },
+          "required": ["$var"]
+        }
+      ],
+      "description": "Labels for the slider or variable reference"
+    },
+    "initVal": {
       "oneOf": [
         {
           "type": "number",
@@ -48,14 +73,14 @@
           "required": ["$var"]
         }
       ],
-      "description": "Initial value of the slider or variable reference",
-      "default": 0.0
+      "description": "Initial value or variable reference",
+      "default": 0.5
     },
-    "minValue": {
+    "forceEndRoutine": {
       "oneOf": [
         {
-          "type": "number",
-          "description": "Minimum value of the slider"
+          "type": "boolean",
+          "description": "Should a response force the end of the Routine?"
         },
         {
           "type": "object",
@@ -68,14 +93,14 @@
           "required": ["$var"]
         }
       ],
-      "description": "Minimum value of the slider or variable reference",
-      "default": 0.0
+      "description": "Force end of routine or variable reference",
+      "default": true
     },
-    "maxValue": {
+    "flip": {
       "oneOf": [
         {
-          "type": "number",
-          "description": "Maximum value of the slider"
+          "type": "boolean",
+          "description": "Should the slider flip its orientation?"
         },
         {
           "type": "object",
@@ -88,107 +113,239 @@
           "required": ["$var"]
         }
       ],
-      "description": "Maximum value of the slider or variable reference",
-      "default": 1.0
-    },
-    "stepSize": {
-      "oneOf": [
-        {
-          "type": "number",
-          "description": "Step size for the slider"
-        },
-        {
-          "type": "object",
-          "properties": {
-            "$var": {
-              "type": "string",
-              "description": "Variable name from varList"
-            }
-          },
-          "required": ["$var"]
-        }
-      ],
-      "description": "Step size for the slider or variable reference",
-      "default": 0.01
-    },
-    "pos": {
-      "type": "array",
-      "description": "Position on screen (-1 to 1)",
-      "items": {
-        "type": "number"
-      },
-      "minItems": 2,
-      "maxItems": 2,
-      "default": [0.0, 0.0]
-    },
-    "size": {
-      "type": "array",
-      "description": "Size of the slider (width, height)",
-      "items": {
-        "type": "number"
-      },
-      "minItems": 2,
-      "maxItems": 2,
-      "default": [1.0, 0.1]
-    },
-    "color": {
-      "type": "array",
-      "description": "Slider color in RGB format (0-1)",
-      "items": {
-        "type": "number",
-        "minimum": 0,
-        "maximum": 1
-      },
-      "minItems": 3,
-      "maxItems": 4,
-      "default": [1.0, 1.0, 1.0]
-    },
-    "textColor": {
-      "type": "array",
-      "description": "Text color in RGB format (0-1)",
-      "items": {
-        "type": "number",
-        "minimum": 0,
-        "maximum": 1
-      },
-      "minItems": 3,
-      "maxItems": 4,
-      "default": [1.0, 1.0, 1.0]
-    },
-    "font": {
-      "type": "string",
-      "description": "Font family",
-      "default": "Arial"
-    },
-    "fontSize": {
-      "type": "number",
-      "description": "Font size in pixels",
-      "default": 18
-    },
-    "labels": {
-      "type": "array",
-      "description": "Labels for the slider",
-      "items": {
-        "type": "string"
-      }
-    },
-    "tickMarks": {
-      "type": "array",
-      "description": "Positions of tick marks (0-1)",
-      "items": {
-        "type": "number",
-        "minimum": 0,
-        "maximum": 1
-      }
-    },
-    "readOnly": {
-      "type": "boolean",
-      "description": "Whether the slider is read-only",
+      "description": "Flip orientation or variable reference",
       "default": false
     },
-    "currentValue": {
-      "type": "number",
-      "description": "Current value of the slider"
+    "font": {
+      "oneOf": [
+        {
+          "type": "string",
+          "description": "Font family for labels"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "$var": {
+              "type": "string",
+              "description": "Variable name from varList"
+            }
+          },
+          "required": ["$var"]
+        }
+      ],
+      "description": "Font family or variable reference",
+      "default": "Arial"
+    },
+    "letterHeight": {
+      "oneOf": [
+        {
+          "type": "number",
+          "description": "Letter height for labels"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "$var": {
+              "type": "string",
+              "description": "Variable name from varList"
+            }
+          },
+          "required": ["$var"]
+        }
+      ],
+      "description": "Letter height or variable reference",
+      "default": 0.02
+    },
+    "pos": {
+      "oneOf": [
+        {
+          "type": "array",
+          "description": "Position on screen (x, y)",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 2,
+          "maxItems": 2
+        },
+        {
+          "type": "object",
+          "properties": {
+            "$var": {
+              "type": "string",
+              "description": "Variable name from varList"
+            }
+          },
+          "required": ["$var"]
+        }
+      ],
+      "description": "Position on screen or variable reference",
+      "default": [0, 0]
+    },
+    "size": {
+      "oneOf": [
+        {
+          "type": "array",
+          "description": "Size of the slider (width, height)",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 2,
+          "maxItems": 2
+        },
+        {
+          "type": "object",
+          "properties": {
+            "$var": {
+              "type": "string",
+              "description": "Variable name from varList"
+            }
+          },
+          "required": ["$var"]
+        }
+      ],
+      "description": "Size of the slider or variable reference",
+      "default": [1.0, 0.1]
+    },
+    "units": {
+      "oneOf": [
+        {
+          "type": "string",
+          "description": "Units to use when positioning",
+          "enum": ["from exp settings", "norm", "cm", "deg", "pix", "height"]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "$var": {
+              "type": "string",
+              "description": "Variable name from varList"
+            }
+          },
+          "required": ["$var"]
+        }
+      ],
+      "description": "Units or variable reference",
+      "default": "from exp settings"
+    },
+    "color": {
+      "oneOf": [
+        {
+          "type": "string",
+          "description": "Label color"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "$var": {
+              "type": "string",
+              "description": "Variable name from varList"
+            }
+          },
+          "required": ["$var"]
+        }
+      ],
+      "description": "Label color or variable reference",
+      "default": "white"
+    },
+    "fillColor": {
+      "oneOf": [
+        {
+          "type": "string",
+          "description": "Marker color"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "$var": {
+              "type": "string",
+              "description": "Variable name from varList"
+            }
+          },
+          "required": ["$var"]
+        }
+      ],
+      "description": "Marker color or variable reference",
+      "default": "white"
+    },
+    "borderColor": {
+      "oneOf": [
+        {
+          "type": "string",
+          "description": "Line color"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "$var": {
+              "type": "string",
+              "description": "Variable name from varList"
+            }
+          },
+          "required": ["$var"]
+        }
+      ],
+      "description": "Line color or variable reference",
+      "default": "white"
+    },
+    "opacity": {
+      "oneOf": [
+        {
+          "type": "number",
+          "description": "Slider opacity (0-1)",
+          "minimum": 0,
+          "maximum": 1
+        },
+        {
+          "type": "object",
+          "properties": {
+            "$var": {
+              "type": "string",
+              "description": "Variable name from varList"
+            }
+          },
+          "required": ["$var"]
+        }
+      ],
+      "description": "Slider opacity or variable reference",
+      "default": 1.0
+    },
+    "minTime": {
+      "oneOf": [
+        {
+          "type": "number",
+          "description": "Minimum time to display the component in seconds"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "$var": {
+              "type": "string",
+              "description": "Variable name from varList"
+            }
+          },
+          "required": ["$var"]
+        }
+      ],
+      "description": "Minimum time to display the component in seconds or variable reference"
+    },
+    "maxTime": {
+      "oneOf": [
+        {
+          "type": "number",
+          "description": "Maximum time to display the component in seconds"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "$var": {
+              "type": "string",
+              "description": "Variable name from varList"
+            }
+          },
+          "required": ["$var"]
+        }
+      ],
+      "description": "Maximum time to display the component in seconds or variable reference"
     }
   },
   "required": ["id", "name"]

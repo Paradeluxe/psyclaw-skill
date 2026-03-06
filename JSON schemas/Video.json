@@ -12,11 +12,11 @@
       "type": "string",
       "description": "Name of the video component"
     },
-    "filePath": {
+    "movie": {
       "oneOf": [
         {
           "type": "string",
-          "description": "Path to the video file"
+          "description": "A movie file (e.g. *.mp4, *.avi)"
         },
         {
           "type": "object",
@@ -29,7 +29,135 @@
           "required": ["$var"]
         }
       ],
-      "description": "Path to the video file or variable reference"
+      "description": "Movie file path or variable reference"
+    },
+    "volume": {
+      "oneOf": [
+        {
+          "type": "number",
+          "description": "Volume level (0.0 to 1.0)",
+          "minimum": 0.0,
+          "maximum": 1.0
+        },
+        {
+          "type": "object",
+          "properties": {
+            "$var": {
+              "type": "string",
+              "description": "Variable name from varList"
+            }
+          },
+          "required": ["$var"]
+        }
+      ],
+      "description": "Volume level or variable reference",
+      "default": 1.0
+    },
+    "loop": {
+      "oneOf": [
+        {
+          "type": "boolean",
+          "description": "Should the video loop?"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "$var": {
+              "type": "string",
+              "description": "Variable name from varList"
+            }
+          },
+          "required": ["$var"]
+        }
+      ],
+      "description": "Loop video or variable reference",
+      "default": false
+    },
+    "stopWithRoutine": {
+      "oneOf": [
+        {
+          "type": "boolean",
+          "description": "Should the video stop when the Routine ends?"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "$var": {
+              "type": "string",
+              "description": "Variable name from varList"
+            }
+          },
+          "required": ["$var"]
+        }
+      ],
+      "description": "Stop with routine or variable reference",
+      "default": true
+    },
+    "forceEndRoutine": {
+      "oneOf": [
+        {
+          "type": "boolean",
+          "description": "Should a response force the end of the Routine?"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "$var": {
+              "type": "string",
+              "description": "Variable name from varList"
+            }
+          },
+          "required": ["$var"]
+        }
+      ],
+      "description": "Force end of routine or variable reference",
+      "default": true
+    },
+    "anchor": {
+      "oneOf": [
+        {
+          "type": "string",
+          "description": "Anchor point for the video",
+          "enum": ["center", "top-center", "bottom-center", "center-left", "center-right", "top-left", "top-right", "bottom-left", "bottom-right"]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "$var": {
+              "type": "string",
+              "description": "Variable name from varList"
+            }
+          },
+          "required": ["$var"]
+        }
+      ],
+      "description": "Anchor or variable reference",
+      "default": "center"
+    },
+    "pos": {
+      "oneOf": [
+        {
+          "type": "array",
+          "description": "Position on screen (x, y)",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 2,
+          "maxItems": 2
+        },
+        {
+          "type": "object",
+          "properties": {
+            "$var": {
+              "type": "string",
+              "description": "Variable name from varList"
+            }
+          },
+          "required": ["$var"]
+        }
+      ],
+      "description": "Position on screen or variable reference",
+      "default": [0, 0]
     },
     "size": {
       "oneOf": [
@@ -53,18 +181,14 @@
           "required": ["$var"]
         }
       ],
-      "description": "Size of the video (width, height) or variable reference"
+      "description": "Size of the video or variable reference"
     },
-    "pos": {
+    "units": {
       "oneOf": [
         {
-          "type": "array",
-          "description": "Position on screen (-1 to 1)",
-          "items": {
-            "type": "number"
-          },
-          "minItems": 2,
-          "maxItems": 2
+          "type": "string",
+          "description": "Units to use when positioning",
+          "enum": ["from exp settings", "norm", "cm", "deg", "pix", "height"]
         },
         {
           "type": "object",
@@ -77,8 +201,8 @@
           "required": ["$var"]
         }
       ],
-      "description": "Position on screen (-1 to 1) or variable reference",
-      "default": [0.0, 0.0]
+      "description": "Units or variable reference",
+      "default": "from exp settings"
     },
     "opacity": {
       "oneOf": [
@@ -99,21 +223,14 @@
           "required": ["$var"]
         }
       ],
-      "description": "Video opacity (0-1) or variable reference",
+      "description": "Video opacity or variable reference",
       "default": 1.0
     },
-    "loop": {
-      "type": "boolean",
-      "description": "Whether to loop the video",
-      "default": false
-    },
-    "volume": {
+    "minTime": {
       "oneOf": [
         {
           "type": "number",
-          "description": "Volume level (0.0 to 1.0)",
-          "minimum": 0.0,
-          "maximum": 1.0
+          "description": "Minimum time to play the video in seconds"
         },
         {
           "type": "object",
@@ -126,14 +243,13 @@
           "required": ["$var"]
         }
       ],
-      "description": "Volume level (0.0 to 1.0) or variable reference",
-      "default": 1.0
+      "description": "Minimum time to play the video in seconds or variable reference"
     },
-    "startTime": {
+    "maxTime": {
       "oneOf": [
         {
           "type": "number",
-          "description": "Start time of the video in seconds"
+          "description": "Maximum time to play the video in seconds"
         },
         {
           "type": "object",
@@ -146,41 +262,8 @@
           "required": ["$var"]
         }
       ],
-      "description": "Start time of the video in seconds or variable reference",
-      "default": 0.0
-    },
-    "stopTime": {
-      "oneOf": [
-        {
-          "type": "number",
-          "description": "Stop time of the video in seconds"
-        },
-        {
-          "type": "object",
-          "properties": {
-            "$var": {
-              "type": "string",
-              "description": "Variable name from varList"
-            }
-          },
-          "required": ["$var"]
-        }
-      ],
-      "description": "Stop time of the video in seconds or variable reference"
-    },
-    "autoPlay": {
-      "type": "boolean",
-      "description": "Whether to automatically play the video",
-      "default": true
-    },
-    "isPlaying": {
-      "type": "boolean",
-      "description": "Whether the video is currently playing"
-    },
-    "isFinished": {
-      "type": "boolean",
-      "description": "Whether the video has finished playing"
+      "description": "Maximum time to play the video in seconds or variable reference"
     }
   },
-  "required": ["id", "name", "filePath"]
+  "required": ["id", "name", "movie"]
 }

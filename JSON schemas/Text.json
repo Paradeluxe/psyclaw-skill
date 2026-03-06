@@ -16,7 +16,7 @@
       "oneOf": [
         {
           "type": "string",
-          "description": "Text content to display"
+          "description": "The text to be displayed"
         },
         {
           "type": "object",
@@ -29,78 +29,296 @@
           "required": ["$var"]
         }
       ],
-      "description": "Text content to display or variable reference"
+      "description": "The text to be displayed or variable reference"
     },
     "font": {
-      "type": "string",
-      "description": "Font family",
+      "oneOf": [
+        {
+          "type": "string",
+          "description": "The font name (e.g. Comic Sans)"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "$var": {
+              "type": "string",
+              "description": "Variable name from varList"
+            }
+          },
+          "required": ["$var"]
+        }
+      ],
+      "description": "Font family or variable reference",
       "default": "Arial"
     },
-    "fontSize": {
-      "type": "number",
-      "description": "Font size in pixels",
-      "default": 24
+    "units": {
+      "oneOf": [
+        {
+          "type": "string",
+          "description": "Units to use when positioning the text",
+          "enum": ["from exp settings", "norm", "cm", "deg", "pix", "height"]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "$var": {
+              "type": "string",
+              "description": "Variable name from varList"
+            }
+          },
+          "required": ["$var"]
+        }
+      ],
+      "description": "Units or variable reference",
+      "default": "from exp settings"
     },
     "color": {
-      "type": "array",
-      "description": "Text color in RGB format (0-1)",
-      "items": {
-        "type": "number",
-        "minimum": 0,
-        "maximum": 1
-      },
-      "minItems": 3,
-      "maxItems": 4,
-      "default": [1.0, 1.0, 1.0]
+      "oneOf": [
+        {
+          "type": "string",
+          "description": "Text color (e.g. white, red, $[1,0,0])"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "$var": {
+              "type": "string",
+              "description": "Variable name from varList"
+            }
+          },
+          "required": ["$var"]
+        }
+      ],
+      "description": "Text color or variable reference",
+      "default": "white"
     },
     "pos": {
-      "type": "array",
-      "description": "Position on screen (-1 to 1)",
-      "items": {
-        "type": "number"
-      },
-      "minItems": 2,
-      "maxItems": 2,
-      "default": [0.0, 0.0]
+      "oneOf": [
+        {
+          "type": "array",
+          "description": "Position on screen (x, y)",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 2,
+          "maxItems": 2
+        },
+        {
+          "type": "object",
+          "properties": {
+            "$var": {
+              "type": "string",
+              "description": "Variable name from varList"
+            }
+          },
+          "required": ["$var"]
+        }
+      ],
+      "description": "Position on screen or variable reference",
+      "default": [0, 0]
     },
-    "alignHoriz": {
-      "type": "string",
-      "description": "Horizontal alignment",
-      "enum": ["left", "center", "right"],
-      "default": "center"
+    "letterHeight": {
+      "oneOf": [
+        {
+          "type": "number",
+          "description": "Specifies the height of the letter (the width is then determined by the font)"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "$var": {
+              "type": "string",
+              "description": "Variable name from varList"
+            }
+          },
+          "required": ["$var"]
+        }
+      ],
+      "description": "Letter height or variable reference",
+      "default": 0.05
     },
-    "alignVert": {
-      "type": "string",
-      "description": "Vertical alignment",
-      "enum": ["top", "center", "bottom"],
-      "default": "center"
+    "ori": {
+      "oneOf": [
+        {
+          "type": "number",
+          "description": "Orientation of the text in degrees"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "$var": {
+              "type": "string",
+              "description": "Variable name from varList"
+            }
+          },
+          "required": ["$var"]
+        }
+      ],
+      "description": "Orientation or variable reference",
+      "default": 0
     },
-    "bold": {
-      "type": "boolean",
-      "description": "Whether text is bold",
+    "draggable": {
+      "oneOf": [
+        {
+          "type": "boolean",
+          "description": "Should this stimulus be movable by clicking and dragging?"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "$var": {
+              "type": "string",
+              "description": "Variable name from varList"
+            }
+          },
+          "required": ["$var"]
+        }
+      ],
+      "description": "Draggable or variable reference",
       "default": false
     },
-    "italic": {
-      "type": "boolean",
-      "description": "Whether text is italic",
-      "default": false
+    "flip": {
+      "oneOf": [
+        {
+          "type": "string",
+          "description": "Horizontal or vertical flip",
+          "enum": ["horiz", "vert", "None"]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "$var": {
+              "type": "string",
+              "description": "Variable name from varList"
+            }
+          },
+          "required": ["$var"]
+        }
+      ],
+      "description": "Flip (mirror) or variable reference",
+      "default": "None"
     },
-    "underline": {
-      "type": "boolean",
-      "description": "Whether text is underlined",
-      "default": false
-    },
-    "opacity": {
-      "type": "number",
-      "description": "Text opacity (0-1)",
-      "minimum": 0,
-      "maximum": 1,
-      "default": 1.0
+    "languageStyle": {
+      "oneOf": [
+        {
+          "type": "string",
+          "description": "Handle right-to-left (RTL) languages and Arabic reshaping",
+          "enum": ["LTR", "RTL", "Arabic"]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "$var": {
+              "type": "string",
+              "description": "Variable name from varList"
+            }
+          },
+          "required": ["$var"]
+        }
+      ],
+      "description": "Language style or variable reference",
+      "default": "LTR"
     },
     "wrapWidth": {
-      "type": "number",
-      "description": "Width at which text should wrap",
-      "default": -1
+      "oneOf": [
+        {
+          "type": "number",
+          "description": "How wide should the text get when it wraps? (in the specified units)"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "$var": {
+              "type": "string",
+              "description": "Variable name from varList"
+            }
+          },
+          "required": ["$var"]
+        }
+      ],
+      "description": "Wrap width or variable reference"
+    },
+    "opacity": {
+      "oneOf": [
+        {
+          "type": "number",
+          "description": "Opacity of the text (0-1)",
+          "minimum": 0,
+          "maximum": 1
+        },
+        {
+          "type": "object",
+          "properties": {
+            "$var": {
+              "type": "string",
+              "description": "Variable name from varList"
+            }
+          },
+          "required": ["$var"]
+        }
+      ],
+      "description": "Opacity or variable reference",
+      "default": 1.0
+    },
+    "contrast": {
+      "oneOf": [
+        {
+          "type": "number",
+          "description": "Contrast of the text (-1 to 1)",
+          "minimum": -1,
+          "maximum": 1
+        },
+        {
+          "type": "object",
+          "properties": {
+            "$var": {
+              "type": "string",
+              "description": "Variable name from varList"
+            }
+          },
+          "required": ["$var"]
+        }
+      ],
+      "description": "Contrast or variable reference",
+      "default": 1.0
+    },
+    "minTime": {
+      "oneOf": [
+        {
+          "type": "number",
+          "description": "Minimum time to display the component in seconds"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "$var": {
+              "type": "string",
+              "description": "Variable name from varList"
+            }
+          },
+          "required": ["$var"]
+        }
+      ],
+      "description": "Minimum time to display the component in seconds or variable reference"
+    },
+    "maxTime": {
+      "oneOf": [
+        {
+          "type": "number",
+          "description": "Maximum time to display the component in seconds"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "$var": {
+              "type": "string",
+              "description": "Variable name from varList"
+            }
+          },
+          "required": ["$var"]
+        }
+      ],
+      "description": "Maximum time to display the component in seconds or variable reference"
     }
   },
   "required": ["id", "name", "text"]

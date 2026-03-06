@@ -24,7 +24,7 @@
     "varLists": {
       "type": "array",
       "items": {
-        "$ref": "Var.json"
+        "$ref": "VarList.json"
       },
       "minItems": { "$data": "1/nReps" },
       "maxItems": { "$data": "1/nReps" }

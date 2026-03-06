@@ -1,0 +1,95 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Routine",
+  "description": "PsychoPy Routine settings component",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "integer",
+      "description": "Unique identifier for the routine"
+    },
+    "name": {
+      "type": "string",
+      "description": "Name of the routine"
+    },
+    "description": {
+      "oneOf": [
+        {
+          "type": "string",
+          "description": "Some descriptive text to give information about this Routine"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "$var": {
+              "type": "string",
+              "description": "Variable name from varList"
+            }
+          },
+          "required": ["$var"]
+        }
+      ],
+      "description": "Description of the routine or variable reference"
+    },
+    "useWindowParams": {
+      "oneOf": [
+        {
+          "type": "boolean",
+          "description": "Should the appearance of the window change while this Routine is running?"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "$var": {
+              "type": "string",
+              "description": "Variable name from varList"
+            }
+          },
+          "required": ["$var"]
+        }
+      ],
+      "description": "Different window settings or variable reference",
+      "default": false
+    },
+    "color": {
+      "oneOf": [
+        {
+          "type": "string",
+          "description": "Color of the screen this Routine (e.g. black, $[1.0,1.0,1.0], $variable)"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "$var": {
+              "type": "string",
+              "description": "Variable name from varList"
+            }
+          },
+          "required": ["$var"]
+        }
+      ],
+      "description": "Background color or variable reference",
+      "default": "$[0,0,0]"
+    },
+    "backgroundImg": {
+      "oneOf": [
+        {
+          "type": "string",
+          "description": "Image file to use as a background (leave blank for no image)"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "$var": {
+              "type": "string",
+              "description": "Variable name from varList"
+            }
+          },
+          "required": ["$var"]
+        }
+      ],
+      "description": "Background image file path or variable reference"
+    }
+  },
+  "required": ["id", "name"]
+}
