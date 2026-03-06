@@ -1,5 +1,5 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$schema": "https://json-schema.org/draft/2020-12/schema#",
   "title": "Loop",
   "description": "PsychoPy Loop component for repeating trials",
   "type": "object",
@@ -16,18 +16,11 @@
       "type": "string",
       "description": "Description of the stimuli content"
     },
-    "nReps": {
+    "nTrials": {
       "type": "integer",
-      "description": "Number of repetitions on the entire stimList",
-      "default": 1
-    },
-    "varLists": {
-      "type": "array",
-      "items": {
-        "$ref": "VarList.json"
-      },
-      "minItems": { "$data": "1/nReps" },
-      "maxItems": { "$data": "1/nReps" }
+      "description": "Number of trials on the entire Loop",
+      "default": 1,
+      "minimum": 1
     },
     "randomization": {
       "type": "string",
@@ -43,5 +36,5 @@
       }
     }
   },
-  "required": ["id", "name", "description", "nReps", "varList", "routines"]
+  "required": ["id", "name", "description", "nReps", "routines"]
 }
