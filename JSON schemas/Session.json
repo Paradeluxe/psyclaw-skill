@@ -20,5 +20,5 @@
       }
     }
   },
-  "required": ["id", "name", "loops"]
+  "required": ["id", "name", "description", "loops"]
 }

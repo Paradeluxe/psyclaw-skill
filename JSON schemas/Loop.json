@@ -35,18 +35,13 @@
       "enum": ["random", "sequential", "fullRandom"],
       "default": "sequential"
     },
-    "components": {
+    "routines": {
       "type": "array",
-      "description": "Components to include in the loop",
+      "description": "Routines to include in the loop",
       "items": {
-        "oneOf": [
-          { "$ref": "Slider.json" },
-          { "$ref": "Text.json" },
-          { "$ref": "Video.json" },
-          { "$ref": "Audio.json" }
-        ]
+        "$ref": "Routine.json"
       }
     }
   },
-  "required": ["id", "name", "description", "nReps", "varList"]
+  "required": ["id", "name", "description", "nReps", "varList", "routines"]
 }

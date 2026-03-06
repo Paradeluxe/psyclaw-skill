@@ -13,124 +13,34 @@
       "description": "Name of the audio component"
     },
     "sound": {
-      "oneOf": [
-        {
-          "type": "string",
-          "description": "A sound file (e.g. *.wav, *.mp3) or a number for a tone"
-        },
-        {
-          "type": "object",
-          "properties": {
-            "$var": {
-              "type": "string",
-              "description": "Variable name from varList"
-            }
-          },
-          "required": ["$var"]
-        }
-      ],
-      "description": "Sound file or variable reference"
+      "type": "string",
+      "description": "A sound file (e.g. *.wav, *.mp3) or a number for a tone"
     },
     "volume": {
-      "oneOf": [
-        {
-          "type": "number",
-          "description": "Volume level (0.0 to 1.0)",
-          "minimum": 0.0,
-          "maximum": 1.0
-        },
-        {
-          "type": "object",
-          "properties": {
-            "$var": {
-              "type": "string",
-              "description": "Variable name from varList"
-            }
-          },
-          "required": ["$var"]
-        }
-      ],
-      "description": "Volume level or variable reference",
+      "type": "number",
+      "description": "Volume level (0.0 to 1.0)",
+      "minimum": 0.0,
+      "maximum": 1.0,
       "default": 1.0
     },
     "stopWithRoutine": {
-      "oneOf": [
-        {
-          "type": "boolean",
-          "description": "Should the sound stop when the Routine ends?"
-        },
-        {
-          "type": "object",
-          "properties": {
-            "$var": {
-              "type": "string",
-              "description": "Variable name from varList"
-            }
-          },
-          "required": ["$var"]
-        }
-      ],
-      "description": "Stop with routine or variable reference",
+      "type": "boolean",
+      "description": "Should the sound stop when the Routine ends?",
       "default": true
     },
     "forceEndRoutine": {
-      "oneOf": [
-        {
-          "type": "boolean",
-          "description": "Should a response force the end of the Routine?"
-        },
-        {
-          "type": "object",
-          "properties": {
-            "$var": {
-              "type": "string",
-              "description": "Variable name from varList"
-            }
-          },
-          "required": ["$var"]
-        }
-      ],
-      "description": "Force end of routine or variable reference",
+      "type": "boolean",
+      "description": "Should a response force the end of the Routine?",
       "default": true
     },
     "minTime": {
-      "oneOf": [
-        {
-          "type": "number",
-          "description": "Minimum time to play the audio in seconds"
-        },
-        {
-          "type": "object",
-          "properties": {
-            "$var": {
-              "type": "string",
-              "description": "Variable name from varList"
-            }
-          },
-          "required": ["$var"]
-        }
-      ],
-      "description": "Minimum time to play the audio in seconds or variable reference"
+      "type": "integer",
+      "description": "Minimum time to play the audio in milliseconds"
     },
     "maxTime": {
-      "oneOf": [
-        {
-          "type": "number",
-          "description": "Maximum time to play the audio in seconds"
-        },
-        {
-          "type": "object",
-          "properties": {
-            "$var": {
-              "type": "string",
-              "description": "Variable name from varList"
-            }
-          },
-          "required": ["$var"]
-        }
-      ],
-      "description": "Maximum time to play the audio in seconds or variable reference"
+      "type": "integer",
+      "description": "Maximum time to play the audio in milliseconds"
     }
   },
-  "required": ["id", "name", "sound"]
+  "required": ["id", "name", "description", "sound"]
 }

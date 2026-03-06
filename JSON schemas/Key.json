@@ -13,83 +13,23 @@
       "description": "Name of the keyboard component"
     },
     "allowedKeys": {
-      "oneOf": [
-        {
-          "type": "string",
-          "description": "A comma-separated list of keys (with quotes), such as 'q','right','space','left'"
-        },
-        {
-          "type": "object",
-          "properties": {
-            "$var": {
-              "type": "string",
-              "description": "Variable name from varList"
-            }
-          },
-          "required": ["$var"]
-        }
-      ],
-      "description": "A comma-separated list of keys or variable reference",
+      "type": "string",
+      "description": "A comma-separated list of keys (with quotes), such as 'q','right','space','left'",
       "default": "'y','n','left','right','space'"
     },
     "forceEndRoutine": {
-      "oneOf": [
-        {
-          "type": "boolean",
-          "description": "Should a response force the end of the Routine (e.g end the trial)?"
-        },
-        {
-          "type": "object",
-          "properties": {
-            "$var": {
-              "type": "string",
-              "description": "Variable name from varList"
-            }
-          },
-          "required": ["$var"]
-        }
-      ],
-      "description": "Should a response force the end of the Routine or variable reference",
+      "type": "boolean",
+      "description": "Should a response force the end of the Routine (e.g end the trial)?",
       "default": true
     },
     "minTime": {
-      "oneOf": [
-        {
-          "type": "number",
-          "description": "Minimum time to capture keyboard input in seconds"
-        },
-        {
-          "type": "object",
-          "properties": {
-            "$var": {
-              "type": "string",
-              "description": "Variable name from varList"
-            }
-          },
-          "required": ["$var"]
-        }
-      ],
-      "description": "Minimum time to capture keyboard input in seconds or variable reference"
+      "type": "integer",
+      "description": "Minimum time to capture keyboard input in milliseconds"
     },
     "maxTime": {
-      "oneOf": [
-        {
-          "type": "number",
-          "description": "Maximum time to capture keyboard input in seconds"
-        },
-        {
-          "type": "object",
-          "properties": {
-            "$var": {
-              "type": "string",
-              "description": "Variable name from varList"
-            }
-          },
-          "required": ["$var"]
-        }
-      ],
-      "description": "Maximum time to capture keyboard input in seconds or variable reference"
+      "type": "integer",
+      "description": "Maximum time to capture keyboard input in milliseconds"
     }
   },
-  "required": ["id", "name"]
+  "required": ["id", "name", "description", "minTime", "maxTime"]
 }

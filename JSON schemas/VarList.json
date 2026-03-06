@@ -15,10 +15,9 @@
     },
     {
       "type": "array",
-      "description": "Placeholder string representing a Var object to be filled later",
+      "description": "Array of null values for variables to be filled later",
       "items": { 
-        "type": "string",
-        "pattern": "^<placeholder>$"
+        "type": "null"
       }
     }
   ]
