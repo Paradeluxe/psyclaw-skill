@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Session",
+  "type": "object",
+  "properties": {
+    "number of trial(s)": {
+      "type": "integer",
+      "description": "The number of trials in this session"
+    },
+    "description of the trial(s)": {
+      "type": "string",
+      "description": "A description of the trials in this session."
+    },
+    "procedure": {
+      "type": "string",
+      "description": "The procedure followed in this session."
+    },
+    "variable(s) in this session": {
+      "type": "string",
+      "description": "The variables involved in this session."
+    }
+  },
+  "required": []
+}

@@ -39,10 +39,21 @@
         "oneOf": [
           { "$ref": "Text.json" },
           { "$ref": "Video.json" },
-          { "$ref": "Audio.json" },
-          { "$ref": "Key.json" }
+          { "$ref": "Audio.json" }
         ]
       }
+    },
+    "allowedKeys": {
+      "type": "array",
+      "description": "A list of allowed keys for keyboard input",
+      "items": {
+        "type": "string"
+      }
+    },
+    "forcedEndRoutine": {
+      "type": "boolean",
+      "description": "Should a response force the end of the Routine (e.g end the trial)?",
+      "default": true
     }
   },
   "required": ["id", "name", "description", "components"]

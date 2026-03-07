@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "GenerateStimliBasedOnCondition",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "description": "A condition object containing stimuli based on the condition"
+  },
+  "minItems": 1,
+  "maxItems": 100,
+  "description": "An array of condition objects. The size of this array is determined by the 'number of trial(s) in each condition' field in GenStimList.json"
+}

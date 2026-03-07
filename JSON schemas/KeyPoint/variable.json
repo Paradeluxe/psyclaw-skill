@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "variable",
+  "type": "object",
+  "description": "Single variable",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "The name of the variable"
+    },
+    "description": {
+      "type": "string",
+      "description": "The description of the variable"
+    }
+  },
+  "oneOf": [
+    {
+      "properties": {
+        "type": {
+          "const": "continuous",
+          "description": "The type of the variable: continuous"
+        },
+        "level": {
+          "const": null,
+          "description": "Null for continuous variables"
+        }
+      },
+      "required": ["type", "level"]
+    },
+    {
+      "properties": {
+        "type": {
+          "const": "categorical",
+          "description": "The type of the variable: categorical"
+        },
+        "level": {
+          "type": "array",
+          "description": "The levels of the variable (for categorical variables)"
+        }
+      },
+      "required": ["type", "level"]
+    }
+  ],
+  "required": ["name", "description", "type", "level"]
+
+}
