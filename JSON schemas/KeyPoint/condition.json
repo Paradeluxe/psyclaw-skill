@@ -4,17 +4,20 @@
   "type": "object",
   "description": "The complete experimental design",
   "properties": {
-    "numberOfVariables": {
-      "type": "integer",
-      "description": "The number of variables in this session"
-    },
-    "variables": {
+    "dependentVariables": {
       "type": "array",
-      "description": "The variables in this session",
+      "description": "The dependent variables in this session",
+      "items": {
+        "$ref": "variable.json"
+      }
+    },
+    "independentVariables": {
+      "type": "array",
+      "description": "The independent variables in this session",
       "items": {
         "$ref": "variable.json"
       }
     }
   },
-  "required": ["numberOfVariables", "variables", "conditions"]
+  "required": ["dependentVariables", "independentVariables"]
 }

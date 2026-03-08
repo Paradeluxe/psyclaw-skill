@@ -1,0 +1,142 @@
+[
+  {
+    "id": 1,
+    "name": "StroopExperimentSession",
+    "description": "A complete Stroop effect experiment session including instruction, formal experiment, and ending.",
+    "loops": [
+      {
+        "id": 101,
+        "name": "InstructionLoop",
+        "description": "Loop for displaying instruction screen once.",
+        "nTrials": 1,
+        "randomization": "sequential",
+        "routines": [
+          {
+            "id": 1001,
+            "name": "InstructionRoutine",
+            "description": "Displays instructions for the Stroop task.",
+            "backgroundColor": "[1.0,1.0,1.0]",
+            "components": [
+              {
+                "id": 2001,
+                "name": "InstructionText",
+                "description": "Instruction text component.",
+                "text": "Welcome to the Stroop Experiment.\n\nYou will see words printed in different colors.\nYour task is to identify the COLOR of the ink, ignoring the word itself.\n\nPress 'f' for RED\nPress 'j' for GREEN\n\nPress Space to start.",
+                "font": "Arial",
+                "units": "from exp settings",
+                "color": "black",
+                "pos": [0, 0],
+                "letterHeight": 0.05,
+                "ori": 0,
+                "draggable": false,
+                "flip": "None",
+                "languageStyle": "LTR",
+                "opacity": 1.0,
+                "contrast": 1.0,
+                "startTime": 0,
+                "endTime": -1
+              }
+            ],
+            "allowedKeys": ["space"],
+            "forcedEndRoutine": true
+          }
+        ]
+      },
+      {
+        "id": 102,
+        "name": "FormalExperimentLoop",
+        "description": "Main loop for the Stroop trials.",
+        "nTrials": 100,
+        "randomization": "fullRandom",
+        "routines": [
+          {
+            "id": 1002,
+            "name": "StroopTrialRoutine",
+            "description": "Single trial routine for the Stroop task.",
+            "backgroundColor": "[1.0,1.0,1.0]",
+            "components": [
+              {
+                "id": 2002,
+                "name": "StroopStimulus",
+                "description": "The Stroop stimulus (word in colored ink).",
+                "text": "$stimWord",
+                "font": "Arial",
+                "units": "from exp settings",
+                "color": "$inkColor",
+                "pos": [0, 0],
+                "letterHeight": 0.08,
+                "ori": 0,
+                "draggable": false,
+                "flip": "None",
+                "languageStyle": "LTR",
+                "opacity": 1.0,
+                "contrast": 1.0,
+                "startTime": 500,
+                "endTime": 2500
+              },
+              {
+                "id": 2003,
+                "name": "FixationCross",
+                "description": "Fixation cross displayed before stimulus.",
+                "text": "+",
+                "font": "Arial",
+                "units": "from exp settings",
+                "color": "black",
+                "pos": [0, 0],
+                "letterHeight": 0.08,
+                "ori": 0,
+                "draggable": false,
+                "flip": "None",
+                "languageStyle": "LTR",
+                "opacity": 1.0,
+                "contrast": 1.0,
+                "startTime": 0,
+                "endTime": 500
+              }
+            ],
+            "allowedKeys": ["f", "j"],
+            "forcedEndRoutine": true
+          }
+        ]
+      },
+      {
+        "id": 103,
+        "name": "EndingLoop",
+        "description": "Loop for displaying the ending screen once.",
+        "nTrials": 1,
+        "randomization": "sequential",
+        "routines": [
+          {
+            "id": 1003,
+            "name": "EndingRoutine",
+            "description": "Displays the thank you message at the end of the experiment.",
+            "backgroundColor": "[1.0,1.0,1.0]",
+            "components": [
+              {
+                "id": 2004,
+                "name": "EndingText",
+                "description": "Ending text component.",
+                "text": "Thank you for participating!\n\nThe experiment is now complete.",
+                "font": "Arial",
+                "units": "from exp settings",
+                "color": "black",
+                "pos": [0, 0],
+                "letterHeight": 0.06,
+                "ori": 0,
+                "draggable": false,
+                "flip": "None",
+                "languageStyle": "LTR",
+                "opacity": 1.0,
+                "contrast": 1.0,
+                "startTime": 0,
+                "endTime": 3000
+              }
+            ],
+            "allowedKeys": [],
+            "forcedEndRoutine": false
+          }
+        ]
+      }
+    ]
+  }
+]

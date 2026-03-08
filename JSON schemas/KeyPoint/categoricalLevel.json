@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CategoricalLevel",
+  "type": "object",
+  "description": "The complete experimental design",
+  "properties": {
+    "nameOfLevel": {
+      "type": "string",
+      "description": "The name of the level of the categorical variable. Used as the value in the data file."
+    },
+    "descriptionOfLevel": {
+      "type": "string",
+      "description": "The description of this level of the categorical variable. It is for generating a Python scrit later in the procedure."
+    }
+  },
+  "required": ["nameOfLevel", "descriptionOfLevel"]
+}

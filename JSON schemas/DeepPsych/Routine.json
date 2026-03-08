@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema#",
   "title": "Routine",
-  "description": "PsychoPy Routine settings component",
+  "description": "PsychoPy Routine settings component. For fields that need dynamic changes, use $ prefix (e.g., $variable, $[1,0,0]). See variable-convention.json for details.",
   "type": "object",
   "properties": {
     "id": {
@@ -16,21 +16,14 @@
       "type": "string",
       "description": "Some descriptive text to give information about this Routine"
     },
-    "color": {
+    "backgroundColor": {
       "type": "string",
-      "description": "Color of the screen this Routine (e.g. black, $[1.0,1.0,1.0], $variable)",
-      "default": "$[1.0,1.0,1.0]"
+      "description": "Color of the screen this Routine. Use $ prefix for dynamic values (e.g., black, $[1.0,1.0,1.0], $variable)",
+      "default": "[1.0,1.0,1.0]"
     },
     "backgroundImg": {
       "type": "string",
       "description": "Image file to use as a background (leave blank for no image)"
-    },
-    "varLists": {
-      "type": "array",
-      "description": "List of variables for this routine",
-      "items": {
-        "$ref": "VarList.json"
-      }
     },
     "components": {
       "type": "array",
@@ -44,11 +37,31 @@
       }
     },
     "allowedKeys": {
-      "type": "array",
-      "description": "A list of allowed keys for keyboard input",
-      "items": {
-        "type": "string"
-      }
+      "oneOf": [
+        {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["f", "j"]
+          },
+          "description": "Predefined option: f and j keys. Usually for Yes/No responses (or other binary responses)."
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "const": "space"
+          },
+          "description": "Predefined option: space key only. Usually for instruction or other non-response tasks."
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Custom array of allowed keys. Usually for other situations."
+        }
+      ]
     },
     "forcedEndRoutine": {
       "type": "boolean",

@@ -14,7 +14,7 @@
     },
     "movie": {
       "type": "string",
-      "description": "A movie file (e.g. *.mp4, *.avi)"
+      "description": "A movie file (e.g. *.mp4, *.avi). Use $ prefix for dynamic movie selection (e.g., $movieFile)"
     },
     "volume": {
       "type": "number",
@@ -46,7 +46,7 @@
     },
     "pos": {
       "type": "array",
-      "description": "Position on screen (x, y)",
+      "description": "Position on screen (x, y). Use $ prefix for dynamic positioning (e.g., $position)",
       "items": {
         "type": "number"
       },
@@ -76,14 +76,14 @@
       "maximum": 1,
       "default": 1.0
     },
-    "minTime": {
+    "startTime": {
       "type": "integer",
-      "description": "Minimum time to play the video in milliseconds"
+      "description": "Start time to play the video in milliseconds"
     },
-    "maxTime": {
+    "endTime": {
       "type": "integer",
-      "description": "Maximum time to play the video in milliseconds"
+      "description": "End time to play the video in milliseconds"
     }
   },
-  "required": ["id", "name", "description", "movie", "minTime", "maxTime"]
+  "required": ["id", "name", "description", "movie", "startTime", "endTime"]
 }

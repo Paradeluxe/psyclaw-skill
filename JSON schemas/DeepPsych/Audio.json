@@ -14,7 +14,7 @@
     },
     "sound": {
       "type": "string",
-      "description": "A sound file (e.g. *.wav, *.mp3) or a number for a tone"
+      "description": "A sound file (e.g. *.wav, *.mp3) or a number for a tone. Use $ prefix for dynamic sound selection (e.g., $soundFile)"
     },
     "volume": {
       "type": "number",
@@ -33,13 +33,13 @@
       "description": "Should a response force the end of the Routine?",
       "default": true
     },
-    "minTime": {
+    "startTime": {
       "type": "integer",
-      "description": "Minimum time to play the audio in milliseconds"
+      "description": "Start time to play the audio in milliseconds"
     },
-    "maxTime": {
+    "endTime": {
       "type": "integer",
-      "description": "Maximum time to play the audio in milliseconds"
+      "description": "End time to play the audio in milliseconds"
     }
   },
   "required": ["id", "name", "description", "sound"]

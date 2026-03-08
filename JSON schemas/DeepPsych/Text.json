@@ -14,7 +14,7 @@
     },
     "text": {
       "type": "string",
-      "description": "The text to be displayed"
+      "description": "The text to be displayed. Use $ prefix for dynamic variables (e.g., $stimText)"
     },
     "font": {
       "type": "string",
@@ -29,12 +29,12 @@
     },
     "color": {
       "type": "string",
-      "description": "Text color (e.g. white, red, $[1,0,0])",
+      "description": "Text color. Use $ prefix for dynamic values (e.g., white, red, $[1,0,0], $colorVar)",
       "default": "white"
     },
     "pos": {
       "type": "array",
-      "description": "Position on screen (x, y)",
+      "description": "Position on screen (x, y). Use $ prefix for dynamic positioning (e.g., $position)",
       "items": {
         "type": "number"
       },
@@ -87,14 +87,14 @@
       "maximum": 1,
       "default": 1.0
     },
-    "minTime": {
+    "startTime": {
       "type": "integer",
-      "description": "Minimum time to display the component in milliseconds"
+      "description": "Start time to display the component in milliseconds"
     },
-    "maxTime": {
+    "endTime": {
       "type": "integer",
-      "description": "Maximum time to display the component in milliseconds"
+      "description": "End time to display the component in milliseconds"
     }
   },
-  "required": ["id", "name", "description", "text", "minTime", "maxTime"]
+  "required": ["id", "name", "description", "text", "startTime", "endTime"]
 }
