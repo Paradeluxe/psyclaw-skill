@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema#",
   "title": "Routine",
-  "description": "PsychoPy Routine settings component. For fields that need dynamic changes, use $ prefix (e.g., $variable, $[1,0,0]). See variable-convention.json for details.",
+  "description": "PsychoPy Routine settings component. For fields that need dynamic changes, use $ prefix (e.g., $variable).",
   "type": "object",
   "properties": {
     "id": {
