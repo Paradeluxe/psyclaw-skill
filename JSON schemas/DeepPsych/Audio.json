@@ -37,9 +37,9 @@
       "type": "integer",
       "description": "Start time to play the audio in milliseconds"
     },
-    "endTime": {
+    "duration": {
       "type": "integer",
-      "description": "End time to play the audio in milliseconds"
+      "description": "Duration to play the audio in milliseconds. Use -1 for infinite duration (allows ending with key press, but continues indefinitely without key press)"
     }
   },
   "required": ["id", "name", "description", "sound"]

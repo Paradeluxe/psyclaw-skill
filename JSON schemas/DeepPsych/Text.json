@@ -91,10 +91,10 @@
       "type": "integer",
       "description": "Start time to display the component in milliseconds"
     },
-    "endTime": {
+    "duration": {
       "type": "integer",
-      "description": "End time to display the component in milliseconds"
+      "description": "Duration to display the component in milliseconds. Use -1 for infinite duration (allows ending with key press, but continues indefinitely without key press)"
     }
   },
-  "required": ["id", "name", "description", "text", "startTime", "endTime"]
+  "required": ["id", "name", "description", "text", "startTime", "duration"]
 }

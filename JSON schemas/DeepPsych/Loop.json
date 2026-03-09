@@ -16,12 +16,6 @@
       "type": "string",
       "description": "Description of the stimuli content"
     },
-    "nTrials": {
-      "type": "integer",
-      "description": "Number of trials on the entire Loop",
-      "default": 1,
-      "minimum": 1
-    },
     "randomization": {
       "type": "string",
       "description": "Method for selecting conditions",
@@ -36,5 +30,5 @@
       }
     }
   },
-  "required": ["id", "name", "description", "nReps", "routines"]
+  "required": ["id", "name", "description", "randomization", "routines"]
 }

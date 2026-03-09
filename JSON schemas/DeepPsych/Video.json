@@ -80,10 +80,10 @@
       "type": "integer",
       "description": "Start time to play the video in milliseconds"
     },
-    "endTime": {
+    "duration": {
       "type": "integer",
-      "description": "End time to play the video in milliseconds"
+      "description": "Duration to play the video in milliseconds. Use -1 for infinite duration (allows ending with key press, but continues indefinitely without key press)"
     }
   },
-  "required": ["id", "name", "description", "movie", "startTime", "endTime"]
+  "required": ["id", "name", "description", "movie", "startTime", "duration"]
 }

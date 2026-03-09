@@ -1,0 +1,410 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema#",
+  "title": "DeepPsych",
+  "description": "PsychoPy experiment schema for DeepPsych project",
+  "definitions": {
+    "Text": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "description": "Unique identifier for the text component"
+        },
+        "name": {
+          "type": "string",
+          "description": "Name of the text component"
+        },
+        "text": {
+          "type": "string",
+          "description": "The text to be displayed. Use $ prefix for dynamic variables (e.g., $stimText)"
+        },
+        "font": {
+          "type": "string",
+          "description": "The font name (e.g. Comic Sans)",
+          "default": "Arial"
+        },
+        "units": {
+          "type": "string",
+          "description": "Units to use when positioning the text",
+          "enum": ["from exp settings", "norm", "cm", "deg", "pix", "height"],
+          "default": "from exp settings"
+        },
+        "color": {
+          "type": "string",
+          "description": "Text color. Use $ prefix for dynamic values (e.g., white, red, $[1,0,0], $colorVar)",
+          "default": "white"
+        },
+        "pos": {
+          "type": "array",
+          "description": "Position on screen (x, y). Use $ prefix for dynamic positioning (e.g., $position)",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 2,
+          "maxItems": 2,
+          "default": [0, 0]
+        },
+        "letterHeight": {
+          "type": "number",
+          "description": "Specifies the height of the letter (the width is then determined by the font)",
+          "default": 0.05
+        },
+        "ori": {
+          "type": "number",
+          "description": "Orientation of the text in degrees",
+          "default": 0
+        },
+        "draggable": {
+          "type": "boolean",
+          "description": "Should this stimulus be movable by clicking and dragging?",
+          "default": false
+        },
+        "flip": {
+          "type": "string",
+          "description": "Horizontal or vertical flip",
+          "enum": ["horiz", "vert", "None"],
+          "default": "None"
+        },
+        "languageStyle": {
+          "type": "string",
+          "description": "Handle right-to-left (RTL) languages and Arabic reshaping",
+          "enum": ["LTR", "RTL", "Arabic"],
+          "default": "LTR"
+        },
+        "wrapWidth": {
+          "type": "number",
+          "description": "How wide should the text get when it wraps? (in the specified units)"
+        },
+        "opacity": {
+          "type": "number",
+          "description": "Opacity of the text (0-1)",
+          "minimum": 0,
+          "maximum": 1,
+          "default": 1.0
+        },
+        "contrast": {
+          "type": "number",
+          "description": "Contrast of the text (-1 to 1)",
+          "minimum": -1,
+          "maximum": 1,
+          "default": 1.0
+        },
+        "startTime": {
+          "type": "integer",
+          "description": "Start time to display the component in milliseconds"
+        },
+        "duration": {
+          "type": "integer",
+          "description": "Duration to display the component in milliseconds. Use -1 for infinite duration (allows ending with key press, but continues indefinitely without key press)"
+        }
+      },
+      "required": ["id", "name", "description", "text", "startTime", "duration"]
+    },
+    "Video": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "description": "Unique identifier for the video component"
+        },
+        "name": {
+          "type": "string",
+          "description": "Name of the video component"
+        },
+        "movie": {
+          "type": "string",
+          "description": "A movie file (e.g. *.mp4, *.avi). Use $ prefix for dynamic movie selection (e.g., $movieFile)"
+        },
+        "volume": {
+          "type": "number",
+          "description": "Volume level (0.0 to 1.0)",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "default": 1.0
+        },
+        "loop": {
+          "type": "boolean",
+          "description": "Should the video loop?",
+          "default": false
+        },
+        "stopWithRoutine": {
+          "type": "boolean",
+          "description": "Should the video stop when the Routine ends?",
+          "default": true
+        },
+        "forceEndRoutine": {
+          "type": "boolean",
+          "description": "Should a response force the end of the Routine?",
+          "default": true
+        },
+        "anchor": {
+          "type": "string",
+          "description": "Anchor point for the video",
+          "enum": ["center", "top-center", "bottom-center", "center-left", "center-right", "top-left", "top-right", "bottom-left", "bottom-right"],
+          "default": "center"
+        },
+        "pos": {
+          "type": "array",
+          "description": "Position on screen (x, y). Use $ prefix for dynamic positioning (e.g., $position)",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 2,
+          "maxItems": 2,
+          "default": [0, 0]
+        },
+        "size": {
+          "type": "array",
+          "description": "Size of the video (width, height)",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "units": {
+          "type": "string",
+          "description": "Units to use when positioning",
+          "enum": ["from exp settings", "norm", "cm", "deg", "pix", "height"],
+          "default": "from exp settings"
+        },
+        "opacity": {
+          "type": "number",
+          "description": "Video opacity (0-1)",
+          "minimum": 0,
+          "maximum": 1,
+          "default": 1.0
+        },
+        "startTime": {
+          "type": "integer",
+          "description": "Start time to play the video in milliseconds"
+        },
+        "duration": {
+          "type": "integer",
+          "description": "Duration to play the video in milliseconds. Use -1 for infinite duration (allows ending with key press, but continues indefinitely without key press)"
+        }
+      },
+      "required": ["id", "name", "description", "movie", "startTime", "duration"]
+    },
+    "Audio": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "description": "Unique identifier for the audio component"
+        },
+        "name": {
+          "type": "string",
+          "description": "Name of the audio component"
+        },
+        "sound": {
+          "type": "string",
+          "description": "A sound file (e.g. *.wav, *.mp3) or a number for a tone. Use $ prefix for dynamic sound selection (e.g., $soundFile)"
+        },
+        "volume": {
+          "type": "number",
+          "description": "Volume level (0.0 to 1.0)",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "default": 1.0
+        },
+        "stopWithRoutine": {
+          "type": "boolean",
+          "description": "Should the sound stop when the Routine ends?",
+          "default": true
+        },
+        "forceEndRoutine": {
+          "type": "boolean",
+          "description": "Should a response force the end of the Routine?",
+          "default": true
+        },
+        "startTime": {
+          "type": "integer",
+          "description": "Start time to play the audio in milliseconds"
+        },
+        "duration": {
+          "type": "integer",
+          "description": "Duration to play the audio in milliseconds. Use -1 for infinite duration (allows ending with key press, but continues indefinitely without key press)"
+        }
+      },
+      "required": ["id", "name", "description", "sound"]
+    },
+    "Routine": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "description": "Unique identifier for the routine"
+        },
+        "name": {
+          "type": "string",
+          "description": "Name of the routine"
+        },
+        "description": {
+          "type": "string",
+          "description": "Some descriptive text to give information about this Routine"
+        },
+        "backgroundColor": {
+          "type": "string",
+          "description": "Color of the screen this Routine. Use $ prefix for dynamic values (e.g., black, $[1.0,1.0,1.0], $variable)",
+          "default": "[1.0,1.0,1.0]"
+        },
+        "backgroundImg": {
+          "type": "string",
+          "description": "Image file to use as a background (leave blank for no image)"
+        },
+        "components": {
+          "type": "array",
+          "description": "Components to include in the routine",
+          "items": {
+            "oneOf": [
+              { "$ref": "#/definitions/Text" },
+              { "$ref": "#/definitions/Video" },
+              { "$ref": "#/definitions/Audio" },
+              { "$ref": "#/definitions/Keyboard" }
+            ]
+          }
+        },
+        "allowedKeys": {
+          "oneOf": [
+            {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": ["f", "j"]
+              },
+              "description": "Predefined option: f and j keys. Usually for Yes/No responses (or other binary responses)."
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "const": "space"
+              },
+              "description": "Predefined option: space key only. Usually for instruction or other non-response tasks."
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Custom array of allowed keys. Usually for other situations."
+            }
+          ]
+        },
+        "forcedEndRoutine": {
+          "type": "boolean",
+          "description": "Should a response force the end of the Routine (e.g end the trial)?",
+          "default": true
+        }
+      },
+      "required": ["id", "name", "description", "components"]
+    },
+    "Loop": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "description": "Unique identifier for the loop"
+        },
+        "name": {
+          "type": "string",
+          "description": "Name of the loop"
+        },
+        "description": {
+          "type": "string",
+          "description": "Description of the stimuli content"
+        },
+        "randomization": {
+          "type": "string",
+          "description": "Method for selecting conditions",
+          "enum": ["random", "sequential", "fullRandom"],
+          "default": "sequential"
+        },
+        "routines": {
+          "type": "array",
+          "description": "Routines to include in the loop",
+          "items": {
+            "$ref": "#/definitions/Routine"
+          }
+        }
+      },
+      "required": ["id", "name", "description", "randomization", "routines"]
+    },
+    "Keyboard": {
+      "type": "object",
+      "properties": {
+        "allowedKeys": {
+          "oneOf": [
+            {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": ["f", "j"]
+              },
+              "description": "Predefined option: f and j keys. Usually for Yes/No responses (or other binary responses)."
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "const": "space"
+              },
+              "description": "Predefined option: space key only. Usually for instruction or other non-response tasks."
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Custom array of allowed keys. Usually for other situations."
+            }
+          ]
+        },
+        "forcedEndRoutine": {
+          "type": "boolean",
+          "description": "Should a response force the end of the Routine (e.g end the trial)?",
+          "default": true
+        },
+        "startTime": {
+          "type": "integer",
+          "description": "Start time to display the component in milliseconds"
+        },
+        "duration": {
+          "type": "integer",
+          "description": "Duration to display the component in milliseconds. Use -1 for infinite duration (allows ending with key press, but continues indefinitely without key press)"
+        }
+      },
+      "required": ["allowedKeys", "forcedEndRoutine", "startTime", "duration"]
+    },
+    "Session": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "description": "Unique identifier for the session"
+        },
+        "name": {
+          "type": "string",
+          "description": "Name of the session"
+        },
+        "description": {
+          "type": "string",
+          "description": "Description of the session"
+        },
+        "loops": {
+          "type": "array",
+          "description": "Loops used in the session",
+          "items": {
+            "$ref": "#/definitions/Loop"
+          }
+        }
+      },
+      "required": ["id", "name", "loops"]
+    }
+  },
+  "type": "array",
+  "items": {
+    "$ref": "#/definitions/Session"
+  }
+}

@@ -1,0 +1,222 @@
+[
+  {
+    "id": 1,
+    "name": "AX-CPT Experiment",
+    "description": "Full experiment including instructions, formal trials, and ending.",
+    "loops": [
+      {
+        "id": 101,
+        "name": "InstructionLoop",
+        "description": "Loop for presenting instruction screens.",
+        "randomization": "sequential",
+        "routines": [
+          {
+            "id": 201,
+            "name": "WelcomeScreen",
+            "description": "Welcome message and general experiment overview.",
+            "backgroundColor": "[0, 0, 0]",
+            "components": [
+              {
+                "id": 301,
+                "name": "WelcomeText",
+                "text": "Welcome to the AX-CPT Task.\n\nIn this experiment, you will see pairs of letters.\nYour task is to respond based on the specific combination of these letters.\n\nPress SPACE to continue.",
+                "startTime": 0,
+                "duration": -1,
+                "color": "white",
+                "font": "Arial",
+                "letterHeight": 0.05,
+                "pos": [0, 0]
+              }
+            ],
+            "allowedKeys": ["space"],
+            "forcedEndRoutine": true
+          },
+          {
+            "id": 202,
+            "name": "InstructionScreen",
+            "description": "Detailed instructions on AX-CPT rules.",
+            "backgroundColor": "[0, 0, 0]",
+            "components": [
+              {
+                "id": 302,
+                "name": "RuleText",
+                "text": "Rules:\n1. A letter (Cue) appears, followed by another letter (Probe).\n2. If Cue is 'A' AND Probe is 'X': Press RIGHT MIDDLE finger (Target Key).\n3. For ANY other combination: Press RIGHT INDEX finger (Non-Target Key).\n4. ONLY respond after seeing the SECOND letter.\n\nPress SPACE to continue.",
+                "startTime": 0,
+                "duration": -1,
+                "color": "white",
+                "font": "Arial",
+                "letterHeight": 0.04,
+                "pos": [0, 0]
+              }
+            ],
+            "allowedKeys": ["space"],
+            "forcedEndRoutine": true
+          },
+          {
+            "id": 203,
+            "name": "PracticeInfo",
+            "description": "Information about the practice session.",
+            "backgroundColor": "[0, 0, 0]",
+            "components": [
+              {
+                "id": 303,
+                "name": "PracticeText",
+                "text": "You will now complete a short practice session.\n\nRemember:\n'A' then 'X' -> Target Key\nAnything else -> Non-Target Key\n\nPress SPACE to start practice.",
+                "startTime": 0,
+                "duration": -1,
+                "color": "white",
+                "font": "Arial",
+                "letterHeight": 0.05,
+                "pos": [0, 0]
+              }
+            ],
+            "allowedKeys": ["space"],
+            "forcedEndRoutine": true
+          }
+        ]
+      },
+      {
+        "id": 102,
+        "name": "FormalExperimentLoop",
+        "description": "Main experimental loop containing 4 blocks of AX-CPT trials.",
+        "randomization": "sequential",
+        "routines": [
+          {
+            "id": 204,
+            "name": "Fixation",
+            "description": "Fixation cross before each trial.",
+            "backgroundColor": "[0, 0, 0]",
+            "components": [
+              {
+                "id": 304,
+                "name": "FixationText",
+                "text": "+",
+                "startTime": 0,
+                "duration": 500,
+                "color": "white",
+                "font": "Arial",
+                "letterHeight": 0.1,
+                "pos": [0, 0]
+              }
+            ],
+            "allowedKeys": [],
+            "forcedEndRoutine": false
+          },
+          {
+            "id": 205,
+            "name": "CuePhase",
+            "description": "Presentation of the Cue letter.",
+            "backgroundColor": "[0, 0, 0]",
+            "components": [
+              {
+                "id": 305,
+                "name": "CueText",
+                "text": "$cueLetter",
+                "startTime": 0,
+                "duration": 1000,
+                "color": "white",
+                "font": "Arial",
+                "letterHeight": 0.1,
+                "pos": [0, 0]
+              }
+            ],
+            "allowedKeys": [],
+            "forcedEndRoutine": false
+          },
+          {
+            "id": 206,
+            "name": "ISI",
+            "description": "Inter-stimulus interval (blank screen).",
+            "backgroundColor": "[0, 0, 0]",
+            "components": [
+              {
+                "id": 306,
+                "name": "BlankScreen",
+                "text": "",
+                "startTime": 0,
+                "duration": 4000,
+                "color": "black",
+                "font": "Arial",
+                "letterHeight": 0.0,
+                "pos": [0, 0]
+              }
+            ],
+            "allowedKeys": [],
+            "forcedEndRoutine": false
+          },
+          {
+            "id": 207,
+            "name": "ProbePhase",
+            "description": "Presentation of the Probe letter and response collection.",
+            "backgroundColor": "[0, 0, 0]",
+            "components": [
+              {
+                "id": 307,
+                "name": "ProbeText",
+                "text": "$probeLetter",
+                "startTime": 0,
+                "duration": 500,
+                "color": "white",
+                "font": "Arial",
+                "letterHeight": 0.1,
+                "pos": [0, 0]
+              }
+            ],
+            "allowedKeys": ["f", "j"],
+            "forcedEndRoutine": true
+          },
+          {
+            "id": 208,
+            "name": "ITI",
+            "description": "Inter-trial interval with asterisks.",
+            "backgroundColor": "[0, 0, 0]",
+            "components": [
+              {
+                "id": 308,
+                "name": "ITIText",
+                "text": "*****",
+                "startTime": 0,
+                "duration": 1000,
+                "color": "white",
+                "font": "Arial",
+                "letterHeight": 0.05,
+                "pos": [0, 0]
+              }
+            ],
+            "allowedKeys": [],
+            "forcedEndRoutine": false
+          }
+        ]
+      },
+      {
+        "id": 103,
+        "name": "EndingLoop",
+        "description": "Loop for ending screens.",
+        "randomization": "sequential",
+        "routines": [
+          {
+            "id": 209,
+            "name": "ThankYouScreen",
+            "description": "Thank you message upon completion.",
+            "backgroundColor": "[0, 0, 0]",
+            "components": [
+              {
+                "id": 309,
+                "name": "ThankYouText",
+                "text": "Thank you for participating!\n\nThe experiment is now complete.\nPlease wait for further instructions from the researcher.",
+                "startTime": 0,
+                "duration": -1,
+                "color": "white",
+                "font": "Arial",
+                "letterHeight": 0.05,
+                "pos": [0, 0]
+              }
+            ],
+            "allowedKeys": ["space"],
+            "forcedEndRoutine": true
+          }
+        ]
+      }
+    ]
+  }
+]

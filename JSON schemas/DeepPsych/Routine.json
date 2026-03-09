@@ -32,41 +32,10 @@
         "oneOf": [
           { "$ref": "Text.json" },
           { "$ref": "Video.json" },
-          { "$ref": "Audio.json" }
+          { "$ref": "Audio.json" },
+          { "$ref": "Keyboard.json" }
         ]
       }
-    },
-    "allowedKeys": {
-      "oneOf": [
-        {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "enum": ["f", "j"]
-          },
-          "description": "Predefined option: f and j keys. Usually for Yes/No responses (or other binary responses)."
-        },
-        {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "const": "space"
-          },
-          "description": "Predefined option: space key only. Usually for instruction or other non-response tasks."
-        },
-        {
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "description": "Custom array of allowed keys. Usually for other situations."
-        }
-      ]
-    },
-    "forcedEndRoutine": {
-      "type": "boolean",
-      "description": "Should a response force the end of the Routine (e.g end the trial)?",
-      "default": true
     }
   },
   "required": ["id", "name", "description", "components"]

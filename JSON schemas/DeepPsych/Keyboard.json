@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema#",
+  "title": "Keyboard",
+  "description": "Keyboard response settings for PsychoPy routines",
+  "type": "object",
+  "properties": {
+    "allowedKeys": {
+      "oneOf": [
+        {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["f", "j"]
+          },
+          "description": "Predefined option: f and j keys. Usually for Yes/No responses (or other binary responses)."
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "const": "space"
+          },
+          "description": "Predefined option: space key only. Usually for instruction or other non-response tasks."
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Custom array of allowed keys. Usually for other situations."
+        }
+      ]
+    },
+    "forcedEndRoutine": {
+      "type": "boolean",
+      "description": "Should a response force the end of the Routine (e.g end the trial)?",
+      "default": true
+    },
+    "startTime": {
+      "type": "integer",
+      "description": "Start time to display the component in milliseconds"
+    },
+    "duration": {
+      "type": "integer",
+      "description": "Duration to display the component in milliseconds. Use -1 for infinite duration (allows ending with key press, but continues indefinitely without key press)"
+    }
+  },
+  "required": ["allowedKeys", "forcedEndRoutine", "startTime", "duration"]
+}
