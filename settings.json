@@ -1,0 +1,10 @@
+{
+  "model": "gpt-4o",
+  "temperature": 0,
+  "top_p": 0,
+  "max_length": 1024,
+  "system_prompt": "You are a professional, friendly AI assistant",
+  "api_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+  "api_key": "sk-1a7eef79673b4ab3af60ecb03e69be81",
+  "saved_settings": {}
+}

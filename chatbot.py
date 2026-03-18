@@ -3,6 +3,7 @@ from gradio import ChatMessage
 import time
 import json
 import os
+import requests
 
 # Set file path
 SETTINGS_FILE = "settings.json"
@@ -22,12 +23,84 @@ def load_settings():
         "max_length": 1024,
         "system_prompt": "You are a professional, friendly AI assistant",
         "api_url": "",
-        "api_key": "",
-        "saved_settings": {}
+        "api_key": ""
     }
+
+# Validate API configuration
+def validate_api(api_url, api_key):
+    import re
+    # Check if API URL is valid
+    if not api_url:
+        return "❌ API URL is required"
+    # Basic URL validation
+    url_pattern = re.compile(r'^https?://[\w\-]+(\.[\w\-]+)+([\w\-\.,@?^=%&:/~\+#]*[\w\-\@?^=%&/~\+#])?$')
+    if not url_pattern.match(api_url):
+        return "❌ Invalid API URL format"
+    # Check if API key is provided
+    if not api_key:
+        return "❌ API Key is required"
+    return "✅ API configuration is valid"
+
+def get_model_list(base_url, api_key):
+    """
+    输入 Base URL 和 API Key，返回模型 ID 列表
+    """
+    # 自动处理 URL 拼接，确保指向 /models 路径
+    base_url = base_url.rstrip('/')
+    if not base_url.endswith('/models'):
+        url = f"{base_url}/models"
+    else:
+        url = base_url
+        
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Content-Type": "application/json"
+    }
+    
+    try:
+        # 发送 GET 请求
+        response = requests.get(url, headers=headers, timeout=10)
+        response.raise_for_status() # 检查 HTTP 状态码
+        
+        data = response.json()
+        
+        # 提取数据中每个模型的 'id' 字段
+        models = [model.get('id') for model in data.get('data', [])]
+        return models
+        
+    except requests.exceptions.RequestException as e:
+        return f"请求失败: {e}"
+    except Exception as e:
+        return f"解析失败: {e}"
+
+# Check available models from API
+def check_available_models(api_url, api_key):
+    # Validate API first
+    validation_result = validate_api(api_url, api_key)
+    if "❌" in validation_result:
+        return gr.update(choices=["gpt-4o", "claude-3-5", "Local Model"]), validation_result
+    
+    # Get model list using the new function
+    model_list = get_model_list(api_url, api_key)
+    
+    # Check if the result is an error message (string) or successful list
+    if isinstance(model_list, str):
+        # It's an error message
+        return gr.update(choices=["gpt-4o", "claude-3-5", "Local Model"]), f"❌ {model_list}"
+    elif isinstance(model_list, list) and len(model_list) > 0:
+        # Successfully got model list
+        return gr.update(choices=model_list), f"✅ Found {len(model_list)} available models"
+    else:
+        # Empty list or unexpected result
+        return gr.update(choices=["gpt-4o", "claude-3-5", "Local Model"]), "⚠️ No models found or unexpected response format"
 
 # Save settings
 def save_settings(model, temperature, top_p, max_length, system_prompt, api_url, api_key):
+    # Validate API first
+    validation_result = validate_api(api_url, api_key)
+    if "❌" in validation_result:
+        return validation_result
+    
     settings = load_settings()
     settings.update({
         "model": model,
@@ -40,39 +113,9 @@ def save_settings(model, temperature, top_p, max_length, system_prompt, api_url,
     })
     with open(SETTINGS_FILE, 'w', encoding='utf-8') as f:
         json.dump(settings, f, indent=2, ensure_ascii=False)
-    return "Settings saved"
+    return "✅ Settings saved successfully"
 
-# Save as preset
-def save_as_preset(preset_name, model, temperature, top_p, max_length, system_prompt, api_url, api_key):
-    settings = load_settings()
-    settings["saved_settings"][preset_name] = {
-        "model": model,
-        "temperature": temperature,
-        "top_p": top_p,
-        "max_length": max_length,
-        "system_prompt": system_prompt,
-        "api_url": api_url,
-        "api_key": api_key
-    }
-    with open(SETTINGS_FILE, 'w', encoding='utf-8') as f:
-        json.dump(settings, f, indent=2, ensure_ascii=False)
-    return f"Preset '{preset_name}' saved"
 
-# Load preset
-def load_preset(preset_name):
-    settings = load_settings()
-    if preset_name in settings["saved_settings"]:
-        preset = settings["saved_settings"][preset_name]
-        return (
-            preset["model"],
-            preset["temperature"],
-            preset["top_p"],
-            preset["max_length"],
-            preset["system_prompt"],
-            preset["api_url"],
-            preset["api_key"]
-        )
-    return None
 
 # [User Replacement Area: Connect to actual LLM API here]
 def predict(message, history, model="gpt-4o", temperature=0.0, top_p=0.0, max_length=1024, system_prompt="You are a professional, friendly AI assistant"):
@@ -143,89 +186,68 @@ with gr.Blocks(title="PsyClaw") as demo:
     
     # 4️⃣ Advanced Settings Panel (Collapsible)
     with gr.Accordion("⚙️ Advanced Settings", open=False, elem_id="advanced-settings"):
-        # Organize settings with tabs
-        with gr.Tabs():
-            # Preset Management tab
-            with gr.Tab("Preset Management"):
-                gr.Markdown("### Preset Configuration")
-                preset_dropdown = gr.Dropdown(
-                    label="Select Preset",
-                    choices=["Default"] + list(initial_settings["saved_settings"].keys()),
-                    value="Default",
-                    elem_id="preset-select"
-                )
-                gr.Markdown("### Model Configuration")
-                model_dropdown = gr.Dropdown(
-                    label="Model Selection",
-                    choices=["gpt-4o", "claude-3-5", "Local Model"],
-                    value=initial_settings["model"],
-                    elem_id="model-select"
-                )
-                gr.Markdown("### Save Preset")
-                with gr.Row():
-                    preset_name_input = gr.Textbox(
-                        label="Preset Name",
-                        placeholder="Enter preset name",
-                        elem_id="preset-name-input"
-                    )
-                    save_preset_btn = gr.Button("💾 Save as Preset", elem_id="save-preset-button")
-            
-            # API Settings tab
-            with gr.Tab("API Settings"):
-                gr.Markdown("### API Configuration")
-                api_url_input = gr.Textbox(
-                    label="API URL",
-                    value=initial_settings["api_url"],
-                    placeholder="Enter API URL, e.g.: https://api.openai.com/v1/chat/completions",
-                    elem_id="api-url-input"
-                )
-                api_key_input = gr.Textbox(
-                    label="API Key",
-                    value=initial_settings["api_key"],
-                    type="password",
-                    placeholder="Enter API key",
-                    elem_id="api-key-input"
-                )
-            
-            # Model Parameters tab
-            with gr.Tab("Model Parameters"):
-                gr.Markdown("### Generation Parameters")
-                temperature_slider = gr.Slider(
-                    label="Temperature (Creativity)",
-                    minimum=0.0,
-                    maximum=1.0,
-                    step=0.1,
-                    value=initial_settings["temperature"],
-                    elem_id="temperature-slider"
-                )
-                top_p_slider = gr.Slider(
-                    label="Top-p (Sampling Range)",
-                    minimum=0.0,
-                    maximum=1.0,
-                    step=0.05,
-                    value=initial_settings["top_p"],
-                    elem_id="top-p-slider"
-                )
-                max_length_slider = gr.Slider(
-                    label="Max Generation Length",
-                    minimum=128,
-                    maximum=4096,
-                    step=128,
-                    value=initial_settings["max_length"],
-                    elem_id="max-length-slider"
-                )
-                system_prompt_input = gr.Textbox(
-                    label="System Prompt",
-                    value=initial_settings["system_prompt"],
-                    lines=3,
-                    placeholder="Enter system prompt to guide AI behavior and style",
-                    elem_id="system-prompt-input"
-                )
+        # API Configuration Section
+        gr.Markdown("### API Configuration")
+        api_url_input = gr.Textbox(
+            label="API URL",
+            value=initial_settings["api_url"],
+            placeholder="Enter API URL, e.g.: https://api.openai.com/v1/chat/completions",
+            elem_id="api-url-input"
+        )
+        api_key_input = gr.Textbox(
+            label="API Key",
+            value=initial_settings["api_key"],
+            type="password",
+            placeholder="Enter API key",
+            elem_id="api-key-input"
+        )
         
-        # Save settings button (below all tabs)
-        with gr.Row():
-            save_btn = gr.Button("💾 Save Settings", elem_id="save-button")
+        # Check API configuration button
+        check_api_btn = gr.Button("Check", elem_id="check-api-button")
         save_status = gr.Markdown("", elem_id="save-status")
+        
+        # Model Configuration
+        gr.Markdown("### Model Configuration")
+        model_dropdown = gr.Dropdown(
+            label="Model Selection",
+            choices=["gpt-4o", "claude-3-5", "Local Model"],
+            value=initial_settings["model"],
+            elem_id="model-select"
+        )
+        
+        # Model Parameters
+        gr.Markdown("### Generation Parameters")
+        temperature_slider = gr.Slider(
+            label="Temperature (Creativity)",
+            minimum=0.0,
+            maximum=1.0,
+            step=0.1,
+            value=initial_settings["temperature"],
+            elem_id="temperature-slider"
+        )
+        top_p_slider = gr.Slider(
+            label="Top-p (Sampling Range)",
+            minimum=0.0,
+            maximum=1.0,
+            step=0.05,
+            value=initial_settings["top_p"],
+            elem_id="top-p-slider"
+        )
+        max_length_slider = gr.Slider(
+            label="Max Generation Length",
+            minimum=128,
+            maximum=4096,
+            step=128,
+            value=initial_settings["max_length"],
+            elem_id="max-length-slider"
+        )
+        system_prompt_input = gr.Textbox(
+            label="System Prompt",
+            value=initial_settings["system_prompt"],
+            lines=3,
+            placeholder="Enter system prompt to guide AI behavior and style",
+            elem_id="system-prompt-input"
+        )
     
     # 5️⃣ Status Feedback Layer
     status_message = gr.Markdown("", elem_id="status-message")
@@ -260,68 +282,16 @@ with gr.Blocks(title="PsyClaw") as demo:
         outputs=[status_message]
     )
 
-    # Save settings
-    save_btn.click(
-        save_settings,
-        inputs=[model_dropdown, temperature_slider, top_p_slider, max_length_slider, system_prompt_input, api_url_input, api_key_input],
-        outputs=[save_status]
+    # Check API configuration and update model list
+    check_api_btn.click(
+        check_available_models,
+        inputs=[api_url_input, api_key_input],
+        outputs=[model_dropdown, save_status]
     )
     
-    # Save as preset
-    save_preset_btn.click(
-        save_as_preset,
-        inputs=[preset_name_input, model_dropdown, temperature_slider, top_p_slider, max_length_slider, system_prompt_input, api_url_input, api_key_input],
-        outputs=[save_status]
-    )
+
     
-    # Load preset
-    def update_preset_choices():
-        settings = load_settings()
-        return gr.Dropdown.update(
-            choices=["Default"] + list(settings["saved_settings"].keys())
-        )
-    
-    def load_selected_preset(preset_name):
-        if preset_name == "Default":
-            settings = load_settings()
-            return (
-                settings["model"],
-                settings["temperature"],
-                settings["top_p"],
-                settings["max_length"],
-                settings["system_prompt"],
-                settings["api_url"],
-                settings["api_key"]
-            )
-        else:
-            result = load_preset(preset_name)
-            if result:
-                return result
-            else:
-                # If preset doesn't exist, return current values
-                return (
-                    model_dropdown.value,
-                    temperature_slider.value,
-                    top_p_slider.value,
-                    max_length_slider.value,
-                    system_prompt_input.value,
-                    api_url_input.value,
-                    api_key_input.value
-                )
-    
-    # Update preset dropdown after saving preset
-    save_preset_btn.click(
-        update_preset_choices,
-        inputs=[],
-        outputs=[preset_dropdown]
-    )
-    
-    # Load settings when preset is selected
-    preset_dropdown.change(
-        load_selected_preset,
-        inputs=[preset_dropdown],
-        outputs=[model_dropdown, temperature_slider, top_p_slider, max_length_slider, system_prompt_input, api_url_input, api_key_input]
-    )
+
 
 # Launch the application
 demo.launch(share=False)
