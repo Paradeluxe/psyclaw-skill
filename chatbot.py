@@ -17,7 +17,7 @@ def load_settings():
         except:
             pass
     return {
-        "model": "gpt-4o",
+        "model": None,
         "temperature": 0.0,
         "top_p": 0.0,
         "max_length": 1024,
@@ -45,29 +45,27 @@ def get_model_list(base_url, api_key):
     """
     输入 Base URL 和 API Key，返回模型 ID 列表
     """
-    # 自动处理 URL 拼接，确保指向 /models 路径
     base_url = base_url.rstrip('/')
     if not base_url.endswith('/models'):
         url = f"{base_url}/models"
     else:
         url = base_url
-        
+
     headers = {
         "Authorization": f"Bearer {api_key}",
         "Content-Type": "application/json"
     }
-    
+
     try:
-        # 发送 GET 请求
         response = requests.get(url, headers=headers, timeout=10)
-        response.raise_for_status() # 检查 HTTP 状态码
-        
+        response.raise_for_status()
+
         data = response.json()
-        
-        # 提取数据中每个模型的 'id' 字段
-        models = [model.get('id') for model in data.get('data', [])]
-        return models
-        
+
+        all_models = [model.get('id') for model in data.get('data', [])]
+
+        return all_models
+
     except requests.exceptions.RequestException as e:
         return f"请求失败: {e}"
     except Exception as e:
@@ -78,21 +76,26 @@ def check_available_models(api_url, api_key):
     # Validate API first
     validation_result = validate_api(api_url, api_key)
     if "❌" in validation_result:
-        return gr.update(choices=["gpt-4o", "claude-3-5", "Local Model"]), validation_result
+        return gr.update(choices=[]), validation_result
     
     # Get model list using the new function
     model_list = get_model_list(api_url, api_key)
     
     # Check if the result is an error message (string) or successful list
     if isinstance(model_list, str):
-        # It's an error message
-        return gr.update(choices=["gpt-4o", "claude-3-5", "Local Model"]), f"❌ {model_list}"
+        return gr.update(choices=[]), f"❌ {model_list}"
     elif isinstance(model_list, list) and len(model_list) > 0:
-        # Successfully got model list
-        return gr.update(choices=model_list), f"✅ Found {len(model_list)} available models"
+        priority_models = ["qwen3.5-flash", "qwen3.5-plus"]
+        default_model = None
+        for pm in priority_models:
+            if pm in model_list:
+                default_model = pm
+                break
+        if default_model is None and len(model_list) > 0:
+            default_model = model_list[0]
+        return gr.update(choices=model_list, value=default_model), f"✅ Found {len(model_list)} available models"
     else:
-        # Empty list or unexpected result
-        return gr.update(choices=["gpt-4o", "claude-3-5", "Local Model"]), "⚠️ No models found or unexpected response format"
+        return gr.update(choices=[]), "⚠️ No models found or unexpected response format"
 
 # Save settings
 def save_settings(model, temperature, top_p, max_length, system_prompt, api_url, api_key):
@@ -118,33 +121,150 @@ def save_settings(model, temperature, top_p, max_length, system_prompt, api_url,
 
 
 # [User Replacement Area: Connect to actual LLM API here]
-def predict(message, history, model="gpt-4o", temperature=0.0, top_p=0.0, max_length=1024, system_prompt="You are a professional, friendly AI assistant"):
-    """Placeholder function to simulate LLM response"""
-    # Simulate thinking process
-    thinking_response = ChatMessage(
-        content="",
-        metadata={"status": "pending"}
-    )
-    yield thinking_response
+def predict(message, history, model=None, temperature=0.0, top_p=0.0, max_length=1024, system_prompt="You are a professional, friendly AI assistant"):
+    """Connect to actual LLM API for generating responses"""
+    if not message:
+        return history, ""
+
+    if not model:
+        history.append({"role": "assistant", "content": "⚠️ Please select a model in Advanced Settings first."})
+        return history, ""
+
+    history.append({"role": "user", "content": message})
+
+    settings = load_settings()
+    api_url = settings.get("api_url", "")
+    api_key = settings.get("api_key", "")
+
+    if not api_url or not api_key:
+        history.append({"role": "assistant", "content": "⚠️ API URL and Key are required. Please configure them in Advanced Settings."})
+        return history, ""
+
+    api_url = api_url.rstrip('/')
+    if not api_url.endswith('/chat/completions'):
+        api_url = api_url + "/chat/completions"
+
+    messages = []
+    if system_prompt:
+        messages.append({"role": "system", "content": system_prompt})
+
+    for msg in history[:-1]:
+        if isinstance(msg, dict):
+            messages.append({"role": msg.get("role"), "content": msg.get("content")})
+        elif hasattr(msg, "role") and hasattr(msg, "content"):
+            messages.append({"role": msg.role, "content": msg.content})
+
+    messages.append({"role": "user", "content": message})
+
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Content-Type": "application/json"
+    }
+
+    payload = {
+        "model": model,
+        "messages": messages,
+        "temperature": temperature,
+        "top_p": top_p,
+        "max_tokens": max_length
+    }
+
+    try:
+        response = requests.post(api_url, headers=headers, json=payload, timeout=60)
+        response.raise_for_status()
+        result = response.json()
+
+        if "choices" in result and len(result["choices"]) > 0:
+            response_content = result["choices"][0]["message"]["content"]
+        else:
+            response_content = "⚠️ Unexpected response format from API"
+
+    except requests.exceptions.RequestException as e:
+        response_content = f"❌ API request failed: {str(e)}"
+    except Exception as e:
+        response_content = f"❌ Error processing response: {str(e)}"
+
+    history.append({"role": "assistant", "content": response_content})
+
+    return history, ""
+
+def handle_undo(history, undo_data: gr.UndoData):
+    index = undo_data.index
+    if index > 0 and index <= len(history):
+        prev_msg = history[index - 1]
+        if isinstance(prev_msg, dict) and prev_msg.get("role") == "user":
+            content = prev_msg.get("content", "")
+            if isinstance(content, list):
+                text_parts = []
+                files = []
+                for item in content:
+                    if isinstance(item, dict):
+                        if item.get("type") == "text":
+                            text_parts.append(item.get("text", ""))
+                        elif item.get("type") == "file":
+                            files.append(item)
+                user_msg = "\n".join(text_parts)
+                new_history = history[:index - 1]
+                if files and user_msg:
+                    new_content = [{"type": "text", "text": user_msg}] + files
+                    new_history.append({"role": "user", "content": new_content})
+                    return new_history, ""
+                elif user_msg:
+                    return new_history, user_msg
+                else:
+                    return new_history, ""
+            else:
+                user_msg = str(content) if content else ""
+            new_history = history[:index - 1]
+            return new_history, user_msg
+    raw_value = undo_data.value if undo_data.value else ""
+    if isinstance(raw_value, list):
+        text_parts = []
+        for item in raw_value:
+            if isinstance(item, dict) and item.get("type") == "text":
+                text_parts.append(item.get("text", ""))
+        user_msg = "\n".join(text_parts)
+    else:
+        user_msg = str(raw_value) if raw_value else ""
+    new_history = history[:index]
+    return new_history, user_msg
+
+def handle_retry(history, retry_data: gr.RetryData, model, temperature, top_p, max_length, system_prompt):
+    index = retry_data.index
+    content = history[index]['content']
+    if isinstance(content, list):
+        previous_prompt = ""
+        for item in content:
+            if isinstance(item, dict) and item.get("type") == "text":
+                previous_prompt = item.get("text", "")
+                break
+    else:
+        previous_prompt = content
+    new_history = history[:index]
+    new_history.append({"role": "user", "content": previous_prompt})
+    new_history.append({"role": "assistant", "content": "⏳ Retrying..."})
+    yield new_history, ""
+    result = predict(previous_prompt, new_history[:-1], model, temperature, top_p, max_length, system_prompt)
+    yield result[0], ""
+
+def handle_edit(history, edit_data: gr.EditData):
+    new_history = history[:edit_data.index]
+    if new_history and isinstance(new_history[-1], dict) and new_history[-1].get("role") == "assistant":
+        new_history.pop()
+    return new_history
+
+def handle_like(data: gr.LikeData):
+    pass
+
+def send_message(message, history, model, temperature, top_p, max_length, system_prompt):
+    if not message:
+        return history, ""
     
-    # Simulate generation process
-    response_content = """
-    This is a simulated AI response. In actual implementation, a real LLM API would be called here.
+    history.append({"role": "user", "content": message})
+    yield history, ""
     
-    You can adjust the response style based on the following settings:
-    - Model: {model}
-    - Temperature: {temperature}
-    - Top-p: {top_p}
-    - Max length: {max_length}
-    - System prompt: {system_prompt}
-    """.format(model=model, temperature=temperature, top_p=top_p, max_length=max_length, system_prompt=system_prompt)
-    
-    # Simulate streaming output
-    for i in range(0, len(response_content), 5):
-        time.sleep(0.05)
-        thinking_response.content = response_content[:i+5]
-        thinking_response.metadata["status"] = "done" if i+5 >= len(response_content) else "pending"
-        yield thinking_response
+    result = predict(message, history[:-1], model, temperature, top_p, max_length, system_prompt)
+    yield result[0], ""
 
 # Create Gradio interface
 with gr.Blocks(title="PsyClaw") as demo:
@@ -159,7 +279,8 @@ with gr.Blocks(title="PsyClaw") as demo:
         height=500,
         avatar_images=("user", "assistant"),
         placeholder="💬 Start your conversation～",
-        allow_tags=False
+        allow_tags=False,
+        editable=True
     )
     
     # 3️⃣ Input Control Area (Horizontal Compact Layout)
@@ -168,7 +289,7 @@ with gr.Blocks(title="PsyClaw") as demo:
             message_input = gr.Textbox(
                 label="Input Message",
                 placeholder="Enter message... (Press Enter to send, Shift+Enter for new line)",
-                lines=3,
+                # lines=3,
                 max_lines=10,
                 elem_id="message-input",
                 scale=8
@@ -210,7 +331,7 @@ with gr.Blocks(title="PsyClaw") as demo:
         gr.Markdown("### Model Configuration")
         model_dropdown = gr.Dropdown(
             label="Model Selection",
-            choices=["gpt-4o", "claude-3-5", "Local Model"],
+            choices=[],
             value=initial_settings["model"],
             elem_id="model-select"
         )
@@ -251,21 +372,28 @@ with gr.Blocks(title="PsyClaw") as demo:
     
     # 5️⃣ Status Feedback Layer
     status_message = gr.Markdown("", elem_id="status-message")
-    
+
     # Key interaction logic
-    
+
     # Bind events
     send_event = send_btn.click(
-        predict,
+        send_message,
         inputs=[message_input, chatbot, model_dropdown, temperature_slider, top_p_slider, max_length_slider, system_prompt_input],
-        outputs=[chatbot]
+        outputs=[chatbot, message_input]
     )
-    
+
     # Enter key to send message
     message_input.submit(
-        predict,
+        send_message,
         inputs=[message_input, chatbot, model_dropdown, temperature_slider, top_p_slider, max_length_slider, system_prompt_input],
-        outputs=[chatbot]
+        outputs=[chatbot, message_input]
+    )
+
+    # Auto-check API configuration on page load
+    demo.load(
+        check_available_models,
+        inputs=[api_url_input, api_key_input],
+        outputs=[model_dropdown, save_status]
     )
     
 
@@ -288,10 +416,11 @@ with gr.Blocks(title="PsyClaw") as demo:
         inputs=[api_url_input, api_key_input],
         outputs=[model_dropdown, save_status]
     )
-    
 
-    
-
+    chatbot.undo(handle_undo, chatbot, [chatbot, message_input])
+    chatbot.retry(handle_retry, [chatbot, model_dropdown, temperature_slider, top_p_slider, max_length_slider, system_prompt_input], [chatbot, message_input])
+    chatbot.like(handle_like, None, None)
+    chatbot.edit(handle_edit, chatbot, chatbot)
 
 # Launch the application
 demo.launch(share=False)
