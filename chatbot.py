@@ -121,10 +121,25 @@ def save_settings(model, temperature, top_p, max_length, system_prompt, api_url,
 
 
 # [User Replacement Area: Connect to actual LLM API here]
+def _validate_message(msg):
+    if isinstance(msg, dict):
+        role = msg.get("role")
+        content = msg.get("content")
+        if isinstance(role, str) and role in ("system", "user", "assistant") and isinstance(content, str):
+            return {"role": role, "content": content}
+    elif hasattr(msg, "role") and hasattr(msg, "content"):
+        role = getattr(msg, "role", None)
+        content = getattr(msg, "content", None)
+        if isinstance(role, str) and role in ("system", "user", "assistant") and isinstance(content, str):
+            return {"role": role, "content": content}
+    return None
+
 def predict(message, history, model=None, temperature=0.0, top_p=0.0, max_length=1024, system_prompt="You are a professional, friendly AI assistant"):
     """Connect to actual LLM API for generating responses"""
     if not message:
         return history, ""
+
+    history = list(history)
 
     if not model:
         history.append({"role": "assistant", "content": "⚠️ Please select a model in Advanced Settings first."})
@@ -149,10 +164,9 @@ def predict(message, history, model=None, temperature=0.0, top_p=0.0, max_length
         messages.append({"role": "system", "content": system_prompt})
 
     for msg in history[:-1]:
-        if isinstance(msg, dict):
-            messages.append({"role": msg.get("role"), "content": msg.get("content")})
-        elif hasattr(msg, "role") and hasattr(msg, "content"):
-            messages.append({"role": msg.role, "content": msg.content})
+        validated = _validate_message(msg)
+        if validated:
+            messages.append(validated)
 
     messages.append({"role": "user", "content": message})
 
@@ -240,10 +254,14 @@ def handle_retry(history, retry_data: gr.RetryData, model, temperature, top_p, m
                 break
     else:
         previous_prompt = content
+
     new_history = history[:index]
     new_history.append({"role": "user", "content": previous_prompt})
+    yield new_history, ""
+
     new_history.append({"role": "assistant", "content": "⏳ Retrying..."})
     yield new_history, ""
+
     result = predict(previous_prompt, new_history[:-1], model, temperature, top_p, max_length, system_prompt)
     yield result[0], ""
 
