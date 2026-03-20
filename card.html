@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>吸附点连线</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: #ffffff;
+            overflow: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;
+        }
+
+        .container {
+            position: relative;
+            padding: 0;
+        }
+
+        canvas {
+            background: transparent;
+            cursor: crosshair;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <canvas id="canvas"></canvas>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
+        canvas.width = 600;
+        canvas.height = 480;
+
+        const allPoints = [];
+        const totalPoints = 9;
+        const lineX = 300;
+        const startY = 60;
+        const endY = 440;
+        const spacing = (endY - startY) / (totalPoints - 1);
+
+        for (let i = 0; i < totalPoints; i++) {
+            const label = i + 1;
+            allPoints.push({
+                x: lineX,
+                y: startY + i * spacing,
+                label: label.toString(),
+                isSnapTarget: label % 2 === 0
+            });
+        }
+
+        const snapPoints = allPoints.filter(p => p.isSnapTarget);
+        const linePoints = allPoints.filter(p => !p.isSnapTarget);
+
+        let startPoint = null;
+        let endPoint = null;
+        let isDraggingLine = false;
+        let currentMousePos = { x: 0, y: 0 };
+        let nearestValidPoint = null;
+
+        const dragRect = {
+            x: 250,
+            y: 170,
+            width: 100,
+            height: 70,
+            borderRadius: 16,
+            isDragging: false,
+            offsetX: 0,
+            offsetY: 0
+        };
+
+        const snapDistance = 80;
+        const pointClickRadius = 20;
+        const lineSnapRadius = 80;
+
+        function drawRoundedRect(x, y, width, height, radius) {
+            ctx.beginPath();
+            ctx.moveTo(x + radius, y);
+            ctx.lineTo(x + width - radius, y);
+            ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+            ctx.lineTo(x + width, y + height - radius);
+            ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+            ctx.lineTo(x + radius, y + height);
+            ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+            ctx.lineTo(x, y + radius);
+            ctx.quadraticCurveTo(x, y, x + radius, y);
+            ctx.closePath();
+        }
+
+        function drawPreviewLine() {
+            if (isDraggingLine && startPoint) {
+                const targetPoint = nearestValidPoint || { x: currentMousePos.x, y: currentMousePos.y };
+                ctx.strokeStyle = nearestValidPoint ? '#000000' : 'rgba(0, 0, 0, 0.4)';
+                ctx.lineWidth = 1.5;
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+                ctx.setLineDash([6, 4]);
+
+                const offsetX = 140;
+
+                ctx.beginPath();
+                ctx.moveTo(startPoint.x, startPoint.y);
+                ctx.lineTo(startPoint.x + offsetX, startPoint.y);
+                ctx.lineTo(startPoint.x + offsetX, targetPoint.y);
+                ctx.lineTo(targetPoint.x, targetPoint.y);
+                ctx.stroke();
+
+                ctx.setLineDash([]);
+            }
+        }
+
+        function drawConnectionLine() {
+            if (startPoint && endPoint) {
+                ctx.strokeStyle = '#000000';
+                ctx.lineWidth = 1.5;
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+                ctx.setLineDash([]);
+
+                const offsetX = 140;
+
+                ctx.beginPath();
+                ctx.moveTo(startPoint.x, startPoint.y);
+                ctx.lineTo(startPoint.x + offsetX, startPoint.y);
+                ctx.lineTo(startPoint.x + offsetX, endPoint.y);
+                ctx.lineTo(endPoint.x, endPoint.y);
+                ctx.stroke();
+            }
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            ctx.strokeStyle = 'rgba(0, 0, 0, 0.12)';
+            ctx.lineWidth = 1;
+            ctx.lineCap = 'round';
+            ctx.beginPath();
+            ctx.moveTo(lineX, startY);
+            ctx.lineTo(lineX, endY);
+            ctx.stroke();
+
+            drawConnectionLine();
+            drawPreviewLine();
+
+            allPoints.forEach(point => {
+                const isStart = startPoint && point.label === startPoint.label;
+                const isEnd = endPoint && point.label === endPoint.label;
+                const isNearest = nearestValidPoint && point.label === nearestValidPoint.label;
+
+                if (point.isSnapTarget) {
+                    ctx.beginPath();
+                    ctx.arc(point.x, point.y, 3, 0, Math.PI * 2);
+                    ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
+                    ctx.fill();
+                } else {
+                    let radius = 4;
+                    let fillColor = '#ffffff';
+                    let strokeColor = '#000000';
+
+                    if (isStart) {
+                        radius = 6;
+                        fillColor = '#000000';
+                        strokeColor = '#000000';
+                    } else if (isEnd) {
+                        radius = 6;
+                        fillColor = '#000000';
+                        strokeColor = '#000000';
+                    } else if (isNearest && isDraggingLine) {
+                        radius = 6;
+                        fillColor = '#ffffff';
+                        strokeColor = '#000000';
+                    }
+
+                    ctx.beginPath();
+                    ctx.arc(point.x, point.y, radius, 0, Math.PI * 2);
+                    ctx.fillStyle = fillColor;
+                    ctx.fill();
+                    ctx.strokeStyle = strokeColor;
+                    ctx.lineWidth = 1.5;
+                    ctx.stroke();
+                }
+            });
+
+            ctx.fillStyle = '#ffffff';
+            ctx.strokeStyle = '#000000';
+            ctx.lineWidth = 1.5;
+            drawRoundedRect(dragRect.x, dragRect.y, dragRect.width, dragRect.height, dragRect.borderRadius);
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.fillStyle = '#000000';
+            ctx.font = '500 11px -apple-system, BlinkMacSystemFont, SF Pro Text, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('DRAG', dragRect.x + dragRect.width / 2, dragRect.y + dragRect.height / 2);
+        }
+
+        function snapToPoint() {
+            const rectCenterX = dragRect.x + dragRect.width / 2;
+            const rectCenterY = dragRect.y + dragRect.height / 2;
+
+            let nearestPoint = null;
+            let minDistance = Infinity;
+
+            snapPoints.forEach(point => {
+                const distance = Math.sqrt(
+                    Math.pow(rectCenterX - point.x, 2) +
+                    Math.pow(rectCenterY - point.y, 2)
+                );
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    nearestPoint = point;
+                }
+            });
+
+            if (minDistance < snapDistance && nearestPoint) {
+                dragRect.x = nearestPoint.x - dragRect.width / 2;
+                dragRect.y = nearestPoint.y - dragRect.height / 2;
+                return true;
+            }
+            return false;
+        }
+
+        function findNearestValidPoint(pos) {
+            let nearest = null;
+            let minDist = lineSnapRadius;
+
+            for (const point of linePoints) {
+                if (startPoint && point.label === startPoint.label) continue;
+                const dist = Math.sqrt(
+                    Math.pow(pos.x - point.x, 2) + Math.pow(pos.y - point.y, 2)
+                );
+                if (dist < minDist) {
+                    minDist = dist;
+                    nearest = point;
+                }
+            }
+            return nearest;
+        }
+
+        function getMousePos(e) {
+            const rect = canvas.getBoundingClientRect();
+            return {
+                x: e.clientX - rect.left,
+                y: e.clientY - rect.top
+            };
+        }
+
+        function isInsideRect(x, y) {
+            return x >= dragRect.x && x <= dragRect.x + dragRect.width &&
+                   y >= dragRect.y && y <= dragRect.y + dragRect.height;
+        }
+
+        function isInsidePoint(pos, point) {
+            const distance = Math.sqrt(
+                Math.pow(pos.x - point.x, 2) + Math.pow(pos.y - point.y, 2)
+            );
+            return distance < pointClickRadius;
+        }
+
+        canvas.addEventListener('mousedown', (e) => {
+            const pos = getMousePos(e);
+
+            if (isInsideRect(pos.x, pos.y)) {
+                dragRect.isDragging = true;
+                dragRect.offsetX = pos.x - dragRect.x;
+                dragRect.offsetY = pos.y - dragRect.y;
+                canvas.style.cursor = 'grabbing';
+                return;
+            }
+
+            for (const point of linePoints) {
+                if (isInsidePoint(pos, point)) {
+                    startPoint = point;
+                    endPoint = null;
+                    isDraggingLine = true;
+                    currentMousePos = pos;
+                    draw();
+                    return;
+                }
+            }
+        });
+
+        canvas.addEventListener('mousemove', (e) => {
+            const pos = getMousePos(e);
+            currentMousePos = pos;
+
+            if (dragRect.isDragging) {
+                dragRect.x = pos.x - dragRect.offsetX;
+                dragRect.y = pos.y - dragRect.offsetY;
+                draw();
+            } else if (isDraggingLine) {
+                nearestValidPoint = findNearestValidPoint(pos);
+                draw();
+            } else {
+                canvas.style.cursor = isInsideRect(pos.x, pos.y) ? 'grab' : 'crosshair';
+            }
+        });
+
+        canvas.addEventListener('mouseup', (e) => {
+            const pos = getMousePos(e);
+
+            if (dragRect.isDragging) {
+                dragRect.isDragging = false;
+                snapToPoint();
+                draw();
+                canvas.style.cursor = 'crosshair';
+                return;
+            }
+
+            if (isDraggingLine && startPoint) {
+                const targetPoint = nearestValidPoint || findNearestValidPoint(pos);
+                if (targetPoint) {
+                    endPoint = targetPoint;
+                }
+                isDraggingLine = false;
+                nearestValidPoint = null;
+                draw();
+                startPoint = null;
+            }
+        });
+
+        canvas.addEventListener('mouseleave', () => {
+            if (dragRect.isDragging) {
+                dragRect.isDragging = false;
+                snapToPoint();
+                draw();
+            }
+            if (isDraggingLine) {
+                isDraggingLine = false;
+                nearestValidPoint = null;
+                startPoint = null;
+                draw();
+            }
+        });
+
+        draw();
+    </script>
+</body>
+</html>

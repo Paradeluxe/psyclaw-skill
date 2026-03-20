@@ -111,9 +111,9 @@ def _validate_message(msg):
             return {"role": role, "content": content}
     return None
 
-def predict(message, history, model, temperature, top_p, max_length, system_prompt):
+def predict(message, history, model, temperature, top_p, max_length, system_prompt, file):
     """ChatInterface compatible predict function"""
-    if not message:
+    if not message and not file:
         return ""
 
     if not model:
@@ -139,7 +139,20 @@ def predict(message, history, model, temperature, top_p, max_length, system_prom
         if validated:
             messages.append(validated)
 
-    messages.append({"role": "user", "content": message})
+    user_content = message if message else ""
+    if file is not None:
+        try:
+            file_name = os.path.basename(file.name)
+            with open(file.name, 'r', encoding='utf-8') as f:
+                file_content = f.read()
+            if user_content:
+                user_content += f"\n\n[File: {file_name}]\n{file_content}"
+            else:
+                user_content = f"[File: {file_name}]\n{file_content}"
+        except Exception as e:
+            user_content += f"\n\n[File: {file.name}](read error: {str(e)})"
+
+    messages.append({"role": "user", "content": user_content})
 
     headers = {
         "Authorization": f"Bearer {api_key}",
@@ -230,19 +243,30 @@ with gr.Blocks(title="PsyClaw") as demo:
         )
 
     gr.Markdown("---")
-    gr.Markdown("### Chat Interface")
-    chat_interface = gr.ChatInterface(
-        fn=predict,
-        additional_inputs=[
-            model_dropdown,
-            temperature_slider,
-            top_p_slider,
-            max_length_slider,
-            system_prompt_input
-        ]
-    )
+    # gr.Markdown("### Chat Interface")
 
-    gr.Markdown("---")
+    with gr.Row():
+        with gr.Column(scale=4):
+            file_state = gr.State()
+            chat_interface = gr.ChatInterface(
+                fn=predict,
+                additional_inputs=[
+                    model_dropdown,
+                    temperature_slider,
+                    top_p_slider,
+                    max_length_slider,
+                    system_prompt_input,
+                    file_state
+                ]
+            )
+        with gr.Column(scale=1):
+            file_input = gr.File(
+                label="Upload File",
+                file_count="single",
+                file_types=[".txt", ".md", ".json", ".py", ".csv"]
+            )
+
+    # gr.Markdown("---")
     status_message = gr.Markdown("")
 
     demo.load(
@@ -255,6 +279,15 @@ with gr.Blocks(title="PsyClaw") as demo:
         check_available_models,
         inputs=[api_url_input, api_key_input],
         outputs=[model_dropdown, save_status]
+    )
+
+    def handle_file_upload(file):
+        return file
+
+    file_input.upload(
+        handle_file_upload,
+        inputs=[file_input],
+        outputs=[file_state]
     )
 
 demo.launch(share=False)
