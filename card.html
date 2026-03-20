@@ -449,24 +449,32 @@
             if (isDraggingLine && startPoint) {
                 const targetPoint = nearestValidPoint || findNearestValidPoint(pos);
                 if (targetPoint) {
-                    const newConn = { start: startPoint, end: targetPoint, depth: 0 };
-                    connections.push(newConn);
+                    // 检查是否是重复的 loop
+                    const isDuplicate = connections.some(conn => {
+                        return (conn.start.label === startPoint.label && conn.end.label === targetPoint.label) ||
+                               (conn.start.label === targetPoint.label && conn.end.label === startPoint.label);
+                    });
                     
-                    // 重新计算所有连接的层级，直到稳定
-                    let changed = true;
-                    while (changed) {
-                        changed = false;
-                        for (const conn of connections) {
-                            const newDepth = getNestingDepth(conn, connections);
-                            if (newDepth !== conn.depth) {
-                                conn.depth = newDepth;
-                                changed = true;
+                    if (!isDuplicate) {
+                        const newConn = { start: startPoint, end: targetPoint, depth: 0 };
+                        connections.push(newConn);
+                        
+                        // 重新计算所有连接的层级，直到稳定
+                        let changed = true;
+                        while (changed) {
+                            changed = false;
+                            for (const conn of connections) {
+                                const newDepth = getNestingDepth(conn, connections);
+                                if (newDepth !== conn.depth) {
+                                    conn.depth = newDepth;
+                                    changed = true;
+                                }
                             }
                         }
-                    }
-                    
-                    if (isOverlapping(newConn, connections)) {
-                        connections.pop();
+                        
+                        if (isOverlapping(newConn, connections)) {
+                            connections.pop();
+                        }
                     }
                 }
                 isDraggingLine = false;
