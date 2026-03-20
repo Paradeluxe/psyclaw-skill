@@ -39,6 +39,7 @@
     </div>
 
     <script>
+        console.log('Script starting');
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
 
@@ -66,10 +67,10 @@
         const linePoints = allPoints.filter(p => !p.isSnapTarget);
 
         let startPoint = null;
-        let endPoint = null;
         let isDraggingLine = false;
         let currentMousePos = { x: 0, y: 0 };
         let nearestValidPoint = null;
+        const connections = [];
 
         const dragRect = {
             x: 250,
@@ -85,6 +86,60 @@
         const snapDistance = 80;
         const pointClickRadius = 20;
         const lineSnapRadius = 80;
+        const baseOffsetX = 60;
+        const offsetXStep = 80;
+
+        function getNestingDepth(conn, allConnections) {
+            let maxContainedDepth = -1;
+            const startLabel = parseInt(conn.start.label);
+            const endLabel = parseInt(conn.end.label);
+            const connMin = Math.min(startLabel, endLabel);
+            const connMax = Math.max(startLabel, endLabel);
+            
+            for (const other of allConnections) {
+                if (other === conn) continue;
+                const otherStartLabel = parseInt(other.start.label);
+                const otherEndLabel = parseInt(other.end.label);
+                const otherMin = Math.min(otherStartLabel, otherEndLabel);
+                const otherMax = Math.max(otherStartLabel, otherEndLabel);
+                
+                // 检查 other 是否被 conn 包含（严格包含）
+                if (connMin <= otherMin && connMax >= otherMax &&
+                    (connMin < otherMin || connMax > otherMax)) {
+                    maxContainedDepth = Math.max(maxContainedDepth, other.depth);
+                }
+            }
+            
+            return maxContainedDepth + 1;
+        }
+
+        function getConnectionOffsetX(conn, allConnections) {
+            return baseOffsetX + conn.depth * offsetXStep;
+        }
+
+        function isOverlapping(conn, allConnections) {
+            const startLabel = parseInt(conn.start.label);
+            const endLabel = parseInt(conn.end.label);
+            const connMin = Math.min(startLabel, endLabel);
+            const connMax = Math.max(startLabel, endLabel);
+            for (const other of allConnections) {
+                const otherStartLabel = parseInt(other.start.label);
+                const otherEndLabel = parseInt(other.end.label);
+                const otherMin = Math.min(otherStartLabel, otherEndLabel);
+                const otherMax = Math.max(otherStartLabel, otherEndLabel);
+                const isSame = connMin === otherMin && connMax === otherMax;
+                const sharesEndpoint = (startLabel === otherStartLabel || startLabel === otherEndLabel ||
+                                       endLabel === otherStartLabel || endLabel === otherEndLabel);
+                const isContained = (otherMin <= connMin && otherMax >= connMax) ||
+                                   (connMin <= otherMin && connMax >= otherMax);
+                const isSeparate = connMax < otherMin || connMin > otherMax;
+                if (isSame || sharesEndpoint || isContained || isSeparate) {
+                    continue;
+                }
+                return true;
+            }
+            return false;
+        }
 
         function drawRoundedRect(x, y, width, height, radius) {
             ctx.beginPath();
@@ -103,13 +158,14 @@
         function drawPreviewLine() {
             if (isDraggingLine && startPoint) {
                 const targetPoint = nearestValidPoint || { x: currentMousePos.x, y: currentMousePos.y };
-                ctx.strokeStyle = nearestValidPoint ? '#000000' : 'rgba(0, 0, 0, 0.4)';
+                ctx.strokeStyle = '#666666';
                 ctx.lineWidth = 1.5;
                 ctx.lineCap = 'round';
                 ctx.lineJoin = 'round';
                 ctx.setLineDash([6, 4]);
 
-                const offsetX = 140;
+                const previewConn = { start: startPoint, end: targetPoint };
+                const offsetX = getConnectionOffsetX(previewConn, connections);
 
                 ctx.beginPath();
                 ctx.moveTo(startPoint.x, startPoint.y);
@@ -118,27 +174,69 @@
                 ctx.lineTo(targetPoint.x, targetPoint.y);
                 ctx.stroke();
 
+                const cornerX = startPoint.x + offsetX;
+                const middleY = (startPoint.y + targetPoint.y) / 2;
+                const followRectWidth = 60;
+                const followRectHeight = 40;
+                const followRectRadius = 8;
+
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+                ctx.strokeStyle = '#000000';
+                ctx.lineWidth = 1.5;
+                drawRoundedRect(cornerX - followRectWidth / 2, middleY - followRectHeight / 2, followRectWidth, followRectHeight, followRectRadius);
+                ctx.fill();
+                ctx.stroke();
+
+                ctx.fillStyle = '#000000';
+                ctx.font = '500 10px -apple-system, BlinkMacSystemFont, SF Pro Text, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('MOVE', cornerX, middleY);
+
                 ctx.setLineDash([]);
             }
         }
 
-        function drawConnectionLine() {
-            if (startPoint && endPoint) {
+        function drawConnectionLines() {
+            const previewConn = isDraggingLine && startPoint && nearestValidPoint ? 
+                { start: startPoint, end: nearestValidPoint } : null;
+            const allConns = previewConn ? [...connections, previewConn] : connections;
+
+            connections.forEach(conn => {
                 ctx.strokeStyle = '#000000';
                 ctx.lineWidth = 1.5;
                 ctx.lineCap = 'round';
                 ctx.lineJoin = 'round';
                 ctx.setLineDash([]);
 
-                const offsetX = 140;
+                const offsetX = getConnectionOffsetX(conn, allConns);
 
                 ctx.beginPath();
-                ctx.moveTo(startPoint.x, startPoint.y);
-                ctx.lineTo(startPoint.x + offsetX, startPoint.y);
-                ctx.lineTo(startPoint.x + offsetX, endPoint.y);
-                ctx.lineTo(endPoint.x, endPoint.y);
+                ctx.moveTo(conn.start.x, conn.start.y);
+                ctx.lineTo(conn.start.x + offsetX, conn.start.y);
+                ctx.lineTo(conn.start.x + offsetX, conn.end.y);
+                ctx.lineTo(conn.end.x, conn.end.y);
                 ctx.stroke();
-            }
+
+                const cornerX = conn.start.x + offsetX;
+                const middleY = (conn.start.y + conn.end.y) / 2;
+                const followRectWidth = 60;
+                const followRectHeight = 40;
+                const followRectRadius = 8;
+
+                ctx.fillStyle = '#ffffff';
+                ctx.strokeStyle = '#000000';
+                ctx.lineWidth = 1.5;
+                drawRoundedRect(cornerX - followRectWidth / 2, middleY - followRectHeight / 2, followRectWidth, followRectHeight, followRectRadius);
+                ctx.fill();
+                ctx.stroke();
+
+                ctx.fillStyle = '#000000';
+                ctx.font = '500 10px -apple-system, BlinkMacSystemFont, SF Pro Text, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('MOVE', cornerX, middleY);
+            });
         }
 
         function draw() {
@@ -152,12 +250,12 @@
             ctx.lineTo(lineX, endY);
             ctx.stroke();
 
-            drawConnectionLine();
+            drawConnectionLines();
             drawPreviewLine();
 
             allPoints.forEach(point => {
                 const isStart = startPoint && point.label === startPoint.label;
-                const isEnd = endPoint && point.label === endPoint.label;
+                const isEnd = connections.some(c => c.end.label === point.label);
                 const isNearest = nearestValidPoint && point.label === nearestValidPoint.label;
 
                 if (point.isSnapTarget) {
@@ -285,7 +383,6 @@
             for (const point of linePoints) {
                 if (isInsidePoint(pos, point)) {
                     startPoint = point;
-                    endPoint = null;
                     isDraggingLine = true;
                     currentMousePos = pos;
                     draw();
@@ -324,7 +421,25 @@
             if (isDraggingLine && startPoint) {
                 const targetPoint = nearestValidPoint || findNearestValidPoint(pos);
                 if (targetPoint) {
-                    endPoint = targetPoint;
+                    const newConn = { start: startPoint, end: targetPoint, depth: 0 };
+                    connections.push(newConn);
+                    
+                    // 重新计算所有连接的层级，直到稳定
+                    let changed = true;
+                    while (changed) {
+                        changed = false;
+                        for (const conn of connections) {
+                            const newDepth = getNestingDepth(conn, connections);
+                            if (newDepth !== conn.depth) {
+                                conn.depth = newDepth;
+                                changed = true;
+                            }
+                        }
+                    }
+                    
+                    if (isOverlapping(newConn, connections)) {
+                        connections.pop();
+                    }
                 }
                 isDraggingLine = false;
                 nearestValidPoint = null;
@@ -346,6 +461,53 @@
                 draw();
             }
         });
+
+        function isInsideConnection(pos, conn) {
+            const tolerance = 20;
+            const offsetX = getConnectionOffsetX(conn, connections);
+
+            const seg1Start = { x: conn.start.x, y: conn.start.y };
+            const seg1End = { x: conn.start.x + offsetX, y: conn.start.y };
+            if (isNearSegment(pos, seg1Start, seg1End, tolerance)) return true;
+
+            const seg2Start = { x: conn.start.x + offsetX, y: conn.start.y };
+            const seg2End = { x: conn.start.x + offsetX, y: conn.end.y };
+            if (isNearSegment(pos, seg2Start, seg2End, tolerance)) return true;
+
+            const seg3Start = { x: conn.start.x + offsetX, y: conn.end.y };
+            const seg3End = { x: conn.end.x, y: conn.end.y };
+            if (isNearSegment(pos, seg3Start, seg3End, tolerance)) return true;
+
+            return false;
+        }
+
+        function isNearSegment(pos, start, end, tolerance) {
+            const dx = end.x - start.x;
+            const dy = end.y - start.y;
+            const length = Math.sqrt(dx * dx + dy * dy);
+            if (length === 0) return false;
+
+            const t = Math.max(0, Math.min(1, ((pos.x - start.x) * dx + (pos.y - start.y) * dy) / (length * length)));
+            const projX = start.x + t * dx;
+            const projY = start.y + t * dy;
+            const dist = Math.sqrt((pos.x - projX) * (pos.x - projX) + (pos.y - projY) * (pos.y - projY));
+            return dist < tolerance;
+        }
+
+        canvas.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+            const pos = getMousePos(e);
+
+            for (let i = connections.length - 1; i >= 0; i--) {
+                if (isInsideConnection(pos, connections[i])) {
+                    connections.splice(i, 1);
+                    draw();
+                    return;
+                }
+            }
+        });
+
+        console.log('Context menu listener attached');
 
         draw();
     </script>
