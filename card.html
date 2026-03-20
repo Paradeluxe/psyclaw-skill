@@ -164,8 +164,23 @@
                 ctx.lineJoin = 'round';
                 ctx.setLineDash([6, 4]);
 
-                const previewConn = { start: startPoint, end: targetPoint };
-                const offsetX = getConnectionOffsetX(previewConn, connections);
+                const previewConn = { start: startPoint, end: targetPoint, depth: 0 };
+                const allConnsForPreview = [...connections, previewConn];
+                
+                // 重新计算所有连接的层级（包括预览线）
+                let changed = true;
+                while (changed) {
+                    changed = false;
+                    for (const conn of allConnsForPreview) {
+                        const newDepth = getNestingDepth(conn, allConnsForPreview);
+                        if (newDepth !== conn.depth) {
+                            conn.depth = newDepth;
+                            changed = true;
+                        }
+                    }
+                }
+                
+                const offsetX = getConnectionOffsetX(previewConn, allConnsForPreview);
 
                 ctx.beginPath();
                 ctx.moveTo(startPoint.x, startPoint.y);
@@ -199,8 +214,21 @@
 
         function drawConnectionLines() {
             const previewConn = isDraggingLine && startPoint && nearestValidPoint ? 
-                { start: startPoint, end: nearestValidPoint } : null;
+                { start: startPoint, end: nearestValidPoint, depth: 0 } : null;
             const allConns = previewConn ? [...connections, previewConn] : connections;
+
+            // 重新计算所有连接的层级（包括预览线）
+            let changed = true;
+            while (changed) {
+                changed = false;
+                for (const conn of allConns) {
+                    const newDepth = getNestingDepth(conn, allConns);
+                    if (newDepth !== conn.depth) {
+                        conn.depth = newDepth;
+                        changed = true;
+                    }
+                }
+            }
 
             connections.forEach(conn => {
                 ctx.strokeStyle = '#000000';
