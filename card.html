@@ -191,8 +191,8 @@
 
                 const cornerX = startPoint.x + offsetX;
                 const middleY = (startPoint.y + targetPoint.y) / 2;
-                const followRectWidth = 60;
-                const followRectHeight = 40;
+                const followRectWidth = 30;
+                const followRectHeight = 60;
                 const followRectRadius = 8;
 
                 ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
@@ -203,10 +203,10 @@
                 ctx.stroke();
 
                 ctx.fillStyle = '#000000';
-                ctx.font = '500 10px -apple-system, BlinkMacSystemFont, SF Pro Text, sans-serif';
+                ctx.font = '500 16px -apple-system, BlinkMacSystemFont, SF Pro Text, sans-serif';
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
-                ctx.fillText('MOVE', cornerX, middleY);
+                ctx.fillText(previewConn.depth + 1, cornerX, middleY);
 
                 ctx.setLineDash([]);
             }
@@ -248,8 +248,8 @@
 
                 const cornerX = conn.start.x + offsetX;
                 const middleY = (conn.start.y + conn.end.y) / 2;
-                const followRectWidth = 60;
-                const followRectHeight = 40;
+                const followRectWidth = 30;
+                const followRectHeight = 60;
                 const followRectRadius = 8;
 
                 ctx.fillStyle = '#ffffff';
@@ -260,10 +260,10 @@
                 ctx.stroke();
 
                 ctx.fillStyle = '#000000';
-                ctx.font = '500 10px -apple-system, BlinkMacSystemFont, SF Pro Text, sans-serif';
+                ctx.font = '500 16px -apple-system, BlinkMacSystemFont, SF Pro Text, sans-serif';
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
-                ctx.fillText('MOVE', cornerX, middleY);
+                ctx.fillText(conn.depth + 1, cornerX, middleY);
             });
         }
 
@@ -283,7 +283,7 @@
 
             allPoints.forEach(point => {
                 const isStart = startPoint && point.label === startPoint.label;
-                const isEnd = connections.some(c => c.end.label === point.label);
+                const isConnected = connections.some(c => c.start.label === point.label || c.end.label === point.label);
                 const isNearest = nearestValidPoint && point.label === nearestValidPoint.label;
 
                 if (point.isSnapTarget) {
@@ -296,11 +296,11 @@
                     let fillColor = '#ffffff';
                     let strokeColor = '#000000';
 
-                    if (isStart) {
+                    if (isConnected) {
                         radius = 6;
                         fillColor = '#000000';
                         strokeColor = '#000000';
-                    } else if (isEnd) {
+                    } else if (isStart && isDraggingLine) {
                         radius = 6;
                         fillColor = '#000000';
                         strokeColor = '#000000';
