@@ -17,23 +17,469 @@
             align-items: center;
             min-height: 100vh;
             background: #ffffff;
-            overflow: hidden;
             font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;
+            overflow: auto;
+            padding: 20px 0;
         }
 
         .container {
             position: relative;
-            padding: 0;
         }
 
         canvas {
             background: transparent;
             cursor: crosshair;
             display: block;
+            margin: auto;
+        }
+
+        .avtp-form {
+            position: fixed;
+            left: -320px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 300px;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            padding: 20px;
+            transition: left 0.3s ease;
+            z-index: 1000;
+        }
+
+        .avtp-form.visible {
+            left: 20px;
+        }
+
+        .avtp-form-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .avtp-form-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #000000;
+        }
+
+        .avtp-form-close {
+            width: 28px;
+            height: 28px;
+            border: none;
+            background: #f5f5f5;
+            border-radius: 6px;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666666;
+            transition: all 0.2s;
+        }
+
+        .avtp-form-close:hover {
+            background: #e0e0e0;
+            color: #000000;
+        }
+
+        .avtp-form-group {
+            margin-bottom: 16px;
+        }
+
+        .avtp-form-label {
+            display: block;
+            font-size: 12px;
+            font-weight: 500;
+            color: #666666;
+            margin-bottom: 6px;
+        }
+
+        .avtp-form-input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1.5px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: border-color 0.2s;
+        }
+
+        .avtp-form-input:focus {
+            outline: none;
+            border-color: #000000;
+        }
+
+        .avtp-form-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .avtp-form-checkbox input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .avtp-form-checkbox label {
+            font-size: 13px;
+            color: #000000;
+            cursor: pointer;
+        }
+
+        .avtp-form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .avtp-form-select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1.5px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            background: #ffffff;
+            cursor: pointer;
+        }
+
+        .avtp-form-select:focus {
+            outline: none;
+            border-color: #000000;
+        }
+
+        .routine-controls {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 12px 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+        }
+
+        .routine-btn {
+            padding: 10px 20px;
+            border: 1.5px solid #000000;
+            background: #ffffff;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .routine-btn:hover {
+            background: #f5f5f5;
+            transform: scale(1.05);
+        }
+
+        .routine-btn:active {
+            transform: scale(0.95);
+        }
+
+        .routine-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .routine-count {
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            font-weight: 500;
+            color: #000000;
+        }
+
+        .form-group-hidden {
+            display: none;
+        }
+
+        .form-row-margin {
+            margin-top: 12px;
+        }
+
+        .checkbox-margin-top-12 {
+            margin-top: 12px;
+        }
+
+        .checkbox-margin-top-8 {
+            margin-top: 8px;
+        }
+
+        .hint-text {
+            font-size: 11px;
+            color: #999999;
+            margin-top: 4px;
+        }
+
+        .form-group-visible {
+            display: block;
         }
     </style>
 </head>
 <body>
+    <div class="avtp-form" id="avtpForm">
+        <div class="avtp-form-header">
+            <div class="avtp-form-title" id="formTitle">Audio</div>
+            <button class="avtp-form-close" id="formClose">×</button>
+        </div>
+        
+        <div class="avtp-form-group form-group-hidden" id="fileInputGroup">
+            <label class="avtp-form-label">File Path / URL</label>
+            <input type="text" class="avtp-form-input" id="formPath" placeholder="Enter file path or URL...">
+        </div>
+
+        <div class="avtp-form-group" id="textOptions">
+            <div class="avtp-form-group">
+                <label class="avtp-form-label">Text Content</label>
+                <input type="text" class="avtp-form-input" id="formText" placeholder="Enter text...">
+            </div>
+            <div class="avtp-form-row">
+                <div>
+                    <label class="avtp-form-label">Font</label>
+                    <input type="text" class="avtp-form-input" id="formFont" placeholder="Arial">
+                </div>
+                <div>
+                    <label class="avtp-form-label">Letter Height</label>
+                    <input type="number" class="avtp-form-input" id="formLetterHeight" step="0.01" placeholder="0.05">
+                </div>
+            </div>
+            <div class="avtp-form-row form-row-margin">
+                <div>
+                    <label class="avtp-form-label">Color</label>
+                    <input type="text" class="avtp-form-input" id="formColor" placeholder="white">
+                </div>
+                <div>
+                    <label class="avtp-form-label" for="formUnits">Units</label>
+                    <select class="avtp-form-select" id="formUnits" aria-label="Units">
+                        <option value="from exp settings">from exp settings</option>
+                        <option value="norm">norm</option>
+                        <option value="cm">cm</option>
+                        <option value="deg">deg</option>
+                        <option value="pix">pix</option>
+                        <option value="height">height</option>
+                    </select>
+                </div>
+            </div>
+            <div class="avtp-form-row form-row-margin">
+                <div>
+                    <label class="avtp-form-label">Pos X</label>
+                    <input type="number" class="avtp-form-input" id="formPosX" step="1" placeholder="0">
+                </div>
+                <div>
+                    <label class="avtp-form-label">Pos Y</label>
+                    <input type="number" class="avtp-form-input" id="formPosY" step="1" placeholder="0">
+                </div>
+            </div>
+            <div class="avtp-form-row form-row-margin">
+                <div>
+                    <label class="avtp-form-label">Opacity</label>
+                    <input type="number" class="avtp-form-input" id="formOpacity" step="0.1" min="0" max="1" placeholder="1.0">
+                </div>
+                <div>
+                    <label class="avtp-form-label">Orientation</label>
+                    <input type="number" class="avtp-form-input" id="formOri" step="1" placeholder="0">
+                </div>
+            </div>
+            <div class="avtp-form-row form-row-margin">
+                <div>
+                    <label class="avtp-form-label">Contrast</label>
+                    <input type="number" class="avtp-form-input" id="formContrast" step="0.1" min="-1" max="1" placeholder="1.0">
+                </div>
+                <div>
+                    <label class="avtp-form-label" for="formWrapWidth">Wrap Width</label>
+                    <input type="number" class="avtp-form-input" id="formWrapWidth" step="1" aria-label="Wrap Width">
+                </div>
+            </div>
+            <div class="avtp-form-row form-row-margin">
+                <div>
+                    <label class="avtp-form-label" for="formFlip">Flip</label>
+                    <select class="avtp-form-select" id="formFlip" aria-label="Flip">
+                        <option value="None">None</option>
+                        <option value="horiz">Horizontal</option>
+                        <option value="vert">Vertical</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="avtp-form-label" for="formLanguageStyle">Language Style</label>
+                    <select class="avtp-form-select" id="formLanguageStyle" aria-label="Language Style">
+                        <option value="LTR">LTR</option>
+                        <option value="RTL">RTL</option>
+                        <option value="Arabic">Arabic</option>
+                    </select>
+                </div>
+            </div>
+            <div class="avtp-form-checkbox checkbox-margin-top-12">
+                <input type="checkbox" id="formDraggable">
+                <label for="formDraggable">Draggable</label>
+            </div>
+        </div>
+
+        <div class="avtp-form-group form-group-hidden" id="videoOptions">
+            <div class="avtp-form-row">
+                <div>
+                    <label class="avtp-form-label">Volume</label>
+                    <input type="number" class="avtp-form-input" id="formVolume" step="0.1" min="0" max="1" placeholder="1.0">
+                </div>
+                <div>
+                    <label class="avtp-form-label">Size Width</label>
+                    <input type="number" class="avtp-form-input" id="formSizeW" step="1" placeholder="">
+                </div>
+            </div>
+            <div class="avtp-form-row form-row-margin">
+                <div>
+                    <label class="avtp-form-label">Size Height</label>
+                    <input type="number" class="avtp-form-input" id="formSizeH" step="1" placeholder="">
+                </div>
+                <div>
+                    <label class="avtp-form-label">Anchor</label>
+                    <select class="avtp-form-select" id="formAnchor">
+                        <option value="center">center</option>
+                        <option value="top-center">top-center</option>
+                        <option value="bottom-center">bottom-center</option>
+                        <option value="center-left">center-left</option>
+                        <option value="center-right">center-right</option>
+                        <option value="top-left">top-left</option>
+                        <option value="top-right">top-right</option>
+                        <option value="bottom-left">bottom-left</option>
+                        <option value="bottom-right">bottom-right</option>
+                    </select>
+                </div>
+            </div>
+            <div class="avtp-form-row form-row-margin">
+                <div>
+                    <label class="avtp-form-label">Units</label>
+                    <select class="avtp-form-select" id="formVideoUnits">
+                        <option value="from exp settings">from exp settings</option>
+                        <option value="norm">norm</option>
+                        <option value="cm">cm</option>
+                        <option value="deg">deg</option>
+                        <option value="pix">pix</option>
+                        <option value="height">height</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="avtp-form-label">Opacity</label>
+                    <input type="number" class="avtp-form-input" id="formVideoOpacity" step="0.1" min="0" max="1" placeholder="1.0">
+                </div>
+            </div>
+            <div class="avtp-form-checkbox checkbox-margin-top-12">
+                <input type="checkbox" id="formLoop">
+                <label for="formLoop">Loop video</label>
+            </div>
+            <div class="avtp-form-checkbox checkbox-margin-top-8">
+                <input type="checkbox" id="formVideoStopWithRoutine">
+                <label for="formVideoStopWithRoutine">Stop with Routine</label>
+            </div>
+            <div class="avtp-form-checkbox checkbox-margin-top-8">
+                <input type="checkbox" id="formVideoForceEndRoutine">
+                <label for="formVideoForceEndRoutine">Force End Routine</label>
+            </div>
+        </div>
+
+        <div class="avtp-form-group form-group-hidden" id="audioOptions">
+            <div class="avtp-form-group">
+                <label class="avtp-form-label">Volume</label>
+                <input type="number" class="avtp-form-input" id="formAudioVolume" step="0.1" min="0" max="1" placeholder="1.0">
+            </div>
+            <div class="avtp-form-checkbox checkbox-margin-top-12">
+                <input type="checkbox" id="formAudioStopWithRoutine">
+                <label for="formAudioStopWithRoutine">Stop with Routine</label>
+            </div>
+            <div class="avtp-form-checkbox checkbox-margin-top-8">
+                <input type="checkbox" id="formAudioForceEndRoutine">
+                <label for="formAudioForceEndRoutine">Force End Routine</label>
+            </div>
+        </div>
+
+        <div class="avtp-form-group form-group-hidden" id="imageOptions">
+            <div class="avtp-form-row">
+                <div>
+                    <label class="avtp-form-label">Size Width</label>
+                    <input type="number" class="avtp-form-input" id="formImageSizeW" step="1" placeholder="">
+                </div>
+                <div>
+                    <label class="avtp-form-label">Size Height</label>
+                    <input type="number" class="avtp-form-input" id="formImageSizeH" step="1" placeholder="">
+                </div>
+            </div>
+            <div class="avtp-form-row form-row-margin">
+                <div>
+                    <label class="avtp-form-label">Pos X</label>
+                    <input type="number" class="avtp-form-input" id="formImagePosX" step="1" placeholder="0">
+                </div>
+                <div>
+                    <label class="avtp-form-label">Pos Y</label>
+                    <input type="number" class="avtp-form-input" id="formImagePosY" step="1" placeholder="0">
+                </div>
+            </div>
+            <div class="avtp-form-row form-row-margin">
+                <div>
+                    <label class="avtp-form-label">Opacity</label>
+                    <input type="number" class="avtp-form-input" id="formImageOpacity" step="0.1" min="0" max="1" placeholder="1.0">
+                </div>
+                <div>
+                    <label class="avtp-form-label">Orientation</label>
+                    <input type="number" class="avtp-form-input" id="formImageOri" step="1" placeholder="0">
+                </div>
+            </div>
+            <div class="avtp-form-row form-row-margin">
+                <div>
+                    <label class="avtp-form-label">Flip</label>
+                    <select class="avtp-form-select" id="formImageFlip">
+                        <option value="None">None</option>
+                        <option value="horiz">Horizontal</option>
+                        <option value="vert">Vertical</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="avtp-form-label">Units</label>
+                    <select class="avtp-form-select" id="formImageUnits">
+                        <option value="from exp settings">from exp settings</option>
+                        <option value="norm">norm</option>
+                        <option value="cm">cm</option>
+                        <option value="deg">deg</option>
+                        <option value="pix">pix</option>
+                        <option value="height">height</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="avtp-form-group">
+            <label class="avtp-form-label">Start Time (ms)</label>
+            <input type="number" class="avtp-form-input" id="formStartTime" step="1" placeholder="0">
+        </div>
+
+        <div class="avtp-form-group">
+            <label class="avtp-form-label">Duration (ms)</label>
+            <input type="number" class="avtp-form-input" id="formDuration" step="1" placeholder="3000">
+            <div class="hint-text">Use -1 for infinite duration</div>
+        </div>
+
+        <div class="avtp-form-checkbox">
+            <input type="checkbox" id="formEnabled">
+            <label for="formEnabled">Enabled</label>
+        </div>
+    </div>
+
+    <div class="routine-controls">
+        <button class="routine-btn" id="addRoutine">+ Add</button>
+        <div class="routine-count" id="routineCount">0 Routines</div>
+        <button class="routine-btn" id="removeRoutine">− Remove</button>
+    </div>
+
     <div class="container">
         <canvas id="canvas"></canvas>
     </div>
@@ -43,28 +489,63 @@
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
 
-        canvas.width = 600;
-        canvas.height = 480;
+        const dpr = window.devicePixelRatio || 1;
+        const baseWidth = 600;
+        const baseStartY = 40;
+        const baseEndY = 600;
+        const maxPoints = 9;
+        const spacing = (baseEndY - baseStartY) / (maxPoints - 1);
+        const minDisplayRoutines = 1; // 最少显示 1 个 routine 的位置（2 个连线点）
+        
+        // 根据最大 routine 数量计算 canvas 高度
+        function calculateCanvasHeight(routineCount) {
+            const displayCount = Math.max(routineCount, minDisplayRoutines);
+            const totalPoints = displayCount * 2 + 1;
+            const contentHeight = baseStartY + (totalPoints - 1) * spacing + 80; // 底部留白
+            return Math.max(800, contentHeight); // 最小高度 800
+        }
+        
+        let currentRoutineCount = 0;
+        let canvasHeight = calculateCanvasHeight(currentRoutineCount);
 
-        const allPoints = [];
-        const totalPoints = 9;
+        canvas.width = baseWidth * dpr;
+        canvas.height = canvasHeight * dpr;
+        canvas.style.width = baseWidth + 'px';
+        canvas.style.height = canvasHeight + 'px';
+        ctx.scale(dpr, dpr);
+
         const lineX = 300;
-        const startY = 60;
-        const endY = 440;
-        const spacing = (endY - startY) / (totalPoints - 1);
 
-        for (let i = 0; i < totalPoints; i++) {
-            const label = i + 1;
-            allPoints.push({
-                x: lineX,
-                y: startY + i * spacing,
-                label: label.toString(),
-                isSnapTarget: label % 2 === 0
-            });
+        function generatePoints(routineCount) {
+            const totalPoints = routineCount * 2 + 1;
+            const startY = baseStartY;
+            const endY = baseStartY + (totalPoints - 1) * spacing;
+            const points = [];
+            
+            for (let i = 0; i < totalPoints; i++) {
+                const label = i + 1;
+                points.push({
+                    x: lineX,
+                    y: startY + i * spacing,
+                    label: label.toString(),
+                    isSnapTarget: label % 2 === 0
+                });
+            }
+            
+            return {
+                all: points,
+                snap: points.filter(p => p.isSnapTarget),
+                line: points.filter(p => !p.isSnapTarget),
+                startY: startY,
+                endY: endY
+            };
         }
 
-        const snapPoints = allPoints.filter(p => p.isSnapTarget);
-        const linePoints = allPoints.filter(p => !p.isSnapTarget);
+        let pointsData = generatePoints(minDisplayRoutines);
+        let snapPoints = pointsData.snap;
+        let linePoints = pointsData.line;
+        let startY = pointsData.startY;
+        let endY = pointsData.endY;
 
         let startPoint = null;
         let isDraggingLine = false;
@@ -72,21 +553,103 @@
         let nearestValidPoint = null;
         const connections = [];
 
-        const dragRect = {
-            x: 250,
-            y: 170,
-            width: 100,
-            height: 70,
-            borderRadius: 16,
-            isDragging: false,
-            offsetX: 0,
-            offsetY: 0
-        };
+        const routineRects = [];
+        let selectedRoutineIndex = 0;
+
+        let routineIdCounter = 0;
+
+        function createRoutineRect(index) {
+            const snapPoint = snapPoints[index];
+            return {
+                id: ++routineIdCounter, // 固定的 ID，不随位置改变
+                x: snapPoint.x - 80,
+                y: snapPoint.y - 50,
+                width: 160,
+                height: 100,
+                borderRadius: 8,
+                isDragging: false,
+                offsetX: 0,
+                offsetY: 0,
+                keys: 'Space F J',
+                duration: 3000,
+                avtp: { a: false, v: false, t: true, p: true },
+                avtpData: {
+                    a: {
+                        enabled: false,
+                        label: 'Audio',
+                        type: 'audio',
+                        path: '',
+                        volume: 1.0,
+                        startTime: 0,
+                        duration: -1,
+                        stopWithRoutine: true,
+                        forceEndRoutine: true
+                    },
+                    v: {
+                        enabled: false,
+                        label: 'Video',
+                        type: 'video',
+                        path: '',
+                        volume: 1.0,
+                        size: [null, null],
+                        anchor: 'center',
+                        loop: false,
+                        startTime: 0,
+                        duration: -1,
+                        units: 'from exp settings',
+                        opacity: 1.0,
+                        stopWithRoutine: true,
+                        forceEndRoutine: true
+                    },
+                    t: {
+                        enabled: true,
+                        label: 'Text',
+                        type: 'text',
+                        text: 'Sample Text',
+                        font: 'Arial',
+                        letterHeight: 0.05,
+                        color: 'white',
+                        pos: [0, 0],
+                        ori: 0,
+                        opacity: 1.0,
+                        units: 'from exp settings',
+                        startTime: 0,
+                        duration: 3000,
+                        contrast: 1.0,
+                        wrapWidth: undefined,
+                        flip: 'None',
+                        languageStyle: 'LTR',
+                        draggable: false
+                    },
+                    p: {
+                        enabled: true,
+                        label: 'Pic',
+                        type: 'image',
+                        path: '',
+                        size: [null, null],
+                        pos: [0, 0],
+                        opacity: 1.0,
+                        startTime: 0,
+                        duration: 3000,
+                        ori: 0,
+                        flip: 'None',
+                        units: 'from exp settings'
+                    }
+                }
+            };
+        }
+
+        // 初始时不添加任何 routine，让用户从零开始
+        // routineRects.push(createRoutineRect(0));
+        // routineRects.push(createRoutineRect(1));
+
+        let activeAvtp = null;
+        let activeDragRect = null;
 
         const snapDistance = 80;
         const pointClickRadius = 20;
         const lineSnapRadius = 80;
-        const baseOffsetX = 60;
+        const baseOffsetX = 100;
         const offsetXStep = 80;
 
         function getNestingDepth(conn, allConnections) {
@@ -103,7 +666,6 @@
                 const otherMin = Math.min(otherStartLabel, otherEndLabel);
                 const otherMax = Math.max(otherStartLabel, otherEndLabel);
                 
-                // 检查 other 是否被 conn 包含（严格包含）
                 if (connMin <= otherMin && connMax >= otherMax &&
                     (connMin < otherMin || connMax > otherMax)) {
                     maxContainedDepth = Math.max(maxContainedDepth, other.depth);
@@ -167,7 +729,6 @@
                 const previewConn = { start: startPoint, end: targetPoint, depth: 0 };
                 const allConnsForPreview = [...connections, previewConn];
                 
-                // 重新计算所有连接的层级（包括预览线）
                 let changed = true;
                 while (changed) {
                     changed = false;
@@ -217,7 +778,6 @@
                 { start: startPoint, end: nearestValidPoint, depth: 0 } : null;
             const allConns = previewConn ? [...connections, previewConn] : connections;
 
-            // 重新计算所有连接的层级（包括预览线）
             let changed = true;
             while (changed) {
                 changed = false;
@@ -268,7 +828,10 @@
         }
 
         function draw() {
+            ctx.save();
+            ctx.setTransform(1, 0, 0, 1, 0, 0);
             ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.restore();
 
             ctx.strokeStyle = 'rgba(0, 0, 0, 0.12)';
             ctx.lineWidth = 1;
@@ -281,62 +844,123 @@
             drawConnectionLines();
             drawPreviewLine();
 
-            allPoints.forEach(point => {
+            linePoints.forEach(point => {
                 const isStart = startPoint && point.label === startPoint.label;
                 const isConnected = connections.some(c => c.start.label === point.label || c.end.label === point.label);
                 const isNearest = nearestValidPoint && point.label === nearestValidPoint.label;
 
-                if (point.isSnapTarget) {
-                    ctx.beginPath();
-                    ctx.arc(point.x, point.y, 3, 0, Math.PI * 2);
-                    ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
-                    ctx.fill();
-                } else {
-                    let radius = 4;
-                    let fillColor = '#ffffff';
-                    let strokeColor = '#000000';
+                let radius = 4;
+                let fillColor = '#ffffff';
+                let strokeColor = '#000000';
 
-                    if (isConnected) {
-                        radius = 6;
-                        fillColor = '#000000';
-                        strokeColor = '#000000';
-                    } else if (isStart && isDraggingLine) {
-                        radius = 6;
-                        fillColor = '#000000';
-                        strokeColor = '#000000';
-                    } else if (isNearest && isDraggingLine) {
-                        radius = 6;
-                        fillColor = '#ffffff';
-                        strokeColor = '#000000';
-                    }
-
-                    ctx.beginPath();
-                    ctx.arc(point.x, point.y, radius, 0, Math.PI * 2);
-                    ctx.fillStyle = fillColor;
-                    ctx.fill();
-                    ctx.strokeStyle = strokeColor;
-                    ctx.lineWidth = 1.5;
-                    ctx.stroke();
+                if (isConnected) {
+                    radius = 5;
+                    fillColor = '#000000';
+                    strokeColor = '#000000';
+                } else if (isStart && isDraggingLine) {
+                    radius = 5;
+                    fillColor = '#000000';
+                    strokeColor = '#000000';
+                } else if (isNearest && isDraggingLine) {
+                    radius = 5;
+                    fillColor = '#ffffff';
+                    strokeColor = '#000000';
                 }
+
+                ctx.beginPath();
+                ctx.arc(point.x, point.y, radius, 0, Math.PI * 2);
+                ctx.fillStyle = fillColor;
+                ctx.fill();
+                ctx.strokeStyle = strokeColor;
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
             });
 
-            ctx.fillStyle = '#ffffff';
-            ctx.strokeStyle = '#000000';
-            ctx.lineWidth = 1.5;
-            drawRoundedRect(dragRect.x, dragRect.y, dragRect.width, dragRect.height, dragRect.borderRadius);
-            ctx.fill();
-            ctx.stroke();
-
-            ctx.fillStyle = '#000000';
-            ctx.font = '500 11px -apple-system, BlinkMacSystemFont, SF Pro Text, sans-serif';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillText('DRAG', dragRect.x + dragRect.width / 2, dragRect.y + dragRect.height / 2);
+            // 先绘制所有非拖拽的 routine
+            routineRects.forEach((rect, index) => {
+                if (rect !== activeDragRect) {
+                    drawDragRect(rect, index);
+                }
+            });
+            
+            // 最后绘制正在拖拽的 routine（在最上层）
+            if (activeDragRect) {
+                const draggedIndex = routineRects.indexOf(activeDragRect);
+                drawDragRect(activeDragRect, draggedIndex);
+            }
         }
 
-        function snapToPoint() {
-            const rectCenterX = dragRect.x + dragRect.width / 2;
-            const rectCenterY = dragRect.y + dragRect.height / 2;
+        function drawDragRect(dragRect, index) {
+            const isSelected = index === selectedRoutineIndex;
+            
+            if (isSelected) {
+                ctx.fillStyle = '#ffffff';
+                ctx.strokeStyle = '#0066cc';
+                ctx.lineWidth = 2.5;
+            } else {
+                ctx.fillStyle = '#ffffff';
+                ctx.strokeStyle = '#000000';
+                ctx.lineWidth = 1;
+            }
+            
+            drawRoundedRect(dragRect.x, dragRect.y, dragRect.width, dragRect.height, dragRect.borderRadius);
+            ctx.fill();
+
+            const mainRectHeight = dragRect.height * 0.7;
+            const keyRectHeight = dragRect.height * 0.3;
+
+            // 显示 ID（使用固定的 id 属性）
+            ctx.fillStyle = isSelected ? '#0066cc' : '#000000';
+            ctx.font = '600 12px -apple-system, BlinkMacSystemFont, SF Pro Text, sans-serif';
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('#' + dragRect.id, dragRect.x + 8, dragRect.y + 16);
+
+            ctx.fillStyle = '#000000';
+            ctx.font = '500 13px -apple-system, BlinkMacSystemFont, SF Pro Text, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(dragRect.duration + ' ms', dragRect.x + dragRect.width / 2, dragRect.y + mainRectHeight * 0.2);
+
+            const avtpText = 'AVTP';
+            const avtpColors = [
+                dragRect.avtp.a ? '#000000' : '#cccccc',
+                dragRect.avtp.v ? '#000000' : '#cccccc',
+                dragRect.avtp.t ? '#000000' : '#cccccc',
+                dragRect.avtp.p ? '#000000' : '#cccccc'
+            ];
+            
+            const letterWidth = dragRect.width / 4;
+            for (let i = 0; i < 4; i++) {
+                ctx.fillStyle = avtpColors[i];
+                ctx.font = '600 16px -apple-system, BlinkMacSystemFont, SF Pro Text, sans-serif';
+                ctx.fillText(avtpText[i], dragRect.x + letterWidth * (i + 0.5), dragRect.y + mainRectHeight * 0.65);
+            }
+
+            ctx.fillStyle = '#f5f5f5';
+            drawRoundedRect(dragRect.x, dragRect.y + mainRectHeight, dragRect.width, keyRectHeight, dragRect.borderRadius);
+            ctx.fill();
+
+            ctx.fillStyle = '#666666';
+            ctx.font = '400 10px -apple-system, BlinkMacSystemFont, SF Pro Text, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(dragRect.keys, dragRect.x + dragRect.width / 2, dragRect.y + mainRectHeight + keyRectHeight / 2);
+
+            if (isSelected) {
+                ctx.strokeStyle = '#0066cc';
+                ctx.lineWidth = 2.5;
+            } else {
+                ctx.strokeStyle = '#000000';
+                ctx.lineWidth = 1;
+            }
+            drawRoundedRect(dragRect.x, dragRect.y, dragRect.width, dragRect.height, dragRect.borderRadius);
+            ctx.stroke();
+        }
+
+        function snapToPoint(rect) {
+            const rectCenterX = rect.x + rect.width / 2;
+            const rectCenterY = rect.y + rect.height / 2;
 
             let nearestPoint = null;
             let minDistance = Infinity;
@@ -352,10 +976,60 @@
                 }
             });
 
-            if (minDistance < snapDistance && nearestPoint) {
-                dragRect.x = nearestPoint.x - dragRect.width / 2;
-                dragRect.y = nearestPoint.y - dragRect.height / 2;
-                return true;
+            rect.x = nearestPoint.x - rect.width / 2;
+            rect.y = nearestPoint.y - rect.height / 2;
+            return true;
+        }
+
+        function findNearestSnapPoint(rect) {
+            const rectCenterX = rect.x + rect.width / 2;
+            const rectCenterY = rect.y + rect.height / 2;
+
+            let nearestPoint = null;
+            let minDistance = Infinity;
+
+            snapPoints.forEach(point => {
+                const distance = Math.sqrt(
+                    Math.pow(rectCenterX - point.x, 2) +
+                    Math.pow(rectCenterY - point.y, 2)
+                );
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    nearestPoint = point;
+                }
+            });
+
+            return nearestPoint;
+        }
+
+        function hasDragRectAtPoint(point) {
+            for (const rect of routineRects) {
+                const rectCenterX = rect.x + rect.width / 2;
+                const rectCenterY = rect.y + rect.height / 2;
+                const distance = Math.sqrt(
+                    Math.pow(rectCenterX - point.x, 2) +
+                    Math.pow(rectCenterY - point.y, 2)
+                );
+                if (distance < 10) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        function hasDragRectInLoopRange(startPoint, endPoint) {
+            const startLabel = parseInt(startPoint.label);
+            const endLabel = parseInt(endPoint.label);
+            const minLabel = Math.min(startLabel, endLabel);
+            const maxLabel = Math.max(startLabel, endLabel);
+            
+            for (const point of snapPoints) {
+                const pointLabel = parseInt(point.label);
+                if (pointLabel > minLabel && pointLabel < maxLabel) {
+                    if (hasDragRectAtPoint(point)) {
+                        return true;
+                    }
+                }
             }
             return false;
         }
@@ -385,9 +1059,16 @@
             };
         }
 
-        function isInsideRect(x, y) {
-            return x >= dragRect.x && x <= dragRect.x + dragRect.width &&
-                   y >= dragRect.y && y <= dragRect.y + dragRect.height;
+        function isInsideRect(x, y, rect) {
+            return x >= rect.x && x <= rect.x + rect.width &&
+                   y >= rect.y && y <= rect.y + rect.height;
+        }
+
+        function getDragRectAtPos(x, y) {
+            for (const rect of routineRects) {
+                if (isInsideRect(x, y, rect)) return rect;
+            }
+            return null;
         }
 
         function isInsidePoint(pos, point) {
@@ -397,14 +1078,25 @@
             return distance < pointClickRadius;
         }
 
+        function isInsideAvtpArea(pos, rect) {
+            const mainRectHeight = rect.height * 0.7;
+            return pos.x >= rect.x && pos.x <= rect.x + rect.width &&
+                   pos.y >= rect.y + mainRectHeight * 0.5 && pos.y <= rect.y + mainRectHeight;
+        }
+
         canvas.addEventListener('mousedown', (e) => {
             const pos = getMousePos(e);
 
-            if (isInsideRect(pos.x, pos.y)) {
-                dragRect.isDragging = true;
-                dragRect.offsetX = pos.x - dragRect.x;
-                dragRect.offsetY = pos.y - dragRect.y;
+            const clickedRect = getDragRectAtPos(pos.x, pos.y);
+            if (clickedRect && !isInsideAvtpArea(pos, clickedRect)) {
+                selectedRoutineIndex = routineRects.indexOf(clickedRect);
+                clickedRect.isDragging = true;
+                clickedRect.offsetX = pos.x - clickedRect.x;
+                clickedRect.offsetY = pos.y - clickedRect.y;
+                activeDragRect = clickedRect;
                 canvas.style.cursor = 'grabbing';
+                updateRoutineCount();
+                draw();
                 return;
             }
 
@@ -417,39 +1109,98 @@
                     return;
                 }
             }
+
+            selectedRoutineIndex = -1;
+            updateRoutineCount();
+            draw();
         });
 
         canvas.addEventListener('mousemove', (e) => {
             const pos = getMousePos(e);
             currentMousePos = pos;
 
-            if (dragRect.isDragging) {
-                dragRect.x = pos.x - dragRect.offsetX;
-                dragRect.y = pos.y - dragRect.offsetY;
+            if (activeDragRect && activeDragRect.isDragging) {
+                activeDragRect.x = pos.x - activeDragRect.offsetX;
+                activeDragRect.y = pos.y - activeDragRect.offsetY;
                 draw();
             } else if (isDraggingLine) {
                 nearestValidPoint = findNearestValidPoint(pos);
                 draw();
             } else {
-                canvas.style.cursor = isInsideRect(pos.x, pos.y) ? 'grab' : 'crosshair';
+                const clickableAvtp = getClickableAvtp(pos);
+                if (clickableAvtp) {
+                    canvas.style.cursor = 'pointer';
+                } else if (getDragRectAtPos(pos.x, pos.y)) {
+                    canvas.style.cursor = 'grab';
+                } else {
+                    canvas.style.cursor = 'crosshair';
+                }
             }
         });
 
         canvas.addEventListener('mouseup', (e) => {
             const pos = getMousePos(e);
 
-            if (dragRect.isDragging) {
-                dragRect.isDragging = false;
-                snapToPoint();
+            if (activeDragRect && activeDragRect.isDragging) {
+                activeDragRect.isDragging = false;
+                
+                const draggedIndex = routineRects.indexOf(activeDragRect);
+                let targetIndex = -1;
+                
+                // 检查是否释放到另一个 routine 的位置上
+                const dragRectCenter = {
+                    x: activeDragRect.x + activeDragRect.width / 2,
+                    y: activeDragRect.y + activeDragRect.height / 2
+                };
+                
+                for (let i = 0; i < routineRects.length; i++) {
+                    if (i === draggedIndex) continue;
+                    
+                    const otherRect = routineRects[i];
+                    const otherCenter = {
+                        x: otherRect.x + otherRect.width / 2,
+                        y: otherRect.y + otherRect.height / 2
+                    };
+                    
+                    // 计算两个 routine 中心的距离
+                    const distance = Math.sqrt(
+                        Math.pow(dragRectCenter.x - otherCenter.x, 2) +
+                        Math.pow(dragRectCenter.y - otherCenter.y, 2)
+                    );
+                    
+                    // 如果距离小于阈值（比如 routine 宽度的一半），认为是交换
+                    if (distance < activeDragRect.width * 0.8) {
+                        targetIndex = i;
+                        break;
+                    }
+                }
+                
+                if (targetIndex !== -1) {
+                    // 交换两个 routine 在数组中的位置
+                    const temp = routineRects[draggedIndex];
+                    routineRects[draggedIndex] = routineRects[targetIndex];
+                    routineRects[targetIndex] = temp;
+                    
+                    // 更新选中的索引
+                    if (selectedRoutineIndex === draggedIndex) {
+                        selectedRoutineIndex = targetIndex;
+                    } else if (selectedRoutineIndex === targetIndex) {
+                        selectedRoutineIndex = draggedIndex;
+                    }
+                }
+                
+                // 重新分配所有 routine 到正确的 snap points
+                reassignSnapPoints();
+                
                 draw();
                 canvas.style.cursor = 'crosshair';
+                activeDragRect = null;
                 return;
             }
 
             if (isDraggingLine && startPoint) {
                 const targetPoint = nearestValidPoint || findNearestValidPoint(pos);
-                if (targetPoint) {
-                    // 检查是否是重复的 loop
+                if (targetPoint && hasDragRectInLoopRange(startPoint, targetPoint)) {
                     const isDuplicate = connections.some(conn => {
                         return (conn.start.label === startPoint.label && conn.end.label === targetPoint.label) ||
                                (conn.start.label === targetPoint.label && conn.end.label === startPoint.label);
@@ -459,7 +1210,6 @@
                         const newConn = { start: startPoint, end: targetPoint, depth: 0 };
                         connections.push(newConn);
                         
-                        // 重新计算所有连接的层级，直到稳定
                         let changed = true;
                         while (changed) {
                             changed = false;
@@ -485,9 +1235,9 @@
         });
 
         canvas.addEventListener('mouseleave', () => {
-            if (dragRect.isDragging) {
-                dragRect.isDragging = false;
-                snapToPoint();
+            if (activeDragRect && activeDragRect.isDragging) {
+                activeDragRect.isDragging = false;
+                snapToPoint(activeDragRect);
                 draw();
             }
             if (isDraggingLine) {
@@ -545,6 +1295,395 @@
 
         console.log('Context menu listener attached');
 
+        const avtpForm = document.getElementById('avtpForm');
+        const formTitle = document.getElementById('formTitle');
+        const formClose = document.getElementById('formClose');
+        const fileInputGroup = document.getElementById('fileInputGroup');
+        
+        const formPath = document.getElementById('formPath');
+        const formEnabled = document.getElementById('formEnabled');
+        const formStartTime = document.getElementById('formStartTime');
+        const formDuration = document.getElementById('formDuration');
+        
+        const textOptions = document.getElementById('textOptions');
+        const formText = document.getElementById('formText');
+        const formFont = document.getElementById('formFont');
+        const formLetterHeight = document.getElementById('formLetterHeight');
+        const formColor = document.getElementById('formColor');
+        const formUnits = document.getElementById('formUnits');
+        const formPosX = document.getElementById('formPosX');
+        const formPosY = document.getElementById('formPosY');
+        const formOpacity = document.getElementById('formOpacity');
+        const formOri = document.getElementById('formOri');
+        const formContrast = document.getElementById('formContrast');
+        const formWrapWidth = document.getElementById('formWrapWidth');
+        const formFlip = document.getElementById('formFlip');
+        const formLanguageStyle = document.getElementById('formLanguageStyle');
+        const formDraggable = document.getElementById('formDraggable');
+        
+        const videoOptions = document.getElementById('videoOptions');
+        const formVolume = document.getElementById('formVolume');
+        const formSizeW = document.getElementById('formSizeW');
+        const formSizeH = document.getElementById('formSizeH');
+        const formAnchor = document.getElementById('formAnchor');
+        const formLoop = document.getElementById('formLoop');
+        const formVideoUnits = document.getElementById('formVideoUnits');
+        const formVideoOpacity = document.getElementById('formVideoOpacity');
+        const formVideoStopWithRoutine = document.getElementById('formVideoStopWithRoutine');
+        const formVideoForceEndRoutine = document.getElementById('formVideoForceEndRoutine');
+        
+        const audioOptions = document.getElementById('audioOptions');
+        const formAudioVolume = document.getElementById('formAudioVolume');
+        const formAudioStopWithRoutine = document.getElementById('formAudioStopWithRoutine');
+        const formAudioForceEndRoutine = document.getElementById('formAudioForceEndRoutine');
+        
+        const imageOptions = document.getElementById('imageOptions');
+        const formImageSizeW = document.getElementById('formImageSizeW');
+        const formImageSizeH = document.getElementById('formImageSizeH');
+        const formImagePosX = document.getElementById('formImagePosX');
+        const formImagePosY = document.getElementById('formImagePosY');
+        const formImageOpacity = document.getElementById('formImageOpacity');
+        const formImageOri = document.getElementById('formImageOri');
+        const formImageFlip = document.getElementById('formImageFlip');
+        const formImageUnits = document.getElementById('formImageUnits');
+
+        function isInsideAvtp(pos, avtpKey, rect) {
+            const mainRectHeight = rect.height * 0.7;
+            const letterWidth = rect.width / 4;
+            const avtpIndex = ['a', 'v', 't', 'p'].indexOf(avtpKey);
+            
+            const letterX = rect.x + letterWidth * (avtpIndex + 0.5);
+            const letterY = rect.y + mainRectHeight * 0.65;
+            const clickRadius = 15;
+            
+            const distance = Math.sqrt(
+                Math.pow(pos.x - letterX, 2) + Math.pow(pos.y - letterY, 2)
+            );
+            return distance < clickRadius;
+        }
+
+        function getClickableAvtp(pos) {
+            for (const rect of routineRects) {
+                for (const key of ['a', 'v', 't', 'p']) {
+                    if (isInsideAvtp(pos, key, rect)) {
+                        activeDragRect = rect;
+                        return key;
+                    }
+                }
+            }
+            return null;
+        }
+
+        function showAvtpForm(avtpKey) {
+            activeAvtp = avtpKey;
+            const data = activeDragRect.avtpData[avtpKey];
+            formTitle.textContent = data.label;
+            
+            const needsFileInput = ['audio', 'video', 'image'].includes(data.type);
+            if (needsFileInput) {
+                fileInputGroup.classList.remove('form-group-hidden');
+                fileInputGroup.classList.add('form-group-visible');
+                formPath.value = data.path || '';
+            } else {
+                fileInputGroup.classList.remove('form-group-visible');
+                fileInputGroup.classList.add('form-group-hidden');
+                formPath.value = '';
+            }
+            
+            formEnabled.checked = data.enabled;
+            formStartTime.value = data.startTime || 0;
+            formDuration.value = data.duration !== undefined ? data.duration : 3000;
+            
+            if (data.type === 'text') {
+                textOptions.classList.remove('form-group-hidden');
+                textOptions.classList.add('form-group-visible');
+                videoOptions.classList.remove('form-group-visible');
+                videoOptions.classList.add('form-group-hidden');
+                audioOptions.classList.remove('form-group-visible');
+                audioOptions.classList.add('form-group-hidden');
+                imageOptions.classList.remove('form-group-visible');
+                imageOptions.classList.add('form-group-hidden');
+                
+                formText.value = data.text || 'Sample Text';
+                formFont.value = data.font || 'Arial';
+                formLetterHeight.value = data.letterHeight || 0.05;
+                formColor.value = data.color || 'white';
+                formUnits.value = data.units || 'from exp settings';
+                formPosX.value = data.pos ? data.pos[0] : 0;
+                formPosY.value = data.pos ? data.pos[1] : 0;
+                formOpacity.value = data.opacity || 1.0;
+                formOri.value = data.ori || 0;
+                formContrast.value = data.contrast !== undefined ? data.contrast : 1.0;
+                formWrapWidth.value = data.wrapWidth !== undefined ? data.wrapWidth : '';
+                formFlip.value = data.flip || 'None';
+                formLanguageStyle.value = data.languageStyle || 'LTR';
+                formDraggable.checked = data.draggable || false;
+            } else if (data.type === 'video') {
+                textOptions.classList.remove('form-group-visible');
+                textOptions.classList.add('form-group-hidden');
+                videoOptions.classList.remove('form-group-hidden');
+                videoOptions.classList.add('form-group-visible');
+                audioOptions.classList.remove('form-group-visible');
+                audioOptions.classList.add('form-group-hidden');
+                imageOptions.classList.remove('form-group-visible');
+                imageOptions.classList.add('form-group-hidden');
+                
+                formVolume.value = data.volume || 1.0;
+                formSizeW.value = data.size && data.size[0] !== null ? data.size[0] : '';
+                formSizeH.value = data.size && data.size[1] !== null ? data.size[1] : '';
+                formAnchor.value = data.anchor || 'center';
+                formLoop.checked = data.loop || false;
+                formVideoUnits.value = data.units || 'from exp settings';
+                formVideoOpacity.value = data.opacity || 1.0;
+                formVideoStopWithRoutine.checked = data.stopWithRoutine !== undefined ? data.stopWithRoutine : true;
+                formVideoForceEndRoutine.checked = data.forceEndRoutine !== undefined ? data.forceEndRoutine : true;
+            } else if (data.type === 'audio') {
+                textOptions.classList.remove('form-group-visible');
+                textOptions.classList.add('form-group-hidden');
+                videoOptions.classList.remove('form-group-visible');
+                videoOptions.classList.add('form-group-hidden');
+                audioOptions.classList.remove('form-group-hidden');
+                audioOptions.classList.add('form-group-visible');
+                imageOptions.classList.remove('form-group-visible');
+                imageOptions.classList.add('form-group-hidden');
+                
+                formAudioVolume.value = data.volume || 1.0;
+                formAudioStopWithRoutine.checked = data.stopWithRoutine !== undefined ? data.stopWithRoutine : true;
+                formAudioForceEndRoutine.checked = data.forceEndRoutine !== undefined ? data.forceEndRoutine : true;
+            } else if (data.type === 'image') {
+                textOptions.classList.remove('form-group-visible');
+                textOptions.classList.add('form-group-hidden');
+                videoOptions.classList.remove('form-group-visible');
+                videoOptions.classList.add('form-group-hidden');
+                audioOptions.classList.remove('form-group-visible');
+                audioOptions.classList.add('form-group-hidden');
+                imageOptions.classList.remove('form-group-hidden');
+                imageOptions.classList.add('form-group-visible');
+                
+                formImageSizeW.value = data.size && data.size[0] !== null ? data.size[0] : '';
+                formImageSizeH.value = data.size && data.size[1] !== null ? data.size[1] : '';
+                formImagePosX.value = data.pos ? data.pos[0] : 0;
+                formImagePosY.value = data.pos ? data.pos[1] : 0;
+                formImageOpacity.value = data.opacity || 1.0;
+                formImageOri.value = data.ori || 0;
+                formImageFlip.value = data.flip || 'None';
+                formImageUnits.value = data.units || 'from exp settings';
+            }
+            
+            avtpForm.classList.add('visible');
+        }
+
+        function hideAvtpForm() {
+            if (activeAvtp && activeDragRect) {
+                const data = activeDragRect.avtpData[activeAvtp];
+                data.path = formPath.value;
+                data.enabled = formEnabled.checked;
+                data.startTime = parseInt(formStartTime.value) || 0;
+                data.duration = parseInt(formDuration.value) || 3000;
+                
+                if (data.type === 'text') {
+                    data.text = formText.value || 'Sample Text';
+                    data.font = formFont.value || 'Arial';
+                    data.letterHeight = parseFloat(formLetterHeight.value) || 0.05;
+                    data.color = formColor.value || 'white';
+                    data.units = formUnits.value || 'from exp settings';
+                    data.pos = [parseInt(formPosX.value) || 0, parseInt(formPosY.value) || 0];
+                    data.opacity = parseFloat(formOpacity.value) || 1.0;
+                    data.ori = parseInt(formOri.value) || 0;
+                    data.contrast = parseFloat(formContrast.value) || 1.0;
+                    data.wrapWidth = formWrapWidth.value ? parseFloat(formWrapWidth.value) : undefined;
+                    data.flip = formFlip.value || 'None';
+                    data.languageStyle = formLanguageStyle.value || 'LTR';
+                    data.draggable = formDraggable.checked;
+                } else if (data.type === 'video') {
+                    data.volume = parseFloat(formVolume.value) || 1.0;
+                    data.size = [
+                        formSizeW.value ? parseInt(formSizeW.value) : null,
+                        formSizeH.value ? parseInt(formSizeH.value) : null
+                    ];
+                    data.anchor = formAnchor.value || 'center';
+                    data.loop = formLoop.checked;
+                    data.units = formVideoUnits.value || 'from exp settings';
+                    data.opacity = parseFloat(formVideoOpacity.value) || 1.0;
+                    data.stopWithRoutine = formVideoStopWithRoutine.checked;
+                    data.forceEndRoutine = formVideoForceEndRoutine.checked;
+                } else if (data.type === 'audio') {
+                    data.volume = parseFloat(formAudioVolume.value) || 1.0;
+                    data.stopWithRoutine = formAudioStopWithRoutine.checked;
+                    data.forceEndRoutine = formAudioForceEndRoutine.checked;
+                } else if (data.type === 'image') {
+                    data.size = [
+                        formImageSizeW.value ? parseInt(formImageSizeW.value) : null,
+                        formImageSizeH.value ? parseInt(formImageSizeH.value) : null
+                    ];
+                    data.pos = [parseInt(formImagePosX.value) || 0, parseInt(formImagePosY.value) || 0];
+                    data.opacity = parseFloat(formImageOpacity.value) || 1.0;
+                    data.ori = parseInt(formImageOri.value) || 0;
+                    data.flip = formImageFlip.value || 'None';
+                    data.units = formImageUnits.value || 'from exp settings';
+                }
+                
+                activeDragRect.avtp[activeAvtp] = formEnabled.checked;
+            }
+            activeAvtp = null;
+            avtpForm.classList.remove('visible');
+        }
+
+        formClose.addEventListener('click', hideAvtpForm);
+
+        // 实时保存所有输入框的变化
+        function saveFormChanges() {
+            if (!activeAvtp || !activeDragRect) return;
+            
+            const data = activeDragRect.avtpData[activeAvtp];
+            data.path = formPath.value;
+            data.enabled = formEnabled.checked;
+            data.startTime = parseInt(formStartTime.value) || 0;
+            data.duration = parseInt(formDuration.value) || 3000;
+            
+            if (data.type === 'text') {
+                data.text = formText.value || 'Sample Text';
+                data.font = formFont.value || 'Arial';
+                data.letterHeight = parseFloat(formLetterHeight.value) || 0.05;
+                data.color = formColor.value || 'white';
+                data.units = formUnits.value || 'from exp settings';
+                data.pos = [parseInt(formPosX.value) || 0, parseInt(formPosY.value) || 0];
+                data.opacity = parseFloat(formOpacity.value) || 1.0;
+                data.ori = parseInt(formOri.value) || 0;
+                data.contrast = parseFloat(formContrast.value) || 1.0;
+                data.wrapWidth = formWrapWidth.value ? parseFloat(formWrapWidth.value) : undefined;
+                data.flip = formFlip.value || 'None';
+                data.languageStyle = formLanguageStyle.value || 'LTR';
+                data.draggable = formDraggable.checked;
+            } else if (data.type === 'video') {
+                data.volume = parseFloat(formVolume.value) || 1.0;
+                data.size = [
+                    formSizeW.value ? parseInt(formSizeW.value) : null,
+                    formSizeH.value ? parseInt(formSizeH.value) : null
+                ];
+                data.anchor = formAnchor.value || 'center';
+                data.loop = formLoop.checked;
+                data.units = formVideoUnits.value || 'from exp settings';
+                data.opacity = parseFloat(formVideoOpacity.value) || 1.0;
+                data.stopWithRoutine = formVideoStopWithRoutine.checked;
+                data.forceEndRoutine = formVideoForceEndRoutine.checked;
+            } else if (data.type === 'audio') {
+                data.volume = parseFloat(formAudioVolume.value) || 1.0;
+                data.stopWithRoutine = formAudioStopWithRoutine.checked;
+                data.forceEndRoutine = formAudioForceEndRoutine.checked;
+            } else if (data.type === 'image') {
+                data.size = [
+                    formImageSizeW.value ? parseInt(formImageSizeW.value) : null,
+                    formImageSizeH.value ? parseInt(formImageSizeH.value) : null
+                ];
+                data.pos = [parseInt(formImagePosX.value) || 0, parseInt(formImagePosY.value) || 0];
+                data.opacity = parseFloat(formImageOpacity.value) || 1.0;
+                data.ori = parseInt(formImageOri.value) || 0;
+                data.flip = formImageFlip.value || 'None';
+                data.units = formImageUnits.value || 'from exp settings';
+            }
+            
+            activeDragRect.avtp[activeAvtp] = formEnabled.checked;
+            draw();
+        }
+
+        // 为所有输入框添加实时保存监听
+        [formPath, formText, formFont, formLetterHeight, formColor, formUnits, 
+         formPosX, formPosY, formOpacity, formOri, formContrast, formWrapWidth,
+         formFlip, formLanguageStyle, formVolume, formSizeW, formSizeH, formAnchor,
+         formVideoUnits, formVideoOpacity, formAudioVolume,
+         formImageSizeW, formImageSizeH, formImagePosX, formImagePosY,
+         formImageOpacity, formImageOri, formImageFlip, formImageUnits,
+         formStartTime, formDuration].forEach(input => {
+            input.addEventListener('input', saveFormChanges);
+            input.addEventListener('change', saveFormChanges);
+        });
+
+        formEnabled.addEventListener('change', saveFormChanges);
+        formDraggable.addEventListener('change', saveFormChanges);
+        formLoop.addEventListener('change', saveFormChanges);
+        formVideoStopWithRoutine.addEventListener('change', saveFormChanges);
+        formVideoForceEndRoutine.addEventListener('change', saveFormChanges);
+        formAudioStopWithRoutine.addEventListener('change', saveFormChanges);
+        formAudioForceEndRoutine.addEventListener('change', saveFormChanges);
+
+        canvas.addEventListener('click', (e) => {
+            const pos = getMousePos(e);
+            const clickableAvtp = getClickableAvtp(pos);
+            
+            if (clickableAvtp) {
+                showAvtpForm(clickableAvtp);
+            }
+        });
+
+        const addRoutineBtn = document.getElementById('addRoutine');
+        const removeRoutineBtn = document.getElementById('removeRoutine');
+        const routineCountEl = document.getElementById('routineCount');
+
+        function updateRoutineCount() {
+            routineCountEl.textContent = `${routineRects.length} Routines`;
+            addRoutineBtn.disabled = false;
+            removeRoutineBtn.disabled = routineRects.length <= 0 || selectedRoutineIndex < 0;
+        }
+
+        function updatePoints() {
+            currentRoutineCount = routineRects.length;
+            canvasHeight = calculateCanvasHeight(currentRoutineCount);
+            canvas.height = canvasHeight * dpr;
+            canvas.style.height = canvasHeight + 'px';
+            ctx.scale(dpr, dpr);
+            
+            // 使用至少 minDisplayRoutines 来计算点位置
+            const displayCount = Math.max(routineRects.length, minDisplayRoutines);
+            pointsData = generatePoints(displayCount);
+            snapPoints = pointsData.snap;
+            linePoints = pointsData.line;
+            startY = pointsData.startY;
+            endY = pointsData.endY;
+            reassignSnapPoints();
+        }
+
+        function reassignSnapPoints() {
+            routineRects.forEach((rect, index) => {
+                // 只更新已有完整属性的 routine
+                if (rect.width && rect.height) {
+                    const snapPoint = snapPoints[index];
+                    rect.x = snapPoint.x - rect.width / 2;
+                    rect.y = snapPoint.y - rect.height / 2;
+                }
+            });
+        }
+
+        addRoutineBtn.addEventListener('click', () => {
+            // 当没有 routine 时，从索引 0 开始；否则在选中的后面添加
+            const newIndex = routineRects.length === 0 ? 0 : (selectedRoutineIndex >= 0 ? selectedRoutineIndex + 1 : routineRects.length);
+            
+            // 先增加 routine 数量（占位）
+            routineRects.splice(newIndex, 0, {});
+            
+            // 更新点，确保 snapPoints 已经包含新 routine 的位置
+            updatePoints(); // 这会调用 reassignSnapPoints() 重新分配所有 routine
+            
+            // 现在创建实际的 routine rect 数据
+            const newRect = createRoutineRect(newIndex);
+            routineRects[newIndex] = newRect;
+            
+            selectedRoutineIndex = newIndex;
+            updateRoutineCount();
+            draw();
+        });
+
+        removeRoutineBtn.addEventListener('click', () => {
+            if (routineRects.length > 0) {
+                routineRects.splice(selectedRoutineIndex, 1);
+                selectedRoutineIndex = routineRects.length > 0 ? Math.min(selectedRoutineIndex, routineRects.length - 1) : -1;
+                updatePoints();
+                updateRoutineCount();
+                draw();
+            }
+        });
+
+        updateRoutineCount();
         draw();
     </script>
 </body>
