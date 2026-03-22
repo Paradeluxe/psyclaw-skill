@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PsyClaw Chatbot</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;
+            background: #ffffff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .chatbot-container {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .chatbot-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .chatbot-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #000000;
+        }
+
+        .psyclaw-form {
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .psyclaw-accordion {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            overflow: hidden;
+        }
+
+        .psyclaw-accordion-header {
+            width: 100%;
+            padding: 12px 16px;
+            background: #f5f5f5;
+            border: none;
+            text-align: left;
+            font-size: 14px;
+            font-weight: 600;
+            color: #000000;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.2s;
+        }
+
+        .psyclaw-accordion-header:hover {
+            background: #e0e0e0;
+        }
+
+        .psyclaw-accordion-header::after {
+            content: '▼';
+            font-size: 12px;
+            transition: transform 0.3s;
+        }
+
+        .psyclaw-accordion-header.active::after {
+            transform: rotate(180deg);
+        }
+
+        .psyclaw-accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            background: #ffffff;
+        }
+
+        .psyclaw-accordion-content.open {
+            max-height: 2000px;
+        }
+
+        .psyclaw-accordion-inner {
+            padding: 16px;
+        }
+
+        .psyclaw-form-group {
+            margin-bottom: 16px;
+        }
+
+        .psyclaw-form-label {
+            display: block;
+            font-size: 12px;
+            font-weight: 500;
+            color: #666666;
+            margin-bottom: 6px;
+        }
+
+        .psyclaw-form-input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1.5px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: border-color 0.2s;
+        }
+
+        .psyclaw-form-input:focus {
+            outline: none;
+            border-color: #000000;
+        }
+
+        .psyclaw-form-textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .psyclaw-form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .psyclaw-btn {
+            padding: 10px 20px;
+            border: 1.5px solid #000000;
+            background: #ffffff;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .psyclaw-btn:hover {
+            background: #f5f5f5;
+            transform: scale(1.05);
+        }
+
+        .psyclaw-btn:active {
+            transform: scale(0.95);
+        }
+
+        .psyclaw-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .psyclaw-status {
+            font-size: 12px;
+            margin-top: 8px;
+            padding: 8px;
+            border-radius: 6px;
+            background: #f5f5f5;
+        }
+
+        .psyclaw-status.success {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .psyclaw-status.error {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .psyclaw-status.warning {
+            background: #fff3e0;
+            color: #e65100;
+        }
+
+        .slider-container {
+            margin-bottom: 16px;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            font-weight: 500;
+            color: #666666;
+            margin-bottom: 6px;
+        }
+
+        .slider-value {
+            font-weight: 600;
+            color: #000000;
+        }
+
+        .psyclaw-slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #e0e0e0;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .psyclaw-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #000000;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .psyclaw-slider::-webkit-slider-thumb:hover {
+            background: #333333;
+        }
+
+        .psyclaw-slider::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #000000;
+            cursor: pointer;
+            border: none;
+            transition: background 0.2s;
+        }
+
+        .psyclaw-slider::-moz-range-thumb:hover {
+            background: #333333;
+        }
+
+        .chat-interface {
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+        }
+
+        .chat-messages {
+            height: 400px;
+            overflow-y: auto;
+            padding: 20px;
+            background: #f9f9f9;
+        }
+
+        .chat-message {
+            margin-bottom: 16px;
+            padding: 12px 16px;
+            border-radius: 12px;
+            max-width: 80%;
+            word-wrap: break-word;
+        }
+
+        .chat-message.user {
+            background: #000000;
+            color: #ffffff;
+            margin-left: auto;
+        }
+
+        .chat-message.assistant {
+            background: #ffffff;
+            color: #000000;
+            border: 1px solid #e0e0e0;
+        }
+
+        .chat-message.system {
+            background: #e3f2fd;
+            color: #1565c0;
+            font-style: italic;
+        }
+
+        .chat-message.error {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .chat-input-area {
+            padding: 16px;
+            background: #ffffff;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .chat-input-row {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 12px;
+            border: 1.5px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            resize: none;
+            min-height: 50px;
+            max-height: 150px;
+        }
+
+        .chat-input:focus {
+            outline: none;
+            border-color: #000000;
+        }
+
+        .chat-send-btn {
+            padding: 12px 24px;
+            background: #000000;
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .chat-send-btn:hover {
+            background: #333333;
+            transform: scale(1.05);
+        }
+
+        .chat-send-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .file-upload-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: #f5f5f5;
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+
+        .file-upload-label {
+            font-size: 12px;
+            font-weight: 500;
+            color: #666666;
+        }
+
+        .file-upload-input {
+            flex: 1;
+        }
+
+        .file-name {
+            font-size: 12px;
+            color: #000000;
+            font-weight: 500;
+        }
+
+        .clear-file-btn {
+            padding: 6px 12px;
+            background: #ffffff;
+            border: 1.5px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .clear-file-btn:hover {
+            background: #e0e0e0;
+        }
+
+        .hint-text {
+            font-size: 11px;
+            color: #999999;
+            margin-top: 4px;
+        }
+
+        .loading-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #000000;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="chatbot-container">
+        <div class="chatbot-header">
+            <h1 class="chatbot-title">PsyClaw</h1>
+        </div>
+
+        <div class="psyclaw-form">
+            <div class="psyclaw-accordion">
+                <button class="psyclaw-accordion-header" id="advancedSettingsHeader">⚙️ Advanced Settings</button>
+                <div class="psyclaw-accordion-content" id="advancedSettingsContent">
+                    <div class="psyclaw-accordion-inner">
+                        <h3 style="font-size: 14px; margin-bottom: 12px; color: #000000;">API Configuration</h3>
+                        
+                        <div class="psyclaw-form-group">
+                            <label class="psyclaw-form-label">API URL</label>
+                            <input type="text" class="psyclaw-form-input" id="apiUrl" placeholder="Enter API URL, e.g.: https://api.openai.com/v1">
+                        </div>
+
+                        <div class="psyclaw-form-group">
+                            <label class="psyclaw-form-label">API Key</label>
+                            <input type="password" class="psyclaw-form-input" id="apiKey" placeholder="Enter API key">
+                        </div>
+
+                        <div class="psyclaw-form-row">
+                            <button class="psyclaw-btn" id="checkApiBtn">Check</button>
+                            <div class="psyclaw-status" id="apiStatus"></div>
+                        </div>
+
+                        <h3 style="font-size: 14px; margin: 20px 0 12px; color: #000000;">Model Configuration</h3>
+
+                        <div class="psyclaw-form-group">
+                            <label class="psyclaw-form-label">Model Selection</label>
+                            <input type="text" class="psyclaw-form-input" id="modelSelect" list="modelList" placeholder="Select or enter model name">
+                            <datalist id="modelList"></datalist>
+                            <div class="hint-text">Select from available models or enter custom model name</div>
+                        </div>
+
+                        <h3 style="font-size: 14px; margin: 20px 0 12px; color: #000000;">Generation Parameters</h3>
+
+                        <div class="slider-container">
+                            <div class="slider-label">
+                                <span>Temperature (Creativity)</span>
+                                <span class="slider-value" id="tempValue">0.0</span>
+                            </div>
+                            <input type="range" class="psyclaw-slider" id="temperature" min="0.0" max="1.0" step="0.1" value="0.0">
+                        </div>
+
+                        <div class="slider-container">
+                            <div class="slider-label">
+                                <span>Top-p (Sampling Range)</span>
+                                <span class="slider-value" id="topPValue">0.0</span>
+                            </div>
+                            <input type="range" class="psyclaw-slider" id="topP" min="0.0" max="1.0" step="0.05" value="0.0">
+                        </div>
+
+                        <div class="slider-container">
+                            <div class="slider-label">
+                                <span>Max Generation Length</span>
+                                <span class="slider-value" id="maxLengthValue">1024</span>
+                            </div>
+                            <input type="range" class="psyclaw-slider" id="maxLength" min="128" max="4096" step="128" value="1024">
+                        </div>
+
+                        <div class="psyclaw-form-group">
+                            <label class="psyclaw-form-label">System Prompt</label>
+                            <textarea class="psyclaw-form-input psyclaw-form-textarea" id="systemPrompt" placeholder="Enter system prompt to guide AI behavior and style">You are a professional, friendly AI assistant</textarea>
+                        </div>
+
+                        <button class="psyclaw-btn" id="saveSettingsBtn" style="width: 100%;">Save Settings</button>
+                        <div class="psyclaw-status" id="saveStatus"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="chat-interface">
+            <div class="chat-messages" id="chatMessages">
+                <div class="chat-message system">Welcome to PsyClaw! Configure your API settings and start chatting.</div>
+            </div>
+
+            <div class="chat-input-area">
+                <div class="file-upload-area" id="fileUploadArea">
+                    <label class="file-upload-label" for="fileInput">📎 Upload File:</label>
+                    <input type="file" class="file-upload-input" id="fileInput" accept=".txt,.md,.json,.py,.csv">
+                    <span class="file-name" id="fileName"></span>
+                    <button class="clear-file-btn" id="clearFileBtn" style="display: none;">Clear</button>
+                </div>
+
+                <div class="chat-input-row">
+                    <textarea class="chat-input" id="chatInput" placeholder="Type your message..." rows="1"></textarea>
+                    <button class="chat-send-btn" id="sendBtn">Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        console.log('PsyClaw Chatbot starting');
+
+        const SETTINGS_KEY = 'psyclaw_settings';
+
+        const apiUrlInput = document.getElementById('apiUrl');
+        const apiKeyInput = document.getElementById('apiKey');
+        const modelSelectInput = document.getElementById('modelSelect');
+        const modelListDatalist = document.getElementById('modelList');
+        const temperatureSlider = document.getElementById('temperature');
+        const topPSlider = document.getElementById('topP');
+        const maxLengthSlider = document.getElementById('maxLength');
+        const systemPromptInput = document.getElementById('systemPrompt');
+        const checkApiBtn = document.getElementById('checkApiBtn');
+        const saveSettingsBtn = document.getElementById('saveSettingsBtn');
+        const apiStatusDiv = document.getElementById('apiStatus');
+        const saveStatusDiv = document.getElementById('saveStatus');
+        const advancedSettingsHeader = document.getElementById('advancedSettingsHeader');
+        const advancedSettingsContent = document.getElementById('advancedSettingsContent');
+
+        const chatMessagesDiv = document.getElementById('chatMessages');
+        const chatInput = document.getElementById('chatInput');
+        const sendBtn = document.getElementById('sendBtn');
+        const fileInput = document.getElementById('fileInput');
+        const fileName = document.getElementById('fileName');
+        const clearFileBtn = document.getElementById('clearFileBtn');
+        const fileUploadArea = document.getElementById('fileUploadArea');
+
+        let currentFile = null;
+
+        function loadSettings() {
+            try {
+                const saved = localStorage.getItem(SETTINGS_KEY);
+                if (saved) {
+                    const settings = JSON.parse(saved);
+                    apiUrlInput.value = settings.api_url || '';
+                    apiKeyInput.value = settings.api_key || '';
+                    modelSelectInput.value = settings.model || '';
+                    temperatureSlider.value = settings.temperature || 0.0;
+                    topPSlider.value = settings.top_p || 0.0;
+                    maxLengthSlider.value = settings.max_length || 1024;
+                    systemPromptInput.value = settings.system_prompt || 'You are a professional, friendly AI assistant';
+
+                    document.getElementById('tempValue').textContent = settings.temperature || 0.0;
+                    document.getElementById('topPValue').textContent = settings.top_p || 0.0;
+                    document.getElementById('maxLengthValue').textContent = settings.max_length || 1024;
+                }
+            } catch (e) {
+                console.error('Error loading settings:', e);
+            }
+        }
+
+        function saveSettings() {
+            const settings = {
+                api_url: apiUrlInput.value.trim(),
+                api_key: apiKeyInput.value.trim(),
+                model: modelSelectInput.value.trim(),
+                temperature: parseFloat(temperatureSlider.value),
+                top_p: parseFloat(topPSlider.value),
+                max_length: parseInt(maxLengthSlider.value),
+                system_prompt: systemPromptInput.value.trim()
+            };
+
+            try {
+                localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+                saveStatusDiv.textContent = '✅ Settings saved successfully';
+                saveStatusDiv.className = 'psyclaw-status success';
+                setTimeout(() => {
+                    saveStatusDiv.textContent = '';
+                    saveStatusDiv.className = 'psyclaw-status';
+                }, 3000);
+            } catch (e) {
+                saveStatusDiv.textContent = '❌ Error saving settings: ' + e.message;
+                saveStatusDiv.className = 'psyclaw-status error';
+            }
+        }
+
+        function validateApi(apiUrl, apiKey) {
+            if (!apiUrl) {
+                return "❌ API URL is required";
+            }
+            const urlPattern = /^https?:\/\/[\w\-]+(\.[\w\-]+)+([\w\-\.,@?^=%&:/~\+#]*[\w\-\@?^=%&/~\+#])?$/;
+            if (!urlPattern.test(apiUrl)) {
+                return "❌ Invalid API URL format";
+            }
+            if (!apiKey) {
+                return "❌ API Key is required";
+            }
+            return "✅ API configuration is valid";
+        }
+
+        async function getModelList(baseUrl, apiKey) {
+            baseUrl = baseUrl.rstrip('/');
+            if (!baseUrl.endsWith('/models')) {
+                baseUrl = baseUrl + '/models';
+            }
+
+            try {
+                const response = await fetch(baseUrl, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${apiKey}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                return data.data?.map(model => model.id) || [];
+            } catch (e) {
+                throw new Error(`Failed to fetch models: ${e.message}`);
+            }
+        }
+
+        String.prototype.rstrip = function(chars) {
+            let str = this;
+            while (str.endsWith(chars)) {
+                str = str.slice(0, -chars.length);
+            }
+            return str;
+        };
+
+        async function checkAvailableModels() {
+            const apiUrl = apiUrlInput.value.trim();
+            const apiKey = apiKeyInput.value.trim();
+
+            const validation = validateApi(apiUrl, apiKey);
+            if (validation.includes('❌')) {
+                apiStatusDiv.textContent = validation;
+                apiStatusDiv.className = 'psyclaw-status error';
+                modelListDatalist.innerHTML = '';
+                return;
+            }
+
+            apiStatusDiv.innerHTML = '<span class="loading-indicator"></span>Checking...';
+            apiStatusDiv.className = 'psyclaw-status';
+
+            try {
+                const modelList = await getModelList(apiUrl, apiKey);
+
+                if (modelList.length === 0) {
+                    apiStatusDiv.textContent = '⚠️ No models found';
+                    apiStatusDiv.className = 'psyclaw-status warning';
+                    modelListDatalist.innerHTML = '';
+                    return;
+                }
+
+                const priorityModels = ['qwen3.5-flash', 'qwen3.5-plus'];
+                let defaultModel = null;
+                for (const pm of priorityModels) {
+                    if (modelList.includes(pm)) {
+                        defaultModel = pm;
+                        break;
+                    }
+                }
+                if (!defaultModel && modelList.length > 0) {
+                    defaultModel = modelList[0];
+                }
+
+                modelListDatalist.innerHTML = modelList.map(m => `<option value="${m}">`).join('');
+                if (defaultModel && !modelSelectInput.value) {
+                    modelSelectInput.value = defaultModel;
+                }
+
+                apiStatusDiv.textContent = `✅ Found ${modelList.length} available models`;
+                apiStatusDiv.className = 'psyclaw-status success';
+            } catch (e) {
+                apiStatusDiv.textContent = `❌ ${e.message}`;
+                apiStatusDiv.className = 'psyclaw-status error';
+                modelListDatalist.innerHTML = '';
+            }
+        }
+
+        function addMessage(content, role) {
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `chat-message ${role}`;
+            msgDiv.textContent = content;
+            chatMessagesDiv.appendChild(msgDiv);
+            chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
+            return msgDiv;
+        }
+
+        function updateMessage(msgDiv, content) {
+            msgDiv.textContent = content;
+            chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
+        }
+
+        async function readFile(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = reject;
+                reader.readAsText(file);
+            });
+        }
+
+        async function sendMessage() {
+            const message = chatInput.value.trim();
+            const settings = {
+                api_url: apiUrlInput.value.trim(),
+                api_key: apiKeyInput.value.trim(),
+                model: modelSelectInput.value.trim(),
+                temperature: parseFloat(temperatureSlider.value),
+                top_p: parseFloat(topPSlider.value),
+                max_length: parseInt(maxLengthSlider.value),
+                system_prompt: systemPromptInput.value.trim()
+            };
+
+            if (!message && !currentFile) {
+                return;
+            }
+
+            if (!settings.model) {
+                addMessage('⚠️ Please select a model in Advanced Settings first.', 'error');
+                return;
+            }
+
+            if (!settings.api_url || !settings.api_key) {
+                addMessage('⚠️ API URL and Key are required. Please configure them in Advanced Settings.', 'error');
+                return;
+            }
+
+            const validation = validateApi(settings.api_url, settings.api_key);
+            if (validation.includes('❌')) {
+                addMessage(validation, 'error');
+                return;
+            }
+
+            let apiUrl = settings.api_url.rstrip('/');
+            if (!apiUrl.endsWith('/chat/completions')) {
+                apiUrl = apiUrl + '/chat/completions';
+            }
+
+            const messages = [];
+            if (settings.system_prompt) {
+                messages.push({ role: 'system', content: settings.system_prompt });
+            }
+
+            let userContent = message || '';
+            if (currentFile) {
+                try {
+                    const fileContent = await readFile(currentFile);
+                    if (userContent) {
+                        userContent += `\n\n[File: ${currentFile.name}]\n${fileContent}`;
+                    } else {
+                        userContent = `[File: ${currentFile.name}]\n${fileContent}`;
+                    }
+                } catch (e) {
+                    userContent += `\n\n[File: ${currentFile.name}](read error: ${e.message})`;
+                }
+            }
+
+            messages.push({ role: 'user', content: userContent });
+
+            addMessage(userContent, 'user');
+            chatInput.value = '';
+            clearFile();
+            sendBtn.disabled = true;
+
+            const responseMsg = addMessage('Thinking...', 'assistant');
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${settings.api_key}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        model: settings.model,
+                        messages: messages,
+                        temperature: settings.temperature,
+                        top_p: settings.top_p,
+                        max_tokens: settings.max_length
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(`API Error: ${response.status} ${errorData.error?.message || response.statusText}`);
+                }
+
+                const result = await response.json();
+                const responseContent = result.choices?.[0]?.message?.content || '⚠️ Unexpected response format from API';
+                updateMessage(responseMsg, responseContent);
+            } catch (e) {
+                updateMessage(responseMsg, `❌ ${e.message}`);
+                responseMsg.classList.add('error');
+            } finally {
+                sendBtn.disabled = false;
+                chatInput.focus();
+            }
+        }
+
+        function clearFile() {
+            currentFile = null;
+            fileInput.value = '';
+            fileName.textContent = '';
+            clearFileBtn.style.display = 'none';
+        }
+
+        advancedSettingsHeader.addEventListener('click', () => {
+            advancedSettingsHeader.classList.toggle('active');
+            advancedSettingsContent.classList.toggle('open');
+        });
+
+        checkApiBtn.addEventListener('click', checkAvailableModels);
+        saveSettingsBtn.addEventListener('click', saveSettings);
+
+        temperatureSlider.addEventListener('input', (e) => {
+            document.getElementById('tempValue').textContent = e.target.value;
+        });
+
+        topPSlider.addEventListener('input', (e) => {
+            document.getElementById('topPValue').textContent = e.target.value;
+        });
+
+        maxLengthSlider.addEventListener('input', (e) => {
+            document.getElementById('maxLengthValue').textContent = e.target.value;
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files && e.target.files[0]) {
+                currentFile = e.target.files[0];
+                fileName.textContent = currentFile.name;
+                clearFileBtn.style.display = 'block';
+            }
+        });
+
+        clearFileBtn.addEventListener('click', clearFile);
+
+        sendBtn.addEventListener('click', sendMessage);
+
+        chatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+
+        loadSettings();
+        console.log('PsyClaw Chatbot ready');
+    </script>
+</body>
+</html>

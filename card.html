@@ -20,6 +20,13 @@
             font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;
             overflow: auto;
             padding: 20px 0;
+            gap: 20px;
+        }
+
+        .main-content {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
         }
 
         .container {
@@ -226,10 +233,56 @@
         .form-group-visible {
             display: block;
         }
+
+        .chatbot-panel {
+            position: fixed;
+            right: -850px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 800px;
+            transition: right 0.3s ease;
+            z-index: 1000;
+        }
+
+        .chatbot-panel.visible {
+            right: 20px;
+        }
+
+        .chatbot-toggle {
+            position: fixed;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 50px;
+            background: #000000;
+            color: #ffffff;
+            border: none;
+            border-radius: 50%;
+            font-size: 24px;
+            cursor: pointer;
+            z-index: 999;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .chatbot-toggle:hover {
+            background: #333333;
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .chatbot-toggle.hidden {
+            right: -70px;
+        }
     </style>
 </head>
 <body>
-    <div class="avtp-form" id="avtpForm">
+    <button class="chatbot-toggle" id="chatbotToggle" title="Toggle Chatbot">💬</button>
+    
+    <div class="main-content">
+        <div class="avtp-form" id="avtpForm">
         <div class="avtp-form-header">
             <div class="avtp-form-title" id="formTitle">Audio</div>
             <button class="avtp-form-close" id="formClose">×</button>
@@ -473,6 +526,11 @@
             <label for="formEnabled">Enabled</label>
         </div>
     </div>
+</div>
+
+<div class="chatbot-panel" id="chatbotPanel">
+    <iframe src="chatbot.html" style="width: 100%; height: 100vh; border: none;" id="chatbotFrame"></iframe>
+</div>
 
     <div class="routine-controls">
         <button class="routine-btn" id="addRoutine">+ Add</button>
@@ -495,8 +553,23 @@
         const baseEndY = 600;
         const maxPoints = 9;
         const spacing = (baseEndY - baseStartY) / (maxPoints - 1);
-        const minDisplayRoutines = 1; // 最少显示 1 个 routine 的位置（2 个连线点）
-        
+        const minDisplayRoutines = 1;
+
+         const chatbotToggle = document.getElementById('chatbotToggle');
+         const chatbotPanel = document.getElementById('chatbotPanel');
+         let isChatbotVisible = false;
+
+         chatbotToggle.addEventListener('click', () => {
+             isChatbotVisible = !isChatbotVisible;
+             if (isChatbotVisible) {
+                 chatbotPanel.classList.add('visible');
+                 chatbotToggle.classList.add('hidden');
+             } else {
+                 chatbotPanel.classList.remove('visible');
+                 chatbotToggle.classList.remove('hidden');
+             }
+         });
+         
         // 根据最大 routine 数量计算 canvas 高度
         function calculateCanvasHeight(routineCount) {
             const displayCount = Math.max(routineCount, minDisplayRoutines);
