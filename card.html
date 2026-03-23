@@ -12,15 +12,12 @@
         }
 
         body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
+            display: block;
             background: #ffffff;
             font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;
             overflow: auto;
             padding: 20px;
-            gap: 20px;
+            padding-right: 340px;
         }
 
         .main-content {
@@ -28,6 +25,7 @@
             gap: 20px;
             align-items: flex-start;
             justify-content: flex-start;
+            flex-wrap: nowrap;
         }
 
         .canvas-container {
@@ -241,58 +239,29 @@
 
         .chatbot-panel {
             position: fixed;
-            right: -520px;
+            right: 20px;
             top: 50%;
             transform: translateY(-50%);
-            width: 500px;
-            flex-shrink: 0;
+            width: 30%;
             background: #ffffff;
             border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
             overflow: hidden;
             height: calc(100vh - 40px);
-            transition: right 0.3s ease;
             z-index: 1000;
         }
 
-        .chatbot-panel.visible {
-            right: 20px;
+        .chatbot-resizer {
+            display: none;
         }
 
-        .chatbot-toggle {
-            position: fixed;
-            right: 20px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 50px;
-            height: 50px;
-            background: #000000;
-            color: #ffffff;
+        #chatbotFrame {
+            width: 100%;
+            height: 100%;
             border: none;
-            border-radius: 50%;
-            font-size: 24px;
-            cursor: pointer;
-            z-index: 1001;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .chatbot-toggle:hover {
-            background: #333333;
-            transform: translateY(-50%) scale(1.1);
-        }
-
-        .chatbot-toggle.hidden {
-            opacity: 0;
-            pointer-events: none;
         }
     </style>
 </head>
 <body>
-    <button class="chatbot-toggle" id="chatbotToggle" title="Toggle Chatbot">💬</button>
-    
     <div class="main-content">
         <div class="avtp-form" id="avtpForm">
         <div class="avtp-form-header">
@@ -541,21 +510,22 @@
 </div>
 
 <div class="canvas-container">
-    <div class="routine-controls">
-        <button class="routine-btn" id="addRoutine">+ Add</button>
-        <div class="routine-count" id="routineCount">0 Routines</div>
-        <button class="routine-btn" id="removeRoutine">− Remove</button>
-    </div>
+        <div class="routine-controls">
+            <button class="routine-btn" id="addRoutine">+ Add</button>
+            <div class="routine-count" id="routineCount">0 Routines</div>
+            <button class="routine-btn" id="removeRoutine">− Remove</button>
+        </div>
 
-    <div class="container">
-        <canvas id="canvas"></canvas>
+        <div class="container">
+            <canvas id="canvas"></canvas>
+        </div>
     </div>
 </div>
 
 <div class="chatbot-panel" id="chatbotPanel">
-    <iframe src="chatbot.html" style="width: 100%; height: 100%; border: none;" id="chatbotFrame"></iframe>
+    <div class="chatbot-resizer" id="chatbotResizer"></div>
+    <iframe src="chatbot.html" title="Chatbot Panel" id="chatbotFrame"></iframe>
 </div>
-    </div>
 
     <script>
         console.log('Script starting');
@@ -570,20 +540,7 @@
         const spacing = (baseEndY - baseStartY) / (maxPoints - 1);
         const minDisplayRoutines = 1;
 
-        const chatbotToggle = document.getElementById('chatbotToggle');
         const chatbotPanel = document.getElementById('chatbotPanel');
-        let isChatbotVisible = false;
-
-        chatbotToggle.addEventListener('click', () => {
-            isChatbotVisible = !isChatbotVisible;
-            if (isChatbotVisible) {
-                chatbotPanel.classList.add('visible');
-                chatbotToggle.textContent = '×';
-            } else {
-                chatbotPanel.classList.remove('visible');
-                chatbotToggle.textContent = '💬';
-            }
-        });
          
         // 根据最大 routine 数量计算 canvas 高度
         function calculateCanvasHeight(routineCount) {
