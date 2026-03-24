@@ -820,6 +820,27 @@
             return baseOffsetX + conn.depth * offsetXStep;
         }
 
+        // Get the position of the follow rectangle on a connection line
+        function getFollowRectPosition(conn) {
+            const offsetX = getConnectionOffsetX(conn, connections);
+            const cornerX = conn.start.x + offsetX;
+            const middleY = (conn.start.y + conn.end.y) / 2;
+            
+            return {
+                x: cornerX,
+                y: middleY,
+                width: 30,
+                height: 60,
+                depth: conn.depth,
+                label: conn.depth + 1
+            };
+        }
+
+        // Get all follow rectangle positions for all connections
+        function getAllFollowRectPositions() {
+            return connections.map(conn => getFollowRectPosition(conn));
+        }
+
         function isOverlapping(conn, allConnections) {
             const startLabel = parseInt(conn.start.label);
             const endLabel = parseInt(conn.end.label);
@@ -1816,8 +1837,37 @@
 
         removeRoutineBtn.addEventListener('click', () => {
             if (routineRects.length > 0) {
-                routineRects.splice(selectedRoutineIndex, 1);
-                selectedRoutineIndex = routineRects.length > 0 ? Math.min(selectedRoutineIndex, routineRects.length - 1) : -1;
+                const removedRoutineIndex = selectedRoutineIndex;
+                const removedRoutine = routineRects[removedRoutineIndex];
+                
+                // Get the snap point that this routine is currently at
+                // We need to find which snap point this routine corresponds to
+                const removedRoutineSnapIndex = removedRoutineIndex;
+                
+                // Remove connections that involve any snap point at or after the removed index
+                // because after deletion, all subsequent snap points will shift
+                for (let i = connections.length - 1; i >= 0; i--) {
+                    const conn = connections[i];
+                    const startLabel = parseInt(conn.start.label);
+                    const endLabel = parseInt(conn.end.label);
+                    const minLabel = Math.min(startLabel, endLabel);
+                    const maxLabel = Math.max(startLabel, endLabel);
+                    
+                    // Check if this connection involves the removed routine's position
+                    // Labels are 1-indexed, routine indices are 0-indexed
+                    if (minLabel <= removedRoutineSnapIndex + 1 && maxLabel >= removedRoutineSnapIndex + 1) {
+                        connections.splice(i, 1);
+                    }
+                }
+                
+                // Clear activeDragRect if it's the one being removed
+                if (activeDragRect === removedRoutine) {
+                    activeDragRect = null;
+                }
+                
+                // Remove the routine
+                routineRects.splice(removedRoutineIndex, 1);
+                selectedRoutineIndex = routineRects.length > 0 ? Math.min(removedRoutineIndex, routineRects.length - 1) : -1;
                 updatePoints();
                 updateRoutineCount();
                 draw();
