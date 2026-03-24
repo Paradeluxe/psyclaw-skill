@@ -579,8 +579,10 @@
             // Calculate the center of the left canvas area
             const chatbotWidth = chatbotPanel.offsetWidth;
             const containerWidth = window.innerWidth;
-            const leftAreaWidth = containerWidth - chatbotWidth - 40; // 40px for left and right padding
-            const centerPos = 20 + leftAreaWidth / 2; // 20px left padding + half of left area
+            const leftPadding = 20;
+            const rightPadding = 20;
+            const leftAreaWidth = containerWidth - chatbotWidth - leftPadding - rightPadding;
+            const centerPos = leftPadding + leftAreaWidth / 2;
             routineControls.style.left = centerPos + 'px';
         }
 
@@ -630,6 +632,9 @@
         });
 
         // Initial position and resize listener
+        // Sync initial padding with chatbot panel width
+        const initialChatbotWidth = chatbotPanel.offsetWidth;
+        document.body.style.paddingRight = (initialChatbotWidth + 20) + 'px';
         updateRoutineControlsPosition();
         window.addEventListener('resize', updateRoutineControlsPosition);
          
