@@ -18,6 +18,7 @@
             overflow: auto;
             padding: 20px;
             padding-right: 340px;
+            transition: padding-right 0.1s ease;
         }
 
         .main-content {
@@ -176,6 +177,7 @@
             border-radius: 12px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
             z-index: 1000;
+            transition: left 0.1s ease;
         }
 
         .routine-btn {
@@ -243,6 +245,8 @@
             top: 50%;
             transform: translateY(-50%);
             width: 30%;
+            min-width: 20%;
+            max-width: 50%;
             background: #ffffff;
             border-radius: 12px;
             overflow: hidden;
@@ -251,7 +255,30 @@
         }
 
         .chatbot-resizer {
-            display: none;
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 12px;
+            cursor: ew-resize;
+            z-index: 1002;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: auto;
+        }
+
+        .chatbot-resizer::after {
+            content: '';
+            width: 4px;
+            height: 60px;
+            background: #e0e0e0;
+            border-radius: 2px;
+            transition: background 0.2s;
+        }
+
+        .chatbot-resizer:hover::after {
+            background: #999999;
         }
 
         #chatbotFrame {
@@ -541,6 +568,70 @@
         const minDisplayRoutines = 1;
 
         const chatbotPanel = document.getElementById('chatbotPanel');
+        const chatbotResizer = document.getElementById('chatbotResizer');
+        const chatbotFrame = document.getElementById('chatbotFrame');
+        const routineControls = document.querySelector('.routine-controls');
+        let isResizingChatbot = false;
+        let startX = 0;
+        let startWidth = 0;
+
+        function updateRoutineControlsPosition() {
+            // Calculate the center of the left canvas area
+            const chatbotWidth = chatbotPanel.offsetWidth;
+            const containerWidth = window.innerWidth;
+            const leftAreaWidth = containerWidth - chatbotWidth - 40; // 40px for left and right padding
+            const centerPos = 20 + leftAreaWidth / 2; // 20px left padding + half of left area
+            routineControls.style.left = centerPos + 'px';
+        }
+
+        chatbotResizer.addEventListener('mousedown', (e) => {
+            isResizingChatbot = true;
+            startX = e.clientX;
+            startWidth = chatbotPanel.offsetWidth;
+            document.body.style.cursor = 'ew-resize';
+            document.body.style.userSelect = 'none';
+            // Disable pointer events on iframe to prevent it from capturing mouse events
+            chatbotFrame.style.pointerEvents = 'none';
+            e.stopPropagation();
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!isResizingChatbot) return;
+            
+            const delta = startX - e.clientX;
+            const containerWidth = window.innerWidth;
+            const newWidth = startWidth + delta;
+            
+            const minWidth = containerWidth * 0.2;
+            const maxWidth = containerWidth * 0.5;
+            
+            const clampedWidth = Math.max(minWidth, Math.min(maxWidth, newWidth));
+            chatbotPanel.style.width = (clampedWidth / containerWidth * 100) + '%';
+            
+            // Update body padding to match chatbot panel width
+            document.body.style.paddingRight = (clampedWidth + 20) + 'px';
+            
+            // Update routine controls position
+            updateRoutineControlsPosition();
+        });
+
+        document.addEventListener('mouseup', () => {
+            isResizingChatbot = false;
+            document.body.style.cursor = '';
+            document.body.style.userSelect = '';
+            // Re-enable pointer events on iframe
+            chatbotFrame.style.pointerEvents = 'auto';
+            
+            // Persist the padding change
+            const currentPadding = document.body.style.paddingRight;
+            if (currentPadding) {
+                document.body.style.paddingRight = currentPadding;
+            }
+        });
+
+        // Initial position and resize listener
+        updateRoutineControlsPosition();
+        window.addEventListener('resize', updateRoutineControlsPosition);
          
         // 根据最大 routine 数量计算 canvas 高度
         function calculateCanvasHeight(routineCount) {
