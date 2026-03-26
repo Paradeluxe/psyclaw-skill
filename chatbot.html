@@ -797,6 +797,41 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+
+        .chat-input-area.drag-over {
+            border: 2px dashed #1a73e8;
+            background: #e8f0fe;
+        }
+
+        .drag-overlay {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(26, 115, 232, 0.1);
+            border: 2px dashed #1a73e8;
+            border-radius: 8px;
+            z-index: 100;
+            pointer-events: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .drag-overlay.visible {
+            display: flex;
+        }
+
+        .drag-overlay-text {
+            font-size: 14px;
+            font-weight: 500;
+            color: #1a73e8;
+            background: #ffffff;
+            padding: 12px 24px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
     </style>
 </head>
 <body>
@@ -883,7 +918,10 @@
                 <div class="chat-message system">Welcome to PsyClaw! Configure your API settings and start chatting.</div>
             </div>
 
-            <div class="chat-input-area">
+            <div class="chat-input-area" id="chatInputArea">
+                <div class="drag-overlay" id="dragOverlay">
+                    <div class="drag-overlay-text">Drop file here</div>
+                </div>
                 <div class="chat-input-row">
                     <div class="file-card-container" id="fileCardContainer">
                         <div class="attachment-hint">Attachment</div>
@@ -1201,6 +1239,12 @@
             }
         });
 
+        modelDropbtn.addEventListener('blur', (e) => {
+            if (!modelDropdownContent.contains(e.relatedTarget)) {
+                modelDropdownContent.classList.remove('show');
+            }
+        });
+
         // Update clear button visibility based on input
         modelDropbtn.addEventListener('input', () => {
             const inputWithClear = document.querySelector('.input-with-clear');
@@ -1411,9 +1455,36 @@
 
         chatInput.addEventListener('input', autoResizeTextarea);
 
-        advancedSettingsHeader.addEventListener('click', () => {
-            advancedSettingsHeader.classList.toggle('active');
-            advancedSettingsContent.classList.toggle('open');
+        advancedSettingsHeader.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isOpen = advancedSettingsContent.classList.contains('open');
+            if (isOpen) {
+                advancedSettingsHeader.classList.remove('active');
+                advancedSettingsContent.classList.remove('open');
+            } else {
+                advancedSettingsHeader.classList.add('active');
+                advancedSettingsContent.classList.add('open');
+            }
+        });
+
+        window.addEventListener('message', (e) => {
+            if (e.data === 'closeAdvancedSettings') {
+                advancedSettingsHeader.classList.remove('active');
+                advancedSettingsContent.classList.remove('open');
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            const isClickInsideAccordion = advancedSettingsHeader.contains(e.target) || 
+                                           advancedSettingsContent.contains(e.target);
+            if (!isClickInsideAccordion && advancedSettingsContent.classList.contains('open')) {
+                advancedSettingsHeader.classList.remove('active');
+                advancedSettingsContent.classList.remove('open');
+            }
+        });
+
+        advancedSettingsContent.addEventListener('click', (e) => {
+            e.stopPropagation();
         });
 
         checkApiBtn.addEventListener('click', checkAvailableModels);
@@ -1465,6 +1536,51 @@
         deepThinkBtn.addEventListener('click', () => {
             deepThinkEnabled = !deepThinkEnabled;
             deepThinkBtn.classList.toggle('active', deepThinkEnabled);
+        });
+
+        const chatInputArea = document.getElementById('chatInputArea');
+        const dragOverlay = document.getElementById('dragOverlay');
+
+        chatInputArea.addEventListener('dragenter', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            chatInputArea.classList.add('drag-over');
+            dragOverlay.classList.add('visible');
+        });
+
+        chatInputArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+        });
+
+        chatInputArea.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            if (!chatInputArea.contains(e.relatedTarget)) {
+                chatInputArea.classList.remove('drag-over');
+                dragOverlay.classList.remove('visible');
+            }
+        });
+
+        chatInputArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            chatInputArea.classList.remove('drag-over');
+            dragOverlay.classList.remove('visible');
+
+            const files = e.dataTransfer.files;
+            if (files && files.length > 0) {
+                const file = files[0];
+                const acceptedExtensions = ['txt', 'md', 'json', 'py', 'csv', 'xlsx', 'xls', 'doc', 'docx', 'pdf'];
+                const extension = file.name.split('.').pop().toLowerCase();
+                
+                if (acceptedExtensions.includes(extension)) {
+                    currentFile = file;
+                    updateFileCard();
+                } else {
+                    addMessage(`Unsupported file type: .${extension}. Accepted types: ${acceptedExtensions.join(', ')}`, 'error');
+                }
+            }
         });
 
         loadSettings();

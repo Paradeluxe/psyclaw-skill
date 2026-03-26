@@ -128,25 +128,247 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            margin-top: 8px;
+            margin-top: 12px;
         }
 
         .avtp-form-checkbox input[type="checkbox"] {
             width: 18px;
             height: 18px;
+            margin: 0;
             cursor: pointer;
+            vertical-align: middle;
         }
 
         .avtp-form-checkbox label {
             font-size: 13px;
             color: #000000;
             cursor: pointer;
+            line-height: 1;
+            vertical-align: middle;
+        }
+
+        .avtp-input-with-icon {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .avtp-input-with-icon .avtp-form-input {
+            padding-right: 40px;
+        }
+
+        .avtp-keyboard-btn {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666666;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+
+        .avtp-keyboard-btn:hover {
+            color: #000000;
+            background: #f0f0f0;
+        }
+
+        .avtp-keyboard-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 10000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .avtp-keyboard-modal.active {
+            display: flex;
+        }
+
+        .avtp-keyboard-container {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            max-width: 900px;
+            width: 95%;
+            overflow-x: auto;
+        }
+
+        .avtp-keyboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .avtp-keyboard-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #000000;
+        }
+
+        .avtp-keyboard-close {
+            width: 28px;
+            height: 28px;
+            border: none;
+            background: #f5f5f5;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: #666666;
+            transition: all 0.2s;
+        }
+
+        .avtp-keyboard-close:hover {
+            background: #e0e0e0;
+            color: #000000;
+        }
+
+        .avtp-keyboard-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 12px;
+        }
+
+        .avtp-keyboard-row {
+            display: flex;
+            gap: 6px;
+            justify-content: center;
+        }
+
+        .avtp-keyboard-key {
+            padding: 12px 8px;
+            min-width: 40px;
+            border: 1.5px solid #e0e0e0;
+            border-radius: 6px;
+            background: #ffffff;
+            cursor: pointer;
+            font-size: 13px;
+            font-family: inherit;
+            color: #000000;
+            transition: all 0.15s;
+            text-align: center;
+        }
+
+        .avtp-keyboard-key:hover {
+            border-color: #000000;
+            background: #f5f5f5;
+        }
+
+        .avtp-keyboard-key.selected {
+            background: #000000;
+            color: #ffffff;
+            border-color: #000000;
+        }
+
+        .avtp-keyboard-key.wide {
+            min-width: 80px;
+        }
+
+        .avtp-keyboard-key.space-key {
+            min-width: 280px;
+        }
+
+        .avtp-keyboard-selected {
+            margin-top: 16px;
+            padding: 12px;
+            background: #f5f5f5;
+            border-radius: 8px;
+        }
+
+        .avtp-keyboard-selected-label {
+            font-size: 12px;
+            color: #666666;
+            margin-bottom: 8px;
+        }
+
+        .avtp-keyboard-selected-keys {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .avtp-keyboard-selected-key {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 8px;
+            background: #000000;
+            color: #ffffff;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .avtp-keyboard-selected-key button {
+            background: none;
+            border: none;
+            color: #ffffff;
+            cursor: pointer;
+            padding: 0;
+            font-size: 14px;
+            line-height: 1;
+        }
+
+        .avtp-keyboard-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 16px;
+            justify-content: flex-end;
+        }
+
+        .avtp-keyboard-btn-secondary {
+            padding: 8px 16px;
+            border: 1.5px solid #e0e0e0;
+            border-radius: 6px;
+            background: #ffffff;
+            cursor: pointer;
+            font-size: 14px;
+            font-family: inherit;
+            color: #000000;
+            transition: all 0.2s;
+        }
+
+        .avtp-keyboard-btn-secondary:hover {
+            background: #f5f5f5;
+        }
+
+        .avtp-keyboard-btn-primary {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            background: #000000;
+            cursor: pointer;
+            font-size: 14px;
+            font-family: inherit;
+            color: #ffffff;
+            transition: all 0.2s;
+        }
+
+        .avtp-keyboard-btn-primary:hover {
+            background: #333333;
         }
 
         .avtp-form-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 12px;
+            gap: 16px;
+            margin-bottom: 16px;
         }
 
         .avtp-form-select {
@@ -226,13 +448,199 @@
         }
 
         .checkbox-margin-top-8 {
-            margin-top: 8px;
+            margin-top: 8px !important;
         }
 
         .hint-text {
             font-size: 11px;
             color: #999999;
-            margin-top: 4px;
+            margin-top: 8px;
+        }
+
+        .conditions-table-container {
+            border: 1.5px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+
+        .conditions-table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            background: #f5f5f7;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .conditions-table-title {
+            font-size: 12px;
+            font-weight: 500;
+            color: #666666;
+        }
+
+        .conditions-table-actions {
+            display: flex;
+            gap: 6px;
+        }
+
+        .conditions-btn {
+            padding: 4px 10px;
+            border: 1px solid #e0e0e0;
+            background: #ffffff;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+            color: #666666;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .conditions-btn:hover {
+            background: #f0f0f0;
+            border-color: #000000;
+            color: #000000;
+        }
+
+        .conditions-btn.add-btn {
+            color: #2e7d32;
+            border-color: #c8e6c9;
+        }
+
+        .conditions-btn.add-btn:hover {
+            background: #e8f5e9;
+        }
+
+        .conditions-btn.delete-btn {
+            color: #c62828;
+            border-color: #ffcdd2;
+        }
+
+        .conditions-btn.delete-btn:hover {
+            background: #ffebee;
+        }
+
+        .conditions-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #ffffff;
+            table-layout: fixed;
+        }
+
+        .conditions-table th {
+            padding: 8px 8px;
+            text-align: left;
+            font-size: 12px;
+            font-weight: 500;
+            color: #666666;
+            background: #fafafa;
+            border-bottom: 1.5px solid #e0e0e0;
+            white-space: nowrap;
+        }
+
+        .conditions-table td {
+            padding: 6px 8px;
+            border-bottom: 1px solid #f0f0f0;
+            white-space: nowrap;
+        }
+
+        .conditions-table input {
+            width: 100%;
+            padding: 6px 8px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 12px;
+            font-family: inherit;
+            transition: border-color 0.2s;
+            box-sizing: border-box;
+        }
+
+        .conditions-table tr:hover {
+            background: #fafafa;
+        }
+
+        .conditions-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .conditions-table input {
+            width: 100%;
+            padding: 6px 8px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 12px;
+            font-family: inherit;
+            transition: border-color 0.2s;
+        }
+
+        .conditions-table input:focus {
+            outline: none;
+            border-color: #000000;
+        }
+
+        .conditions-table .row-actions {
+            display: flex;
+            justify-content: center;
+            gap: 4px;
+        }
+
+        .conditions-table .remove-row-btn {
+            width: 24px;
+            height: 24px;
+            border: none;
+            background: transparent;
+            color: #999999;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            transition: all 0.2s;
+            padding: 0;
+        }
+
+        .conditions-table .remove-row-btn:hover {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .conditions-empty-state {
+            padding: 20px;
+            text-align: center;
+            color: #999999;
+            font-size: 12px;
+        }
+
+        .conditions-mode-switch {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .mode-btn {
+            flex: 1;
+            padding: 6px 12px;
+            border: 1px solid #e0e0e0;
+            background: #ffffff;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 500;
+            color: #666666;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .mode-btn.active {
+            background: #000000;
+            color: #ffffff;
+            border-color: #000000;
+        }
+
+        .mode-btn:hover:not(.active) {
+            background: #f5f5f5;
         }
 
         .form-group-visible {
@@ -286,9 +694,153 @@
             height: 100%;
             border: none;
         }
+
+        .undo-button-container {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 2000;
+            display: flex;
+            gap: 6px;
+        }
+
+        .undo-button, .action-button {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 14px;
+            background: #ffffff;
+            border: 1.5px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #1d1d1f;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+        }
+
+        .undo-button:hover:not(:disabled), .action-button:hover {
+            background: #f5f5f5;
+            border-color: #000000;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+        }
+
+        .undo-button:active:not(:disabled), .action-button:active {
+            background: #e8e8e8;
+            transform: scale(0.98);
+        }
+
+        .undo-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background: #f5f5f5;
+            border-color: #e0e0e0;
+            box-shadow: none;
+        }
+
+        .undo-icon, .action-icon {
+            font-size: 14px;
+            font-weight: 600;
+            line-height: 1;
+            transition: transform 0.2s;
+        }
+
+        .undo-button:hover:not(:disabled) .undo-icon, .action-button:hover .action-icon {
+            transform: scale(1.1);
+        }
+
+        .undo-count {
+            font-size: 13px;
+            font-weight: 500;
+            line-height: 1;
+            min-width: 16px;
+            text-align: center;
+        }
+
+        .action-button {
+            color: #0071e3;
+        }
+
+        .action-button:hover {
+            background: rgba(0, 113, 227, 0.08);
+            border-color: #0071e3;
+        }
+
+        .action-button:active {
+            background: rgba(0, 113, 227, 0.15);
+        }
+
+        .conditions-table th:first-child {
+            width: 120px;
+        }
+
+        .conditions-table th:nth-child(n+2) {
+            min-width: 140px;
+        }
+
+        .conditions-table th:last-child {
+            width: 40px;
+        }
+
+        .condition-var-name-input {
+            flex: 1;
+            min-width: 80px;
+        }
+
+
+
+        .condition-row-name-header {
+            font-weight: 600;
+            color: #000000;
+        }
+
+        .condition-var-name-input {
+            font-weight: 500;
+            color: #1a73e8;
+        }
+
+        .condition-var-name-input.auto-detected {
+            background: #e8f0fe;
+            color: #0d47a1;
+            border-color: #0d47a1;
+        }
+
+        .condition-var-name-input.auto-detected::after {
+            content: 'Auto';
+            font-size: 9px;
+            margin-left: 6px;
+            padding: 2px 6px;
+            background: #0d47a1;
+            color: #ffffff;
+            border-radius: 3px;
+            font-weight: 500;
+        }
+
+        .conditions-empty-state.hidden {
+            display: none;
+        }
+
+        #conditionsTableView.hidden {
+            display: none;
+        }
     </style>
 </head>
 <body>
+    <div class="undo-button-container">
+        <button class="undo-button" id="undoButton" disabled>
+            <span class="undo-icon">↶</span>
+            <span class="undo-count" id="undoCount">0</span>
+        </button>
+        <button class="action-button" id="saveButton">
+            <span class="action-icon">💾</span>
+            <span>保存</span>
+        </button>
+        <button class="action-button" id="importButton">
+            <span class="action-icon">📁</span>
+            <span>导入</span>
+        </button>
+    </div>
     <div class="main-content">
         <div class="avtp-form" id="avtpForm">
         <div class="avtp-form-header">
@@ -381,7 +933,7 @@
                     </select>
                 </div>
             </div>
-            <div class="avtp-form-checkbox checkbox-margin-top-12">
+            <div class="avtp-form-checkbox">
                 <input type="checkbox" id="formDraggable">
                 <label for="formDraggable">Draggable</label>
             </div>
@@ -435,7 +987,7 @@
                     <input type="number" class="avtp-form-input" id="formVideoOpacity" step="0.1" min="0" max="1" placeholder="1.0">
                 </div>
             </div>
-            <div class="avtp-form-checkbox checkbox-margin-top-12">
+            <div class="avtp-form-checkbox">
                 <input type="checkbox" id="formLoop">
                 <label for="formLoop">Loop video</label>
             </div>
@@ -454,7 +1006,7 @@
                 <label class="avtp-form-label">Volume</label>
                 <input type="number" class="avtp-form-input" id="formAudioVolume" step="0.1" min="0" max="1" placeholder="1.0">
             </div>
-            <div class="avtp-form-checkbox checkbox-margin-top-12">
+            <div class="avtp-form-checkbox">
                 <input type="checkbox" id="formAudioStopWithRoutine">
                 <label for="formAudioStopWithRoutine">Stop with Routine</label>
             </div>
@@ -518,6 +1070,82 @@
             </div>
         </div>
 
+        <div class="avtp-form-group form-group-hidden" id="keyboardOptions">
+            <label class="avtp-form-label">Allowed Keys</label>
+            <div class="avtp-input-with-icon">
+                <input type="text" class="avtp-form-input" id="formKeys" value="Space, F, J" placeholder="e.g., Space, F, J">
+                <button type="button" class="avtp-keyboard-btn" id="openKeyboardBtn" title="Open Keyboard">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="2" y="4" width="20" height="16" rx="2" ry="2"></rect>
+                        <line x1="6" y1="8" x2="6" y2="8"></line>
+                        <line x1="10" y1="8" x2="10" y2="8"></line>
+                        <line x1="14" y1="8" x2="14" y2="8"></line>
+                        <line x1="18" y1="8" x2="18" y2="8"></line>
+                        <line x1="6" y1="12" x2="6" y2="12"></line>
+                        <line x1="10" y1="12" x2="10" y2="12"></line>
+                        <line x1="14" y1="12" x2="14" y2="12"></line>
+                        <line x1="18" y1="12" x2="18" y2="12"></line>
+                        <line x1="7" y1="16" x2="17" y2="16"></line>
+                    </svg>
+                </button>
+            </div>
+            <div class="avtp-form-checkbox">
+                <input type="checkbox" id="formKeyboardForceEndRoutine">
+                <label for="formKeyboardForceEndRoutine">Force End Routine</label>
+            </div>
+        </div>
+
+        <div class="form-group-hidden" id="loopOptions">
+            <div class="avtp-form-group">
+                <label class="avtp-form-label">Loop Name</label>
+                <input type="text" class="avtp-form-input" id="formLoopName" placeholder="e.g., trials">
+            </div>
+            <div class="avtp-form-row">
+                <div>
+                    <label class="avtp-form-label">nTrials</label>
+                    <input type="number" class="avtp-form-input" id="formLoopReps" step="1" min="1" placeholder="1">
+                </div>
+                <div>
+                    <label class="avtp-form-label">Loop Type</label>
+                    <select class="avtp-form-select" id="formLoopType">
+                        <option value="random">random</option>
+                        <option value="sequential">sequential</option>
+                        <option value="fullRandom">fullRandom</option>
+                    </select>
+                </div>
+            </div>
+            <div class="avtp-form-group">
+                <button type="button" class="conditions-btn add-btn" id="addConditionRowBtn">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                    Add Condition
+                </button>
+                <div id="conditionsTableView">
+                    <div class="conditions-table-container">
+                        <table class="conditions-table" id="conditionsTable">
+                            <thead id="conditionsTableHead">
+                                <tr id="conditionsTableHeaderRow">
+                                    <th class="condition-row-name-header">Condition</th>
+                                </tr>
+                            </thead>
+                            <tbody id="conditionsTableBody">
+                            </tbody>
+                        </table>
+                        <div class="conditions-empty-state" id="conditionsEmptyState">
+                            No conditions defined. Click "Add Condition" to add a condition.
+                        </div>
+                        <div class="conditions-empty-state hidden" id="noVariablesState">
+                            No variables detected. Add variables starting with '$' in your routines/loops first.
+                        </div>
+                    </div>
+                </div>
+                <input type="hidden" class="avtp-form-input" id="formLoopConditions" placeholder="e.g., conditions.xlsx or [{...}]">
+            </div>
+
+        </div>
+
         <div class="avtp-form-group">
             <label class="avtp-form-label">Start Time (ms)</label>
             <input type="number" class="avtp-form-input" id="formStartTime" step="1" placeholder="0">
@@ -529,7 +1157,7 @@
             <div class="hint-text">Use -1 for infinite duration</div>
         </div>
 
-        <div class="avtp-form-checkbox">
+        <div class="avtp-form-checkbox" id="enabledOption">
             <input type="checkbox" id="formEnabled">
             <label for="formEnabled">Enabled</label>
         </div>
@@ -637,6 +1265,12 @@
         document.body.style.paddingRight = (initialChatbotWidth + 20) + 'px';
         updateRoutineControlsPosition();
         window.addEventListener('resize', updateRoutineControlsPosition);
+
+        document.addEventListener('click', (e) => {
+            if (!chatbotPanel.contains(e.target)) {
+                chatbotFrame.contentWindow.postMessage('closeAdvancedSettings', '*');
+            }
+        });
          
         // 根据最大 routine 数量计算 canvas 高度
         function calculateCanvasHeight(routineCount) {
@@ -648,6 +1282,53 @@
         
         let currentRoutineCount = 0;
         let canvasHeight = calculateCanvasHeight(currentRoutineCount);
+
+        const undoButton = document.getElementById('undoButton');
+        const undoCount = document.getElementById('undoCount');
+        const maxHistoryLength = 15;
+        const historyStack = [];
+
+        function deepCopyState(state) {
+            return JSON.parse(JSON.stringify(state));
+        }
+
+        function saveState() {
+            const state = {
+                routineRects: deepCopyState(routineRects),
+                connections: deepCopyState(connections),
+                selectedRoutineIndex: selectedRoutineIndex,
+                currentRoutineCount: currentRoutineCount
+            };
+            historyStack.push(state);
+            if (historyStack.length > maxHistoryLength) {
+                historyStack.shift();
+            }
+            updateUndoButton();
+        }
+
+        function undo() {
+            if (historyStack.length === 0) return;
+            
+            const state = historyStack.pop();
+            routineRects.length = 0;
+            routineRects.push(...deepCopyState(state.routineRects));
+            connections.length = 0;
+            connections.push(...deepCopyState(state.connections));
+            selectedRoutineIndex = state.selectedRoutineIndex;
+            currentRoutineCount = state.currentRoutineCount;
+            
+            updatePoints();
+            updateRoutineCount();
+            draw();
+            updateUndoButton();
+        }
+
+        function updateUndoButton() {
+            undoCount.textContent = historyStack.length;
+            undoButton.disabled = historyStack.length === 0;
+        }
+
+        undoButton.addEventListener('click', undo);
 
         canvas.width = baseWidth * dpr;
         canvas.height = canvasHeight * dpr;
@@ -711,9 +1392,9 @@
                 isDragging: false,
                 offsetX: 0,
                 offsetY: 0,
-                keys: 'Space F J',
+                keys: 'Space, F, J',
                 duration: 3000,
-                avtp: { a: false, v: false, t: true, p: true },
+                avtp: { a: false, v: false, t: true, p: true, k: true },
                 avtpData: {
                     a: {
                         enabled: false,
@@ -775,6 +1456,15 @@
                         ori: 0,
                         flip: 'None',
                         units: 'from exp settings'
+                    },
+                    k: {
+                        enabled: true,
+                        label: 'Key',
+                        type: 'keyboard',
+                        keys: 'Space, F, J',
+                        startTime: 0,
+                        duration: 3000,
+                        forceEndRoutine: true
                     }
                 }
             };
@@ -786,6 +1476,7 @@
 
         let activeAvtp = null;
         let activeDragRect = null;
+        let activeConnection = null;
 
         const snapDistance = 80;
         const pointClickRadius = 20;
@@ -982,10 +1673,11 @@
                 ctx.stroke();
 
                 ctx.fillStyle = '#000000';
-                ctx.font = '500 16px -apple-system, BlinkMacSystemFont, SF Pro Text, sans-serif';
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
-                ctx.fillText(conn.depth + 1, cornerX, middleY);
+                const loopReps = conn.loopReps || 1;
+                ctx.font = 'bold 12px -apple-system, BlinkMacSystemFont, SF Pro Text, sans-serif';
+                ctx.fillText(loopReps, cornerX, middleY);
             });
         }
 
@@ -1082,7 +1774,6 @@
             ctx.font = '500 13px -apple-system, BlinkMacSystemFont, SF Pro Text, sans-serif';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-            ctx.fillText(dragRect.duration + ' ms', dragRect.x + dragRect.width / 2, dragRect.y + mainRectHeight * 0.2);
 
             const avtpText = 'AVTP';
             const avtpColors = [
@@ -1289,13 +1980,24 @@
                 nearestValidPoint = findNearestValidPoint(pos);
                 draw();
             } else {
-                const clickableAvtp = getClickableAvtp(pos);
-                if (clickableAvtp) {
+                let isOverLoopBlock = false;
+                for (const conn of connections) {
+                    if (isInsideLoopBlock(pos, conn, connections)) {
+                        isOverLoopBlock = true;
+                        break;
+                    }
+                }
+                if (isOverLoopBlock) {
                     canvas.style.cursor = 'pointer';
-                } else if (getDragRectAtPos(pos.x, pos.y)) {
-                    canvas.style.cursor = 'grab';
                 } else {
-                    canvas.style.cursor = 'crosshair';
+                    const clickableAvtp = getClickableAvtp(pos);
+                    if (clickableAvtp) {
+                        canvas.style.cursor = 'pointer';
+                    } else if (getDragRectAtPos(pos.x, pos.y)) {
+                        canvas.style.cursor = 'grab';
+                    } else {
+                        canvas.style.cursor = 'crosshair';
+                    }
                 }
             }
         });
@@ -1338,6 +2040,7 @@
                 }
                 
                 if (targetIndex !== -1) {
+                    saveState();
                     // 交换两个 routine 在数组中的位置
                     const temp = routineRects[draggedIndex];
                     routineRects[draggedIndex] = routineRects[targetIndex];
@@ -1369,7 +2072,17 @@
                     });
                     
                     if (!isDuplicate) {
-                        const newConn = { start: startPoint, end: targetPoint, depth: 0 };
+                        saveState();
+                        const newConn = { 
+                            start: startPoint, 
+                            end: targetPoint, 
+                            depth: 0,
+                            loopName: 'trials',
+                            loopReps: 1,
+                            loopType: 'sequential',
+                            loopConditions: '',
+                            loopIsTrials: true
+                        };
                         connections.push(newConn);
                         
                         let changed = true;
@@ -1442,14 +2155,39 @@
             return dist < tolerance;
         }
 
+        function isInsideLoopBlock(pos, conn, allConns) {
+            const offsetX = getConnectionOffsetX(conn, allConns);
+            const cornerX = conn.start.x + offsetX;
+            const middleY = (conn.start.y + conn.end.y) / 2;
+            const followRectWidth = 30;
+            const followRectHeight = 60;
+            return pos.x >= cornerX - followRectWidth / 2 &&
+                   pos.x <= cornerX + followRectWidth / 2 &&
+                   pos.y >= middleY - followRectHeight / 2 &&
+                   pos.y <= middleY + followRectHeight / 2;
+        }
+
         canvas.addEventListener('contextmenu', (e) => {
             e.preventDefault();
             const pos = getMousePos(e);
 
             for (let i = connections.length - 1; i >= 0; i--) {
                 if (isInsideConnection(pos, connections[i])) {
+                    saveState();
                     connections.splice(i, 1);
                     draw();
+                    return;
+                }
+            }
+        });
+
+        canvas.addEventListener('dblclick', (e) => {
+            const pos = getMousePos(e);
+
+            for (let i = connections.length - 1; i >= 0; i--) {
+                if (isInsideConnection(pos, connections[i])) {
+                    activeConnection = connections[i];
+                    showLoopForm(connections[i]);
                     return;
                 }
             }
@@ -1464,6 +2202,7 @@
         
         const formPath = document.getElementById('formPath');
         const formEnabled = document.getElementById('formEnabled');
+        const enabledOption = document.getElementById('enabledOption');
         const formStartTime = document.getElementById('formStartTime');
         const formDuration = document.getElementById('formDuration');
         
@@ -1498,6 +2237,10 @@
         const formAudioVolume = document.getElementById('formAudioVolume');
         const formAudioStopWithRoutine = document.getElementById('formAudioStopWithRoutine');
         const formAudioForceEndRoutine = document.getElementById('formAudioForceEndRoutine');
+
+        const keyboardOptions = document.getElementById('keyboardOptions');
+        const formKeys = document.getElementById('formKeys');
+        const formKeyboardForceEndRoutine = document.getElementById('formKeyboardForceEndRoutine');
         
         const imageOptions = document.getElementById('imageOptions');
         const formImageSizeW = document.getElementById('formImageSizeW');
@@ -1509,19 +2252,47 @@
         const formImageFlip = document.getElementById('formImageFlip');
         const formImageUnits = document.getElementById('formImageUnits');
 
+        const loopOptions = document.getElementById('loopOptions');
+        const formLoopName = document.getElementById('formLoopName');
+        const formLoopReps = document.getElementById('formLoopReps');
+        const formLoopType = document.getElementById('formLoopType');
+        const formLoopConditions = document.getElementById('formLoopConditions');
+
+
+        // Conditions table elements
+        const conditionsTableView = document.getElementById('conditionsTableView');
+        const conditionsTableBody = document.getElementById('conditionsTableBody');
+        const conditionsTableHeaderRow = document.getElementById('conditionsTableHeaderRow');
+        const conditionsEmptyState = document.getElementById('conditionsEmptyState');
+        const noVariablesState = document.getElementById('noVariablesState');
+        const addConditionRowBtn = document.getElementById('addConditionRowBtn');
+
         function isInsideAvtp(pos, avtpKey, rect) {
             const mainRectHeight = rect.height * 0.7;
             const letterWidth = rect.width / 4;
             const avtpIndex = ['a', 'v', 't', 'p'].indexOf(avtpKey);
-            
+
             const letterX = rect.x + letterWidth * (avtpIndex + 0.5);
             const letterY = rect.y + mainRectHeight * 0.65;
             const clickRadius = 15;
-            
+
             const distance = Math.sqrt(
                 Math.pow(pos.x - letterX, 2) + Math.pow(pos.y - letterY, 2)
             );
             return distance < clickRadius;
+        }
+
+        function isInsideKeyArea(pos, rect) {
+            const mainRectHeight = rect.height * 0.7;
+            const keyRectHeight = rect.height * 0.3;
+
+            const keyAreaX = rect.x;
+            const keyAreaY = rect.y + mainRectHeight;
+            const keyAreaWidth = rect.width;
+            const keyAreaHeight = keyRectHeight;
+
+            return pos.x >= keyAreaX && pos.x <= keyAreaX + keyAreaWidth &&
+                   pos.y >= keyAreaY && pos.y <= keyAreaY + keyAreaHeight;
         }
 
         function getClickableAvtp(pos) {
@@ -1532,11 +2303,21 @@
                         return key;
                     }
                 }
+                if (isInsideKeyArea(pos, rect)) {
+                    activeDragRect = rect;
+                    return 'k';
+                }
             }
             return null;
         }
 
         function showAvtpForm(avtpKey) {
+            // 先隐藏可能显示的 loop 表单
+            if (loopOptions.classList.contains('form-group-visible')) {
+                loopOptions.classList.remove('form-group-visible');
+                loopOptions.classList.add('form-group-hidden');
+            }
+            
             activeAvtp = avtpKey;
             const data = activeDragRect.avtpData[avtpKey];
             formTitle.textContent = data.label;
@@ -1553,6 +2334,7 @@
             }
             
             formEnabled.checked = data.enabled;
+            enabledOption.style.display = data.type === 'keyboard' ? 'none' : 'block';
             formStartTime.value = data.startTime || 0;
             formDuration.value = data.duration !== undefined ? data.duration : 3000;
             
@@ -1565,6 +2347,8 @@
                 audioOptions.classList.add('form-group-hidden');
                 imageOptions.classList.remove('form-group-visible');
                 imageOptions.classList.add('form-group-hidden');
+                keyboardOptions.classList.remove('form-group-visible');
+                keyboardOptions.classList.add('form-group-hidden');
                 
                 formText.value = data.text || 'Sample Text';
                 formFont.value = data.font || 'Arial';
@@ -1589,6 +2373,8 @@
                 audioOptions.classList.add('form-group-hidden');
                 imageOptions.classList.remove('form-group-visible');
                 imageOptions.classList.add('form-group-hidden');
+                keyboardOptions.classList.remove('form-group-visible');
+                keyboardOptions.classList.add('form-group-hidden');
                 
                 formVolume.value = data.volume || 1.0;
                 formSizeW.value = data.size && data.size[0] !== null ? data.size[0] : '';
@@ -1608,10 +2394,26 @@
                 audioOptions.classList.add('form-group-visible');
                 imageOptions.classList.remove('form-group-visible');
                 imageOptions.classList.add('form-group-hidden');
+                keyboardOptions.classList.remove('form-group-visible');
+                keyboardOptions.classList.add('form-group-hidden');
                 
                 formAudioVolume.value = data.volume || 1.0;
                 formAudioStopWithRoutine.checked = data.stopWithRoutine !== undefined ? data.stopWithRoutine : true;
                 formAudioForceEndRoutine.checked = data.forceEndRoutine !== undefined ? data.forceEndRoutine : true;
+            } else if (data.type === 'keyboard') {
+                textOptions.classList.remove('form-group-visible');
+                textOptions.classList.add('form-group-hidden');
+                videoOptions.classList.remove('form-group-visible');
+                videoOptions.classList.add('form-group-hidden');
+                audioOptions.classList.remove('form-group-visible');
+                audioOptions.classList.add('form-group-hidden');
+                keyboardOptions.classList.remove('form-group-hidden');
+                keyboardOptions.classList.add('form-group-visible');
+                imageOptions.classList.remove('form-group-visible');
+                imageOptions.classList.add('form-group-hidden');
+                
+                formKeys.value = data.keys || '';
+                formKeyboardForceEndRoutine.checked = data.forceEndRoutine !== undefined ? data.forceEndRoutine : true;
             } else if (data.type === 'image') {
                 textOptions.classList.remove('form-group-visible');
                 textOptions.classList.add('form-group-hidden');
@@ -1621,6 +2423,8 @@
                 audioOptions.classList.add('form-group-hidden');
                 imageOptions.classList.remove('form-group-hidden');
                 imageOptions.classList.add('form-group-visible');
+                keyboardOptions.classList.remove('form-group-visible');
+                keyboardOptions.classList.add('form-group-hidden');
                 
                 formImageSizeW.value = data.size && data.size[0] !== null ? data.size[0] : '';
                 formImageSizeH.value = data.size && data.size[1] !== null ? data.size[1] : '';
@@ -1636,66 +2440,63 @@
         }
 
         function hideAvtpForm() {
-            if (activeAvtp && activeDragRect) {
-                const data = activeDragRect.avtpData[activeAvtp];
-                data.path = formPath.value;
-                data.enabled = formEnabled.checked;
-                data.startTime = parseInt(formStartTime.value) || 0;
-                data.duration = parseInt(formDuration.value) || 3000;
-                
-                if (data.type === 'text') {
-                    data.text = formText.value || 'Sample Text';
-                    data.font = formFont.value || 'Arial';
-                    data.letterHeight = parseFloat(formLetterHeight.value) || 0.05;
-                    data.color = formColor.value || 'white';
-                    data.units = formUnits.value || 'from exp settings';
-                    data.pos = [parseInt(formPosX.value) || 0, parseInt(formPosY.value) || 0];
-                    data.opacity = parseFloat(formOpacity.value) || 1.0;
-                    data.ori = parseInt(formOri.value) || 0;
-                    data.contrast = parseFloat(formContrast.value) || 1.0;
-                    data.wrapWidth = formWrapWidth.value ? parseFloat(formWrapWidth.value) : undefined;
-                    data.flip = formFlip.value || 'None';
-                    data.languageStyle = formLanguageStyle.value || 'LTR';
-                    data.draggable = formDraggable.checked;
-                } else if (data.type === 'video') {
-                    data.volume = parseFloat(formVolume.value) || 1.0;
-                    data.size = [
-                        formSizeW.value ? parseInt(formSizeW.value) : null,
-                        formSizeH.value ? parseInt(formSizeH.value) : null
-                    ];
-                    data.anchor = formAnchor.value || 'center';
-                    data.loop = formLoop.checked;
-                    data.units = formVideoUnits.value || 'from exp settings';
-                    data.opacity = parseFloat(formVideoOpacity.value) || 1.0;
-                    data.stopWithRoutine = formVideoStopWithRoutine.checked;
-                    data.forceEndRoutine = formVideoForceEndRoutine.checked;
-                } else if (data.type === 'audio') {
-                    data.volume = parseFloat(formAudioVolume.value) || 1.0;
-                    data.stopWithRoutine = formAudioStopWithRoutine.checked;
-                    data.forceEndRoutine = formAudioForceEndRoutine.checked;
-                } else if (data.type === 'image') {
-                    data.size = [
-                        formImageSizeW.value ? parseInt(formImageSizeW.value) : null,
-                        formImageSizeH.value ? parseInt(formImageSizeH.value) : null
-                    ];
-                    data.pos = [parseInt(formImagePosX.value) || 0, parseInt(formImagePosY.value) || 0];
-                    data.opacity = parseFloat(formImageOpacity.value) || 1.0;
-                    data.ori = parseInt(formImageOri.value) || 0;
-                    data.flip = formImageFlip.value || 'None';
-                    data.units = formImageUnits.value || 'from exp settings';
-                }
-                
-                activeDragRect.avtp[activeAvtp] = formEnabled.checked;
-            }
             activeAvtp = null;
             avtpForm.classList.remove('visible');
         }
 
-        formClose.addEventListener('click', hideAvtpForm);
+        function showLoopForm(conn) {
+            activeConnection = conn;
+            formTitle.textContent = 'Loop Settings';
+            fileInputGroup.classList.remove('form-group-visible');
+            fileInputGroup.classList.add('form-group-hidden');
+            textOptions.classList.remove('form-group-visible');
+            textOptions.classList.add('form-group-hidden');
+            videoOptions.classList.remove('form-group-visible');
+            videoOptions.classList.add('form-group-hidden');
+            audioOptions.classList.remove('form-group-visible');
+            audioOptions.classList.add('form-group-hidden');
+            imageOptions.classList.remove('form-group-visible');
+            imageOptions.classList.add('form-group-hidden');
+            keyboardOptions.classList.remove('form-group-visible');
+            keyboardOptions.classList.add('form-group-hidden');
+            loopOptions.classList.remove('form-group-hidden');
+            loopOptions.classList.add('form-group-visible');
+            enabledOption.style.display = 'none';
+            formStartTime.parentElement.style.display = 'none';
+            formDuration.parentElement.style.display = 'none';
+
+            formLoopName.value = conn.loopName || 'trials';
+            formLoopReps.value = conn.loopReps || 1;
+            formLoopType.value = conn.loopType || 'sequential';
+            formLoopConditions.value = conn.loopConditions || '';
+
+            
+            switchToTableView();
+
+            avtpForm.classList.add('visible');
+        }
+
+        function hideLoopForm() {
+            activeConnection = null;
+            avtpForm.classList.remove('visible');
+            enabledOption.style.display = 'block';
+            formStartTime.parentElement.style.display = 'block';
+            formDuration.parentElement.style.display = 'block';
+        }
+
+        formClose.addEventListener('click', () => {
+            if (loopOptions.classList.contains('form-group-visible')) {
+                hideLoopForm();
+            } else {
+                hideAvtpForm();
+            }
+        });
 
         // 实时保存所有输入框的变化
         function saveFormChanges() {
             if (!activeAvtp || !activeDragRect) return;
+            
+            saveState();
             
             const data = activeDragRect.avtpData[activeAvtp];
             data.path = formPath.value;
@@ -1733,6 +2534,10 @@
                 data.volume = parseFloat(formAudioVolume.value) || 1.0;
                 data.stopWithRoutine = formAudioStopWithRoutine.checked;
                 data.forceEndRoutine = formAudioForceEndRoutine.checked;
+            } else if (data.type === 'keyboard') {
+                data.keys = formKeys.value || '';
+                data.forceEndRoutine = formKeyboardForceEndRoutine.checked;
+                activeDragRect.keys = data.keys;
             } else if (data.type === 'image') {
                 data.size = [
                     formImageSizeW.value ? parseInt(formImageSizeW.value) : null,
@@ -1749,15 +2554,34 @@
             draw();
         }
 
+        function saveLoopFormChanges() {
+            if (!activeConnection) return;
+
+            saveState();
+
+            activeConnection.loopName = formLoopName.value || 'trials';
+            activeConnection.loopReps = parseInt(formLoopReps.value) || 1;
+            activeConnection.loopType = formLoopType.value || 'sequential';
+            
+            const jsonValue = conditionsToJSON();
+            activeConnection.loopConditions = jsonValue;
+            
+
+
+            // 联动更新目标表单中的变量
+            updateTargetFormsWithVariables();
+
+            draw();
+        }
+
         // 为所有输入框添加实时保存监听
-        [formPath, formText, formFont, formLetterHeight, formColor, formUnits, 
+        [formPath, formText, formFont, formLetterHeight, formColor, formUnits,
          formPosX, formPosY, formOpacity, formOri, formContrast, formWrapWidth,
          formFlip, formLanguageStyle, formVolume, formSizeW, formSizeH, formAnchor,
          formVideoUnits, formVideoOpacity, formAudioVolume,
          formImageSizeW, formImageSizeH, formImagePosX, formImagePosY,
          formImageOpacity, formImageOri, formImageFlip, formImageUnits,
-         formStartTime, formDuration].forEach(input => {
-            input.addEventListener('input', saveFormChanges);
+         formStartTime, formDuration, formKeys].forEach(input => {
             input.addEventListener('change', saveFormChanges);
         });
 
@@ -1768,13 +2592,377 @@
         formVideoForceEndRoutine.addEventListener('change', saveFormChanges);
         formAudioStopWithRoutine.addEventListener('change', saveFormChanges);
         formAudioForceEndRoutine.addEventListener('change', saveFormChanges);
+        formKeyboardForceEndRoutine.addEventListener('change', saveFormChanges);
+        formLoopName.addEventListener('change', saveLoopFormChanges);
+        formLoopReps.addEventListener('change', saveLoopFormChanges);
+        formLoopType.addEventListener('change', saveLoopFormChanges);
+        formLoopConditions.addEventListener('change', saveLoopFormChanges);
+
+
+        // Conditions table functionality
+        let currentVariableNames = []; // Store variable names (column headers)
+        let autoDetectedVariables = []; // Store auto-detected variables from routines/loops
+
+        function collectAutoDetectedVariables() {
+            const variableSet = new Set();
+            
+            // Collect from routineRects
+            routineRects.forEach(rect => {
+                if (rect.avtpData) {
+                    Object.keys(rect.avtpData).forEach(key => {
+                        const data = rect.avtpData[key];
+                        if (data && typeof data === 'object') {
+                            Object.keys(data).forEach(dataKey => {
+                                const value = data[dataKey];
+                                if (typeof value === 'string' && value.startsWith('$')) {
+                                    variableSet.add(value);
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+            
+            // Collect from connections (loops)
+            connections.forEach(conn => {
+                if (conn.loopConditions) {
+                    try {
+                        const parsed = JSON.parse(conn.loopConditions);
+                        if (Array.isArray(parsed)) {
+                            parsed.forEach(condition => {
+                                Object.keys(condition).forEach(key => {
+                                    if (key.startsWith('$')) {
+                                        variableSet.add(key);
+                                    }
+                                });
+                            });
+                        }
+                    } catch (e) {
+                        // Ignore parse errors
+                    }
+                }
+            });
+            
+            return Array.from(variableSet).sort();
+        }
+
+        function parseConditionsJSON(jsonStr) {
+            if (!jsonStr || !jsonStr.trim()) return { variables: [], conditions: [] };
+            
+            try {
+                const parsed = JSON.parse(jsonStr);
+                if (Array.isArray(parsed) && parsed.length > 0) {
+                    // Extract all unique variable names from all conditions (excluding 'name')
+                    const variableSet = new Set();
+                    parsed.forEach(condition => {
+                        Object.keys(condition).forEach(key => {
+                            if (key !== 'name') {
+                                variableSet.add(key);
+                            }
+                        });
+                    });
+                    const variables = Array.from(variableSet);
+                    
+                    // Extract condition names (row names) and their values
+                    const conditions = parsed.map((condition, index) => {
+                        const conditionName = condition.name || `Condition ${index + 1}`;
+                        const values = {};
+                        Object.keys(condition).forEach(key => {
+                            if (key !== 'name') {
+                                values[key] = condition[key];
+                            }
+                        });
+                        return { name: conditionName, values };
+                    });
+                    
+                    return { variables, conditions };
+                }
+                return { variables: [], conditions: [] };
+            } catch (e) {
+                return { variables: [], conditions: [] };
+            }
+        }
+
+        function conditionsToJSON() {
+            const rows = conditionsTableBody.querySelectorAll('tr');
+            if (rows.length === 0) return '';
+            
+            const conditions = [];
+            rows.forEach(row => {
+                const nameInput = row.querySelector('.condition-row-name');
+                if (nameInput && nameInput.value.trim()) {
+                    const condition = { name: nameInput.value.trim() };
+                    currentVariableNames.forEach(varName => {
+                        const valueInput = row.querySelector(`.condition-cell-${CSS.escape(varName)}`);
+                        if (valueInput) {
+                            condition[varName] = valueInput.value.trim();
+                        }
+                    });
+                    conditions.push(condition);
+                }
+            });
+            
+            return conditions.length > 0 ? JSON.stringify(conditions, null, 2) : '';
+        }
+
+        function updateHeaderRow() {
+            // Clear existing header cells (except the first one for row names)
+            while (conditionsTableHeaderRow.children.length > 1) {
+                conditionsTableHeaderRow.removeChild(conditionsTableHeaderRow.lastChild);
+            }
+            
+            // Add header cells for each variable
+            currentVariableNames.forEach(varName => {
+                const th = document.createElement('th');
+                th.innerHTML = `
+                    <div style="display: flex; align-items: center; padding: 2px 0;">
+                        <label style="flex: 1; padding: 4px 6px; font-size: 11px; min-width: 80px;">${varName}</label>
+                    </div>
+                `;
+                conditionsTableHeaderRow.appendChild(th);
+            });
+            
+            // Add header cell for remove button
+            const removeBtnTh = document.createElement('th');
+            removeBtnTh.style.width = '40px';
+            conditionsTableHeaderRow.appendChild(removeBtnTh);
+        }
+
+        function updateConditionsTableBody() {
+            const jsonValue = formLoopConditions.value.trim();
+            const parsed = parseConditionsJSON(jsonValue);
+            
+            conditionsTableBody.innerHTML = '';
+            
+            if (currentVariableNames.length === 0) {
+                noVariablesState.style.display = 'block';
+                conditionsEmptyState.style.display = 'none';
+                updateHeaderRow();
+                return;
+            }
+            
+            noVariablesState.style.display = 'none';
+            
+            if (parsed.conditions.length === 0) {
+                conditionsEmptyState.classList.remove('hidden');
+                addConditionRowBtn.disabled = false;
+                updateHeaderRow();
+                return;
+            }
+            
+            conditionsEmptyState.classList.add('hidden');
+            parsed.conditions.forEach(condition => {
+                const row = document.createElement('tr');
+                let cellsHtml = `<td><input type="text" class="condition-row-name" value="${condition.name}" placeholder="Condition name" style="width: 100%; padding: 6px 8px; border: 1px solid #e0e0e0; border-radius: 4px; font-size: 12px;"></td>`;
+                
+                currentVariableNames.forEach(varName => {
+                    const value = condition.values[varName] || '';
+                    cellsHtml += `<td><input type="text" class="condition-cell-${CSS.escape(varName)}" value="${value}" placeholder="Value" style="width: 100%; padding: 6px 8px; border: 1px solid #e0e0e0; border-radius: 4px; font-size: 12px;"></td>`;
+                });
+                
+                cellsHtml += `
+                    <td class="row-actions">
+                        <button type="button" class="remove-row-btn" title="Remove condition">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="18" y1="6" x2="6" y2="18"></line>
+                                <line x1="6" y1="6" x2="18" y2="18"></line>
+                            </svg>
+                        </button>
+                    </td>
+                `;
+                
+                row.innerHTML = cellsHtml;
+                conditionsTableBody.appendChild(row);
+            });
+            
+            updateHeaderRow();
+            updateConditionsTableState();
+        }
+
+        function updateCellClasses() {
+            const rows = conditionsTableBody.querySelectorAll('tr');
+            rows.forEach(row => {
+                // Update cell classes to match new variable names
+                const cells = row.querySelectorAll('td input:not(.condition-row-name)');
+                cells.forEach((cell, index) => {
+                    if (index < currentVariableNames.length) {
+                        cell.className = `condition-cell-${CSS.escape(currentVariableNames[index])}`;
+                    }
+                });
+            });
+        }
+
+        function updateTargetFormsWithVariables() {
+            if (!activeConnection) return;
+            
+            try {
+                const jsonValue = formLoopConditions.value.trim();
+                if (!jsonValue) return;
+                
+                const conditions = JSON.parse(jsonValue);
+                if (!Array.isArray(conditions)) return;
+                
+                // 提取变量名
+                const variableNames = [];
+                if (conditions.length > 0) {
+                    variableNames.push(...Object.keys(conditions[0]).filter(key => key !== 'name'));
+                }
+                
+                // 遍历所有 routine 中的 AVTP 元素
+                routineRects.forEach(rect => {
+                    if (rect.avtpData) {
+                        Object.keys(rect.avtpData).forEach(avtpKey => {
+                            const data = rect.avtpData[avtpKey];
+                            if (data && typeof data === 'object') {
+                                // 检查并更新所有可能包含变量的字段
+                                Object.keys(data).forEach(key => {
+                                    const value = data[key];
+                                    if (typeof value === 'string' && value.includes('$')) {
+                                        // 替换变量值
+                                        let updatedValue = value;
+                                        variableNames.forEach(varName => {
+                                            if (updatedValue.includes(varName)) {
+                                                // 对于循环变量，这里只做占位符处理
+                                                // 实际的值会在运行时由 PsychoPy 处理
+                                                updatedValue = updatedValue.replace(new RegExp(varName, 'g'), varName);
+                                            }
+                                        });
+                                        data[key] = updatedValue;
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
+                
+                // 重新绘制
+                draw();
+            } catch (e) {
+                console.error('Error updating target forms:', e);
+            }
+        }
+
+        function updateConditionsTableState() {
+            const rows = conditionsTableBody.querySelectorAll('tr');
+            const hasRows = rows.length > 0;
+            
+            if (!hasRows) {
+                conditionsEmptyState.classList.remove('hidden');
+            } else {
+                conditionsEmptyState.classList.add('hidden');
+            }
+            
+            rows.forEach((row, index) => {
+                const removeBtn = row.querySelector('.remove-row-btn');
+                if (removeBtn) {
+                    removeBtn.addEventListener('click', () => {
+                        row.remove();
+                        
+                        // Remove from autoDetectedVariables if no more rows use this variable
+                        currentVariableNames.forEach(varName => {
+                            const isUsed = Array.from(conditionsTableBody.querySelectorAll('tr')).some(r => {
+                                const cell = r.querySelector(`.condition-cell-${CSS.escape(varName)}`);
+                                return cell && cell.value && cell.value.trim() !== '';
+                            });
+                            if (!isUsed) {
+                                const autoIndex = autoDetectedVariables.indexOf(varName);
+                                if (autoIndex !== -1) {
+                                    autoDetectedVariables.splice(autoIndex, 1);
+                                }
+                            }
+                        });
+                        
+                        updateHeaderRow();
+                        updateConditionsTableState();
+                        saveLoopFormChanges();
+                    });
+                }
+                
+                const nameInput = row.querySelector('.condition-row-name');
+                if (nameInput) {
+                    nameInput.addEventListener('input', saveLoopFormChanges);
+                }
+                
+                currentVariableNames.forEach(varName => {
+                    const valueInput = row.querySelector(`.condition-cell-${CSS.escape(varName)}`);
+                    if (valueInput) {
+                        valueInput.addEventListener('input', saveLoopFormChanges);
+                    }
+                });
+            });
+        }
+
+        function switchToTableView() {
+            // Collect auto-detected variables from routines/loops
+            autoDetectedVariables = collectAutoDetectedVariables();
+            
+            // Merge with existing variables from current loop conditions
+            const jsonValue = formLoopConditions.value.trim();
+            const parsed = parseConditionsJSON(jsonValue);
+            const existingVars = parsed.variables || [];
+            
+            // Combine auto-detected variables with existing ones, avoiding duplicates
+            const allVars = [...new Set([...autoDetectedVariables, ...existingVars])];
+            currentVariableNames = allVars;
+            
+            // Disable Add Condition button if no variables detected
+            addConditionRowBtn.disabled = currentVariableNames.length === 0;
+            
+            // Show/hide no variables message
+            if (currentVariableNames.length === 0) {
+                noVariablesState.style.display = 'block';
+                conditionsEmptyState.style.display = 'none';
+            } else {
+                noVariablesState.style.display = 'none';
+            }
+            
+            updateConditionsTableBody();
+        }
+
+
+
+        addConditionRowBtn.addEventListener('click', () => {
+            const rows = conditionsTableBody.querySelectorAll('tr');
+            const conditionNum = rows.length + 1;
+            
+            const row = document.createElement('tr');
+            let cellsHtml = `<td><input type="text" class="condition-row-name" value="Condition ${conditionNum}" placeholder="Condition name" style="width: 100%; padding: 6px 8px; border: 1px solid #e0e0e0; border-radius: 4px; font-size: 12px;"></td>`;
+            
+            currentVariableNames.forEach(varName => {
+                cellsHtml += `<td><input type="text" class="condition-cell-${CSS.escape(varName)}" value="" placeholder="Value" style="width: 100%; padding: 6px 8px; border: 1px solid #e0e0e0; border-radius: 4px; font-size: 12px;"></td>`;
+            });
+            
+            cellsHtml += `
+                <td class="row-actions">
+                    <button type="button" class="remove-row-btn" title="Remove condition">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </button>
+                </td>
+            `;
+            
+            row.innerHTML = cellsHtml;
+            conditionsTableBody.appendChild(row);
+            updateConditionsTableState();
+            saveLoopFormChanges();
+        });
 
         canvas.addEventListener('click', (e) => {
             const pos = getMousePos(e);
             const clickableAvtp = getClickableAvtp(pos);
-            
+
             if (clickableAvtp) {
                 showAvtpForm(clickableAvtp);
+                return;
+            }
+
+            for (let i = connections.length - 1; i >= 0; i--) {
+                if (isInsideLoopBlock(pos, connections[i], connections)) {
+                    showLoopForm(connections[i]);
+                    return;
+                }
             }
         });
 
@@ -1816,7 +3004,89 @@
             });
         }
 
+        // 保存和导入功能
+        const saveButton = document.getElementById('saveButton');
+        const importButton = document.getElementById('importButton');
+
+        // 保存项目
+        saveButton.addEventListener('click', () => {
+            // 确保保存当前打开的表单值
+            if (activeAvtp && activeDragRect) {
+                saveFormChanges();
+            }
+            if (activeConnection) {
+                saveLoopFormChanges();
+            }
+
+            const projectData = {
+                version: '1.0',
+                timestamp: new Date().toISOString(),
+                routineRects: routineRects,
+                connections: connections,
+                currentRoutineCount: currentRoutineCount
+            };
+
+            const jsonData = JSON.stringify(projectData, null, 2);
+            const blob = new Blob([jsonData], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `deeppsych_project_${new Date().toISOString().replace(/[:.]/g, '-')}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            // 显示保存成功消息
+            alert('项目保存成功！');
+        });
+
+        // 导入项目
+        importButton.addEventListener('click', () => {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            input.onchange = (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    try {
+                        const projectData = JSON.parse(event.target.result);
+                        
+                        // 验证数据格式
+                        if (!projectData.routineRects || !Array.isArray(projectData.connections)) {
+                            throw new Error('无效的项目文件格式');
+                        }
+
+                        // 清空当前项目
+                        routineRects.length = 0;
+                        connections.length = 0;
+
+                        // 导入数据
+                        routineRects.push(...projectData.routineRects);
+                        connections.push(...projectData.connections);
+                        currentRoutineCount = projectData.currentRoutineCount || routineRects.length;
+
+                        // 更新界面
+                        updatePoints();
+                        updateRoutineCount();
+                        draw();
+
+                        // 显示导入成功消息
+                        alert('项目导入成功！');
+                    } catch (error) {
+                        alert('导入失败：' + error.message);
+                    }
+                };
+                reader.readAsText(file);
+            };
+            input.click();
+        });
+
         addRoutineBtn.addEventListener('click', () => {
+            saveState();
             // 当没有 routine 时，从索引 0 开始；否则在选中的后面添加
             const newIndex = routineRects.length === 0 ? 0 : (selectedRoutineIndex >= 0 ? selectedRoutineIndex + 1 : routineRects.length);
             
@@ -1837,6 +3107,7 @@
 
         removeRoutineBtn.addEventListener('click', () => {
             if (routineRects.length > 0) {
+                saveState();
                 const removedRoutineIndex = selectedRoutineIndex;
                 const removedRoutine = routineRects[removedRoutineIndex];
                 
@@ -1877,5 +3148,157 @@
         updateRoutineCount();
         draw();
     </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const keyboardModal = document.getElementById('keyboardModal');
+            const keyboardGrid = document.getElementById('keyboardGrid');
+            const selectedKeysDisplay = document.getElementById('selectedKeysDisplay');
+            const openKeyboardBtn = document.getElementById('openKeyboardBtn');
+            const closeKeyboardBtn = document.getElementById('closeKeyboardBtn');
+            const clearKeyboardBtn = document.getElementById('clearKeyboardBtn');
+            const confirmKeyboardBtn = document.getElementById('confirmKeyboardBtn');
+            const formKeys = document.getElementById('formKeys');
+
+            const allKeys = [
+                'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
+                'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
+                'u', 'v', 'w', 'x', 'y', 'z',
+                '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+                'space', 'left', 'right', 'up', 'down',
+                'return', 'backspace', 'tab', 'escape', 'delete',
+                'shift', 'ctrl', 'alt', 'meta',
+                'left shift', 'right shift', 'left ctrl', 'right ctrl',
+                'left alt', 'right alt', 'left meta', 'right meta',
+                'volume up', 'volume down', 'volume mute',
+                'media play', 'media pause', 'media stop', 'media next', 'media previous',
+                'f1', 'f2', 'f3', 'f4', 'f5', 'f6', 'f7', 'f8', 'f9', 'f10', 'f11', 'f12'
+            ];
+
+            let selectedKeys = [];
+
+            function initKeyboard() {
+                keyboardGrid.innerHTML = '';
+                const keyboardLayout = [
+                    ['F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10', 'F11', 'F12'],
+                    ['`', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', 'Backspace'],
+                    ['Tab', 'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', '[', ']', '\\'],
+                    ['Caps', 'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', ';', "'", 'Enter'],
+                    ['Shift', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', ',', '.', '/', 'Right Shift', 'Up'],
+                    ['Ctrl', 'Win', 'Alt', 'Space', 'Right Alt', 'Right Ctrl', 'Left', 'Down', 'Right']
+                ];
+                const keyMap = {
+                    '`': '`', '1': '1', '2': '2', '3': '3', '4': '4', '5': '5', '6': '6', '7': '7', '8': '8', '9': '9', '0': '0', '-': '-', '=': '=',
+                    'Backspace': 'backspace', 'Tab': 'tab', 'Q': 'q', 'W': 'w', 'E': 'e', 'R': 'r', 'T': 't', 'Y': 'y', 'U': 'u', 'I': 'i', 'O': 'o', 'P': 'p', '[': '[', ']': ']', '\\': '\\',
+                    'Caps': 'caps', 'A': 'a', 'S': 's', 'D': 'd', 'F': 'f', 'G': 'g', 'H': 'h', 'J': 'j', 'K': 'k', 'L': 'l', ';': ';', "'": "'", 'Enter': 'return',
+                    'Shift': 'shift', 'Z': 'z', 'X': 'x', 'C': 'c', 'V': 'v', 'B': 'b', 'N': 'n', 'M': 'm', ',': ',', '.': '.', '/': '/', 'Right Shift': 'right shift',
+                    'Ctrl': 'ctrl', 'Win': 'meta', 'Alt': 'alt', 'Space': 'space', 'Right Alt': 'right alt', 'Right Ctrl': 'right ctrl', 'Left': 'left', 'Up': 'up', 'Down': 'down', 'Right': 'right',
+                    'F1': 'f1', 'F2': 'f2', 'F3': 'f3', 'F4': 'f4', 'F5': 'f5', 'F6': 'f6', 'F7': 'f7', 'F8': 'f8', 'F9': 'f9', 'F10': 'f10', 'F11': 'f11', 'F12': 'f12'
+                };
+                keyboardLayout.forEach(row => {
+                    const rowDiv = document.createElement('div');
+                    rowDiv.className = 'avtp-keyboard-row';
+                    row.forEach(key => {
+                        const btn = document.createElement('button');
+                        btn.className = 'avtp-keyboard-key';
+                        const actualKey = keyMap[key] || key.toLowerCase();
+                        btn.dataset.key = actualKey;
+                        btn.textContent = key;
+                        if (key === 'Space') btn.classList.add('space-key');
+                        if (key === 'Backspace' || key === 'Right Shift' || key === 'Right Ctrl') btn.classList.add('wide');
+                        rowDiv.appendChild(btn);
+                    });
+                    keyboardGrid.appendChild(rowDiv);
+                });
+            }
+
+            function updateSelectedKeysDisplay() {
+                selectedKeysDisplay.innerHTML = '';
+                selectedKeys.forEach(key => {
+                    const span = document.createElement('span');
+                    span.className = 'avtp-keyboard-selected-key';
+                    const displayKey = key.split(' ').map(k => k.charAt(0).toUpperCase() + k.slice(1)).join(' ');
+                    span.innerHTML = `<span>${displayKey}</span><button data-key="${key}">×</button>`;
+                    selectedKeysDisplay.appendChild(span);
+                });
+                document.querySelectorAll('#keyboardGrid .avtp-keyboard-key').forEach(btn => {
+                    if (selectedKeys.includes(btn.dataset.key)) {
+                        btn.classList.add('selected');
+                    } else {
+                        btn.classList.remove('selected');
+                    }
+                });
+            }
+
+            function openKeyboardModal() {
+                const currentKeys = formKeys.value.split(',').map(k => k.trim().toLowerCase()).filter(k => k);
+                selectedKeys = [...currentKeys];
+                updateSelectedKeysDisplay();
+                keyboardModal.classList.add('active');
+            }
+
+            function closeKeyboardModal() {
+                keyboardModal.classList.remove('active');
+            }
+
+            openKeyboardBtn.addEventListener('click', openKeyboardModal);
+            closeKeyboardBtn.addEventListener('click', closeKeyboardModal);
+            keyboardModal.addEventListener('click', (e) => {
+                if (e.target === keyboardModal) closeKeyboardModal();
+            });
+
+            keyboardGrid.addEventListener('click', (e) => {
+                if (e.target.classList.contains('avtp-keyboard-key')) {
+                    const key = e.target.dataset.key;
+                    const index = selectedKeys.indexOf(key);
+                    if (index === -1) {
+                        selectedKeys.push(key);
+                    } else {
+                        selectedKeys.splice(index, 1);
+                    }
+                    updateSelectedKeysDisplay();
+                }
+            });
+
+            selectedKeysDisplay.addEventListener('click', (e) => {
+                if (e.target.tagName === 'BUTTON') {
+                    const key = e.target.dataset.key;
+                    const index = selectedKeys.indexOf(key);
+                    if (index !== -1) {
+                        selectedKeys.splice(index, 1);
+                        updateSelectedKeysDisplay();
+                    }
+                }
+            });
+
+            clearKeyboardBtn.addEventListener('click', () => {
+                selectedKeys = [];
+                updateSelectedKeysDisplay();
+            });
+
+            confirmKeyboardBtn.addEventListener('click', () => {
+                formKeys.value = selectedKeys.join(', ');
+                closeKeyboardModal();
+            });
+
+            initKeyboard();
+        });
+    </script>
+    <div class="avtp-keyboard-modal" id="keyboardModal">
+        <div class="avtp-keyboard-container">
+            <div class="avtp-keyboard-header">
+                <span class="avtp-keyboard-title">Select Keys</span>
+                <button class="avtp-keyboard-close" id="closeKeyboardBtn">×</button>
+            </div>
+            <div class="avtp-keyboard-grid" id="keyboardGrid"></div>
+            <div class="avtp-keyboard-selected">
+                <div class="avtp-keyboard-selected-label">Selected keys:</div>
+                <div class="avtp-keyboard-selected-keys" id="selectedKeysDisplay"></div>
+            </div>
+            <div class="avtp-keyboard-actions">
+                <button class="avtp-keyboard-btn-secondary" id="clearKeyboardBtn">Clear</button>
+                <button class="avtp-keyboard-btn-primary" id="confirmKeyboardBtn">Confirm</button>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
