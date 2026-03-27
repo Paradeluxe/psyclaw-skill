@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "timestamp": "2026-03-27T04:35:42.809Z",
+  "timestamp": "2026-03-27T10:09:53.969Z",
   "routineRects": [
     {
       "id": 1,
@@ -113,9 +113,9 @@
       "height": 100,
       "borderRadius": 8,
       "isDragging": false,
-      "offsetX": 62,
-      "offsetY": 92,
-      "keys": "Space, F, J, B",
+      "offsetX": 0,
+      "offsetY": 0,
+      "keys": "Space, F, J",
       "duration": 3000,
       "avtp": {
         "a": false,
@@ -129,7 +129,7 @@
           "enabled": false,
           "label": "Audio",
           "type": "audio",
-          "path": "$terst",
+          "path": "",
           "volume": 1,
           "startTime": 0,
           "duration": -1,
@@ -201,36 +201,118 @@
           "enabled": true,
           "label": "Key",
           "type": "keyboard",
-          "keys": "Space, F, J, B",
+          "keys": "Space, F, J",
           "startTime": 0,
           "duration": 3000,
-          "forceEndRoutine": true,
-          "path": ""
+          "forceEndRoutine": true
+        }
+      }
+    },
+    {
+      "id": 3,
+      "x": 220,
+      "y": 340,
+      "width": 160,
+      "height": 100,
+      "borderRadius": 8,
+      "isDragging": false,
+      "offsetX": 0,
+      "offsetY": 0,
+      "keys": "Space, F, J",
+      "duration": 3000,
+      "avtp": {
+        "a": false,
+        "v": false,
+        "t": true,
+        "p": true,
+        "k": true
+      },
+      "avtpData": {
+        "a": {
+          "enabled": false,
+          "label": "Audio",
+          "type": "audio",
+          "path": "",
+          "volume": 1,
+          "startTime": 0,
+          "duration": -1,
+          "stopWithRoutine": true,
+          "forceEndRoutine": true
+        },
+        "v": {
+          "enabled": false,
+          "label": "Video",
+          "type": "video",
+          "path": "",
+          "volume": 1,
+          "size": [
+            null,
+            null
+          ],
+          "anchor": "center",
+          "loop": false,
+          "startTime": 0,
+          "duration": -1,
+          "units": "from exp settings",
+          "opacity": 1,
+          "stopWithRoutine": true,
+          "forceEndRoutine": true
+        },
+        "t": {
+          "enabled": true,
+          "label": "Text",
+          "type": "text",
+          "text": "Sample Text",
+          "font": "Arial",
+          "letterHeight": 0.05,
+          "color": "white",
+          "pos": [
+            0,
+            0
+          ],
+          "ori": 0,
+          "opacity": 1,
+          "units": "from exp settings",
+          "startTime": 0,
+          "duration": 3000,
+          "contrast": 1,
+          "flip": "None",
+          "languageStyle": "LTR",
+          "draggable": false
+        },
+        "p": {
+          "enabled": true,
+          "label": "Pic",
+          "type": "image",
+          "path": "",
+          "size": [
+            null,
+            null
+          ],
+          "pos": [
+            0,
+            0
+          ],
+          "opacity": 1,
+          "startTime": 0,
+          "duration": 3000,
+          "ori": 0,
+          "flip": "None",
+          "units": "from exp settings"
+        },
+        "k": {
+          "enabled": true,
+          "label": "Key",
+          "type": "keyboard",
+          "keys": "Space, F, J",
+          "startTime": 0,
+          "duration": 3000,
+          "forceEndRoutine": true
         }
       }
     }
   ],
-  "connections": [
-    {
-      "start": {
-        "x": 300,
-        "y": 180,
-        "label": "3",
-        "isSnapTarget": false
-      },
-      "end": {
-        "x": 300,
-        "y": 320,
-        "label": "5",
-        "isSnapTarget": false
-      },
-      "depth": 0,
-      "loopName": "trials",
-      "loopReps": 1,
-      "loopType": "sequential",
-      "loopConditions": "[\n  {\n    \"name\": \"Condition 1\"\n  },\n  {\n    \"name\": \"Condition 2\"\n  }\n]",
-      "loopIsTrials": true
-    }
-  ],
-  "currentRoutineCount": 2
+  "connections": [],
+  "currentRoutineCount": 3,
+  "routineIdCounter": 3
 }

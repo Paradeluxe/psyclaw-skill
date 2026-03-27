@@ -1131,10 +1131,7 @@
             </div>
             <div class="avtp-form-group">
                 <button type="button" class="conditions-btn add-btn" id="addConditionRowBtn">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <line x1="12" y1="5" x2="12" y2="19"></line>
-                        <line x1="5" y1="12" x2="19" y2="12"></line>
-                    </svg>
+                    + Add Condition
                 </button>
                 <div id="conditionsTableView">
                     <div class="conditions-table-container">
@@ -3158,7 +3155,8 @@
                 timestamp: new Date().toISOString(),
                 routineRects: routineRects,
                 connections: connections,
-                currentRoutineCount: currentRoutineCount
+                currentRoutineCount: currentRoutineCount,
+                routineIdCounter: routineIdCounter
             };
 
             const jsonData = JSON.stringify(projectData, null, 2);
@@ -3209,7 +3207,8 @@
                 timestamp: new Date().toISOString(),
                 routineRects: routineRects,
                 connections: connections,
-                currentRoutineCount: currentRoutineCount
+                currentRoutineCount: currentRoutineCount,
+                routineIdCounter: routineIdCounter
             };
 
             const jsonData = JSON.stringify(projectData, null, 2);
@@ -3278,11 +3277,13 @@
                     // 清空当前项目
                     routineRects.length = 0;
                     connections.length = 0;
+                    selectedRoutineIndex = -1;
 
                     // 导入数据
                     routineRects.push(...projectData.routineRects);
                     connections.push(...projectData.connections);
                     currentRoutineCount = projectData.currentRoutineCount || routineRects.length;
+                    routineIdCounter = projectData.routineIdCounter || routineRects.length;
 
                     // 保存导入的文件名和文件句柄
                     currentProjectFile = handle.name;
@@ -3326,11 +3327,13 @@
                         // 清空当前项目
                         routineRects.length = 0;
                         connections.length = 0;
+                        selectedRoutineIndex = -1;
 
                         // 导入数据
                         routineRects.push(...projectData.routineRects);
                         connections.push(...projectData.connections);
                         currentRoutineCount = projectData.currentRoutineCount || routineRects.length;
+                        routineIdCounter = projectData.routineIdCounter || routineRects.length;
 
                         // 保存导入的文件名
                         currentProjectFile = file.name;
