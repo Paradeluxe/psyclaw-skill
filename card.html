@@ -432,7 +432,7 @@
             align-items: center;
             font-size: 14px;
             font-weight: 500;
-            color: #000000;
+            color: #666666;
         }
 
         .form-group-hidden {
@@ -710,19 +710,20 @@
             gap: 6px;
             padding: 8px 14px;
             background: #ffffff;
-            border: 1.5px solid #e0e0e0;
+            border: 1px solid #e0e6ed;
             border-radius: 8px;
             font-size: 13px;
             font-weight: 500;
-            color: #1d1d1f;
+            color: #333333;
             cursor: pointer;
             transition: all 0.2s;
             box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
         }
 
         .undo-button:hover:not(:disabled), .action-button:hover {
-            background: #f5f5f5;
-            border-color: #000000;
+            background: #f0f2f5;
+            border-color: #b8c6db;
+            color: #333333;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
         }
 
@@ -744,10 +745,14 @@
             font-weight: 600;
             line-height: 1;
             transition: transform 0.2s;
+            color: currentColor;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .undo-button:hover:not(:disabled) .undo-icon, .action-button:hover .action-icon {
-            transform: scale(1.1);
+        .undo-icon svg, .action-icon svg {
+            color: currentColor;
         }
 
         .undo-count {
@@ -756,19 +761,6 @@
             line-height: 1;
             min-width: 16px;
             text-align: center;
-        }
-
-        .action-button {
-            color: #0071e3;
-        }
-
-        .action-button:hover {
-            background: rgba(0, 113, 227, 0.08);
-            border-color: #0071e3;
-        }
-
-        .action-button:active {
-            background: rgba(0, 113, 227, 0.15);
         }
 
         .conditions-table th:first-child {
@@ -828,17 +820,40 @@
 </head>
 <body>
     <div class="undo-button-container">
-        <button class="undo-button" id="undoButton" disabled>
-            <span class="undo-icon">↶</span>
-            <span class="undo-count" id="undoCount">0</span>
+        <button class="undo-button" id="backwardButton" title="Backward" disabled>
+            <span class="undo-icon">
+                <svg width="18" height="18" viewBox="0 0 1241 1024" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M1155.12158 1022.906253a82.893312 82.893312 0 0 1-55.633095-22.809569l-436.163468-377.192387v313.770658a86.231298 86.231298 0 0 1-50.626117 78.998996A82.336981 82.336981 0 0 1 520.347962 1001.765677L29.664061 575.616166A87.34396 87.34396 0 0 1 28.551399 445.434723L521.460624 22.623198A82.336981 82.336981 0 0 1 612.6989 7.602262a86.231298 86.231298 0 0 1 51.182448 79.555327v311.545334L1098.932154 22.623198a82.336981 82.336981 0 0 1 89.569283-15.020936 86.231298 86.231298 0 0 1 51.182448 79.555327v848.961036a86.231298 86.231298 0 0 1-51.738778 79.555326 83.449643 83.449643 0 0 1-32.823527 7.232302z m-493.465556-514.049801l492.352894 428.931165V86.601258z m-85.118636-423.924187L84.184494 508.856452l492.352894 428.931165V86.601258z"></path>
+                </svg>
+            </span>
         </button>
-        <button class="action-button" id="saveButton">
-            <span class="action-icon">💾</span>
-            <span>保存</span>
+        <button class="undo-button" id="forwardButton" title="Forward" disabled>
+            <span class="undo-icon">
+                <svg width="18" height="18" viewBox="0 0 1239 1024" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M662.929155 1023.027623a83.489741 83.489741 0 0 1-33.395896-7.235778 86.272732 86.272732 0 0 1-51.207041-79.593553v-311.695031L140.839976 1001.876889a82.376544 82.376544 0 0 1-89.612321 15.028153A86.272732 86.272732 0 0 1 0.020614 936.198292V86.82933A86.272732 86.272732 0 0 1 51.784253 7.235778a82.376544 82.376544 0 0 1 89.612322 15.584751l436.373044 377.373628V86.82933a86.272732 86.272732 0 0 1 51.76364-79.593552 82.376544 82.376544 0 0 1 90.16892 15.584751L1210.621854 445.278617a87.385929 87.385929 0 0 1 0 128.574201L718.588982 1001.876889a82.933142 82.933142 0 0 1-55.659827 21.150734z m-578.862202-87.385929l492.58947-424.127883-490.919675-426.910874v851.595355z m577.749005 0l492.589471-424.127883-490.919676-426.910874v851.595355z"></path>
+                </svg>
+            </span>
         </button>
-        <button class="action-button" id="importButton">
-            <span class="action-icon">📁</span>
-            <span>导入</span>
+        <button class="action-button" id="saveButton" title="Save">
+            <span class="action-icon">
+                <svg width="18" height="18" viewBox="0 0 1024 1024" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M925.248 356.928l-258.176-258.176a64 64 0 0 0-45.248-18.752H144a64 64 0 0 0-64 64v736a64 64 0 0 0 64 64h736a64 64 0 0 0 64-64V402.176a64 64 0 0 0-18.752-45.248zM288 144h192V256H288V144z m448 736H288V736h448v144z m144 0H800V704a32 32 0 0 0-32-32H256a32 32 0 0 0-32 32v176H144v-736H224V288a32 32 0 0 0 32 32h256a32 32 0 0 0 32-32V144h77.824l258.176 258.176V880z"></path>
+                </svg>
+            </span>
+        </button>
+        <button class="action-button" id="saveAsButton" title="Save As">
+            <span class="action-icon">
+                <svg width="18" height="18" viewBox="0 0 1024 1024" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M548.8 177.6H624v148.8h-75.2v-148.8zM102.4 102.4h75.2V400c0 44.8 30.4 75.2 75.2 75.2h446.4c44.8 0 75.2-30.4 75.2-75.2V102.4h75.2v372.8h75.2V102.4c0-44.8-30.4-75.2-75.2-75.2H102.4c-44.8 0-75.2 30.4-75.2 75.2v819.2c0 44.8 30.4 75.2 75.2 75.2H624v-75.2H102.4V102.4z m148.8 0h446.4V400H251.2V102.4zM944 683.2l-156.8-156.8-51.2 52.8 118.4 118.4h-528v75.2h528L736 891.2l52.8 52.8 156.8-156.8 52.8-52.8-54.4-51.2z"></path>
+                </svg>
+            </span>
+        </button>
+        <button class="action-button" id="importButton" title="Import">
+            <span class="action-icon">
+                <svg width="18" height="18" viewBox="0 0 1024 1024" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M557 567.36l83.18-83.18c17.574-17.574 46.066-17.574 63.64 0 17.574 17.574 17.574 46.066 0 63.64l-160 160c-17.534 17.534-45.95 17.58-63.54 0.1l-160-159c-17.628-17.52-17.718-46.012-0.2-63.64 17.52-17.628 46.012-17.718 63.64-0.2l83.28 82.76V510c0-135.31 109.69-245 245-245h150c24.852 0 45 20.148 45 45s-20.148 45-45 45h-150c-85.604 0-155 69.396-155 155v57.36z m196.546 105.64c-24.852 0-45-20.148-45-45s20.148-45 45-45H836c41.42 0 75 33.58 75 75v180c0 41.42-33.58 75-75 75H186c-41.42 0-75-33.58-75-75v-180c0-41.42 33.58-75 75-75h80.276c24.852 0 45 20.148 45 45s-20.148 45-45 45H201v150h620v-150h-67.454z"></path>
+                </svg>
+            </span>
         </button>
     </div>
     <div class="main-content">
@@ -1120,7 +1135,6 @@
                         <line x1="12" y1="5" x2="12" y2="19"></line>
                         <line x1="5" y1="12" x2="19" y2="12"></line>
                     </svg>
-                    Add Condition
                 </button>
                 <div id="conditionsTableView">
                     <div class="conditions-table-container">
@@ -1166,9 +1180,22 @@
 
 <div class="canvas-container">
         <div class="routine-controls">
-            <button class="routine-btn" id="addRoutine">+ Add</button>
+            <button class="action-button" id="addRoutine" title="Add Routine">
+                <span class="action-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                </span>
+            </button>
             <div class="routine-count" id="routineCount">0 Routines</div>
-            <button class="routine-btn" id="removeRoutine">− Remove</button>
+            <button class="action-button" id="removeRoutine" title="Remove Routine">
+                <span class="action-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                </span>
+            </button>
         </div>
 
         <div class="container">
@@ -1283,10 +1310,11 @@
         let currentRoutineCount = 0;
         let canvasHeight = calculateCanvasHeight(currentRoutineCount);
 
-        const undoButton = document.getElementById('undoButton');
-        const undoCount = document.getElementById('undoCount');
+        const backwardButton = document.getElementById('backwardButton');
+        const forwardButton = document.getElementById('forwardButton');
         const maxHistoryLength = 15;
         const historyStack = [];
+        const redoStack = [];
 
         function deepCopyState(state) {
             return JSON.parse(JSON.stringify(state));
@@ -1300,16 +1328,24 @@
                 currentRoutineCount: currentRoutineCount
             };
             historyStack.push(state);
+            redoStack.length = 0;
             if (historyStack.length > maxHistoryLength) {
                 historyStack.shift();
             }
-            updateUndoButton();
+            updateUndoButtons();
         }
 
         function undo() {
             if (historyStack.length === 0) return;
             
             const state = historyStack.pop();
+            redoStack.push({
+                routineRects: deepCopyState(routineRects),
+                connections: deepCopyState(connections),
+                selectedRoutineIndex: selectedRoutineIndex,
+                currentRoutineCount: currentRoutineCount
+            });
+            
             routineRects.length = 0;
             routineRects.push(...deepCopyState(state.routineRects));
             connections.length = 0;
@@ -1320,15 +1356,40 @@
             updatePoints();
             updateRoutineCount();
             draw();
-            updateUndoButton();
+            updateUndoButtons();
         }
 
-        function updateUndoButton() {
-            undoCount.textContent = historyStack.length;
-            undoButton.disabled = historyStack.length === 0;
+        function redo() {
+            if (redoStack.length === 0) return;
+            
+            const state = redoStack.pop();
+            historyStack.push({
+                routineRects: deepCopyState(routineRects),
+                connections: deepCopyState(connections),
+                selectedRoutineIndex: selectedRoutineIndex,
+                currentRoutineCount: currentRoutineCount
+            });
+            
+            routineRects.length = 0;
+            routineRects.push(...deepCopyState(state.routineRects));
+            connections.length = 0;
+            connections.push(...deepCopyState(state.connections));
+            selectedRoutineIndex = state.selectedRoutineIndex;
+            currentRoutineCount = state.currentRoutineCount;
+            
+            updatePoints();
+            updateRoutineCount();
+            draw();
+            updateUndoButtons();
         }
 
-        undoButton.addEventListener('click', undo);
+        function updateUndoButtons() {
+            backwardButton.disabled = historyStack.length === 0;
+            forwardButton.disabled = redoStack.length === 0;
+        }
+
+        backwardButton.addEventListener('click', undo);
+        forwardButton.addEventListener('click', redo);
 
         canvas.width = baseWidth * dpr;
         canvas.height = canvasHeight * dpr;
@@ -1379,6 +1440,9 @@
         let selectedRoutineIndex = 0;
 
         let routineIdCounter = 0;
+        let currentProjectFile = null;
+        let saveCounter = 1;
+        let fileHandle = null;
 
         function createRoutineRect(index) {
             const snapPoint = snapPoints[index];
@@ -1942,7 +2006,14 @@
 
             const clickedRect = getDragRectAtPos(pos.x, pos.y);
             if (clickedRect && !isInsideAvtpArea(pos, clickedRect)) {
-                selectedRoutineIndex = routineRects.indexOf(clickedRect);
+                const clickedIndex = routineRects.indexOf(clickedRect);
+                if (selectedRoutineIndex === clickedIndex) {
+                    selectedRoutineIndex = -1;
+                    updateRoutineCount();
+                    draw();
+                    return;
+                }
+                selectedRoutineIndex = clickedIndex;
                 clickedRect.isDragging = true;
                 clickedRect.offsetX = pos.x - clickedRect.x;
                 clickedRect.offsetY = pos.y - clickedRect.y;
@@ -2041,6 +2112,8 @@
                 
                 if (targetIndex !== -1) {
                     saveState();
+                    currentProjectFile = null;
+                    fileHandle = null;
                     // 交换两个 routine 在数组中的位置
                     const temp = routineRects[draggedIndex];
                     routineRects[draggedIndex] = routineRects[targetIndex];
@@ -2073,6 +2146,8 @@
                     
                     if (!isDuplicate) {
                         saveState();
+                        currentProjectFile = null;
+                        fileHandle = null;
                         const newConn = { 
                             start: startPoint, 
                             end: targetPoint, 
@@ -2174,8 +2249,14 @@
             for (let i = connections.length - 1; i >= 0; i--) {
                 if (isInsideConnection(pos, connections[i])) {
                     saveState();
+                    currentProjectFile = null;
+                    fileHandle = null;
                     connections.splice(i, 1);
+                    activeConnection = null;
                     draw();
+                    if (loopOptions.classList.contains('form-group-visible')) {
+                        hideLoopForm();
+                    }
                     return;
                 }
             }
@@ -2350,6 +2431,9 @@
                 keyboardOptions.classList.remove('form-group-visible');
                 keyboardOptions.classList.add('form-group-hidden');
                 
+                formStartTime.parentElement.style.display = 'block';
+                formDuration.parentElement.style.display = 'block';
+                
                 formText.value = data.text || 'Sample Text';
                 formFont.value = data.font || 'Arial';
                 formLetterHeight.value = data.letterHeight || 0.05;
@@ -2376,6 +2460,9 @@
                 keyboardOptions.classList.remove('form-group-visible');
                 keyboardOptions.classList.add('form-group-hidden');
                 
+                formStartTime.parentElement.style.display = 'block';
+                formDuration.parentElement.style.display = 'block';
+                
                 formVolume.value = data.volume || 1.0;
                 formSizeW.value = data.size && data.size[0] !== null ? data.size[0] : '';
                 formSizeH.value = data.size && data.size[1] !== null ? data.size[1] : '';
@@ -2397,6 +2484,9 @@
                 keyboardOptions.classList.remove('form-group-visible');
                 keyboardOptions.classList.add('form-group-hidden');
                 
+                formStartTime.parentElement.style.display = 'block';
+                formDuration.parentElement.style.display = 'block';
+                
                 formAudioVolume.value = data.volume || 1.0;
                 formAudioStopWithRoutine.checked = data.stopWithRoutine !== undefined ? data.stopWithRoutine : true;
                 formAudioForceEndRoutine.checked = data.forceEndRoutine !== undefined ? data.forceEndRoutine : true;
@@ -2412,6 +2502,9 @@
                 imageOptions.classList.remove('form-group-visible');
                 imageOptions.classList.add('form-group-hidden');
                 
+                formStartTime.parentElement.style.display = 'block';
+                formDuration.parentElement.style.display = 'block';
+                
                 formKeys.value = data.keys || '';
                 formKeyboardForceEndRoutine.checked = data.forceEndRoutine !== undefined ? data.forceEndRoutine : true;
             } else if (data.type === 'image') {
@@ -2425,6 +2518,9 @@
                 imageOptions.classList.add('form-group-visible');
                 keyboardOptions.classList.remove('form-group-visible');
                 keyboardOptions.classList.add('form-group-hidden');
+                
+                formStartTime.parentElement.style.display = 'block';
+                formDuration.parentElement.style.display = 'block';
                 
                 formImageSizeW.value = data.size && data.size[0] !== null ? data.size[0] : '';
                 formImageSizeH.value = data.size && data.size[1] !== null ? data.size[1] : '';
@@ -2478,7 +2574,12 @@
 
         function hideLoopForm() {
             activeConnection = null;
+            loopOptions.classList.remove('form-group-visible');
+            loopOptions.classList.add('form-group-hidden');
+            avtpForm.style.transition = 'none';
             avtpForm.classList.remove('visible');
+            avtpForm.offsetHeight;
+            avtpForm.style.transition = '';
             enabledOption.style.display = 'block';
             formStartTime.parentElement.style.display = 'block';
             formDuration.parentElement.style.display = 'block';
@@ -2497,6 +2598,8 @@
             if (!activeAvtp || !activeDragRect) return;
             
             saveState();
+            currentProjectFile = null;
+            fileHandle = null;
             
             const data = activeDragRect.avtpData[activeAvtp];
             data.path = formPath.value;
@@ -2558,6 +2661,8 @@
             if (!activeConnection) return;
 
             saveState();
+            currentProjectFile = null;
+            fileHandle = null;
 
             activeConnection.loopName = formLoopName.value || 'trials';
             activeConnection.loopReps = parseInt(formLoopReps.value) || 1;
@@ -2982,7 +3087,19 @@
             canvas.height = canvasHeight * dpr;
             canvas.style.height = canvasHeight + 'px';
             ctx.scale(dpr, dpr);
-            
+
+            // 保存现有 connections 的 label 信息，用于后续重新关联
+            const connectionLabels = connections.map(conn => ({
+                startLabel: conn.start.label,
+                endLabel: conn.end.label,
+                depth: conn.depth,
+                loopName: conn.loopName,
+                loopReps: conn.loopReps,
+                loopType: conn.loopType,
+                loopConditions: conn.loopConditions,
+                loopIsTrials: conn.loopIsTrials
+            }));
+
             // 使用至少 minDisplayRoutines 来计算点位置
             const displayCount = Math.max(routineRects.length, minDisplayRoutines);
             pointsData = generatePoints(displayCount);
@@ -2991,6 +3108,17 @@
             startY = pointsData.startY;
             endY = pointsData.endY;
             reassignSnapPoints();
+
+            // 重新关联 connections 到新的 linePoints
+            for (let i = 0; i < connections.length; i++) {
+                const labels = connectionLabels[i];
+                const newStartPoint = linePoints.find(p => p.label === labels.startLabel);
+                const newEndPoint = linePoints.find(p => p.label === labels.endLabel);
+                if (newStartPoint && newEndPoint) {
+                    connections[i].start = newStartPoint;
+                    connections[i].end = newEndPoint;
+                }
+            }
         }
 
         function reassignSnapPoints() {
@@ -3006,10 +3134,17 @@
 
         // 保存和导入功能
         const saveButton = document.getElementById('saveButton');
+        const saveAsButton = document.getElementById('saveAsButton');
         const importButton = document.getElementById('importButton');
 
         // 保存项目
-        saveButton.addEventListener('click', () => {
+        saveButton.addEventListener('click', async () => {
+            // 检查是否为空flowchart
+            if (routineRects.length === 0) {
+                alert('不能保存空的flowchart，请先添加至少一个routine！');
+                return;
+            }
+
             // 确保保存当前打开的表单值
             if (activeAvtp && activeDragRect) {
                 saveFormChanges();
@@ -3027,22 +3162,150 @@
             };
 
             const jsonData = JSON.stringify(projectData, null, 2);
+
+            // 如果已经有文件句柄，直接保存
+            if (fileHandle) {
+                try {
+                    const writable = await fileHandle.createWritable();
+                    await writable.write(jsonData);
+                    await writable.close();
+                    return;
+                } catch (error) {
+                    console.error('保存失败:', error);
+                    // 如果保存失败，回退到传统方式
+                }
+            }
+
+            // 新文件或保存失败，使用传统方式
             const blob = new Blob([jsonData], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `deeppsych_project_${new Date().toISOString().replace(/[:.]/g, '-')}.json`;
+            a.download = currentProjectFile || `deeppsych_project_${saveCounter++}.json`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
+        });
 
-            // 显示保存成功消息
-            alert('项目保存成功！');
+        // 另存为功能
+        saveAsButton.addEventListener('click', async () => {
+            // 检查是否为空flowchart
+            if (routineRects.length === 0) {
+                alert('不能保存空的flowchart，请先添加至少一个routine！');
+                return;
+            }
+
+            // 确保保存当前打开的表单值
+            if (activeAvtp && activeDragRect) {
+                saveFormChanges();
+            }
+            if (activeConnection) {
+                saveLoopFormChanges();
+            }
+
+            const projectData = {
+                version: '1.0',
+                timestamp: new Date().toISOString(),
+                routineRects: routineRects,
+                connections: connections,
+                currentRoutineCount: currentRoutineCount
+            };
+
+            const jsonData = JSON.stringify(projectData, null, 2);
+
+            // 使用File System Access API让用户选择文件
+            if ('showSaveFilePicker' in window) {
+                try {
+                    const handle = await window.showSaveFilePicker({
+                        suggestedName: currentProjectFile || `deeppsych_project_${saveCounter++}.json`,
+                        types: [{
+                            description: 'JSON Files',
+                            accept: { 'application/json': ['.json'] }
+                        }]
+                    });
+
+                    const writable = await handle.createWritable();
+                    await writable.write(jsonData);
+                    await writable.close();
+
+                    // 更新文件句柄和文件名
+                    fileHandle = handle;
+                    currentProjectFile = handle.name;
+                    return;
+                } catch (error) {
+                    if (error.name !== 'AbortError') {
+                        console.error('另存为失败:', error);
+                    }
+                    // 用户取消或出错，回退到传统方式
+                }
+            }
+
+            // 回退到传统方式
+            const blob = new Blob([jsonData], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = currentProjectFile || `deeppsych_project_${saveCounter++}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
         });
 
         // 导入项目
-        importButton.addEventListener('click', () => {
+        importButton.addEventListener('click', async () => {
+            // 使用File System Access API让用户选择文件
+            if ('showOpenFilePicker' in window) {
+                try {
+                    const [handle] = await window.showOpenFilePicker({
+                        types: [{
+                            description: 'JSON Files',
+                            accept: { 'application/json': ['.json'] }
+                        }],
+                        multiple: false
+                    });
+
+                    const file = await handle.getFile();
+                    const text = await file.text();
+                    const projectData = JSON.parse(text);
+
+                    // 验证数据格式
+                    if (!projectData.routineRects || !Array.isArray(projectData.connections)) {
+                        throw new Error('无效的项目文件格式');
+                    }
+
+                    // 清空当前项目
+                    routineRects.length = 0;
+                    connections.length = 0;
+
+                    // 导入数据
+                    routineRects.push(...projectData.routineRects);
+                    connections.push(...projectData.connections);
+                    currentRoutineCount = projectData.currentRoutineCount || routineRects.length;
+
+                    // 保存导入的文件名和文件句柄
+                    currentProjectFile = handle.name;
+                    fileHandle = handle;
+
+                    // 更新界面
+                    updatePoints();
+                    updateRoutineCount();
+                    draw();
+                    
+                    // 保存初始状态并启用按钮
+                    saveState();
+                    return;
+                } catch (error) {
+                    if (error.name === 'AbortError') {
+                        return;
+                    }
+                    console.error('导入失败:', error);
+                    // 回退到传统方式
+                }
+            }
+
+            // 回退到传统方式
             const input = document.createElement('input');
             input.type = 'file';
             input.accept = '.json';
@@ -3069,13 +3332,17 @@
                         connections.push(...projectData.connections);
                         currentRoutineCount = projectData.currentRoutineCount || routineRects.length;
 
+                        // 保存导入的文件名
+                        currentProjectFile = file.name;
+                        fileHandle = null;
+
                         // 更新界面
                         updatePoints();
                         updateRoutineCount();
                         draw();
-
-                        // 显示导入成功消息
-                        alert('项目导入成功！');
+                        
+                        // 保存初始状态并启用按钮
+                        saveState();
                     } catch (error) {
                         alert('导入失败：' + error.message);
                     }
@@ -3085,8 +3352,17 @@
             input.click();
         });
 
+        document.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                e.preventDefault();
+                saveButton.click();
+            }
+        });
+
         addRoutineBtn.addEventListener('click', () => {
             saveState();
+            currentProjectFile = null;
+            fileHandle = null;
             // 当没有 routine 时，从索引 0 开始；否则在选中的后面添加
             const newIndex = routineRects.length === 0 ? 0 : (selectedRoutineIndex >= 0 ? selectedRoutineIndex + 1 : routineRects.length);
             
@@ -3108,38 +3384,141 @@
         removeRoutineBtn.addEventListener('click', () => {
             if (routineRects.length > 0) {
                 saveState();
+                currentProjectFile = null;
+                fileHandle = null;
                 const removedRoutineIndex = selectedRoutineIndex;
                 const removedRoutine = routineRects[removedRoutineIndex];
-                
-                // Get the snap point that this routine is currently at
-                // We need to find which snap point this routine corresponds to
-                const removedRoutineSnapIndex = removedRoutineIndex;
-                
-                // Remove connections that involve any snap point at or after the removed index
-                // because after deletion, all subsequent snap points will shift
+                const removedLabel = removedRoutineIndex * 2 + 2;
+
+                // 先记录哪些Loop包含被删除的routine，以及是起始点、结束点还是中间
+                const loopAdjustments = [];
                 for (let i = connections.length - 1; i >= 0; i--) {
                     const conn = connections[i];
                     const startLabel = parseInt(conn.start.label);
                     const endLabel = parseInt(conn.end.label);
                     const minLabel = Math.min(startLabel, endLabel);
                     const maxLabel = Math.max(startLabel, endLabel);
-                    
-                    // Check if this connection involves the removed routine's position
-                    // Labels are 1-indexed, routine indices are 0-indexed
-                    if (minLabel <= removedRoutineSnapIndex + 1 && maxLabel >= removedRoutineSnapIndex + 1) {
-                        connections.splice(i, 1);
+
+                    if (minLabel <= removedLabel && maxLabel >= removedLabel) {
+                        let adjustmentType = 'middle'; // 默认是中间
+                        if (startLabel === removedLabel) {
+                            adjustmentType = 'start';
+                        } else if (endLabel === removedLabel) {
+                            adjustmentType = 'end';
+                        }
+                        loopAdjustments.push({ index: i, conn: conn, type: adjustmentType, originalStart: startLabel, originalEnd: endLabel });
                     }
                 }
-                
-                // Clear activeDragRect if it's the one being removed
+
                 if (activeDragRect === removedRoutine) {
                     activeDragRect = null;
                 }
-                
-                // Remove the routine
+
+                // 删除routine并更新points
                 routineRects.splice(removedRoutineIndex, 1);
                 selectedRoutineIndex = routineRects.length > 0 ? Math.min(removedRoutineIndex, routineRects.length - 1) : -1;
                 updatePoints();
+
+                // 更新所有Loop的label（因为routine删除后，label编号会变化）
+                for (const conn of connections) {
+                    const startLabel = parseInt(conn.start.label);
+                    const endLabel = parseInt(conn.end.label);
+                    if (startLabel > removedLabel) {
+                        conn.start.label = (startLabel - 2).toString();
+                    }
+                    if (endLabel > removedLabel) {
+                        conn.end.label = (endLabel - 2).toString();
+                    }
+                }
+
+                // 现在处理Loop的范围调整（基于更新后的label）
+                for (let i = connections.length - 1; i >= 0; i--) {
+                    const conn = connections[i];
+                    
+                    // 找到对应的adjustment记录
+                    const adjustment = loopAdjustments.find(adj => adj.conn === conn);
+                    
+                    if (adjustment) {
+                        let startLabel = parseInt(conn.start.label);
+                        let endLabel = parseInt(conn.end.label);
+                        
+                        // 计算Loop原本包含多少个routine（包含起始和结束）
+                        const originalRoutineCount = (adjustment.originalEnd - adjustment.originalStart) / 2 + 1;
+                        
+                        if (adjustment.type === 'start') {
+                            // 原来的起始点被删除了
+                            if (originalRoutineCount <= 1) {
+                                // Loop只包含1个routine，删除后Loop应该被删除
+                                conn.start.label = adjustment.originalStart.toString();
+                                conn.end.label = adjustment.originalStart.toString();
+                            } else if (originalRoutineCount === 2) {
+                                // Loop只包含2个routine，删除起始点后只剩结束点
+                                // 让start和end都指向剩下的routine（原来的结束点）
+                                conn.start.label = adjustment.originalEnd.toString();
+                                conn.end.label = adjustment.originalEnd.toString();
+                            } else {
+                                // Loop包含3个或更多routine，新的起始点是原来的下一个
+                                // 由于label已经-2，原来的下一个现在就是当前startLabel
+                                // 需要+2来移动到下一个routine
+                                conn.start.label = (startLabel + 2).toString();
+                            }
+                        } else if (adjustment.type === 'end') {
+                            // 原来的结束点被删除了
+                            if (originalRoutineCount <= 1) {
+                                // Loop只包含1个routine，删除后Loop应该被删除
+                                conn.start.label = adjustment.originalEnd.toString();
+                                conn.end.label = adjustment.originalEnd.toString();
+                            } else if (originalRoutineCount === 2) {
+                                // Loop只包含2个routine，删除结束点后只剩起始点
+                                // 让start和end都指向剩下的routine（原来的起始点）
+                                conn.start.label = adjustment.originalStart.toString();
+                                conn.end.label = adjustment.originalStart.toString();
+                            } else {
+                                // Loop包含3个或更多routine，新的结束点是原来的上一个
+                                // 由于被删除的结束点label不大于removedLabel，所以不会自动-2
+                                // 需要-2来移动到原来的上一个routine
+                                conn.end.label = (adjustment.originalEnd - 2).toString();
+                            }
+                        }
+                        // 如果是middle类型，不需要额外调整，因为label自动更新已经正确处理了范围
+                    }
+
+                    // 检查Loop是否变得无效
+                    const newStartLabel = parseInt(conn.start.label);
+                    const newEndLabel = parseInt(conn.end.label);
+                    const newMinLabel = Math.min(newStartLabel, newEndLabel);
+                    const newMaxLabel = Math.max(newStartLabel, newEndLabel);
+
+                    // 只有当Loop范围为空（不包含任何routine）时才删除
+                    if (newMinLabel > newMaxLabel) {
+                        connections.splice(i, 1);
+                    }
+                }
+
+                // 重新关联 connections 到 linePoints（因为 label 已经被修改）
+                for (const conn of connections) {
+                    const newStartPoint = linePoints.find(p => p.label === conn.start.label);
+                    const newEndPoint = linePoints.find(p => p.label === conn.end.label);
+                    if (newStartPoint) {
+                        conn.start = newStartPoint;
+                    }
+                    if (newEndPoint) {
+                        conn.end = newEndPoint;
+                    }
+                }
+
+                let changed = true;
+                while (changed) {
+                    changed = false;
+                    for (const conn of connections) {
+                        const newDepth = getNestingDepth(conn, connections);
+                        if (newDepth !== conn.depth) {
+                            conn.depth = newDepth;
+                            changed = true;
+                        }
+                    }
+                }
+
                 updateRoutineCount();
                 draw();
             }
@@ -3276,8 +3655,9 @@
             });
 
             confirmKeyboardBtn.addEventListener('click', () => {
-                formKeys.value = selectedKeys.join(', ');
+                formKeys.value = selectedKeys.map(k => k.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')).join(', ');
                 closeKeyboardModal();
+                formKeys.dispatchEvent(new Event('change'));
             });
 
             initKeyboard();
