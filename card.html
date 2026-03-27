@@ -3489,8 +3489,8 @@
                     const newMinLabel = Math.min(newStartLabel, newEndLabel);
                     const newMaxLabel = Math.max(newStartLabel, newEndLabel);
 
-                    // 只有当Loop范围为空（不包含任何routine）时才删除
-                    if (newMinLabel > newMaxLabel) {
+                    // 当Loop范围为空（不包含任何routine）或start==end时删除
+                    if (newMinLabel > newMaxLabel || newStartLabel === newEndLabel) {
                         connections.splice(i, 1);
                     }
                 }
