@@ -3397,12 +3397,12 @@
                     activeDragRect = null;
                 }
 
-                // 删除routine并更新points
+                // 删除routine
                 routineRects.splice(removedRoutineIndex, 1);
                 selectedRoutineIndex = routineRects.length > 0 ? Math.min(removedRoutineIndex, routineRects.length - 1) : -1;
-                updatePoints();
 
-                // 更新所有Loop的label（因为routine删除后，label编号会变化）
+                // 先更新所有Loop的label（因为routine删除后，label编号会变化）
+                // 注意：此步骤必须在 updatePoints() 之前完成
                 for (const conn of connections) {
                     const startLabel = parseInt(conn.start.label);
                     const endLabel = parseInt(conn.end.label);
@@ -3417,17 +3417,17 @@
                 // 现在处理Loop的范围调整（基于更新后的label）
                 for (let i = connections.length - 1; i >= 0; i--) {
                     const conn = connections[i];
-                    
+
                     // 找到对应的adjustment记录
                     const adjustment = loopAdjustments.find(adj => adj.conn === conn);
-                    
+
                     if (adjustment) {
                         let startLabel = parseInt(conn.start.label);
                         let endLabel = parseInt(conn.end.label);
-                        
+
                         // 计算Loop原本包含多少个routine（包含起始和结束）
                         const originalRoutineCount = (adjustment.originalEnd - adjustment.originalStart) / 2 + 1;
-                        
+
                         if (adjustment.type === 'start') {
                             // 原来的起始点被删除了
                             if (originalRoutineCount <= 1) {
@@ -3478,17 +3478,8 @@
                     }
                 }
 
-                // 重新关联 connections 到 linePoints（因为 label 已经被修改）
-                for (const conn of connections) {
-                    const newStartPoint = linePoints.find(p => p.label === conn.start.label);
-                    const newEndPoint = linePoints.find(p => p.label === conn.end.label);
-                    if (newStartPoint) {
-                        conn.start = newStartPoint;
-                    }
-                    if (newEndPoint) {
-                        conn.end = newEndPoint;
-                    }
-                }
+                // 所有label更新完成后再调用 updatePoints()，确保重新关联到正确的点
+                updatePoints();
 
                 let changed = true;
                 while (changed) {

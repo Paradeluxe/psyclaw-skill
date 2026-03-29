@@ -20,8 +20,8 @@ function convertToPsyExpXML(projectData) {
     
     // 添加 Routines
     xml += '  <Routines>\n';
-    for (const routineRect of routineRects) {
-        xml += generateRoutine(routineRect);
+    for (let i = 0; i < routineRects.length; i++) {
+        xml += generateRoutine(routineRects[i], i);
     }
     xml += '  </Routines>\n';
     
@@ -122,8 +122,8 @@ function generateSettings() {
 /**
  * 生成单个 Routine
  */
-function generateRoutine(routineRect) {
-    const routineName = routineRect.name || `Routine_${routineRect.id || 'unknown'}`;
+function generateRoutine(routineRect, index) {
+    const routineName = routineRect.name || `Routine_${index + 1}`;
     
     let xml = `    <Routine name="${routineName}">\n`;
     
@@ -145,17 +145,38 @@ function generateRoutine(routineRect) {
         <Param val="False" valType="bool" updates="None" name="useWindowParams"/>
       </RoutineSettingsComponent>\n`;
     
-    // 根据 routine 类型添加组件
-    if (routineRect.type === 'Audio') {
-        xml += generateAudioComponent(routineRect);
-    } else if (routineRect.type === 'Text') {
-        xml += generateTextComponent(routineRect);
-    } else if (routineRect.type === 'Image') {
-        xml += generateImageComponent(routineRect);
-    } else if (routineRect.type === 'Keyboard') {
-        xml += generateKeyboardComponent(routineRect);
-    } else if (routineRect.type === 'Code') {
-        xml += generateCodeComponent(routineRect);
+    // 处理 avtpData 中的组件
+    if (routineRect.avtpData) {
+        const avtpData = routineRect.avtpData;
+        
+        if (avtpData.a && avtpData.a.enabled) {
+            xml += generateAudioComponentFromAvtp(avtpData.a, routineName);
+        }
+        if (avtpData.v && avtpData.v.enabled) {
+            xml += generateVideoComponentFromAvtp(avtpData.v, routineName);
+        }
+        if (avtpData.t && avtpData.t.enabled) {
+            xml += generateTextComponentFromAvtp(avtpData.t, routineName);
+        }
+        if (avtpData.p && avtpData.p.enabled) {
+            xml += generateImageComponentFromAvtp(avtpData.p, routineName);
+        }
+        if (avtpData.k && avtpData.k.enabled) {
+            xml += generateKeyboardComponentFromAvtp(avtpData.k, routineName);
+        }
+    } else {
+        // 兼容旧的 type 属性方式
+        if (routineRect.type === 'Audio') {
+            xml += generateAudioComponent(routineRect);
+        } else if (routineRect.type === 'Text') {
+            xml += generateTextComponent(routineRect);
+        } else if (routineRect.type === 'Image') {
+            xml += generateImageComponent(routineRect);
+        } else if (routineRect.type === 'Keyboard') {
+            xml += generateKeyboardComponent(routineRect);
+        } else if (routineRect.type === 'Code') {
+            xml += generateCodeComponent(routineRect);
+        }
     }
     
     xml += `    </Routine>\n`;
@@ -308,76 +329,300 @@ function generateCodeComponent(routineRect) {
 }
 
 /**
+ * 从 avtpData 生成 Audio 组件
+ */
+function generateAudioComponentFromAvtp(avtpData, routineName) {
+    const name = avtpData.name || `${routineName}_audio`;
+    const soundPath = avtpData.path || '';
+    const volume = avtpData.volume || 1.0;
+    const startTime = (avtpData.startTime || 0) / 1000;
+    const duration = avtpData.duration ? avtpData.duration / 1000 : '';
+    const stopWithRoutine = avtpData.stopWithRoutine !== false ? 'True' : 'False';
+    const forceEndRoutine = avtpData.forceEndRoutine === true ? 'True' : 'False';
+    
+    return `      <SoundComponent name="${name}" plugin="None">
+        <Param val="" valType="device" updates="None" name="deviceLabel"/>
+        <Param val="False" valType="bool" updates="None" name="disabled"/>
+        <Param val="" valType="code" updates="None" name="durationEstim"/>
+        <Param val="${forceEndRoutine}" valType="bool" updates="constant" name="forceEndRoutine"/>
+        <Param val="True" valType="bool" updates="constant" name="hamming"/>
+        <Param val="${name}" valType="code" updates="None" name="name"/>
+        <Param val="True" valType="bool" updates="None" name="saveStartStop"/>
+        <Param val="${soundPath}" valType="str" updates="set every repeat" name="sound"/>
+        <Param val="" valType="code" updates="None" name="startEstim"/>
+        <Param val="time (s)" valType="str" updates="None" name="startType"/>
+        <Param val="${startTime}" valType="code" updates="None" name="startVal"/>
+        <Param val="duration (s)" valType="str" updates="None" name="stopType"/>
+        <Param val="${duration}" valType="code" updates="constant" name="stopVal"/>
+        <Param val="${stopWithRoutine}" valType="bool" updates="constant" name="stopWithRoutine"/>
+        <Param val="True" valType="bool" updates="constant" name="syncScreenRefresh"/>
+        <Param val="" valType="code" updates="None" name="validator"/>
+        <Param val="${volume}" valType="num" updates="constant" name="volume"/>
+      </SoundComponent>\n`;
+}
+
+/**
+ * 从 avtpData 生成 Video 组件
+ */
+function generateVideoComponentFromAvtp(avtpData, routineName) {
+    const name = avtpData.name || `${routineName}_video`;
+    const videoPath = avtpData.path || '';
+    const volume = avtpData.volume || 1.0;
+    const loop = avtpData.loop ? 'True' : 'False';
+    const startTime = (avtpData.startTime || 0) / 1000;
+    const duration = avtpData.duration ? avtpData.duration / 1000 : '';
+    const stopWithRoutine = avtpData.stopWithRoutine !== false ? 'True' : 'False';
+    const forceEndRoutine = avtpData.forceEndRoutine === true ? 'True' : 'False';
+    const pos = avtpData.pos || [0, 0];
+    const size = avtpData.size || [null, null];
+    const opacity = avtpData.opacity || 1.0;
+    const anchor = avtpData.anchor || 'center';
+    
+    return `      <MovieComponent name="${name}" plugin="None">
+        <Param val="${anchor}" valType="str" updates="constant" name="anchor"/>
+        <Param val="False" valType="bool" updates="None" name="disabled"/>
+        <Param val="" valType="code" updates="None" name="durationEstim"/>
+        <Param val="${forceEndRoutine}" valType="bool" updates="constant" name="forceEndRoutine"/>
+        <Param val="${videoPath}" valType="str" updates="set every repeat" name="movie"/>
+        <Param val="${name}" valType="code" updates="None" name="name"/>
+        <Param val="${opacity}" valType="num" updates="constant" name="opacity"/>
+        <Param val="(${pos[0]}, ${pos[1]})" valType="list" updates="constant" name="pos"/>
+        <Param val="True" valType="bool" updates="None" name="saveStartStop"/>
+        <Param val="" valType="code" updates="None" name="startEstim"/>
+        <Param val="time (s)" valType="str" updates="None" name="startType"/>
+        <Param val="${startTime}" valType="code" updates="None" name="startVal"/>
+        <Param val="duration (s)" valType="str" updates="None" name="stopType"/>
+        <Param val="${duration}" valType="code" updates="constant" name="stopVal"/>
+        <Param val="${stopWithRoutine}" valType="bool" updates="constant" name="stopWithRoutine"/>
+        <Param val="True" valType="bool" updates="constant" name="syncScreenRefresh"/>
+        <Param val="from exp settings" valType="str" updates="None" name="units"/>
+        <Param val="" valType="code" updates="None" name="validator"/>
+        <Param val="${volume}" valType="num" updates="constant" name="volume"/>
+        <Param val="${loop}" valType="bool" updates="constant" name="loop"/>
+      </MovieComponent>\n`;
+}
+
+/**
+ * 从 avtpData 生成 Text 组件
+ */
+function generateTextComponentFromAvtp(avtpData, routineName) {
+    const name = avtpData.name || `${routineName}_text`;
+    const text = avtpData.text || '';
+    const color = avtpData.color || 'white';
+    const font = avtpData.font || 'Arial';
+    const letterHeight = avtpData.letterHeight || 0.05;
+    const pos = avtpData.pos || [0, 0];
+    const ori = avtpData.ori || 0;
+    // opacity: 如果未设置或为null，使用空字符串
+    const opacity = avtpData.opacity !== undefined && avtpData.opacity !== null ? avtpData.opacity : '';
+    const contrast = avtpData.contrast || 1.0;
+    // startTime: 使用 0.0 格式
+    const startTime = ((avtpData.startTime || 0) / 1000).toFixed(1);
+    // duration: 如果为 -1 或未设置，使用空字符串
+    const duration = avtpData.duration && avtpData.duration !== -1 ? (avtpData.duration / 1000).toFixed(1) : '';
+    const units = avtpData.units || 'from exp settings';
+    const wrapWidth = avtpData.wrapWidth || '';
+    const languageStyle = avtpData.languageStyle || 'LTR';
+    const flip = avtpData.flip || 'None';
+    const draggable = avtpData.draggable ? 'True' : 'False';
+    
+    return `      <TextComponent name="${name}" plugin="None">
+        <Param val="${color}" valType="color" updates="constant" name="color"/>
+        <Param val="rgb" valType="str" updates="constant" name="colorSpace"/>
+        <Param val="${contrast}" valType="num" updates="constant" name="contrast"/>
+        <Param val="False" valType="bool" updates="None" name="disabled"/>
+        <Param val="${draggable}" valType="code" updates="constant" name="draggable"/>
+        <Param val="" valType="code" updates="None" name="durationEstim"/>
+        <Param val="${flip}" valType="str" updates="constant" name="flip"/>
+        <Param val="${font}" valType="str" updates="constant" name="font"/>
+        <Param val="${languageStyle}" valType="str" updates="None" name="languageStyle"/>
+        <Param val="${letterHeight}" valType="num" updates="constant" name="letterHeight"/>
+        <Param val="${name}" valType="code" updates="None" name="name"/>
+        <Param val="${opacity}" valType="num" updates="constant" name="opacity"/>
+        <Param val="${ori}" valType="num" updates="constant" name="ori"/>
+        <Param val="(${pos[0]}, ${pos[1]})" valType="list" updates="constant" name="pos"/>
+        <Param val="True" valType="bool" updates="None" name="saveStartStop"/>
+        <Param val="" valType="code" updates="None" name="startEstim"/>
+        <Param val="time (s)" valType="str" updates="None" name="startType"/>
+        <Param val="${startTime}" valType="code" updates="None" name="startVal"/>
+        <Param val="duration (s)" valType="str" updates="None" name="stopType"/>
+        <Param val="${duration}" valType="code" updates="constant" name="stopVal"/>
+        <Param val="True" valType="bool" updates="None" name="syncScreenRefresh"/>
+        <Param val="${text}" valType="str" updates="constant" name="text"/>
+        <Param val="${units}" valType="str" updates="None" name="units"/>
+        <Param val="" valType="code" updates="None" name="validator"/>
+        <Param val="${wrapWidth}" valType="num" updates="constant" name="wrapWidth"/>
+      </TextComponent>\n`;
+}
+
+/**
+ * 从 avtpData 生成 Image 组件
+ */
+function generateImageComponentFromAvtp(avtpData, routineName) {
+    const name = avtpData.name || `${routineName}_image`;
+    const imagePath = avtpData.path || '';
+    const startTime = (avtpData.startTime || 0) / 1000;
+    const duration = avtpData.duration ? avtpData.duration / 1000 : '';
+    const pos = avtpData.pos || [0, 0];
+    const size = avtpData.size || [null, null];
+    const opacity = avtpData.opacity || 1.0;
+    const ori = avtpData.ori || 0;
+    const flip = avtpData.flip || 'None';
+    const units = avtpData.units || 'from exp settings';
+    
+    // 处理 size：如果为 null 则使用空字符串
+    const sizeVal = size[0] !== null && size[1] !== null ? `(${size[0]}, ${size[1]})` : '';
+    
+    return `      <ImageComponent name="${name}" plugin="None">
+        <Param val="center" valType="str" updates="constant" name="anchor"/>
+        <Param val="$[1,1,1]" valType="color" updates="constant" name="color"/>
+        <Param val="rgb" valType="str" updates="constant" name="colorSpace"/>
+        <Param val="False" valType="bool" updates="None" name="disabled"/>
+        <Param val="" valType="code" updates="None" name="durationEstim"/>
+        <Param val="${flip}" valType="str" updates="constant" name="flipHoriz"/>
+        <Param val="" valType="str" updates="constant" name="flipVert"/>
+        <Param val="${imagePath}" valType="str" updates="set every repeat" name="image"/>
+        <Param val="linear" valType="str" updates="None" name="interpolate"/>
+        <Param val="${name}" valType="code" updates="None" name="name"/>
+        <Param val="${opacity}" valType="num" updates="constant" name="opacity"/>
+        <Param val="${ori}" valType="num" updates="constant" name="ori"/>
+        <Param val="(${pos[0]}, ${pos[1]})" valType="list" updates="constant" name="pos"/>
+        <Param val="True" valType="bool" updates="None" name="saveStartStop"/>
+        <Param val="" valType="code" updates="None" name="startEstim"/>
+        <Param val="time (s)" valType="str" updates="None" name="startType"/>
+        <Param val="${startTime}" valType="code" updates="None" name="startVal"/>
+        <Param val="duration (s)" valType="str" updates="None" name="stopType"/>
+        <Param val="${duration}" valType="code" updates="constant" name="stopVal"/>
+        <Param val="True" valType="bool" updates="None" name="syncScreenRefresh"/>
+        <Param val="${sizeVal}" valType="list" updates="constant" name="size"/>
+        <Param val="${units}" valType="str" updates="None" name="units"/>
+        <Param val="" valType="code" updates="None" name="validator"/>
+      </ImageComponent>\n`;
+}
+
+/**
+ * 从 avtpData 生成 Keyboard 组件
+ */
+function generateKeyboardComponentFromAvtp(avtpData, routineName) {
+    const name = avtpData.name || `${routineName}_key_resp`;
+    const startTime = (avtpData.startTime || 0) / 1000;
+    const duration = avtpData.duration ? avtpData.duration / 1000 : '';
+    const forceEndRoutine = avtpData.forceEndRoutine !== false ? 'True' : 'False';
+    
+    // 处理 keys 格式：将 "Space, F, J" 转换为 "'space','f','j'"
+    let keys = avtpData.keys || 'f,j';
+    if (keys) {
+        const keyList = keys.split(',').map(k => k.trim().toLowerCase());
+        keys = keyList.map(k => `'${k}'`).join(',');
+    } else {
+        keys = "'f','j'";
+    }
+    
+    return `      <KeyboardComponent name="${name}" plugin="None">
+        <Param val="${keys}" valType="list" updates="constant" name="allowedKeys"/>
+        <Param val="" valType="str" updates="constant" name="correctAns"/>
+        <Param val="False" valType="bool" updates="None" name="disabled"/>
+        <Param val="True" valType="bool" updates="constant" name="discard previous"/>
+        <Param val="" valType="code" updates="None" name="durationEstim"/>
+        <Param val="${forceEndRoutine}" valType="bool" updates="constant" name="forceEndRoutine"/>
+        <Param val="${name}" valType="code" updates="None" name="name"/>
+        <Param val="press" valType="str" updates="constant" name="registerOn"/>
+        <Param val="True" valType="bool" updates="None" name="saveStartStop"/>
+        <Param val="" valType="code" updates="None" name="startEstim"/>
+        <Param val="time (s)" valType="str" updates="None" name="startType"/>
+        <Param val="${startTime}" valType="code" updates="None" name="startVal"/>
+        <Param val="duration (s)" valType="str" updates="None" name="stopType"/>
+        <Param val="${duration}" valType="code" updates="constant" name="stopVal"/>
+        <Param val="last key" valType="str" updates="constant" name="store"/>
+        <Param val="False" valType="bool" updates="constant" name="storeCorrect"/>
+        <Param val="True" valType="bool" updates="constant" name="syncScreenRefresh"/>
+      </KeyboardComponent>\n`;
+}
+
+/**
  * 生成 Flow 部分
  */
 function generateFlow(routineRects, connections) {
     let xml = '';
     
-    // 按照 connections 定义的顺序生成 flow
-    // 首先找到所有没有前驱的 routine（起点）
-    const routineMap = new Map();
-    routineRects.forEach((rect, index) => {
-        routineMap.set(rect.id, { ...rect, originalIndex: index });
-    });
+    const routineNames = routineRects.map((rect, index) => rect.name || `Routine_${index + 1}`);
     
-    // 构建连接图
-    const graph = new Map();
-    const inDegree = new Map();
+    const loopConnections = connections.filter(conn => conn.loopName);
+    const loops = [];
     
-    routineRects.forEach(rect => {
-        graph.set(rect.id, []);
-        inDegree.set(rect.id, 0);
-    });
-    
-    connections.forEach(conn => {
-        const startId = conn.start.routineId;
-        const endId = conn.end.routineId;
+    loopConnections.forEach(conn => {
+        const startLabel = parseInt(conn.start.label);
+        const endLabel = parseInt(conn.end.label);
         
-        if (startId && endId && startId !== endId) {
-            graph.get(startId).push(endId);
-            inDegree.set(endId, inDegree.get(endId) + 1);
-        }
-    });
-    
-    // 拓扑排序
-    const queue = [];
-    const result = [];
-    
-    routineRects.forEach(rect => {
-        if (inDegree.get(rect.id) === 0) {
-            queue.push(rect.id);
-        }
-    });
-    
-    while (queue.length > 0) {
-        const current = queue.shift();
-        result.push(current);
+        const startRoutineIndex = Math.floor((startLabel - 1) / 2);
+        const endRoutineIndex = Math.floor((endLabel - 1) / 2);
         
-        const neighbors = graph.get(current) || [];
-        neighbors.forEach(neighbor => {
-            inDegree.set(neighbor, inDegree.get(neighbor) - 1);
-            if (inDegree.get(neighbor) === 0) {
-                queue.push(neighbor);
-            }
+        loops.push({
+            name: conn.loopName || 'trials',
+            reps: conn.loopReps || 1,
+            loopType: conn.loopType || 'sequential',
+            conditions: conn.loopConditions || '',
+            isTrials: conn.loopIsTrials !== false,
+            startRoutineIndex: startRoutineIndex,
+            endRoutineIndex: endRoutineIndex,
+            depth: conn.depth || 0
+        });
+    });
+    
+    loops.sort((a, b) => a.depth - b.depth);
+    
+    for (let i = 0; i < routineRects.length; i++) {
+        const loopsStartingHere = loops.filter(l => l.startRoutineIndex === i).sort((a, b) => b.depth - a.depth);
+        loopsStartingHere.forEach(loop => {
+            xml += generateLoopInitiator(loop);
+        });
+        
+        xml += `    <Routine name="${routineNames[i]}"/>\n`;
+        
+        const loopsEndingHere = loops.filter(l => l.endRoutineIndex === i).sort((a, b) => a.depth - b.depth);
+        loopsEndingHere.forEach(loop => {
+            xml += generateLoopTerminator(loop);
         });
     }
     
-    // 如果还有未访问的节点（有环的情况），直接添加
-    routineRects.forEach(rect => {
-        if (!result.includes(rect.id)) {
-            result.push(rect.id);
-        }
-    });
-    
-    // 生成 flow XML
-    result.forEach(routineId => {
-        const routine = routineMap.get(routineId);
-        if (routine) {
-            xml += `    <Routine name="${routine.name || `Routine_${routineId}`}"/>\n`;
-        }
-    });
-    
     return xml;
+}
+
+/**
+ * 生成 LoopInitiator
+ */
+function generateLoopInitiator(loop) {
+    const conditionsStr = loop.conditions || '';
+    let conditionsVal = '';
+    let conditionsFileVal = '';
+    
+    if (conditionsStr) {
+        if (conditionsStr.startsWith('[')) {
+            // XML 转义：将双引号转为 &quot;
+            conditionsVal = conditionsStr.replace(/"/g, '&quot;');
+        } else {
+            conditionsFileVal = conditionsStr;
+        }
+    }
+    
+    return `    <LoopInitiator loopType="TrialHandler" name="${loop.name}">
+      <Param name="Selected rows" updates="None" val="" valType="str"/>
+      <Param name="conditions" updates="None" val="${conditionsVal}" valType="str"/>
+      <Param name="conditionsFile" updates="None" val="${conditionsFileVal}" valType="file"/>
+      <Param name="endPoints" updates="None" val="[0, 1]" valType="code"/>
+      <Param name="isTrials" updates="None" val="True" valType="bool"/>
+      <Param name="loopType" updates="None" val="${loop.loopType}" valType="str"/>
+      <Param name="nReps" updates="None" val="${loop.reps}" valType="code"/>
+      <Param name="name" updates="None" val="${loop.name}" valType="code"/>
+      <Param name="random seed" updates="None" val="" valType="code"/>
+    </LoopInitiator>\n`;
+}
+
+/**
+ * 生成 LoopTerminator
+ */
+function generateLoopTerminator(loop) {
+    return `    <LoopTerminator name="${loop.name}"/>\n`;
 }
 
 // 导出函数（如果在模块环境中）
