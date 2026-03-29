@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "timestamp": "2026-03-27T10:09:53.969Z",
+  "timestamp": "2026-03-28T13:04:46.580Z",
   "routineRects": [
     {
       "id": 1,
@@ -10,8 +10,8 @@
       "height": 100,
       "borderRadius": 8,
       "isDragging": false,
-      "offsetX": 0,
-      "offsetY": 0,
+      "offsetX": 98.5,
+      "offsetY": 91,
       "keys": "Space, F, J",
       "duration": 3000,
       "avtp": {
@@ -216,9 +216,9 @@
       "height": 100,
       "borderRadius": 8,
       "isDragging": false,
-      "offsetX": 0,
-      "offsetY": 0,
-      "keys": "Space, F, J",
+      "offsetX": 57.5,
+      "offsetY": 71,
+      "keys": "Space, F, J, E",
       "duration": 3000,
       "avtp": {
         "a": false,
@@ -243,7 +243,7 @@
           "enabled": false,
           "label": "Video",
           "type": "video",
-          "path": "",
+          "path": "$test",
           "volume": 1,
           "size": [
             null,
@@ -304,15 +304,37 @@
           "enabled": true,
           "label": "Key",
           "type": "keyboard",
-          "keys": "Space, F, J",
+          "keys": "Space, F, J, E",
           "startTime": 0,
           "duration": 3000,
-          "forceEndRoutine": true
+          "forceEndRoutine": true,
+          "path": ""
         }
       }
     }
   ],
-  "connections": [],
+  "connections": [
+    {
+      "start": {
+        "x": 300,
+        "y": 180,
+        "label": "3",
+        "isSnapTarget": false
+      },
+      "end": {
+        "x": 300,
+        "y": 460,
+        "label": "7",
+        "isSnapTarget": false
+      },
+      "depth": 0,
+      "loopName": "trials",
+      "loopReps": 1,
+      "loopType": "sequential",
+      "loopConditions": "[{\"name\":\"Condition 1\",\"$test\":\"11\"}]",
+      "loopIsTrials": true
+    }
+  ],
   "currentRoutineCount": 3,
   "routineIdCounter": 3
 }
