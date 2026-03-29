@@ -3258,6 +3258,7 @@
                     routineRects.length = 0;
                     connections.length = 0;
                     selectedRoutineIndex = -1;
+                    activeDragRect = null;  // 重置 activeDragRect，避免指向旧的无效对象
 
                     // 导入数据
                     routineRects.push(...projectData.routineRects);
@@ -3308,6 +3309,7 @@
                         routineRects.length = 0;
                         connections.length = 0;
                         selectedRoutineIndex = -1;
+                        activeDragRect = null;  // 重置 activeDragRect，避免指向旧的无效对象
 
                         // 导入数据
                         routineRects.push(...projectData.routineRects);
@@ -3323,7 +3325,7 @@
                         updatePoints();
                         updateRoutineCount();
                         draw();
-                        
+
                         // 保存初始状态并启用按钮
                         saveState();
                     } catch (error) {
