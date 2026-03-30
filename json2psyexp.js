@@ -566,7 +566,7 @@ function generateFlow(routineRects, connections) {
         const endLabel = parseInt(conn.end.label);
         
         const startRoutineIndex = Math.floor((startLabel - 1) / 2);
-        const endRoutineIndex = Math.floor(endLabel / 2) - 1;
+        const endRoutineIndex = Math.floor((endLabel - 1) / 2);
         
         loops.push({
             name: conn.loopName || 'trials',

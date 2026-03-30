@@ -1500,6 +1500,7 @@
         let currentMousePos = { x: 0, y: 0 };
         let nearestValidPoint = null;
         const connections = [];
+        let originalConnectionLabels = null;
 
         const routineRects = [];
         let selectedRoutineIndex = 0;
@@ -1614,6 +1615,23 @@
         const baseOffsetX = 150;
         const offsetXStep = 80;
 
+        function getMaxDepthForSameEndpoints(conn, allConnections) {
+            const startLabel = conn.start.label;
+            const endLabel = conn.end.label;
+            let maxDepth = -1;
+
+            for (const other of allConnections) {
+                if (other === conn) continue;
+                const isSameEndpoints = (other.start.label === startLabel && other.end.label === endLabel) ||
+                                        (other.start.label === endLabel && other.end.label === startLabel);
+                if (isSameEndpoints) {
+                    maxDepth = Math.max(maxDepth, other.depth);
+                }
+            }
+
+            return maxDepth;
+        }
+
         function getNestingDepth(conn, allConnections) {
             let maxContainedDepth = -1;
             const startLabel = parseInt(conn.start.label);
@@ -1703,26 +1721,39 @@
         function drawPreviewLine() {
             if (isDraggingLine && startPoint) {
                 const targetPoint = nearestValidPoint || { x: currentMousePos.x, y: currentMousePos.y };
+                
+                const newStartLabel = parseInt(startPoint.label);
+                const newEndLabel = parseInt(targetPoint.label);
+                const newMin = Math.min(newStartLabel, newEndLabel);
+                const newMax = Math.max(newStartLabel, newEndLabel);
+
+                let maxDepth = -1;
+                for (const conn of connections) {
+                    const connStartLabel = parseInt(conn.start.label);
+                    const connEndLabel = parseInt(conn.end.label);
+                    const connMin = Math.min(connStartLabel, connEndLabel);
+                    const connMax = Math.max(connStartLabel, connEndLabel);
+
+                    const isSameEndpoints = (conn.start.label === startPoint.label && conn.end.label === targetPoint.label) ||
+                                            (conn.start.label === targetPoint.label && conn.end.label === startPoint.label);
+
+                    const isContaining = newMin <= connMin && newMax >= connMax && (newMin < connMin || newMax > connMax);
+
+                    if (isSameEndpoints || isContaining) {
+                        maxDepth = Math.max(maxDepth, conn.depth);
+                    }
+                }
+
+                const previewDepth = maxDepth + 1;
+
                 ctx.strokeStyle = '#666666';
                 ctx.lineWidth = 1.5;
                 ctx.lineCap = 'round';
                 ctx.lineJoin = 'round';
                 ctx.setLineDash([6, 4]);
 
-                const previewConn = { start: startPoint, end: targetPoint, depth: 0 };
+                const previewConn = { start: startPoint, end: targetPoint, depth: previewDepth };
                 const allConnsForPreview = [...connections, previewConn];
-                
-                let changed = true;
-                while (changed) {
-                    changed = false;
-                    for (const conn of allConnsForPreview) {
-                        const newDepth = getNestingDepth(conn, allConnsForPreview);
-                        if (newDepth !== conn.depth) {
-                            conn.depth = newDepth;
-                            changed = true;
-                        }
-                    }
-                }
                 
                 const offsetX = getConnectionOffsetX(previewConn, allConnsForPreview);
 
@@ -1757,20 +1788,35 @@
         }
 
         function drawConnectionLines() {
-            const previewConn = isDraggingLine && startPoint && nearestValidPoint ? 
-                { start: startPoint, end: nearestValidPoint, depth: 0 } : null;
-            const allConns = previewConn ? [...connections, previewConn] : connections;
+            let previewConn = null;
+            let allConns = connections;
+            
+            if (isDraggingLine && startPoint && nearestValidPoint) {
+                const newStartLabel = parseInt(startPoint.label);
+                const newEndLabel = parseInt(nearestValidPoint.label);
+                const newMin = Math.min(newStartLabel, newEndLabel);
+                const newMax = Math.max(newStartLabel, newEndLabel);
 
-            let changed = true;
-            while (changed) {
-                changed = false;
-                for (const conn of allConns) {
-                    const newDepth = getNestingDepth(conn, allConns);
-                    if (newDepth !== conn.depth) {
-                        conn.depth = newDepth;
-                        changed = true;
+                let maxDepth = -1;
+                for (const conn of connections) {
+                    const connStartLabel = parseInt(conn.start.label);
+                    const connEndLabel = parseInt(conn.end.label);
+                    const connMin = Math.min(connStartLabel, connEndLabel);
+                    const connMax = Math.max(connStartLabel, connEndLabel);
+
+                    const isSameEndpoints = (conn.start.label === startPoint.label && conn.end.label === nearestValidPoint.label) ||
+                                            (conn.start.label === nearestValidPoint.label && conn.end.label === startPoint.label);
+
+                    const isContaining = newMin <= connMin && newMax >= connMax && (newMin < connMin || newMax > connMax);
+
+                    if (isSameEndpoints || isContaining) {
+                        maxDepth = Math.max(maxDepth, conn.depth);
                     }
                 }
+
+                const previewDepth = maxDepth + 1;
+                previewConn = { start: startPoint, end: nearestValidPoint, depth: previewDepth };
+                allConns = [...connections, previewConn];
             }
 
             connections.forEach(conn => {
@@ -2205,49 +2251,56 @@
             if (isDraggingLine && startPoint) {
                 const targetPoint = nearestValidPoint || findNearestValidPoint(pos);
                 if (targetPoint && hasDragRectInLoopRange(startPoint, targetPoint)) {
-                    const isDuplicate = connections.some(conn => {
-                        return (conn.start.label === startPoint.label && conn.end.label === targetPoint.label) ||
-                               (conn.start.label === targetPoint.label && conn.end.label === startPoint.label);
-                    });
-                    
-                    if (!isDuplicate) {
-                        saveState();
-                        currentProjectFile = null;
-                        fileHandle = null;
-                        const newConn = {
-                            start: startPoint,
-                            end: targetPoint,
-                            depth: 0,
-                            loopName: `trials_${++loopIdCounter}`,
-                            loopReps: 1,
-                            loopType: 'sequential',
-                            loopConditions: '',
-                            loopIsTrials: true
-                        };
-                        connections.push(newConn);
-                        
-                        let changed = true;
-                        while (changed) {
-                            changed = false;
-                            for (const conn of connections) {
-                                const newDepth = getNestingDepth(conn, connections);
-                                if (newDepth !== conn.depth) {
-                                    conn.depth = newDepth;
-                                    changed = true;
-                                }
-                            }
-                        }
-                        
-                        if (isOverlapping(newConn, connections)) {
-                            connections.pop();
+                    saveState();
+                    currentProjectFile = null;
+                    fileHandle = null;
+
+                    const newStartLabel = parseInt(startPoint.label);
+                    const newEndLabel = parseInt(targetPoint.label);
+                    const newMin = Math.min(newStartLabel, newEndLabel);
+                    const newMax = Math.max(newStartLabel, newEndLabel);
+
+                    let maxDepth = -1;
+                    for (const conn of connections) {
+                        const connStartLabel = parseInt(conn.start.label);
+                        const connEndLabel = parseInt(conn.end.label);
+                        const connMin = Math.min(connStartLabel, connEndLabel);
+                        const connMax = Math.max(connStartLabel, connEndLabel);
+
+                        const isSameEndpoints = (conn.start.label === startPoint.label && conn.end.label === targetPoint.label) ||
+                                                (conn.start.label === targetPoint.label && conn.end.label === startPoint.label);
+
+                        const isContaining = newMin <= connMin && newMax >= connMax && (newMin < connMin || newMax > connMax);
+
+                        if (isSameEndpoints || isContaining) {
+                            maxDepth = Math.max(maxDepth, conn.depth);
                         }
                     }
+
+                    const initialDepth = maxDepth + 1;
+
+                    const newConn = {
+                        start: startPoint,
+                        end: targetPoint,
+                        depth: initialDepth,
+                        loopName: `trials_${++loopIdCounter}`,
+                        loopReps: 1,
+                        loopType: 'sequential',
+                        loopConditions: '',
+                        loopIsTrials: true
+                    };
+                    connections.push(newConn);
+                    
+                    if (isOverlapping(newConn, connections)) {
+                        connections.pop();
+                    }
                 }
-                isDraggingLine = false;
-                nearestValidPoint = null;
-                draw();
-                startPoint = null;
             }
+
+            isDraggingLine = false;
+            nearestValidPoint = null;
+            draw();
+            startPoint = null;
         });
 
         canvas.addEventListener('mouseleave', () => {
@@ -3187,16 +3240,28 @@
             ctx.scale(dpr, dpr);
 
             // 保存现有 connections 的 label 信息，用于后续重新关联
-            const connectionLabels = connections.map(conn => ({
-                startLabel: conn.start.label,
-                endLabel: conn.end.label,
-                depth: conn.depth,
-                loopName: conn.loopName,
-                loopReps: conn.loopReps,
-                loopType: conn.loopType,
-                loopConditions: conn.loopConditions,
-                loopIsTrials: conn.loopIsTrials
-            }));
+            // 如果存在 originalConnectionLabels（删除 routine 时保存的），使用它
+            const connectionLabels = originalConnectionLabels !== null ?
+                originalConnectionLabels.map((labels, i) => ({
+                    startLabel: labels.startLabel,
+                    endLabel: labels.endLabel,
+                    depth: connections[i].depth,
+                    loopName: connections[i].loopName,
+                    loopReps: connections[i].loopReps,
+                    loopType: connections[i].loopType,
+                    loopConditions: connections[i].loopConditions,
+                    loopIsTrials: connections[i].loopIsTrials
+                })) :
+                connections.map(conn => ({
+                    startLabel: conn.start.label,
+                    endLabel: conn.end.label,
+                    depth: conn.depth,
+                    loopName: conn.loopName,
+                    loopReps: conn.loopReps,
+                    loopType: conn.loopType,
+                    loopConditions: conn.loopConditions,
+                    loopIsTrials: conn.loopIsTrials
+                }));
 
             // 使用至少 minDisplayRoutines 来计算点位置
             const displayCount = Math.max(routineRects.length, minDisplayRoutines);
@@ -3468,7 +3533,7 @@
                 const removedRoutine = routineRects[removedRoutineIndex];
                 const removedLabel = removedRoutineIndex * 2 + 2;
 
-                // 先记录哪些Loop包含被删除的routine，以及是起始点、结束点还是中间
+                // 先记录哪些 Loop 包含被删除的 routine，以及是起始点、结束点还是中间
                 const loopAdjustments = [];
                 for (let i = connections.length - 1; i >= 0; i--) {
                     const conn = connections[i];
@@ -3485,29 +3550,40 @@
                             adjustmentType = 'end';
                         }
                         loopAdjustments.push({ index: i, conn: conn, type: adjustmentType, originalStart: startLabel, originalEnd: endLabel });
+                        console.log('Loop adjustment recorded:', i, 'type:', adjustmentType, 'start:', startLabel, 'end:', endLabel);
                     }
                 }
+                console.log('Total loop adjustments:', loopAdjustments.length);
 
                 if (activeDragRect === removedRoutine) {
                     activeDragRect = null;
                 }
 
-                // 删除routine
+                // 删除 routine
                 routineRects.splice(removedRoutineIndex, 1);
                 selectedRoutineIndex = routineRects.length > 0 ? Math.min(removedRoutineIndex, routineRects.length - 1) : -1;
 
-                // 先更新所有Loop的label（因为routine删除后，label编号会变化）
-                // 注意：此步骤必须在 updatePoints() 之前完成
-                for (const conn of connections) {
+                // 先保存 connections 的原始 label，然后计算删除后的新 label
+                originalConnectionLabels = connections.map((conn, i) => {
                     const startLabel = parseInt(conn.start.label);
                     const endLabel = parseInt(conn.end.label);
+                    
+                    // 计算新的 label
+                    let newStartLabel = startLabel;
+                    let newEndLabel = endLabel;
+                    
                     if (startLabel > removedLabel) {
-                        conn.start.label = (startLabel - 2).toString();
+                        newStartLabel = startLabel - 2;
                     }
                     if (endLabel > removedLabel) {
-                        conn.end.label = (endLabel - 2).toString();
+                        newEndLabel = endLabel - 2;
                     }
-                }
+                    
+                    return {
+                        startLabel: String(newStartLabel),
+                        endLabel: String(newEndLabel)
+                    };
+                });
 
                 // 现在处理Loop的范围调整（基于更新后的label）
                 for (let i = connections.length - 1; i >= 0; i--) {
@@ -3564,29 +3640,19 @@
                     // 检查Loop是否变得无效
                     const newStartLabel = parseInt(conn.start.label);
                     const newEndLabel = parseInt(conn.end.label);
-                    const newMinLabel = Math.min(newStartLabel, newEndLabel);
-                    const newMaxLabel = Math.max(newStartLabel, newEndLabel);
 
-                    // 当Loop范围为空（不包含任何routine）或start==end时删除
-                    if (newMinLabel > newMaxLabel || newStartLabel === newEndLabel) {
+                    // 只有当Loop范围确实为空时才删除（min > max的情况）
+                    // start==end的情况不应该删除loop，应该保留
+                    if (newStartLabel > newEndLabel) {
                         connections.splice(i, 1);
                     }
                 }
 
-                // 所有label更新完成后再调用 updatePoints()，确保重新关联到正确的点
+                // 所有 label 更新完成后再调用 updatePoints()，确保重新关联到正确的点
                 updatePoints();
 
-                let changed = true;
-                while (changed) {
-                    changed = false;
-                    for (const conn of connections) {
-                        const newDepth = getNestingDepth(conn, connections);
-                        if (newDepth !== conn.depth) {
-                            conn.depth = newDepth;
-                            changed = true;
-                        }
-                    }
-                }
+                // 重置 originalConnectionLabels
+                originalConnectionLabels = null;
 
                 updateRoutineCount();
                 draw();
