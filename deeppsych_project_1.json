@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "timestamp": "2026-03-29T11:29:26.380Z",
+  "timestamp": "2026-03-30T06:00:29.876Z",
   "routineRects": [
     {
       "id": 1,
@@ -76,7 +76,7 @@
         },
         "p": {
           "enabled": true,
-          "label": "Pic",
+          "label": "Picture",
           "type": "image",
           "path": "",
           "size": [
@@ -121,7 +121,7 @@
         "a": false,
         "v": false,
         "t": true,
-        "p": false,
+        "p": true,
         "k": true
       },
       "avtpData": {
@@ -178,8 +178,8 @@
           "draggable": false
         },
         "p": {
-          "enabled": false,
-          "label": "Pic",
+          "enabled": true,
+          "label": "Picture",
           "type": "image",
           "path": "",
           "size": [
@@ -224,7 +224,7 @@
         "a": false,
         "v": false,
         "t": true,
-        "p": false,
+        "p": true,
         "k": true
       },
       "avtpData": {
@@ -281,8 +281,8 @@
           "draggable": false
         },
         "p": {
-          "enabled": false,
-          "label": "Pic",
+          "enabled": true,
+          "label": "Picture",
           "type": "image",
           "path": "",
           "size": [
@@ -327,7 +327,7 @@
         "a": false,
         "v": false,
         "t": true,
-        "p": false,
+        "p": true,
         "k": true
       },
       "avtpData": {
@@ -384,8 +384,8 @@
           "draggable": false
         },
         "p": {
-          "enabled": false,
-          "label": "Pic",
+          "enabled": true,
+          "label": "Picture",
           "type": "image",
           "path": "",
           "size": [
@@ -419,24 +419,45 @@
     {
       "start": {
         "x": 300,
+        "y": 180,
+        "label": "3",
+        "isSnapTarget": false
+      },
+      "end": {
+        "x": 300,
+        "y": 320,
+        "label": "5",
+        "isSnapTarget": false
+      },
+      "depth": 0,
+      "loopName": "trials_1",
+      "loopReps": 1,
+      "loopType": "sequential",
+      "loopConditions": "",
+      "loopIsTrials": true
+    },
+    {
+      "start": {
+        "x": 300,
         "y": 320,
         "label": "5",
         "isSnapTarget": false
       },
       "end": {
         "x": 300,
-        "y": 460,
-        "label": "7",
+        "y": 40,
+        "label": "1",
         "isSnapTarget": false
       },
-      "depth": 0,
-      "loopName": "trials",
-      "loopReps": 1,
+      "depth": 1,
+      "loopName": "trials_2",
+      "loopReps": 100,
       "loopType": "sequential",
       "loopConditions": "",
       "loopIsTrials": true
     }
   ],
   "currentRoutineCount": 4,
-  "routineIdCounter": 4
+  "routineIdCounter": 4,
+  "loopIdCounter": 2
 }

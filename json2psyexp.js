@@ -465,24 +465,34 @@ function generateImageComponentFromAvtp(avtpData, routineName) {
     const duration = avtpData.duration ? avtpData.duration / 1000 : '';
     const pos = avtpData.pos || [0, 0];
     const size = avtpData.size || [null, null];
-    const opacity = avtpData.opacity || 1.0;
+    const opacity = avtpData.opacity !== undefined && avtpData.opacity !== null ? avtpData.opacity : 1.0;
     const ori = avtpData.ori || 0;
+    const contrast = avtpData.contrast !== undefined && avtpData.contrast !== null ? avtpData.contrast : 1.0;
+    const color = avtpData.color || '$[1,1,1]';
+    const colorSpace = avtpData.colorSpace || 'rgb';
     const flip = avtpData.flip || 'None';
+    const interpolate = avtpData.interpolate || 'linear';
+    const textureRes = avtpData.textureRes || 128;
     const units = avtpData.units || 'from exp settings';
-    
-    // 处理 size：如果为 null 则使用空字符串
+    const draggable = avtpData.draggable ? 'True' : 'False';
+
+    const flipHoriz = flip === 'horiz' ? 'True' : 'False';
+    const flipVert = flip === 'vert' ? 'True' : 'False';
+
     const sizeVal = size[0] !== null && size[1] !== null ? `(${size[0]}, ${size[1]})` : '';
-    
+
     return `      <ImageComponent name="${name}" plugin="None">
         <Param val="center" valType="str" updates="constant" name="anchor"/>
-        <Param val="$[1,1,1]" valType="color" updates="constant" name="color"/>
-        <Param val="rgb" valType="str" updates="constant" name="colorSpace"/>
+        <Param val="${color}" valType="color" updates="constant" name="color"/>
+        <Param val="${colorSpace}" valType="str" updates="constant" name="colorSpace"/>
+        <Param val="${contrast}" valType="num" updates="constant" name="contrast"/>
         <Param val="False" valType="bool" updates="None" name="disabled"/>
+        <Param val="${draggable}" valType="code" updates="constant" name="draggable"/>
         <Param val="" valType="code" updates="None" name="durationEstim"/>
-        <Param val="${flip}" valType="str" updates="constant" name="flipHoriz"/>
-        <Param val="" valType="str" updates="constant" name="flipVert"/>
+        <Param val="${flipHoriz}" valType="bool" updates="constant" name="flipHoriz"/>
+        <Param val="${flipVert}" valType="bool" updates="constant" name="flipVert"/>
         <Param val="${imagePath}" valType="str" updates="set every repeat" name="image"/>
-        <Param val="linear" valType="str" updates="None" name="interpolate"/>
+        <Param val="${interpolate}" valType="str" updates="None" name="interpolate"/>
         <Param val="${name}" valType="code" updates="None" name="name"/>
         <Param val="${opacity}" valType="num" updates="constant" name="opacity"/>
         <Param val="${ori}" valType="num" updates="constant" name="ori"/>
@@ -494,6 +504,7 @@ function generateImageComponentFromAvtp(avtpData, routineName) {
         <Param val="duration (s)" valType="str" updates="None" name="stopType"/>
         <Param val="${duration}" valType="code" updates="constant" name="stopVal"/>
         <Param val="True" valType="bool" updates="None" name="syncScreenRefresh"/>
+        <Param val="${textureRes}" valType="num" updates="constant" name="texture resolution"/>
         <Param val="${sizeVal}" valType="list" updates="constant" name="size"/>
         <Param val="${units}" valType="str" updates="None" name="units"/>
         <Param val="" valType="code" updates="None" name="validator"/>
@@ -555,7 +566,7 @@ function generateFlow(routineRects, connections) {
         const endLabel = parseInt(conn.end.label);
         
         const startRoutineIndex = Math.floor((startLabel - 1) / 2);
-        const endRoutineIndex = Math.floor((endLabel - 1) / 2);
+        const endRoutineIndex = Math.floor(endLabel / 2) - 1;
         
         loops.push({
             name: conn.loopName || 'trials',

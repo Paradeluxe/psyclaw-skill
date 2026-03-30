@@ -49,13 +49,17 @@
             left: -320px;
             top: 50%;
             transform: translateY(-50%);
-            width: 300px;
+            width: 280px;
+            max-height: 60vh;
             background: #ffffff;
             border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-            padding: 20px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25), 0 2px 10px rgba(0, 0, 0, 0.15);
+            padding: 0;
             transition: left 0.3s ease;
             z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
         }
 
         .avtp-form.visible {
@@ -66,9 +70,21 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 12px;
+            padding: 12px 20px;
             border-bottom: 1px solid #e0e0e0;
+            flex-shrink: 0;
+            background: #ffffff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .avtp-form-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .avtp-form-content::-webkit-scrollbar {
+            display: none;
         }
 
         .avtp-form-title {
@@ -99,6 +115,10 @@
 
         .avtp-form-group {
             margin-bottom: 16px;
+        }
+
+        .form-group-margin-top {
+            margin-top: 16px;
         }
 
         .avtp-form-label {
@@ -863,7 +883,8 @@
             <div class="avtp-form-title" id="formTitle">Audio</div>
             <button class="avtp-form-close" id="formClose">×</button>
         </div>
-        
+
+        <div class="avtp-form-content">
         <div class="avtp-form-group form-group-hidden" id="fileInputGroup">
             <label class="avtp-form-label">File Path / URL</label>
             <input type="text" class="avtp-form-input" id="formPath" placeholder="Enter file path or URL...">
@@ -888,17 +909,6 @@
                 <div>
                     <label class="avtp-form-label">Color</label>
                     <input type="text" class="avtp-form-input" id="formColor" placeholder="white">
-                </div>
-                <div>
-                    <label class="avtp-form-label" for="formUnits">Units</label>
-                    <select class="avtp-form-select" id="formUnits" aria-label="Units">
-                        <option value="from exp settings">from exp settings</option>
-                        <option value="norm">norm</option>
-                        <option value="cm">cm</option>
-                        <option value="deg">deg</option>
-                        <option value="pix">pix</option>
-                        <option value="height">height</option>
-                    </select>
                 </div>
             </div>
             <div class="avtp-form-row form-row-margin">
@@ -931,6 +941,10 @@
                     <input type="number" class="avtp-form-input" id="formWrapWidth" step="1" aria-label="Wrap Width">
                 </div>
             </div>
+            <div class="avtp-form-checkbox">
+                <input type="checkbox" id="formDraggable">
+                <label for="formDraggable">Draggable</label>
+            </div>
             <div class="avtp-form-row form-row-margin">
                 <div>
                     <label class="avtp-form-label" for="formFlip">Flip</label>
@@ -949,9 +963,16 @@
                     </select>
                 </div>
             </div>
-            <div class="avtp-form-checkbox">
-                <input type="checkbox" id="formDraggable">
-                <label for="formDraggable">Draggable</label>
+            <div class="avtp-form-group form-group-margin-top">
+                <label class="avtp-form-label" for="formUnits">Units</label>
+                <select class="avtp-form-select" id="formUnits" aria-label="Units">
+                    <option value="from exp settings">from exp settings</option>
+                    <option value="norm">norm</option>
+                    <option value="cm">cm</option>
+                    <option value="deg">deg</option>
+                    <option value="pix">pix</option>
+                    <option value="height">height</option>
+                </select>
             </div>
         </div>
 
@@ -1065,6 +1086,26 @@
             </div>
             <div class="avtp-form-row form-row-margin">
                 <div>
+                    <label class="avtp-form-label">Contrast</label>
+                    <input type="number" class="avtp-form-input" id="formImageContrast" step="0.1" min="-1" max="1" placeholder="1.0">
+                </div>
+                <div>
+                    <label class="avtp-form-label">Color</label>
+                    <input type="text" class="avtp-form-input" id="formImageColor" placeholder="$[1,1,1]">
+                </div>
+            </div>
+            <div class="avtp-form-row form-row-margin">
+                <div>
+                    <label class="avtp-form-label">Color Space</label>
+                    <select class="avtp-form-select" id="formImageColorSpace">
+                        <option value="rgb">rgb</option>
+                        <option value="rgb255">rgb255</option>
+                        <option value="hsv">hsv</option>
+                        <option value="graya">graya</option>
+                        <option value="dkl">dkl</option>
+                    </select>
+                </div>
+                <div>
                     <label class="avtp-form-label">Flip</label>
                     <select class="avtp-form-select" id="formImageFlip">
                         <option value="None">None</option>
@@ -1072,17 +1113,41 @@
                         <option value="vert">Vertical</option>
                     </select>
                 </div>
+            </div>
+            <div class="avtp-form-row form-row-margin">
                 <div>
-                    <label class="avtp-form-label">Units</label>
-                    <select class="avtp-form-select" id="formImageUnits">
-                        <option value="from exp settings">from exp settings</option>
-                        <option value="norm">norm</option>
-                        <option value="cm">cm</option>
-                        <option value="deg">deg</option>
-                        <option value="pix">pix</option>
-                        <option value="height">height</option>
+                    <label class="avtp-form-label">Interpolate</label>
+                    <select class="avtp-form-select" id="formImageInterpolate">
+                        <option value="linear">linear</option>
+                        <option value="nearest">nearest</option>
                     </select>
                 </div>
+                <div>
+                    <label class="avtp-form-label">Texture Resolution</label>
+                    <select class="avtp-form-select" id="formImageTextureRes">
+                        <option value="32">32</option>
+                        <option value="64">64</option>
+                        <option value="128">128</option>
+                        <option value="256">256</option>
+                        <option value="512">512</option>
+                        <option value="1024">1024</option>
+                    </select>
+                </div>
+            </div>
+            <div class="avtp-form-checkbox">
+                <input type="checkbox" id="formImageDraggable">
+                <label for="formImageDraggable">Draggable</label>
+            </div>
+            <div class="avtp-form-group form-group-margin-top">
+                <label class="avtp-form-label">Units</label>
+                <select class="avtp-form-select" id="formImageUnits">
+                    <option value="from exp settings">from exp settings</option>
+                    <option value="norm">norm</option>
+                    <option value="cm">cm</option>
+                    <option value="deg">deg</option>
+                    <option value="pix">pix</option>
+                    <option value="height">height</option>
+                </select>
             </div>
         </div>
 
@@ -1172,6 +1237,7 @@
         <div class="avtp-form-checkbox" id="enabledOption">
             <input type="checkbox" id="formEnabled">
             <label for="formEnabled">Enabled</label>
+        </div>
         </div>
     </div>
 </div>
@@ -1439,6 +1505,7 @@
         let selectedRoutineIndex = 0;
 
         let routineIdCounter = 0;
+        let loopIdCounter = 0;
         let currentProjectFile = null;
         let saveCounter = 1;
         let fileHandle = null;
@@ -1508,7 +1575,7 @@
                     },
                     p: {
                         enabled: true,
-                        label: 'Pic',
+                        label: 'Picture',
                         type: 'image',
                         path: '',
                         size: [null, null],
@@ -2147,11 +2214,11 @@
                         saveState();
                         currentProjectFile = null;
                         fileHandle = null;
-                        const newConn = { 
-                            start: startPoint, 
-                            end: targetPoint, 
+                        const newConn = {
+                            start: startPoint,
+                            end: targetPoint,
                             depth: 0,
-                            loopName: 'trials',
+                            loopName: `trials_${++loopIdCounter}`,
                             loopReps: 1,
                             loopType: 'sequential',
                             loopConditions: '',
@@ -2329,8 +2396,14 @@
         const formImagePosY = document.getElementById('formImagePosY');
         const formImageOpacity = document.getElementById('formImageOpacity');
         const formImageOri = document.getElementById('formImageOri');
+        const formImageContrast = document.getElementById('formImageContrast');
+        const formImageColor = document.getElementById('formImageColor');
+        const formImageColorSpace = document.getElementById('formImageColorSpace');
         const formImageFlip = document.getElementById('formImageFlip');
+        const formImageInterpolate = document.getElementById('formImageInterpolate');
+        const formImageTextureRes = document.getElementById('formImageTextureRes');
         const formImageUnits = document.getElementById('formImageUnits');
+        const formImageDraggable = document.getElementById('formImageDraggable');
 
         const loopOptions = document.getElementById('loopOptions');
         const formLoopName = document.getElementById('formLoopName');
@@ -2525,10 +2598,16 @@
                 formImageSizeH.value = data.size && data.size[1] !== null ? data.size[1] : '';
                 formImagePosX.value = data.pos ? data.pos[0] : 0;
                 formImagePosY.value = data.pos ? data.pos[1] : 0;
-                formImageOpacity.value = data.opacity || 1.0;
+                formImageOpacity.value = data.opacity !== undefined && data.opacity !== null ? data.opacity : 1.0;
                 formImageOri.value = data.ori || 0;
+                formImageContrast.value = data.contrast !== undefined && data.contrast !== null ? data.contrast : 1.0;
+                formImageColor.value = data.color || '$[1,1,1]';
+                formImageColorSpace.value = data.colorSpace || 'rgb';
                 formImageFlip.value = data.flip || 'None';
+                formImageInterpolate.value = data.interpolate || 'linear';
+                formImageTextureRes.value = data.textureRes || 128;
                 formImageUnits.value = data.units || 'from exp settings';
+                formImageDraggable.checked = data.draggable || false;
             }
             
             avtpForm.classList.add('visible');
@@ -2648,8 +2727,14 @@
                 data.pos = [parseInt(formImagePosX.value) || 0, parseInt(formImagePosY.value) || 0];
                 data.opacity = parseFloat(formImageOpacity.value) || 1.0;
                 data.ori = parseInt(formImageOri.value) || 0;
+                data.contrast = parseFloat(formImageContrast.value) || 1.0;
+                data.color = formImageColor.value || '$[1,1,1]';
+                data.colorSpace = formImageColorSpace.value || 'rgb';
                 data.flip = formImageFlip.value || 'None';
+                data.interpolate = formImageInterpolate.value || 'linear';
+                data.textureRes = parseInt(formImageTextureRes.value) || 128;
                 data.units = formImageUnits.value || 'from exp settings';
+                data.draggable = formImageDraggable.checked;
             }
             
             activeDragRect.avtp[activeAvtp] = formEnabled.checked;
@@ -2684,10 +2769,14 @@
          formFlip, formLanguageStyle, formVolume, formSizeW, formSizeH, formAnchor,
          formVideoUnits, formVideoOpacity, formAudioVolume,
          formImageSizeW, formImageSizeH, formImagePosX, formImagePosY,
-         formImageOpacity, formImageOri, formImageFlip, formImageUnits,
+         formImageOpacity, formImageOri, formImageContrast, formImageColor,
+         formImageColorSpace, formImageFlip, formImageInterpolate,
+         formImageTextureRes, formImageUnits,
          formStartTime, formDuration, formKeys].forEach(input => {
             input.addEventListener('change', saveFormChanges);
         });
+
+        formImageDraggable.addEventListener('change', saveFormChanges);
 
         formEnabled.addEventListener('change', saveFormChanges);
         formDraggable.addEventListener('change', saveFormChanges);
@@ -3167,7 +3256,8 @@
                 routineRects: routineRects,
                 connections: connections,
                 currentRoutineCount: currentRoutineCount,
-                routineIdCounter: routineIdCounter
+                routineIdCounter: routineIdCounter,
+                loopIdCounter: loopIdCounter
             };
 
             const jsonData = JSON.stringify(projectData, null, 2);
@@ -3217,7 +3307,8 @@
                 routineRects: routineRects,
                 connections: connections,
                 currentRoutineCount: currentRoutineCount,
-                routineIdCounter: routineIdCounter
+                routineIdCounter: routineIdCounter,
+                loopIdCounter: loopIdCounter
             };
 
             const xmlData = convertToPsyExpXML(projectData);
@@ -3265,6 +3356,7 @@
                     connections.push(...projectData.connections);
                     currentRoutineCount = projectData.currentRoutineCount || routineRects.length;
                     routineIdCounter = projectData.routineIdCounter || routineRects.length;
+                    loopIdCounter = projectData.loopIdCounter || 0;
 
                     // 保存导入的文件名和文件句柄
                     currentProjectFile = handle.name;
@@ -3316,6 +3408,7 @@
                         connections.push(...projectData.connections);
                         currentRoutineCount = projectData.currentRoutineCount || routineRects.length;
                         routineIdCounter = projectData.routineIdCounter || routineRects.length;
+                        loopIdCounter = projectData.loopIdCounter || 0;
 
                         // 保存导入的文件名
                         currentProjectFile = file.name;
