@@ -216,6 +216,106 @@
             display: flex;
         }
 
+        .confirm-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 10000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .confirm-modal.active {
+            display: flex;
+        }
+
+        .confirm-modal-container {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .confirm-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .confirm-modal-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #000000;
+        }
+
+        .confirm-modal-close {
+            width: 28px;
+            height: 28px;
+            border: none;
+            background: #f5f5f5;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: #666666;
+        }
+
+        .confirm-modal-close:hover {
+            background: #e0e0e0;
+            color: #000000;
+        }
+
+        .confirm-modal-message {
+            font-size: 14px;
+            color: #666666;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .confirm-modal-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        .confirm-modal-btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .confirm-modal-btn-cancel {
+            background: #ffffff;
+            border: 1.5px solid #000000;
+            color: #000000;
+        }
+
+        .confirm-modal-btn-cancel:hover {
+            background: #f5f5f5;
+        }
+
+        .confirm-modal-btn-confirm {
+            background: #000000;
+            border: 1.5px solid #000000;
+            color: #ffffff;
+        }
+
+        .confirm-modal-btn-confirm:hover {
+            background: #333333;
+        }
+
         .avtp-keyboard-container {
             background: #ffffff;
             border-radius: 12px;
@@ -1273,11 +1373,6 @@
             <input type="number" class="avtp-form-input" id="formDuration" step="1" placeholder="3000">
             <div class="hint-text">Use -1 for infinite duration</div>
         </div>
-
-        <div class="avtp-form-checkbox" id="enabledOption">
-            <input type="checkbox" id="formEnabled">
-            <label for="formEnabled">Enabled</label>
-        </div>
         </div>
     </div>
 </div>
@@ -1594,7 +1689,7 @@
                 offsetY: 0,
                 keys: 'Space, F, J',
                 duration: 3000,
-                avtp: { a: false, v: false, t: true, p: true, k: true },
+                avtp: { a: false, v: false, t: false, p: false, k: false },
                 avtpData: {
                     a: {
                         enabled: false,
@@ -2460,6 +2555,28 @@
                     return;
                 }
             }
+
+            const clickableAvtp = getClickableAvtp(pos);
+            if (clickableAvtp && activeDragRect) {
+                const isEnabled = activeDragRect.avtp[clickableAvtp];
+                
+                if (isEnabled && activeAvtp === clickableAvtp) {
+                    window.showConfirmModal('Disable ' + clickableAvtp.toUpperCase(), 'Disable this component and clear its settings?').then((confirmed) => {
+                        if (confirmed) {
+                            activeDragRect.avtp[clickableAvtp] = false;
+                            hideAvtpForm();
+                            draw();
+                        }
+                    });
+                } else if (!isEnabled) {
+                    activeDragRect.avtp[clickableAvtp] = true;
+                    showAvtpForm(clickableAvtp);
+                } else if (isEnabled && activeAvtp !== clickableAvtp) {
+                    showAvtpForm(clickableAvtp);
+                }
+                
+                draw();
+            }
         });
 
         console.log('Context menu listener attached');
@@ -2470,8 +2587,6 @@
         const fileInputGroup = document.getElementById('fileInputGroup');
         
         const formPath = document.getElementById('formPath');
-        const formEnabled = document.getElementById('formEnabled');
-        const enabledOption = document.getElementById('enabledOption');
         const formStartTime = document.getElementById('formStartTime');
         const formDuration = document.getElementById('formDuration');
         
@@ -2608,8 +2723,6 @@
                 formPath.value = '';
             }
             
-            formEnabled.checked = data.enabled;
-            enabledOption.style.display = data.type === 'keyboard' ? 'none' : 'block';
             formStartTime.value = data.startTime || 0;
             formDuration.value = data.duration !== undefined ? data.duration : 3000;
             
@@ -2757,7 +2870,6 @@
             keyboardOptions.classList.add('form-group-hidden');
             loopOptions.classList.remove('form-group-hidden');
             loopOptions.classList.add('form-group-visible');
-            enabledOption.style.display = 'none';
             formStartTime.parentElement.style.display = 'none';
             formDuration.parentElement.style.display = 'none';
 
@@ -2780,7 +2892,6 @@
             avtpForm.classList.remove('visible');
             avtpForm.offsetHeight;
             avtpForm.style.transition = '';
-            enabledOption.style.display = 'block';
             formStartTime.parentElement.style.display = 'block';
             formDuration.parentElement.style.display = 'block';
         }
@@ -2803,7 +2914,6 @@
             
             const data = activeDragRect.avtpData[activeAvtp];
             data.path = formPath.value;
-            data.enabled = formEnabled.checked;
             data.startTime = parseInt(formStartTime.value) || 0;
             data.duration = parseInt(formDuration.value) || 3000;
             
@@ -2859,7 +2969,6 @@
                 data.draggable = formImageDraggable.checked;
             }
             
-            activeDragRect.avtp[activeAvtp] = formEnabled.checked;
             draw();
         }
 
@@ -2900,7 +3009,6 @@
 
         formImageDraggable.addEventListener('change', saveFormChanges);
 
-        formEnabled.addEventListener('change', saveFormChanges);
         formDraggable.addEventListener('change', saveFormChanges);
         formLoop.addEventListener('change', saveFormChanges);
         formVideoStopWithRoutine.addEventListener('change', saveFormChanges);
@@ -3276,17 +3384,21 @@
 
         canvas.addEventListener('click', (e) => {
             const pos = getMousePos(e);
-            const clickableAvtp = getClickableAvtp(pos);
-
-            if (clickableAvtp) {
-                showAvtpForm(clickableAvtp);
-                return;
-            }
 
             for (let i = connections.length - 1; i >= 0; i--) {
                 if (isInsideLoopBlock(pos, connections[i], connections)) {
                     showLoopForm(connections[i]);
                     return;
+                }
+            }
+
+            const clickableAvtp = getClickableAvtp(pos);
+            if (clickableAvtp && activeDragRect) {
+                if (activeDragRect.avtp[clickableAvtp] && activeAvtp === clickableAvtp) {
+                    return;
+                }
+                if (activeDragRect.avtp[clickableAvtp]) {
+                    showAvtpForm(clickableAvtp);
                 }
             }
         });
@@ -3872,6 +3984,50 @@
             const confirmKeyboardBtn = document.getElementById('confirmKeyboardBtn');
             const formKeys = document.getElementById('formKeys');
 
+            const confirmModal = document.getElementById('confirmModal');
+            const confirmModalTitle = document.getElementById('confirmModalTitle');
+            const confirmModalMessage = document.getElementById('confirmModalMessage');
+            const confirmModalClose = document.getElementById('confirmModalClose');
+            const confirmModalCancel = document.getElementById('confirmModalCancel');
+            const confirmModalConfirm = document.getElementById('confirmModalConfirm');
+
+            let confirmResolve = null;
+
+            function showConfirmModal(title, message) {
+                confirmModalTitle.textContent = title;
+                confirmModalMessage.textContent = message;
+                confirmModal.classList.add('active');
+                return new Promise((resolve) => {
+                    confirmResolve = resolve;
+                });
+            }
+
+            window.showConfirmModal = showConfirmModal;
+
+            function hideConfirmModal() {
+                confirmModal.classList.remove('active');
+                if (confirmResolve) {
+                    confirmResolve(false);
+                    confirmResolve = null;
+                }
+            }
+
+            confirmModalClose.addEventListener('click', hideConfirmModal);
+            confirmModalCancel.addEventListener('click', hideConfirmModal);
+            confirmModalConfirm.addEventListener('click', () => {
+                if (confirmResolve) {
+                    confirmResolve(true);
+                    confirmResolve = null;
+                }
+                hideConfirmModal();
+            });
+
+            confirmModal.addEventListener('click', (e) => {
+                if (e.target === confirmModal) {
+                    hideConfirmModal();
+                }
+            });
+
             const allKeys = [
                 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
                 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
@@ -3997,6 +4153,19 @@
             initKeyboard();
         });
     </script>
+    <div class="confirm-modal" id="confirmModal">
+        <div class="confirm-modal-container">
+            <div class="confirm-modal-header">
+                <span class="confirm-modal-title" id="confirmModalTitle">Confirm</span>
+                <button class="confirm-modal-close" id="confirmModalClose">×</button>
+            </div>
+            <div class="confirm-modal-message" id="confirmModalMessage">Are you sure?</div>
+            <div class="confirm-modal-buttons">
+                <button class="confirm-modal-btn confirm-modal-btn-cancel" id="confirmModalCancel">Cancel</button>
+                <button class="confirm-modal-btn confirm-modal-btn-confirm" id="confirmModalConfirm">Confirm</button>
+            </div>
+        </div>
+    </div>
     <div class="avtp-keyboard-modal" id="keyboardModal">
         <div class="avtp-keyboard-container">
             <div class="avtp-keyboard-header">
