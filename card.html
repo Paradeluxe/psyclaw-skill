@@ -447,12 +447,30 @@
             cursor: not-allowed;
         }
 
-        .routine-count {
-            display: flex;
-            align-items: center;
+        .routine-name-input {
+            padding: 8px 12px;
+            border: 1.5px solid #000000;
+            background: #ffffff;
+            border-radius: 8px;
             font-size: 14px;
             font-weight: 500;
-            color: #666666;
+            width: 150px;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .routine-name-input:focus {
+            border-color: #0066cc;
+            box-shadow: 0 0 0 2px rgba(0, 102, 204, 0.2);
+        }
+
+        .routine-name-input:disabled {
+            background: #f5f5f5;
+            cursor: not-allowed;
+        }
+
+        .routine-name-input:invalid {
+            border-color: #d32f2f;
         }
 
         .form-group-hidden {
@@ -1274,7 +1292,7 @@
                     </svg>
                 </span>
             </button>
-            <div class="routine-count" id="routineCount">0 Routines</div>
+            <input type="text" class="routine-name-input" id="routineNameInput" placeholder="Select a routine..." disabled>
             <button class="action-button" id="removeRoutine" title="Remove Routine">
                 <span class="action-icon">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1565,6 +1583,7 @@
             const snapPoint = snapPoints[index];
             return {
                 id: ++routineIdCounter, // 固定的 ID，不随位置改变
+                name: 'routine_' + routineIdCounter,
                 x: snapPoint.x - 80,
                 y: snapPoint.y - 50,
                 width: 160,
@@ -1994,7 +2013,7 @@
             ctx.font = '600 12px -apple-system, BlinkMacSystemFont, SF Pro Text, sans-serif';
             ctx.textAlign = 'left';
             ctx.textBaseline = 'middle';
-            ctx.fillText('#' + dragRect.id, dragRect.x + 8, dragRect.y + 16);
+            ctx.fillText(dragRect.name, dragRect.x + 8, dragRect.y + 16);
 
             ctx.fillStyle = '#000000';
             ctx.font = '500 13px -apple-system, BlinkMacSystemFont, SF Pro Text, sans-serif';
@@ -3274,13 +3293,57 @@
 
         const addRoutineBtn = document.getElementById('addRoutine');
         const removeRoutineBtn = document.getElementById('removeRoutine');
-        const routineCountEl = document.getElementById('routineCount');
+        const routineNameInput = document.getElementById('routineNameInput');
+        let savedRoutineName = '';
 
         function updateRoutineCount() {
-            routineCountEl.textContent = `${routineRects.length} Routines`;
             addRoutineBtn.disabled = false;
             removeRoutineBtn.disabled = routineRects.length <= 0 || selectedRoutineIndex < 0;
+            
+            if (selectedRoutineIndex >= 0 && selectedRoutineIndex < routineRects.length) {
+                routineNameInput.disabled = false;
+                routineNameInput.value = routineRects[selectedRoutineIndex].name || '';
+            } else {
+                routineNameInput.disabled = true;
+                routineNameInput.value = '';
+                routineNameInput.placeholder = 'Select a routine...';
+            }
         }
+
+        routineNameInput.addEventListener('focus', () => {
+            if (selectedRoutineIndex >= 0 && selectedRoutineIndex < routineRects.length) {
+                savedRoutineName = routineRects[selectedRoutineIndex].name;
+            }
+        });
+
+        routineNameInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                routineNameInput.blur();
+            }
+        });
+
+        routineNameInput.addEventListener('blur', () => {
+            if (selectedRoutineIndex >= 0 && selectedRoutineIndex < routineRects.length) {
+                let newName = routineNameInput.value.trim();
+                
+                if (!newName) {
+                    newName = 'routine_' + routineRects[selectedRoutineIndex].id;
+                }
+                
+                const isDuplicate = routineRects.some((rect, idx) => 
+                    idx !== selectedRoutineIndex && rect.name === newName
+                );
+                
+                if (isDuplicate) {
+                    routineRects[selectedRoutineIndex].name = savedRoutineName;
+                    routineNameInput.value = savedRoutineName;
+                } else {
+                    routineRects[selectedRoutineIndex].name = newName;
+                }
+                draw();
+            }
+        });
 
         function updatePoints() {
             currentRoutineCount = routineRects.length;
