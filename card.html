@@ -998,11 +998,6 @@
             <button class="avtp-form-close" id="formClose">×</button>
         </div>
 
-        <div class="avtp-form-group" id="routineNameGroup">
-            <label class="avtp-form-label">Routine Name</label>
-            <input type="text" class="avtp-form-input" id="routineNameInput" placeholder="Enter routine name...">
-        </div>
-
         <div class="avtp-form-content">
         <div class="avtp-form-group form-group-hidden" id="fileInputGroup">
             <label class="avtp-form-label">File Path / URL</label>
@@ -1340,6 +1335,19 @@
                 <input type="hidden" class="avtp-form-input" id="formLoopConditions" placeholder="e.g., conditions.xlsx or [{...}]">
             </div>
 
+        </div>
+
+        <div class="avtp-form" id="routineForm" style="display: none;">
+            <div class="avtp-form-header">
+                <div class="avtp-form-title">Routine</div>
+                <button class="avtp-form-close" id="routineFormClose">×</button>
+            </div>
+            <div class="avtp-form-content">
+                <div class="avtp-form-group">
+                    <label class="avtp-form-label">Routine Name</label>
+                    <input type="text" class="avtp-form-input" id="routineNameInput" placeholder="Enter routine name...">
+                </div>
+            </div>
         </div>
 
         <div class="avtp-form-group">
@@ -2251,8 +2259,12 @@
 
         function isInsideAvtpArea(pos, rect) {
             const mainRectHeight = rect.height * 0.7;
-            return pos.x >= rect.x && pos.x <= rect.x + rect.width &&
+            const keyRectHeight = rect.height * 0.3;
+            const isInsideAvtpLetters = pos.x >= rect.x && pos.x <= rect.x + rect.width &&
                    pos.y >= rect.y + mainRectHeight * 0.5 && pos.y <= rect.y + mainRectHeight;
+            const isInsideKey = pos.x >= rect.x && pos.x <= rect.x + rect.width &&
+                   pos.y >= rect.y + mainRectHeight && pos.y <= rect.y + mainRectHeight + keyRectHeight;
+            return isInsideAvtpLetters || isInsideKey;
         }
 
         canvas.addEventListener('mousedown', (e) => {
@@ -2315,13 +2327,24 @@
                 if (isOverLoopBlock) {
                     canvas.style.cursor = 'pointer';
                 } else {
-                    const clickableAvtp = getClickableAvtp(pos);
-                    if (clickableAvtp) {
+                    let isOverKeyArea = false;
+                    for (const rect of routineRects) {
+                        if (isInsideKeyArea(pos, rect)) {
+                            isOverKeyArea = true;
+                            break;
+                        }
+                    }
+                    if (isOverKeyArea) {
                         canvas.style.cursor = 'pointer';
-                    } else if (getDragRectAtPos(pos.x, pos.y)) {
-                        canvas.style.cursor = 'grab';
                     } else {
-                        canvas.style.cursor = 'crosshair';
+                        const clickableAvtp = getClickableAvtp(pos);
+                        if (clickableAvtp) {
+                            canvas.style.cursor = 'pointer';
+                        } else if (getDragRectAtPos(pos.x, pos.y)) {
+                            canvas.style.cursor = 'grab';
+                        } else {
+                            canvas.style.cursor = 'crosshair';
+                        }
                     }
                 }
             }
@@ -2554,6 +2577,23 @@
                 }
                 
                 draw();
+                return;
+            }
+
+            for (const rect of routineRects) {
+                if (isInsideKeyArea(pos, rect)) {
+                    return;
+                }
+            }
+
+            for (const rect of routineRects) {
+                const mainRectHeight = rect.height * 0.7;
+                const isInMainRect = pos.x >= rect.x && pos.x <= rect.x + rect.width &&
+                                     pos.y >= rect.y && pos.y <= rect.y + mainRectHeight * 0.5;
+                if (isInMainRect) {
+                    showRoutineForm(rect);
+                    return;
+                }
             }
         });
 
@@ -2625,6 +2665,10 @@
         const formLoopReps = document.getElementById('formLoopReps');
         const formLoopType = document.getElementById('formLoopType');
         const formLoopConditions = document.getElementById('formLoopConditions');
+
+        const routineForm = document.getElementById('routineForm');
+        const routineFormClose = document.getElementById('routineFormClose');
+        const routineNameInput = document.getElementById('routineNameInput');
 
 
         // Conditions table elements
@@ -2827,6 +2871,18 @@
             avtpForm.classList.remove('visible');
         }
 
+        function showRoutineForm(rect) {
+            hideAvtpForm();
+            hideLoopForm();
+            routineNameInput.value = rect.name || '';
+            routineForm.style.display = 'block';
+            activeDragRect = rect;
+        }
+
+        function hideRoutineForm() {
+            routineForm.style.display = 'none';
+        }
+
         function showLoopForm(conn) {
             activeConnection = conn;
             formTitle.textContent = 'Loop Settings';
@@ -2875,6 +2931,17 @@
                 hideLoopForm();
             } else {
                 hideAvtpForm();
+            }
+        });
+
+        routineFormClose.addEventListener('click', () => {
+            hideRoutineForm();
+        });
+
+        routineNameInput.addEventListener('input', () => {
+            if (activeDragRect) {
+                activeDragRect.name = routineNameInput.value;
+                draw();
             }
         });
 
@@ -3362,6 +3429,20 @@
             for (let i = connections.length - 1; i >= 0; i--) {
                 if (isInsideLoopBlock(pos, connections[i], connections)) {
                     showLoopForm(connections[i]);
+                    return;
+                }
+            }
+
+            for (const rect of routineRects) {
+                if (isInsideKeyArea(pos, rect)) {
+                    activeDragRect = rect;
+                    if (rect.avtp.k) {
+                        showAvtpForm('k');
+                    } else {
+                        rect.avtp.k = true;
+                        showAvtpForm('k');
+                        draw();
+                    }
                     return;
                 }
             }
