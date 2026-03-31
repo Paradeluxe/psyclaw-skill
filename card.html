@@ -37,6 +37,20 @@
             position: relative;
         }
 
+        .routine-name-editor {
+            position: absolute;
+            font-size: 12px;
+            font-weight: 600;
+            font-family: -apple-system, BlinkMacSystemFont, SF Pro Text, sans-serif;
+            border: 1px solid #0066cc;
+            border-radius: 4px;
+            padding: 2px 4px;
+            background: #ffffff;
+            color: #000000;
+            outline: none;
+            z-index: 100;
+        }
+
         canvas {
             background: transparent;
             cursor: crosshair;
@@ -1385,6 +1399,7 @@
 
         <div class="container">
             <canvas id="canvas"></canvas>
+            <input type="text" id="routineNameEditor" class="routine-name-editor" style="display: none;" placeholder="Routine name">
         </div>
     </div>
 </div>
@@ -1399,6 +1414,7 @@
         console.log('Script starting');
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
+        const routineNameEditor = document.getElementById('routineNameEditor');
 
         const dpr = window.devicePixelRatio || 1;
         const baseWidth = 600;
@@ -2557,43 +2573,36 @@
                 }
             }
 
-            const clickableAvtp = getClickableAvtp(pos);
-            if (clickableAvtp && activeDragRect) {
-                const isEnabled = activeDragRect.avtp[clickableAvtp];
-                
-                if (isEnabled && activeAvtp === clickableAvtp) {
-                    window.showConfirmModal('Disable ' + clickableAvtp.toUpperCase(), 'Disable this component and clear its settings?').then((confirmed) => {
-                        if (confirmed) {
-                            activeDragRect.avtp[clickableAvtp] = false;
-                            hideAvtpForm();
-                            draw();
-                        }
-                    });
-                } else if (!isEnabled) {
-                    activeDragRect.avtp[clickableAvtp] = true;
-                    showAvtpForm(clickableAvtp);
-                } else if (isEnabled && activeAvtp !== clickableAvtp) {
-                    showAvtpForm(clickableAvtp);
+            const clickedRect = getDragRectAtPos(pos.x, pos.y);
+            if (clickedRect) {
+                if (isInsideKeyArea(pos, clickedRect)) {
+                    return;
                 }
-                
-                draw();
+                const clickableAvtp = getClickableAvtp(pos);
+                if (clickableAvtp) {
+                    const isEnabled = clickedRect.avtp[clickableAvtp];
+                    
+                    if (isEnabled && activeAvtp === clickableAvtp) {
+                        window.showConfirmModal('Disable ' + clickableAvtp.toUpperCase(), 'Disable this component and clear its settings?').then((confirmed) => {
+                            if (confirmed) {
+                                clickedRect.avtp[clickableAvtp] = false;
+                                hideAvtpForm();
+                                draw();
+                            }
+                        });
+                    } else if (!isEnabled) {
+                        clickedRect.avtp[clickableAvtp] = true;
+                        showAvtpForm(clickableAvtp);
+                    } else if (isEnabled && activeAvtp !== clickableAvtp) {
+                        showAvtpForm(clickableAvtp);
+                    }
+                    
+                    draw();
+                    return;
+                }
+
+                showRoutineForm(clickedRect);
                 return;
-            }
-
-            for (const rect of routineRects) {
-                if (isInsideKeyArea(pos, rect)) {
-                    return;
-                }
-            }
-
-            for (const rect of routineRects) {
-                const mainRectHeight = rect.height * 0.7;
-                const isInMainRect = pos.x >= rect.x && pos.x <= rect.x + rect.width &&
-                                     pos.y >= rect.y && pos.y <= rect.y + mainRectHeight * 0.5;
-                if (isInMainRect) {
-                    showRoutineForm(rect);
-                    return;
-                }
             }
         });
 
@@ -3433,28 +3442,67 @@
                 }
             }
 
-            for (const rect of routineRects) {
-                if (isInsideKeyArea(pos, rect)) {
-                    activeDragRect = rect;
-                    if (rect.avtp.k) {
+            const clickedRect = getDragRectAtPos(pos.x, pos.y);
+            if (clickedRect) {
+                if (isInsideKeyArea(pos, clickedRect)) {
+                    activeDragRect = clickedRect;
+                    if (clickedRect.avtp.k) {
                         showAvtpForm('k');
                     } else {
-                        rect.avtp.k = true;
+                        clickedRect.avtp.k = true;
                         showAvtpForm('k');
                         draw();
                     }
                     return;
                 }
-            }
 
-            const clickableAvtp = getClickableAvtp(pos);
-            if (clickableAvtp && activeDragRect) {
-                if (activeDragRect.avtp[clickableAvtp] && activeAvtp === clickableAvtp) {
+                const clickableAvtp = getClickableAvtp(pos);
+                if (clickableAvtp && clickedRect.avtp[clickableAvtp]) {
+                    showAvtpForm(clickableAvtp);
                     return;
                 }
-                if (activeDragRect.avtp[clickableAvtp]) {
-                    showAvtpForm(clickableAvtp);
+
+                activeDragRect = clickedRect;
+                routineNameEditor.value = clickedRect.name || '';
+                const canvasRect = canvas.getBoundingClientRect();
+                const containerRect = canvas.parentElement.getBoundingClientRect();
+                const offsetX = canvasRect.left - containerRect.left;
+                const offsetY = canvasRect.top - containerRect.top;
+                const rectX = clickedRect.x / dpr;
+                const rectY = clickedRect.y / dpr;
+                const rectWidth = clickedRect.width / dpr;
+                routineNameEditor.style.left = (offsetX + rectX + 8) + 'px';
+                routineNameEditor.style.top = (offsetY + rectY + 8) + 'px';
+                routineNameEditor.style.width = (rectWidth - 20) + 'px';
+                routineNameEditor.style.display = 'block';
+                routineNameEditor.focus();
+                routineNameEditor.select();
+                return;
+            }
+        });
+
+        routineNameEditor.addEventListener('blur', () => {
+            if (activeDragRect) {
+                const newName = routineNameEditor.value.trim();
+                const isDuplicate = routineRects.some(rect => 
+                    rect !== activeDragRect && rect.name === newName
+                );
+                if (isDuplicate || !newName) {
+                    routineNameEditor.value = activeDragRect.name;
+                    routineNameEditor.style.display = 'none';
+                    return;
                 }
+                activeDragRect.name = newName;
+                draw();
+            }
+            routineNameEditor.style.display = 'none';
+        });
+
+        routineNameEditor.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                routineNameEditor.blur();
+            } else if (e.key === 'Escape') {
+                routineNameEditor.style.display = 'none';
             }
         });
 
