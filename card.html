@@ -836,6 +836,28 @@
         #conditionsTableView.hidden {
             display: none;
         }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1370,6 +1392,34 @@
             const totalPoints = displayCount * 2 + 1;
             const contentHeight = baseStartY + (totalPoints - 1) * spacing + 80; // 底部留白
             return Math.max(800, contentHeight); // 最小高度 800
+        }
+        
+        // 显示通知消息
+        function showNotification(message, duration = 3000) {
+            // 创建通知元素
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #4CAF50;
+                color: white;
+                padding: 12px 24px;
+                border-radius: 4px;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+                z-index: 10000;
+                animation: slideIn 0.3s ease-out;
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            // 自动消失
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease-out';
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, duration);
         }
         
         let currentRoutineCount = 0;
@@ -3493,6 +3543,92 @@
                 reader.readAsText(file);
             };
             input.click();
+        });
+
+        // 监听来自 chatbot.html 的 flowchart 生成数据
+        window.addEventListener('message', (e) => {
+            if (e.data && e.data.type === 'flowchart-generated') {
+                const fileName = e.data.fileName || 'generated_flowchart.json';
+                const content = e.data.content;
+                
+                console.log('Received flowchart data, content length:', content ? content.length : 0);
+                console.log('File name:', fileName);
+                
+                // 直接解析 content，尝试修复常见的 JSON 格式问题
+                let projectData;
+                try {
+                    // 尝试直接解析
+                    projectData = JSON.parse(content);
+                    console.log('Parsed project data:', projectData);
+                } catch (parseError) {
+                    console.log('Direct parse failed, trying to fix JSON...');
+                    
+                    // 尝试修复：移除末尾的逗号
+                    let fixedContent = content.trim();
+                    if (fixedContent.endsWith(',}')) {
+                        fixedContent = fixedContent.slice(0, -2) + '}';
+                    }
+                    if (fixedContent.endsWith(',]')) {
+                        fixedContent = fixedContent.slice(0, -2) + ']';
+                    }
+                    
+                    // 移除最后一个 } 或 ] 之前的所有逗号
+                    fixedContent = fixedContent.replace(/,(\s*[}\]])/g, '$1');
+                    
+                    try {
+                        projectData = JSON.parse(fixedContent);
+                        console.log('Parsed fixed JSON:', projectData);
+                    } catch (fixError) {
+                        console.error('Failed to parse JSON even after fixing:', fixError);
+                        console.log('Last 500 chars:', content.slice(-500));
+                        console.log('Full content:', content);
+                        showNotification('❌ Invalid JSON format from AI');
+                        return;
+                    }
+                }
+                
+                // 验证数据格式
+                if (!projectData.routineRects || !Array.isArray(projectData.routineRects) || projectData.routineRects.length === 0) {
+                    console.error('Invalid flowchart data: missing or empty routineRects');
+                    showNotification('❌ Invalid flowchart: no routines found');
+                    return;
+                }
+                
+                // 确保 connections 是数组（可以是空数组）
+                if (!projectData.connections) {
+                    projectData.connections = [];
+                }
+                
+                // 清空当前项目
+                routineRects.length = 0;
+                connections.length = 0;
+                selectedRoutineIndex = -1;
+                activeDragRect = null;
+                
+                // 导入数据
+                routineRects.push(...projectData.routineRects);
+                connections.push(...projectData.connections);
+                currentRoutineCount = projectData.currentRoutineCount || routineRects.length;
+                routineIdCounter = projectData.routineIdCounter || routineRects.length;
+                loopIdCounter = projectData.loopIdCounter || 0;
+                
+                // 保存导入的文件名
+                currentProjectFile = fileName;
+                fileHandle = null;
+                
+                // 更新界面
+                updatePoints();
+                updateRoutineCount();
+                draw();
+                
+                // 保存初始状态并启用按钮
+                saveState();
+                
+                console.log('Flowchart successfully loaded from chatbot');
+                
+                // 显示通知
+                showNotification('✅ Flowchart loaded: ' + fileName);
+            }
         });
 
         document.addEventListener('keydown', (e) => {

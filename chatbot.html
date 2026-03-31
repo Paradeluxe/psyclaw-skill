@@ -424,6 +424,12 @@
             color: #c62828;
         }
 
+        .chat-message.success {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #c8e6c9;
+        }
+
         .chat-input-area {
             padding: 0;
             background: #ffffff;
@@ -989,6 +995,211 @@
 
         let modelList = [];
 
+        const defaultFlowchartSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": ["version", "timestamp", "routineRects", "connections", "currentRoutineCount", "routineIdCounter", "loopIdCounter"],
+  "additionalProperties": false,
+  "properties": {
+    "version": {"type": "string", "description": "Schema version identifier", "examples": ["1.0.0"]},
+    "timestamp": {"type": "string", "format": "date-time", "description": "ISO 8601 datetime string"},
+    "routineRects": {"type": "array", "description": "Array of routine objects", "minItems": 1, "items": {"$ref": "#/definitions/Routine"}, "uniqueItems": false},
+    "connections": {"type": "array", "description": "Array of connection objects", "items": {"$ref": "#/definitions/Connection"}},
+    "currentRoutineCount": {"type": "integer", "description": "Current number of routines", "minimum": 1},
+    "routineIdCounter": {"type": "integer", "description": "Counter for generating unique routine IDs", "minimum": 0},
+    "loopIdCounter": {"type": "integer", "description": "Counter for generating unique loop IDs", "minimum": 0}
+  },
+  "definitions": {
+    "Routine": {
+      "type": "object",
+      "description": "A routine object with AVTP (Audio, Video, Text, Picture, Keyboard) configurations",
+      "required": ["id", "x", "y", "width", "height", "keys", "duration", "avtp", "avtpData"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {"type": "integer", "description": "Unique identifier for the routine", "minimum": 0},
+        "x": {"type": "number", "description": "X coordinate position on the canvas"},
+        "y": {"type": "number", "description": "Y coordinate position on the canvas"},
+        "width": {"type": "number", "description": "Width of the routine rectangle", "minimum": 0},
+        "height": {"type": "number", "description": "Height of the routine rectangle", "minimum": 0},
+        "borderRadius": {"type": "number", "description": "Border radius for rounded corners", "minimum": 0},
+        "isDragging": {"type": "boolean", "description": "Whether the routine is currently being dragged"},
+        "offsetX": {"type": "number", "description": "X offset for drag operation"},
+        "offsetY": {"type": "number", "description": "Y offset for drag operation"},
+        "keys": {"type": "string", "description": "Comma-separated key names", "examples": ["Key1, Key2, Key3"]},
+        "duration": {"type": "integer", "description": "Duration in milliseconds", "minimum": -1},
+        "avtp": {"$ref": "#/definitions/AVTPFlags"},
+        "avtpData": {"$ref": "#/definitions/AVTPData"}
+      }
+    },
+    "AVTPFlags": {
+      "type": "object",
+      "description": "Flags indicating which AVTP components are enabled",
+      "required": ["a", "v", "t", "p", "k"],
+      "additionalProperties": false,
+      "properties": {
+        "a": {"type": "boolean", "description": "Audio enabled flag"},
+        "v": {"type": "boolean", "description": "Video enabled flag"},
+        "t": {"type": "boolean", "description": "Text enabled flag"},
+        "p": {"type": "boolean", "description": "Picture enabled flag"},
+        "k": {"type": "boolean", "description": "Keyboard enabled flag"}
+      }
+    },
+    "AVTPData": {
+      "type": "object",
+      "description": "Configuration data for AVTP components",
+      "additionalProperties": false,
+      "properties": {
+        "a": {"$ref": "#/definitions/AudioConfig"},
+        "v": {"$ref": "#/definitions/VideoConfig"},
+        "t": {"$ref": "#/definitions/TextConfig"},
+        "p": {"$ref": "#/definitions/PictureConfig"},
+        "k": {"$ref": "#/definitions/KeyboardConfig"}
+      }
+    },
+    "TextConfig": {
+      "type": "object",
+      "description": "Configuration for text stimulus",
+      "required": ["enabled", "label", "type", "text", "font", "letterHeight", "color", "pos", "ori", "opacity", "units", "startTime", "duration", "contrast", "flip", "languageStyle", "draggable"],
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {"type": "boolean"},
+        "label": {"type": "string"},
+        "type": {"type": "string", "const": "text"},
+        "text": {"type": "string"},
+        "font": {"type": "string"},
+        "letterHeight": {"type": "number"},
+        "color": {"type": "string"},
+        "pos": {"type": "array", "items": {"type": "number"}, "minItems": 2, "maxItems": 2},
+        "ori": {"type": "integer"},
+        "opacity": {"type": "number", "minimum": 0, "maximum": 1},
+        "units": {"type": "string"},
+        "startTime": {"type": "integer", "minimum": 0},
+        "duration": {"type": "integer", "minimum": -1},
+        "contrast": {"type": "number", "minimum": 0, "maximum": 1},
+        "wrapWidth": {"type": "number"},
+        "flip": {"type": "string", "enum": ["None", "Horizontal", "Vertical", "Both"]},
+        "languageStyle": {"type": "string", "enum": ["LTR", "RTL"]},
+        "draggable": {"type": "boolean"}
+      }
+    },
+    "PictureConfig": {
+      "type": "object",
+      "description": "Configuration for image/picture stimulus",
+      "required": ["enabled", "label", "type", "path", "size", "pos", "opacity", "startTime", "duration", "ori", "flip", "units"],
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {"type": "boolean"},
+        "label": {"type": "string"},
+        "type": {"type": "string", "const": "image"},
+        "path": {"type": "string"},
+        "size": {"type": "array", "items": {"type": ["number", "null"]}, "minItems": 2, "maxItems": 2},
+        "pos": {"type": "array", "items": {"type": "number"}, "minItems": 2, "maxItems": 2},
+        "opacity": {"type": "number", "minimum": 0, "maximum": 1},
+        "startTime": {"type": "integer", "minimum": 0},
+        "duration": {"type": "integer", "minimum": -1},
+        "ori": {"type": "integer"},
+        "flip": {"type": "string", "enum": ["None", "Horizontal", "Vertical", "Both"]},
+        "units": {"type": "string"}
+      }
+    },
+    "AudioConfig": {
+      "type": "object",
+      "description": "Configuration for audio stimulus",
+      "required": ["enabled", "label", "type", "path", "volume", "startTime", "duration", "stopWithRoutine", "forceEndRoutine"],
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {"type": "boolean"},
+        "label": {"type": "string"},
+        "type": {"type": "string", "const": "audio"},
+        "path": {"type": "string"},
+        "volume": {"type": "number", "minimum": 0, "maximum": 1},
+        "startTime": {"type": "integer", "minimum": 0},
+        "duration": {"type": "integer", "minimum": -1},
+        "stopWithRoutine": {"type": "boolean"},
+        "forceEndRoutine": {"type": "boolean"}
+      }
+    },
+    "VideoConfig": {
+      "type": "object",
+      "description": "Configuration for video stimulus",
+      "required": ["enabled", "label", "type", "path", "volume", "size", "anchor", "loop", "startTime", "duration", "units", "opacity", "stopWithRoutine", "forceEndRoutine"],
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {"type": "boolean"},
+        "label": {"type": "string"},
+        "type": {"type": "string", "const": "video"},
+        "path": {"type": "string"},
+        "volume": {"type": "number", "minimum": 0, "maximum": 1},
+        "size": {"type": "array", "items": {"type": ["number", "null"]}, "minItems": 2, "maxItems": 2},
+        "anchor": {"type": "string"},
+        "loop": {"type": "boolean"},
+        "startTime": {"type": "integer", "minimum": 0},
+        "duration": {"type": "integer", "minimum": -1},
+        "units": {"type": "string"},
+        "opacity": {"type": "number", "minimum": 0, "maximum": 1},
+        "stopWithRoutine": {"type": "boolean"},
+        "forceEndRoutine": {"type": "boolean"}
+      }
+    },
+    "KeyboardConfig": {
+      "type": "object",
+      "description": "Configuration for keyboard response component",
+      "required": ["enabled", "label", "type", "keys", "startTime", "duration", "forceEndRoutine"],
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {"type": "boolean"},
+        "label": {"type": "string"},
+        "type": {"type": "string", "const": "keyboard"},
+        "keys": {"type": "string"},
+        "startTime": {"type": "integer", "minimum": 0},
+        "duration": {"type": "integer", "minimum": -1},
+        "forceEndRoutine": {"type": "boolean"}
+      }
+    },
+    "Connection": {
+      "type": "object",
+      "description": "A connection object between routines",
+      "required": ["start", "end", "depth", "loopIsTrials"],
+      "additionalProperties": false,
+      "properties": {
+        "start": {"$ref": "#/definitions/ConnectionEndpoint"},
+        "end": {"$ref": "#/definitions/ConnectionEndpoint"},
+        "depth": {"type": "integer", "minimum": 0},
+        "loopName": {"type": "string"},
+        "loopReps": {"type": "integer", "minimum": 1},
+        "loopType": {"type": "string", "enum": ["sequential", "random"]},
+        "loopConditions": {"type": "string", "contentMediaType": "application/json", "contentSchema": {"type": "array", "items": {"$ref": "#/definitions/LoopCondition"}}},
+        "loopIsTrials": {"type": "boolean"}
+      }
+    },
+    "ConnectionEndpoint": {
+      "type": "object",
+      "description": "An endpoint of a connection",
+      "required": ["x", "y", "label", "isSnapTarget"],
+      "additionalProperties": false,
+      "properties": {
+        "x": {"type": "number"},
+        "y": {"type": "number"},
+        "label": {"type": "integer"},
+        "isSnapTarget": {"type": "boolean"}
+      }
+    },
+    "LoopCondition": {
+      "type": "object",
+      "description": "A condition object for loop execution",
+      "required": ["variable", "operator", "value"],
+      "additionalProperties": false,
+      "properties": {
+        "variable": {"type": "string"},
+        "operator": {"type": "string", "enum": ["==", "!=", ">", "<", ">=", "<="]},
+        "value": {"type": ["string", "number"]}
+      }
+    }
+  }
+};
+
+        let flowchartSchema = defaultFlowchartSchema;
+
         function updateModelNameDisplay() {
             const modelName = modelSelectInput.value || modelDropbtn.value || 'No model selected';
             if (modelNameDisplay) {
@@ -1380,11 +1591,32 @@
             }
 
             const messages = [];
+            
+            // 构建 system prompt，使用内置的 schema
+            const flowchartSystemPrompt = `You are a DeepPsych flowchart JSON generator. Please generate a complete JSON data structure based on user requests that conforms to the following JSON Schema:
+
+[JSON Schema]
+${JSON.stringify(flowchartSchema, null, 2)}
+
+[Important Notes]
+1. routineRects must contain at least 1 routine
+2. Each routine must include all required fields
+3. Components set to true in avtp must have corresponding configuration in avtpData
+4. connections describe the flow relationships between routines
+5. Output must be compact JSON without extra whitespace or newlines
+6. Keep text content concise to avoid token limits`;
+
             if (settings.system_prompt) {
-                messages.push({ role: 'system', content: settings.system_prompt });
+                messages.push({ role: 'system', content: settings.system_prompt + '\n\n' + flowchartSystemPrompt });
+            } else {
+                messages.push({ role: 'system', content: flowchartSystemPrompt });
             }
 
             let userContent = message || '';
+            
+            // 添加 JSON 输出要求，这是使用 response_format 的必要条件
+            userContent += '\n\nPlease output JSON strictly according to the schema above, without any explanatory text.';
+            
             if (currentFile) {
                 try {
                     const fileContent = await readFile(currentFile);
@@ -1408,19 +1640,26 @@
             const responseMsg = addMessage('Thinking...', 'assistant');
 
             try {
+                // 构建请求体 - 增加 max_tokens 并禁用流式传输
+                const requestBody = {
+                    model: settings.model,
+                    messages: messages,
+                    temperature: settings.temperature,
+                    top_p: settings.top_p,
+                    max_tokens: settings.max_length || 16000,  // 进一步增加到 16000
+                    response_format: {
+                        type: "json_object"
+                    },
+                    stream: false  // 明确禁用流式传输
+                };
+
                 const response = await fetch(apiUrl, {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${settings.api_key}`,
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({
-                        model: settings.model,
-                        messages: messages,
-                        temperature: settings.temperature,
-                        top_p: settings.top_p,
-                        max_tokens: settings.max_length
-                    })
+                    body: JSON.stringify(requestBody)
                 });
 
                 if (!response.ok) {
@@ -1430,7 +1669,34 @@
 
                 const result = await response.json();
                 const responseContent = result.choices?.[0]?.message?.content || '⚠️ Unexpected response format from API';
-                updateMessage(responseMsg, responseContent);
+                console.log('Raw AI response:', responseContent);
+                
+                // 清理响应内容，移除可能的 markdown 代码块标记
+                let cleanContent = responseContent.trim();
+                if (cleanContent.startsWith('```json')) {
+                    cleanContent = cleanContent.slice(7);
+                }
+                if (cleanContent.startsWith('```')) {
+                    cleanContent = cleanContent.slice(3);
+                }
+                if (cleanContent.endsWith('```')) {
+                    cleanContent = cleanContent.slice(0, -3);
+                }
+                cleanContent = cleanContent.trim();
+                
+                console.log('Cleaned content:', cleanContent);
+                
+                // 通过 postMessage 发送到父窗口（card.html），让父窗口解析和保存
+                const tempFileName = 'temp_generated_flowchart.json';
+                window.parent.postMessage({
+                    type: 'flowchart-generated',
+                    content: cleanContent,
+                    fileName: tempFileName
+                }, '*');
+                
+                // 显示生成完成消息
+                updateMessage(responseMsg, '✅ Generation completed! The flowchart has been loaded in the editor.');
+                responseMsg.classList.add('success');
             } catch (e) {
                 updateMessage(responseMsg, `❌ ${e.message}`);
                 responseMsg.classList.add('error');

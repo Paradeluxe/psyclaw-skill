@@ -565,8 +565,22 @@ function generateFlow(routineRects, connections) {
         const startLabel = parseInt(conn.start.label);
         const endLabel = parseInt(conn.end.label);
         
+        // linePoints label 是奇数 (1,3,5,7...)，对应 routine 索引 (0,1,2,3...)
+        // 转换公式：index = (label - 1) / 2
         const startRoutineIndex = Math.floor((startLabel - 1) / 2);
-        const endRoutineIndex = Math.floor((endLabel - 1) / 2);
+        // endLabel 指向 loop 结束的 point，该 point 对应的 routine 索引需要减 1 才是 loop 实际包含的最后一个 routine
+        // 例如：endLabel=7 → index=3，但实际包含的是 routine 2（索引从 0），即 routine 3
+        let endRoutineIndex = Math.floor((endLabel - 1) / 2);
+        
+        // 如果 startLabel != endLabel，说明是范围 loop，endRoutineIndex 需要减 1
+        // 如果 startLabel == endLabel，说明是 single-point loop，endRoutineIndex 应该等于 startRoutineIndex
+        if (startLabel !== endLabel) {
+            endRoutineIndex = endRoutineIndex - 1;
+        } else {
+            endRoutineIndex = startRoutineIndex;
+        }
+        
+        console.log(`Loop ${conn.loopName}: startLabel=${startLabel}, endLabel=${endLabel}, startRoutineIndex=${startRoutineIndex}, endRoutineIndex=${endRoutineIndex}`);
         
         loops.push({
             name: conn.loopName || 'trials',
@@ -580,17 +594,37 @@ function generateFlow(routineRects, connections) {
         });
     });
     
+    // 根据 loop 的包含关系重新计算深度
+    // 被包含越多的 loop，depth 应该越大
+    for (let i = 0; i < loops.length; i++) {
+        let depth = 0;
+        for (let j = 0; j < loops.length; j++) {
+            if (i === j) continue;
+            // 如果 loop j 包含 loop i（j 的范围更大，完全包含 i）
+            if (loops[j].startRoutineIndex <= loops[i].startRoutineIndex && 
+                loops[j].endRoutineIndex >= loops[i].endRoutineIndex &&
+                (loops[j].startRoutineIndex < loops[i].startRoutineIndex || 
+                 loops[j].endRoutineIndex > loops[i].endRoutineIndex)) {
+                depth++;
+            }
+        }
+        loops[i].depth = depth;
+        console.log(`Loop ${loops[i].name} recalculated depth: ${depth}`);
+    }
+    
     loops.sort((a, b) => a.depth - b.depth);
     
     for (let i = 0; i < routineRects.length; i++) {
-        const loopsStartingHere = loops.filter(l => l.startRoutineIndex === i).sort((a, b) => b.depth - a.depth);
+        // 按 depth 降序排列，外层 loop（depth 小）先放置
+        const loopsStartingHere = loops.filter(l => l.startRoutineIndex === i).sort((a, b) => a.depth - b.depth);
         loopsStartingHere.forEach(loop => {
             xml += generateLoopInitiator(loop);
         });
         
         xml += `    <Routine name="${routineNames[i]}"/>\n`;
         
-        const loopsEndingHere = loops.filter(l => l.endRoutineIndex === i).sort((a, b) => a.depth - b.depth);
+        // 按 depth 升序排列，内层 loop（depth 大）先结束
+        const loopsEndingHere = loops.filter(l => l.endRoutineIndex === i).sort((a, b) => b.depth - a.depth);
         loopsEndingHere.forEach(loop => {
             xml += generateLoopTerminator(loop);
         });
