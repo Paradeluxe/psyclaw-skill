@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>吸附点连线</title>
+    <title>PsyClaw</title>
     <style>
         * {
             margin: 0;
@@ -547,32 +547,6 @@
             cursor: not-allowed;
         }
 
-        .routine-name-input {
-            padding: 8px 12px;
-            border: 1.5px solid #000000;
-            background: #ffffff;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 500;
-            width: 150px;
-            outline: none;
-            transition: all 0.2s;
-        }
-
-        .routine-name-input:focus {
-            border-color: #0066cc;
-            box-shadow: 0 0 0 2px rgba(0, 102, 204, 0.2);
-        }
-
-        .routine-name-input:disabled {
-            background: #f5f5f5;
-            cursor: not-allowed;
-        }
-
-        .routine-name-input:invalid {
-            border-color: #d32f2f;
-        }
-
         .form-group-hidden {
             display: none;
         }
@@ -1024,6 +998,11 @@
             <button class="avtp-form-close" id="formClose">×</button>
         </div>
 
+        <div class="avtp-form-group" id="routineNameGroup">
+            <label class="avtp-form-label">Routine Name</label>
+            <input type="text" class="avtp-form-input" id="routineNameInput" placeholder="Enter routine name...">
+        </div>
+
         <div class="avtp-form-content">
         <div class="avtp-form-group form-group-hidden" id="fileInputGroup">
             <label class="avtp-form-label">File Path / URL</label>
@@ -1387,7 +1366,6 @@
                     </svg>
                 </span>
             </button>
-            <input type="text" class="routine-name-input" id="routineNameInput" placeholder="Select a routine..." disabled>
             <button class="action-button" id="removeRoutine" title="Remove Routine">
                 <span class="action-icon">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1689,7 +1667,7 @@
                 offsetY: 0,
                 keys: 'Space, F, J',
                 duration: 3000,
-                avtp: { a: false, v: false, t: false, p: false, k: false },
+                avtp: { a: false, v: false, t: false, p: false },
                 avtpData: {
                     a: {
                         enabled: false,
@@ -2693,10 +2671,6 @@
                         return key;
                     }
                 }
-                if (isInsideKeyArea(pos, rect)) {
-                    activeDragRect = rect;
-                    return 'k';
-                }
             }
             return null;
         }
@@ -3405,57 +3379,11 @@
 
         const addRoutineBtn = document.getElementById('addRoutine');
         const removeRoutineBtn = document.getElementById('removeRoutine');
-        const routineNameInput = document.getElementById('routineNameInput');
-        let savedRoutineName = '';
 
         function updateRoutineCount() {
             addRoutineBtn.disabled = false;
             removeRoutineBtn.disabled = routineRects.length <= 0 || selectedRoutineIndex < 0;
-            
-            if (selectedRoutineIndex >= 0 && selectedRoutineIndex < routineRects.length) {
-                routineNameInput.disabled = false;
-                routineNameInput.value = routineRects[selectedRoutineIndex].name || '';
-            } else {
-                routineNameInput.disabled = true;
-                routineNameInput.value = '';
-                routineNameInput.placeholder = 'Select a routine...';
-            }
         }
-
-        routineNameInput.addEventListener('focus', () => {
-            if (selectedRoutineIndex >= 0 && selectedRoutineIndex < routineRects.length) {
-                savedRoutineName = routineRects[selectedRoutineIndex].name;
-            }
-        });
-
-        routineNameInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                routineNameInput.blur();
-            }
-        });
-
-        routineNameInput.addEventListener('blur', () => {
-            if (selectedRoutineIndex >= 0 && selectedRoutineIndex < routineRects.length) {
-                let newName = routineNameInput.value.trim();
-                
-                if (!newName) {
-                    newName = 'routine_' + routineRects[selectedRoutineIndex].id;
-                }
-                
-                const isDuplicate = routineRects.some((rect, idx) => 
-                    idx !== selectedRoutineIndex && rect.name === newName
-                );
-                
-                if (isDuplicate) {
-                    routineRects[selectedRoutineIndex].name = savedRoutineName;
-                    routineNameInput.value = savedRoutineName;
-                } else {
-                    routineRects[selectedRoutineIndex].name = newName;
-                }
-                draw();
-            }
-        });
 
         function updatePoints() {
             currentRoutineCount = routineRects.length;
