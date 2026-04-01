@@ -99,7 +99,7 @@
             border: none;
             background: #f5f5f5;
             border-radius: 6px;
-            font-size: 18px;
+            font-size: 25px;
             cursor: pointer;
             display: flex;
             align-items: center;
@@ -130,8 +130,8 @@
             background: #f9f9f9;
             border: 1px solid #e0e0e0;
             border-radius: 6px;
-            padding: 12px;
-            margin-bottom: 8px;
+            padding: 8px;
+            margin: 6px 0;
             position: relative;
         }
 
@@ -139,7 +139,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 8px;
+            margin-bottom: 0;
         }
 
         .avtp-component-title {
@@ -1415,7 +1415,10 @@
                 <div class="avtp-components-list" id="avtpComponentsList">
                 </div>
                 <div class="avtp-add-buttons">
-                    <button class="avtp-add-btn" data-type="k">Add Keyboard</button>
+                    <button class="avtp-add-btn" data-type="a">A</button>
+                    <button class="avtp-add-btn" data-type="v">V</button>
+                    <button class="avtp-add-btn" data-type="t">T</button>
+                    <button class="avtp-add-btn" data-type="p">P</button>
                 </div>
             </div>
         </div>
@@ -1788,14 +1791,6 @@
                     ori: 0,
                     flip: 'None',
                     units: 'from exp settings'
-                },
-                k: {
-                    label: 'Key',
-                    type: 'keyboard',
-                    keys: 'Space, F, J',
-                    startTime: 0,
-                    duration: 3000,
-                    forceEndRoutine: true
                 }
             };
             return defaults[type] ? JSON.parse(JSON.stringify(defaults[type])) : null;
@@ -2935,37 +2930,24 @@
                 
                 const removeBtn = document.createElement('button');
                 removeBtn.className = 'avtp-component-remove';
-                removeBtn.textContent = 'Remove';
-                removeBtn.onclick = () => {
-                    if (confirm(`Remove ${component.label || component.type}?`)) {
-                        component.enabled = false;
-                        renderAvtpComponentsList(rect);
-                        draw();
-                    }
+                removeBtn.textContent = '×';
+                removeBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    component.enabled = false;
+                    renderAvtpComponentsList(rect);
+                    draw();
                 };
                 
                 headerDiv.appendChild(titleSpan);
                 headerDiv.appendChild(removeBtn);
                 componentDiv.appendChild(headerDiv);
                 
-                // 添加编辑按钮
-                const editBtn = document.createElement('button');
-                editBtn.textContent = 'Edit Settings';
-                editBtn.style.marginTop = '8px';
-                editBtn.style.padding = '4px 8px';
-                editBtn.style.border = '1px solid #0066cc';
-                editBtn.style.backgroundColor = '#0066cc';
-                editBtn.style.color = 'white';
-                editBtn.style.borderRadius = '4px';
-                editBtn.style.cursor = 'pointer';
-                editBtn.style.fontSize = '12px';
-                editBtn.onclick = () => {
-                    // 临时保存到activeAvtpComponent用于编辑
+                componentDiv.style.cursor = 'pointer';
+                componentDiv.onclick = () => {
                     activeAvtpComponent = component;
                     showAvtpkForm(component.type.charAt(0).toLowerCase());
                 };
                 
-                componentDiv.appendChild(editBtn);
                 listContainer.appendChild(componentDiv);
             });
         }
