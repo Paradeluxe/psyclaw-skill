@@ -42,9 +42,11 @@
             font-size: 12px;
             font-weight: 600;
             font-family: -apple-system, BlinkMacSystemFont, SF Pro Text, sans-serif;
-            border: 1px solid #0066cc;
-            border-radius: 4px;
-            padding: 2px 4px;
+            border: 1px solid transparent;
+            border-radius: 2px;
+            padding: 0;
+            height: 20px;
+            line-height: 20px;
             background: #ffffff;
             color: #000000;
             outline: none;
@@ -156,6 +158,11 @@
         .avtp-form-input:focus {
             outline: none;
             border-color: #000000;
+        }
+
+        #routineNameInput {
+            padding: 6px 12px;
+            height: 32px;
         }
 
         .avtp-form-checkbox {
@@ -1399,7 +1406,7 @@
 
         <div class="container">
             <canvas id="canvas"></canvas>
-            <input type="text" id="routineNameEditor" class="routine-name-editor" style="display: none;" placeholder="Routine name">
+            <input type="text" id="routineNameEditor" class="routine-name-editor" style="display: none;" placeholder="Routine name" maxlength="15">
         </div>
     </div>
 </div>
@@ -3470,10 +3477,9 @@
                 const offsetY = canvasRect.top - containerRect.top;
                 const rectX = clickedRect.x / dpr;
                 const rectY = clickedRect.y / dpr;
-                const rectWidth = clickedRect.width / dpr;
-                routineNameEditor.style.left = (offsetX + rectX + 8) + 'px';
-                routineNameEditor.style.top = (offsetY + rectY + 8) + 'px';
-                routineNameEditor.style.width = (rectWidth - 20) + 'px';
+                routineNameEditor.style.left = (offsetX + rectX + 7) + 'px';
+                routineNameEditor.style.top = (offsetY + rectY + 6) + 'px';
+                routineNameEditor.style.width = '120px';
                 routineNameEditor.style.display = 'block';
                 routineNameEditor.focus();
                 routineNameEditor.select();
