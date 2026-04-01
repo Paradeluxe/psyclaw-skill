@@ -145,8 +145,26 @@ function generateRoutine(routineRect, index) {
         <Param val="False" valType="bool" updates="None" name="useWindowParams"/>
       </RoutineSettingsComponent>\n`;
     
-    // 处理 avtpData 中的组件
-    if (routineRect.avtpData) {
+    // 处理 avtpComponents 数组中的组件
+    if (routineRect.avtpComponents && Array.isArray(routineRect.avtpComponents)) {
+        for (const component of routineRect.avtpComponents) {
+            if (component && component.enabled) {
+                if (component.type === 'audio') {
+                    xml += generateAudioComponentFromAvtp(component, routineName);
+                } else if (component.type === 'video') {
+                    xml += generateVideoComponentFromAvtp(component, routineName);
+                } else if (component.type === 'text') {
+                    xml += generateTextComponentFromAvtp(component, routineName);
+                } else if (component.type === 'image') {
+                    xml += generateImageComponentFromAvtp(component, routineName);
+                } else if (component.type === 'keyboard') {
+                    xml += generateKeyboardComponentFromAvtp(component, routineName);
+                }
+            }
+        }
+    } 
+    // 兼容旧的 avtpData 对象方式
+    else if (routineRect.avtpData) {
         const avtpData = routineRect.avtpData;
         
         if (avtpData.a && avtpData.a.enabled) {
@@ -164,8 +182,9 @@ function generateRoutine(routineRect, index) {
         if (avtpData.k && avtpData.k.enabled) {
             xml += generateKeyboardComponentFromAvtp(avtpData.k, routineName);
         }
-    } else {
-        // 兼容旧的 type 属性方式
+    } 
+    // 兼容更旧的 type 属性方式
+    else if (routineRect.type) {
         if (routineRect.type === 'Audio') {
             xml += generateAudioComponent(routineRect);
         } else if (routineRect.type === 'Text') {

@@ -37,22 +37,6 @@
             position: relative;
         }
 
-        .routine-name-editor {
-            position: absolute;
-            font-size: 12px;
-            font-weight: 600;
-            font-family: -apple-system, BlinkMacSystemFont, SF Pro Text, sans-serif;
-            border: 1px solid transparent;
-            border-radius: 2px;
-            padding: 0;
-            height: 20px;
-            line-height: 20px;
-            background: #ffffff;
-            color: #000000;
-            outline: none;
-            z-index: 100;
-        }
-
         canvas {
             background: transparent;
             cursor: crosshair;
@@ -131,6 +115,69 @@
 
         .avtp-form-group {
             margin-bottom: 16px;
+        }
+
+        .avtp-components-list {
+            margin-top: 8px;
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 8px;
+        }
+
+        .avtp-component-item {
+            background: #f9f9f9;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 8px;
+            position: relative;
+        }
+
+        .avtp-component-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .avtp-component-title {
+            font-weight: 600;
+            color: #000000;
+            font-size: 14px;
+        }
+
+        .avtp-component-remove {
+            background: #ff4444;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 4px 8px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .avtp-add-buttons {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+            flex-wrap: wrap;
+        }
+
+        .avtp-add-btn {
+            padding: 6px 12px;
+            border: 1.5px solid #e0e0e0;
+            border-radius: 6px;
+            background: white;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+
+        .avtp-add-btn:hover {
+            border-color: #000000;
+            background: #f5f5f5;
         }
 
         .form-group-margin-top {
@@ -1358,15 +1405,17 @@
 
         </div>
 
-        <div class="avtp-form" id="routineForm" style="display: none;">
-            <div class="avtp-form-header">
-                <div class="avtp-form-title">Routine</div>
-                <button class="avtp-form-close" id="routineFormClose">×</button>
+        <div class="avtp-form-group form-group-hidden" id="routineOptions">
+            <div class="avtp-form-group">
+                <label class="avtp-form-label">Routine Name</label>
+                <input type="text" class="avtp-form-input" id="routineNameInput" placeholder="Enter routine name...">
             </div>
-            <div class="avtp-form-content">
-                <div class="avtp-form-group">
-                    <label class="avtp-form-label">Routine Name</label>
-                    <input type="text" class="avtp-form-input" id="routineNameInput" placeholder="Enter routine name...">
+            <div class="avtp-form-group">
+                <label class="avtp-form-label">AVTP Components</label>
+                <div class="avtp-components-list" id="avtpComponentsList">
+                </div>
+                <div class="avtp-add-buttons">
+                    <button class="avtp-add-btn" data-type="k">Add Keyboard</button>
                 </div>
             </div>
         </div>
@@ -1406,7 +1455,6 @@
 
         <div class="container">
             <canvas id="canvas"></canvas>
-            <input type="text" id="routineNameEditor" class="routine-name-editor" style="display: none;" placeholder="Routine name" maxlength="15">
         </div>
     </div>
 </div>
@@ -1421,7 +1469,6 @@
         console.log('Script starting');
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
-        const routineNameEditor = document.getElementById('routineNameEditor');
 
         const dpr = window.devicePixelRatio || 1;
         const baseWidth = 600;
@@ -1683,6 +1730,86 @@
         let saveCounter = 1;
         let fileHandle = null;
 
+        function createDefaultAvtpData(type) {
+            const defaults = {
+                a: {
+                    label: 'Audio',
+                    type: 'audio',
+                    path: '',
+                    volume: 1.0,
+                    startTime: 0,
+                    duration: -1,
+                    stopWithRoutine: true,
+                    forceEndRoutine: true
+                },
+                v: {
+                    label: 'Video',
+                    type: 'video',
+                    path: '',
+                    volume: 1.0,
+                    size: [null, null],
+                    anchor: 'center',
+                    loop: false,
+                    startTime: 0,
+                    duration: -1,
+                    units: 'from exp settings',
+                    opacity: 1.0,
+                    stopWithRoutine: true,
+                    forceEndRoutine: true
+                },
+                t: {
+                    label: 'Text',
+                    type: 'text',
+                    text: 'Sample Text',
+                    font: 'Arial',
+                    letterHeight: 0.05,
+                    color: 'white',
+                    pos: [0, 0],
+                    ori: 0,
+                    opacity: 1.0,
+                    units: 'from exp settings',
+                    startTime: 0,
+                    duration: 3000,
+                    contrast: 1.0,
+                    wrapWidth: undefined,
+                    flip: 'None',
+                    languageStyle: 'LTR',
+                    draggable: false
+                },
+                p: {
+                    label: 'Picture',
+                    type: 'image',
+                    path: '',
+                    size: [null, null],
+                    pos: [0, 0],
+                    opacity: 1.0,
+                    startTime: 0,
+                    duration: 3000,
+                    ori: 0,
+                    flip: 'None',
+                    units: 'from exp settings'
+                },
+                k: {
+                    label: 'Key',
+                    type: 'keyboard',
+                    keys: 'Space, F, J',
+                    startTime: 0,
+                    duration: 3000,
+                    forceEndRoutine: true
+                }
+            };
+            return defaults[type] ? JSON.parse(JSON.stringify(defaults[type])) : null;
+        }
+
+        function createAvtpComponent(type) {
+            const component = createDefaultAvtpData(type);
+            if (component) {
+                component.id = Date.now() + Math.random().toString(36).substr(2, 9); // 唯一ID
+                component.enabled = true;
+            }
+            return component;
+        }
+
         function createRoutineRect(index) {
             const snapPoint = snapPoints[index];
             return {
@@ -1698,79 +1825,11 @@
                 offsetY: 0,
                 keys: 'Space, F, J',
                 duration: 3000,
-                avtp: { a: false, v: false, t: false, p: false },
-                avtpData: {
-                    a: {
-                        enabled: false,
-                        label: 'Audio',
-                        type: 'audio',
-                        path: '',
-                        volume: 1.0,
-                        startTime: 0,
-                        duration: -1,
-                        stopWithRoutine: true,
-                        forceEndRoutine: true
-                    },
-                    v: {
-                        enabled: false,
-                        label: 'Video',
-                        type: 'video',
-                        path: '',
-                        volume: 1.0,
-                        size: [null, null],
-                        anchor: 'center',
-                        loop: false,
-                        startTime: 0,
-                        duration: -1,
-                        units: 'from exp settings',
-                        opacity: 1.0,
-                        stopWithRoutine: true,
-                        forceEndRoutine: true
-                    },
-                    t: {
-                        enabled: true,
-                        label: 'Text',
-                        type: 'text',
-                        text: 'Sample Text',
-                        font: 'Arial',
-                        letterHeight: 0.05,
-                        color: 'white',
-                        pos: [0, 0],
-                        ori: 0,
-                        opacity: 1.0,
-                        units: 'from exp settings',
-                        startTime: 0,
-                        duration: 3000,
-                        contrast: 1.0,
-                        wrapWidth: undefined,
-                        flip: 'None',
-                        languageStyle: 'LTR',
-                        draggable: false
-                    },
-                    p: {
-                        enabled: true,
-                        label: 'Picture',
-                        type: 'image',
-                        path: '',
-                        size: [null, null],
-                        pos: [0, 0],
-                        opacity: 1.0,
-                        startTime: 0,
-                        duration: 3000,
-                        ori: 0,
-                        flip: 'None',
-                        units: 'from exp settings'
-                    },
-                    k: {
-                        enabled: true,
-                        label: 'Key',
-                        type: 'keyboard',
-                        keys: 'Space, F, J',
-                        startTime: 0,
-                        duration: 3000,
-                        forceEndRoutine: true
-                    }
-                }
+                avtpComponents: [
+                    createAvtpComponent('t'),
+                    createAvtpComponent('p'),
+                    createAvtpComponent('k')
+                ]
             };
         }
 
@@ -1779,6 +1838,7 @@
         // routineRects.push(createRoutineRect(1));
 
         let activeAvtp = null;
+        let activeAvtpComponent = null;
         let activeDragRect = null;
         let activeConnection = null;
 
@@ -2124,30 +2184,16 @@
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
 
-            const avtpText = 'AVTP';
-            const avtpColors = [
-                dragRect.avtp.a ? '#000000' : '#cccccc',
-                dragRect.avtp.v ? '#000000' : '#cccccc',
-                dragRect.avtp.t ? '#000000' : '#cccccc',
-                dragRect.avtp.p ? '#000000' : '#cccccc'
-            ];
-            
-            const letterWidth = dragRect.width / 4;
-            for (let i = 0; i < 4; i++) {
-                ctx.fillStyle = avtpColors[i];
-                ctx.font = '600 16px -apple-system, BlinkMacSystemFont, SF Pro Text, sans-serif';
-                ctx.fillText(avtpText[i], dragRect.x + letterWidth * (i + 0.5), dragRect.y + mainRectHeight * 0.65);
-            }
-
             ctx.fillStyle = '#f5f5f5';
             drawRoundedRect(dragRect.x, dragRect.y + mainRectHeight, dragRect.width, keyRectHeight, dragRect.borderRadius);
             ctx.fill();
 
-            ctx.fillStyle = '#666666';
-            ctx.font = '400 10px -apple-system, BlinkMacSystemFont, SF Pro Text, sans-serif';
+            const hasKeys = dragRect.keys && dragRect.keys.trim();
+            ctx.fillStyle = hasKeys ? '#666666' : '#999999';
+            ctx.font = (hasKeys ? '400 ' : 'italic 400 ') + '10px -apple-system, BlinkMacSystemFont, SF Pro Text, sans-serif';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-            ctx.fillText(dragRect.keys, dragRect.x + dragRect.width / 2, dragRect.y + mainRectHeight + keyRectHeight / 2);
+            ctx.fillText(hasKeys ? dragRect.keys : 'No Key', dragRect.x + dragRect.width / 2, dragRect.y + mainRectHeight + keyRectHeight / 2);
 
             if (isSelected) {
                 ctx.strokeStyle = '#0066cc';
@@ -2283,25 +2329,23 @@
         function isInsideAvtpArea(pos, rect) {
             const mainRectHeight = rect.height * 0.7;
             const keyRectHeight = rect.height * 0.3;
-            const isInsideAvtpLetters = pos.x >= rect.x && pos.x <= rect.x + rect.width &&
-                   pos.y >= rect.y + mainRectHeight * 0.5 && pos.y <= rect.y + mainRectHeight;
             const isInsideKey = pos.x >= rect.x && pos.x <= rect.x + rect.width &&
                    pos.y >= rect.y + mainRectHeight && pos.y <= rect.y + mainRectHeight + keyRectHeight;
-            return isInsideAvtpLetters || isInsideKey;
+            return isInsideKey;
         }
 
         canvas.addEventListener('mousedown', (e) => {
             const pos = getMousePos(e);
 
             const clickedRect = getDragRectAtPos(pos.x, pos.y);
-            if (clickedRect && !isInsideAvtpArea(pos, clickedRect)) {
+            if (clickedRect) {
+                const mainRectHeight = clickedRect.height * 0.7;
+                const keyRectHeight = clickedRect.height * 0.3;
+                const isOverKeyArea = pos.y >= clickedRect.y + mainRectHeight && 
+                                      pos.y <= clickedRect.y + mainRectHeight + keyRectHeight;
+                if (isOverKeyArea) return;
+                
                 const clickedIndex = routineRects.indexOf(clickedRect);
-                if (selectedRoutineIndex === clickedIndex) {
-                    selectedRoutineIndex = -1;
-                    updateRoutineCount();
-                    draw();
-                    return;
-                }
                 selectedRoutineIndex = clickedIndex;
                 clickedRect.isDragging = true;
                 clickedRect.offsetX = pos.x - clickedRect.x;
@@ -2349,26 +2393,10 @@
                 }
                 if (isOverLoopBlock) {
                     canvas.style.cursor = 'pointer';
+                } else if (getDragRectAtPos(pos.x, pos.y)) {
+                    canvas.style.cursor = 'pointer';
                 } else {
-                    let isOverKeyArea = false;
-                    for (const rect of routineRects) {
-                        if (isInsideKeyArea(pos, rect)) {
-                            isOverKeyArea = true;
-                            break;
-                        }
-                    }
-                    if (isOverKeyArea) {
-                        canvas.style.cursor = 'pointer';
-                    } else {
-                        const clickableAvtp = getClickableAvtp(pos);
-                        if (clickableAvtp) {
-                            canvas.style.cursor = 'pointer';
-                        } else if (getDragRectAtPos(pos.x, pos.y)) {
-                            canvas.style.cursor = 'grab';
-                        } else {
-                            canvas.style.cursor = 'crosshair';
-                        }
-                    }
+                    canvas.style.cursor = 'crosshair';
                 }
             }
         });
@@ -2569,6 +2597,11 @@
             }
         });
 
+        const routineNameInput = document.getElementById('routineNameInput');
+        
+        // 用于阻止双击时的 click 事件处理
+        let shouldIgnoreClick = false;
+
         canvas.addEventListener('dblclick', (e) => {
             const pos = getMousePos(e);
 
@@ -2582,33 +2615,6 @@
 
             const clickedRect = getDragRectAtPos(pos.x, pos.y);
             if (clickedRect) {
-                if (isInsideKeyArea(pos, clickedRect)) {
-                    return;
-                }
-                const clickableAvtp = getClickableAvtp(pos);
-                if (clickableAvtp) {
-                    const isEnabled = clickedRect.avtp[clickableAvtp];
-                    
-                    if (isEnabled && activeAvtp === clickableAvtp) {
-                        window.showConfirmModal('Disable ' + clickableAvtp.toUpperCase(), 'Disable this component and clear its settings?').then((confirmed) => {
-                            if (confirmed) {
-                                clickedRect.avtp[clickableAvtp] = false;
-                                hideAvtpForm();
-                                draw();
-                            }
-                        });
-                    } else if (!isEnabled) {
-                        clickedRect.avtp[clickableAvtp] = true;
-                        showAvtpForm(clickableAvtp);
-                    } else if (isEnabled && activeAvtp !== clickableAvtp) {
-                        showAvtpForm(clickableAvtp);
-                    }
-                    
-                    draw();
-                    return;
-                }
-
-                showRoutineForm(clickedRect);
                 return;
             }
         });
@@ -2682,10 +2688,7 @@
         const formLoopType = document.getElementById('formLoopType');
         const formLoopConditions = document.getElementById('formLoopConditions');
 
-        const routineForm = document.getElementById('routineForm');
-        const routineFormClose = document.getElementById('routineFormClose');
-        const routineNameInput = document.getElementById('routineNameInput');
-
+        const routineOptions = document.getElementById('routineOptions');
 
         // Conditions table elements
         const conditionsTableView = document.getElementById('conditionsTableView');
@@ -2723,28 +2726,18 @@
                    pos.y >= keyAreaY && pos.y <= keyAreaY + keyAreaHeight;
         }
 
-        function getClickableAvtp(pos) {
-            for (const rect of routineRects) {
-                for (const key of ['a', 'v', 't', 'p']) {
-                    if (isInsideAvtp(pos, key, rect)) {
-                        activeDragRect = rect;
-                        return key;
-                    }
-                }
-            }
-            return null;
-        }
-
-        function showAvtpForm(avtpKey) {
-            // 先隐藏可能显示的 loop 表单
-            if (loopOptions.classList.contains('form-group-visible')) {
-                loopOptions.classList.remove('form-group-visible');
-                loopOptions.classList.add('form-group-hidden');
+        function showAvtpkForm(avtpKey) {
+            if (avtpKey === 'r' && activeDragRect) {
+                showRoutineForm(activeDragRect);
+                return;
             }
             
+            hideRoutineForm();
+            hideLoopForm();
+            
             activeAvtp = avtpKey;
-            const data = activeDragRect.avtpData[avtpKey];
-            formTitle.textContent = data.label;
+            const data = activeAvtpComponent || {};
+            formTitle.textContent = data.label || avtpKey.toUpperCase();
             
             const needsFileInput = ['audio', 'video', 'image'].includes(data.type);
             if (needsFileInput) {
@@ -2884,20 +2877,118 @@
 
         function hideAvtpForm() {
             activeAvtp = null;
+            activeAvtpComponent = null;
             avtpForm.classList.remove('visible');
         }
 
         function showRoutineForm(rect) {
-            hideAvtpForm();
             hideLoopForm();
-            routineNameInput.value = rect.name || '';
-            routineForm.style.display = 'block';
+            formTitle.textContent = 'Routine';
+            fileInputGroup.classList.remove('form-group-visible');
+            fileInputGroup.classList.add('form-group-hidden');
+            textOptions.classList.remove('form-group-visible');
+            textOptions.classList.add('form-group-hidden');
+            videoOptions.classList.remove('form-group-visible');
+            videoOptions.classList.add('form-group-hidden');
+            audioOptions.classList.remove('form-group-visible');
+            audioOptions.classList.add('form-group-hidden');
+            imageOptions.classList.remove('form-group-visible');
+            imageOptions.classList.add('form-group-hidden');
+            keyboardOptions.classList.remove('form-group-visible');
+            keyboardOptions.classList.add('form-group-hidden');
+            loopOptions.classList.remove('form-group-visible');
+            loopOptions.classList.add('form-group-hidden');
+            routineOptions.classList.remove('form-group-hidden');
+            routineOptions.classList.add('form-group-visible');
+            formStartTime.parentElement.style.display = 'none';
+            formDuration.parentElement.style.display = 'none';
+
+            routineNameInput.value = rect.name || 'Routine';
             activeDragRect = rect;
+            avtpForm.classList.add('visible');
+            
+            renderAvtpComponentsList(rect);
+        }
+
+        function renderAvtpComponentsList(rect) {
+            const listContainer = document.getElementById('avtpComponentsList');
+            listContainer.innerHTML = '';
+            
+            if (!rect.avtpComponents || rect.avtpComponents.length === 0) {
+                listContainer.innerHTML = '<div style="text-align: center; color: #999; padding: 12px;">No AVTP components added</div>';
+                return;
+            }
+            
+            rect.avtpComponents.forEach((component, index) => {
+                if (!component || !component.enabled) return;
+                
+                const componentDiv = document.createElement('div');
+                componentDiv.className = 'avtp-component-item';
+                componentDiv.dataset.componentId = component.id;
+                
+                const headerDiv = document.createElement('div');
+                headerDiv.className = 'avtp-component-header';
+                
+                const titleSpan = document.createElement('span');
+                titleSpan.className = 'avtp-component-title';
+                titleSpan.textContent = component.label || component.type;
+                
+                const removeBtn = document.createElement('button');
+                removeBtn.className = 'avtp-component-remove';
+                removeBtn.textContent = 'Remove';
+                removeBtn.onclick = () => {
+                    if (confirm(`Remove ${component.label || component.type}?`)) {
+                        component.enabled = false;
+                        renderAvtpComponentsList(rect);
+                        draw();
+                    }
+                };
+                
+                headerDiv.appendChild(titleSpan);
+                headerDiv.appendChild(removeBtn);
+                componentDiv.appendChild(headerDiv);
+                
+                // 添加编辑按钮
+                const editBtn = document.createElement('button');
+                editBtn.textContent = 'Edit Settings';
+                editBtn.style.marginTop = '8px';
+                editBtn.style.padding = '4px 8px';
+                editBtn.style.border = '1px solid #0066cc';
+                editBtn.style.backgroundColor = '#0066cc';
+                editBtn.style.color = 'white';
+                editBtn.style.borderRadius = '4px';
+                editBtn.style.cursor = 'pointer';
+                editBtn.style.fontSize = '12px';
+                editBtn.onclick = () => {
+                    // 临时保存到activeAvtpComponent用于编辑
+                    activeAvtpComponent = component;
+                    showAvtpkForm(component.type.charAt(0).toLowerCase());
+                };
+                
+                componentDiv.appendChild(editBtn);
+                listContainer.appendChild(componentDiv);
+            });
         }
 
         function hideRoutineForm() {
-            routineForm.style.display = 'none';
+            routineOptions.classList.remove('form-group-visible');
+            routineOptions.classList.add('form-group-hidden');
         }
+
+        // 添加AVTP组件
+        document.querySelectorAll('.avtp-add-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const type = e.target.dataset.type;
+                if (activeDragRect && type) {
+                    const newComponent = createAvtpComponent(type);
+                    if (newComponent) {
+                        activeDragRect.avtpComponents.push(newComponent);
+                        renderAvtpComponentsList(activeDragRect);
+                        draw();
+                    }
+                }
+            });
+        });
 
         function showLoopForm(conn) {
             activeConnection = conn;
@@ -2945,13 +3036,12 @@
         formClose.addEventListener('click', () => {
             if (loopOptions.classList.contains('form-group-visible')) {
                 hideLoopForm();
+            } else if (routineOptions.classList.contains('form-group-visible')) {
+                hideRoutineForm();
+                avtpForm.classList.remove('visible');
             } else {
                 hideAvtpForm();
             }
-        });
-
-        routineFormClose.addEventListener('click', () => {
-            hideRoutineForm();
         });
 
         routineNameInput.addEventListener('input', () => {
@@ -2963,13 +3053,14 @@
 
         // 实时保存所有输入框的变化
         function saveFormChanges() {
-            if (!activeAvtp || !activeDragRect) return;
+            if (!activeAvtp || !activeDragRect || !activeAvtpComponent) return;
             
             saveState();
             currentProjectFile = null;
             fileHandle = null;
             
-            const data = activeDragRect.avtpData[activeAvtp];
+            // 直接更新activeAvtpComponent
+            const data = activeAvtpComponent;
             data.path = formPath.value;
             data.startTime = parseInt(formStartTime.value) || 0;
             data.duration = parseInt(formDuration.value) || 3000;
@@ -3007,6 +3098,7 @@
             } else if (data.type === 'keyboard') {
                 data.keys = formKeys.value || '';
                 data.forceEndRoutine = formKeyboardForceEndRoutine.checked;
+                // 更新routine的keys属性以保持兼容性
                 activeDragRect.keys = data.keys;
             } else if (data.type === 'image') {
                 data.size = [
@@ -3086,9 +3178,23 @@
         function collectAutoDetectedVariables() {
             const variableSet = new Set();
             
-            // Collect from routineRects
+            // Collect from routineRects (支持新的 avtpComponents 数组和旧的 avtpData 对象)
             routineRects.forEach(rect => {
-                if (rect.avtpData) {
+                // 新的 avtpComponents 数组方式
+                if (rect.avtpComponents && Array.isArray(rect.avtpComponents)) {
+                    rect.avtpComponents.forEach(component => {
+                        if (component && typeof component === 'object') {
+                            Object.keys(component).forEach(dataKey => {
+                                const value = component[dataKey];
+                                if (typeof value === 'string' && value.startsWith('$')) {
+                                    variableSet.add(value);
+                                }
+                            });
+                        }
+                    });
+                }
+                // 旧的 avtpData 对象方式（向后兼容）
+                else if (rect.avtpData) {
                     Object.keys(rect.avtpData).forEach(key => {
                         const data = rect.avtpData[key];
                         if (data && typeof data === 'object') {
@@ -3299,9 +3405,33 @@
                     variableNames.push(...Object.keys(conditions[0]).filter(key => key !== 'name'));
                 }
                 
-                // 遍历所有 routine 中的 AVTP 元素
+                // 遍历所有 routine 中的 AVTP 元素（支持新的 avtpComponents 数组和旧的 avtpData 对象）
                 routineRects.forEach(rect => {
-                    if (rect.avtpData) {
+                    // 新的 avtpComponents 数组方式
+                    if (rect.avtpComponents && Array.isArray(rect.avtpComponents)) {
+                        rect.avtpComponents.forEach(component => {
+                            if (component && typeof component === 'object') {
+                                // 检查并更新所有可能包含变量的字段
+                                Object.keys(component).forEach(key => {
+                                    const value = component[key];
+                                    if (typeof value === 'string' && value.includes('$')) {
+                                        // 替换变量值
+                                        let updatedValue = value;
+                                        variableNames.forEach(varName => {
+                                            if (updatedValue.includes(varName)) {
+                                                // 对于循环变量，这里只做占位符处理
+                                                // 实际的值会在运行时由 PsychoPy 处理
+                                                updatedValue = updatedValue.replace(new RegExp(varName, 'g'), varName);
+                                            }
+                                        });
+                                        component[key] = updatedValue;
+                                    }
+                                });
+                            }
+                        });
+                    }
+                    // 旧的 avtpData 对象方式（向后兼容）
+                    else if (rect.avtpData) {
                         Object.keys(rect.avtpData).forEach(avtpKey => {
                             const data = rect.avtpData[avtpKey];
                             if (data && typeof data === 'object') {
@@ -3440,6 +3570,12 @@
         });
 
         canvas.addEventListener('click', (e) => {
+            // 如果是双击触发的，忽略 click 事件
+            if (shouldIgnoreClick) {
+                shouldIgnoreClick = false;
+                return;
+            }
+            
             const pos = getMousePos(e);
 
             for (let i = connections.length - 1; i >= 0; i--) {
@@ -3451,64 +3587,33 @@
 
             const clickedRect = getDragRectAtPos(pos.x, pos.y);
             if (clickedRect) {
-                if (isInsideKeyArea(pos, clickedRect)) {
-                    activeDragRect = clickedRect;
-                    if (clickedRect.avtp.k) {
-                        showAvtpForm('k');
+                const mainRectHeight = clickedRect.height * 0.7;
+                const keyRectHeight = clickedRect.height * 0.3;
+                const isOverKeyArea = pos.x >= clickedRect.x && pos.x <= clickedRect.x + clickedRect.width &&
+                                     pos.y >= clickedRect.y + mainRectHeight && 
+                                     pos.y <= clickedRect.y + mainRectHeight + keyRectHeight;
+                
+                if (isOverKeyArea) {
+                    let keyboardComponent = null;
+                    if (clickedRect.avtpComponents && Array.isArray(clickedRect.avtpComponents)) {
+                        for (const component of clickedRect.avtpComponents) {
+                            if (component && component.enabled && component.type === 'keyboard') {
+                                keyboardComponent = component;
+                                break;
+                            }
+                        }
+                    }
+                    if (keyboardComponent) {
+                        activeAvtpComponent = keyboardComponent;
+                        showAvtpkForm('k');
                     } else {
-                        clickedRect.avtp.k = true;
-                        showAvtpForm('k');
-                        draw();
+                        alert('请先在表单中添加 Keyboard 组件');
                     }
                     return;
                 }
-
-                const clickableAvtp = getClickableAvtp(pos);
-                if (clickableAvtp && clickedRect.avtp[clickableAvtp]) {
-                    showAvtpForm(clickableAvtp);
-                    return;
-                }
-
-                activeDragRect = clickedRect;
-                routineNameEditor.value = clickedRect.name || '';
-                const canvasRect = canvas.getBoundingClientRect();
-                const containerRect = canvas.parentElement.getBoundingClientRect();
-                const offsetX = canvasRect.left - containerRect.left;
-                const offsetY = canvasRect.top - containerRect.top;
-                const rectX = clickedRect.x / dpr;
-                const rectY = clickedRect.y / dpr;
-                routineNameEditor.style.left = (offsetX + rectX + 7) + 'px';
-                routineNameEditor.style.top = (offsetY + rectY + 6) + 'px';
-                routineNameEditor.style.width = '120px';
-                routineNameEditor.style.display = 'block';
-                routineNameEditor.focus();
-                routineNameEditor.select();
+                
+                showRoutineForm(clickedRect);
                 return;
-            }
-        });
-
-        routineNameEditor.addEventListener('blur', () => {
-            if (activeDragRect) {
-                const newName = routineNameEditor.value.trim();
-                const isDuplicate = routineRects.some(rect => 
-                    rect !== activeDragRect && rect.name === newName
-                );
-                if (isDuplicate || !newName) {
-                    routineNameEditor.value = activeDragRect.name;
-                    routineNameEditor.style.display = 'none';
-                    return;
-                }
-                activeDragRect.name = newName;
-                draw();
-            }
-            routineNameEditor.style.display = 'none';
-        });
-
-        routineNameEditor.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                routineNameEditor.blur();
-            } else if (e.key === 'Escape') {
-                routineNameEditor.style.display = 'none';
             }
         });
 
