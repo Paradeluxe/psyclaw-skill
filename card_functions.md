@@ -19,6 +19,12 @@
 - [generatePoints](#generatepoints) - 生成时间线上的连接点
 - [createRoutineRect](#createroutinerect) - 创建新的 routine 矩形
 
+## AVTPK 组件管理
+
+- [createAvtpkComponent](#createavtpkcomponent) - 创建新的 AVTPK 组件
+- [createDefaultAvtpkData](#createdefaultavtpkdata) - 创建默认的 AVTPK 数据
+- [renderAvtpComponentsList](#renderavtpcomponentslist) - 渲染 AVTPK 组件列表
+
 ## 连接线/嵌套管理
 
 - [getMaxDepthForSameEndpoints](#getmaxdepthforsameendpoints) - 获取相同端点连接的最大深度
@@ -34,7 +40,7 @@
 - [drawPreviewLine](#drawpreviewline) - 绘制预览连接线
 - [drawConnectionLines](#drawconnectionlines) - 绘制所有连接线
 - [draw](#draw) - 主绘制函数，渲染整个画布
-- [drawDragRect](#drawdragrect) - 绘制可拖拽的 routine 矩形
+- [drawDragRect](#drawdragrect) - 绘制可拖拽的 routine 矩形及其 AVTPK 信息
 
 ## 拖拽和吸附
 
@@ -48,6 +54,22 @@
 
 - [getMousePos](#getmousepos) - 获取鼠标在画布上的位置
 - [isInsideRect](#isinsiderect) - 检查点是否在矩形内
+
+---
+
+## 详细信息
+
+### AVTPK 组件显示逻辑
+
+Routine 块的 Canvas 绘制逻辑负责在每个 routine 块上显示：
+
+1. **Routine 名称**：顶部左对齐显示
+2. **Keyboard 按键信息**：显示所有键盘组件的 keys（红色字体）
+3. **组件时间轴**：A/V/T/P 组件以时间条形式显示
+
+**组件数据结构**：所有组件使用扁平化结构，包含 `type`、`keys`、`startTime`、`duration` 等字段。
+
+详见：[Routine 块 AVTPK 信息显示逻辑](../logics/Routine块AVTPK信息显示逻辑.md)
 
 ## 碰撞检测
 

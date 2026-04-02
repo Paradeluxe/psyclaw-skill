@@ -1851,7 +1851,7 @@
 
         function createRoutineRect(index) {
             const snapPoint = snapPoints[index];
-            return {
+            const rect = {
                 id: ++routineIdCounter, // 固定的 ID，不随位置改变
                 name: 'routine_' + routineIdCounter,
                 x: snapPoint.x - 80,
@@ -1868,6 +1868,68 @@
                     createAvtpkComponent('k')
                 ]
             };
+            updateRoutineHeight(rect);
+            return rect;
+        }
+        
+        // 根据 AVTP 组件数量动态计算 routine 块的高度
+        function calculateRoutineHeight(rect) {
+            const padding = 8;
+            const lineHeight = 12;
+            const headerHeight = 20;
+            const minHeight = 100;
+            const extraPadding = 10;
+            
+            let requiredHeight = padding + headerHeight + extraPadding;
+            
+            const avtpComponents = rect.avtpComponents || [];
+            const enabledComponents = avtpComponents.filter(c => c && c.enabled);
+            
+            const hasKeyboard = enabledComponents.some(c => c.type === 'keyboard' && c.keys && c.keys.trim());
+            if (hasKeyboard) {
+                requiredHeight += lineHeight;
+            }
+            
+            const timelineComponents = enabledComponents.filter(c => 
+                ['audio', 'video', 'text', 'image'].includes(c.type)
+            );
+            if (timelineComponents.length > 0) {
+                requiredHeight += timelineComponents.length * lineHeight;
+            }
+            
+            return Math.max(minHeight, requiredHeight);
+        }
+        
+        // 更新 routine 块的高度
+        function updateRoutineHeight(rect) {
+            rect.height = calculateRoutineHeight(rect);
+        }
+        
+        // 更新所有 routine 块的高度
+        function updateAllRoutineHeights() {
+            routineRects.forEach(rect => {
+                updateRoutineHeight(rect);
+            });
+            updateCanvasHeightForRoutines();
+        }
+        
+        // 根据所有 routine 块的高度更新 canvas 高度
+        function updateCanvasHeightForRoutines() {
+            if (routineRects.length === 0) {
+                canvasHeight = calculateCanvasHeight(0);
+            } else {
+                const maxRoutineBottom = Math.max(...routineRects.map(rect => rect.y + rect.height));
+                const minRoutineTop = Math.min(...routineRects.map(rect => rect.y));
+                const currentCanvasHeight = canvasHeight;
+                const requiredHeight = maxRoutineBottom + 100;
+                
+                if (requiredHeight > currentCanvasHeight) {
+                    canvasHeight = Math.max(requiredHeight, 800);
+                    canvas.height = canvasHeight * dpr;
+                    canvas.style.height = canvasHeight + 'px';
+                    ctx.scale(dpr, dpr);
+                }
+            }
         }
 
         // 初始时不添加任何 routine，让用户从零开始
@@ -2261,11 +2323,91 @@
             drawRoundedRect(dragRect.x, dragRect.y, dragRect.width, dragRect.height, dragRect.borderRadius);
             ctx.fill();
 
+            const avtpComponents = dragRect.avtpComponents || [];
+            const enabledComponents = avtpComponents.filter(c => c && c.enabled);
+            
+            const padding = 8;
+            const lineHeight = 12;
+            const headerHeight = 20;
+            
             ctx.fillStyle = isSelected ? '#0066cc' : '#000000';
-            ctx.font = '600 14px -apple-system, BlinkMacSystemFont, SF Pro Text, sans-serif';
-            ctx.textAlign = 'center';
+            ctx.font = '600 12px -apple-system, BlinkMacSystemFont, SF Pro Text, sans-serif';
+            ctx.textAlign = 'left';
             ctx.textBaseline = 'middle';
-            ctx.fillText(dragRect.name, dragRect.x + dragRect.width / 2, dragRect.y + dragRect.height / 2);
+            ctx.fillText(dragRect.name, dragRect.x + padding, dragRect.y + padding + 10);
+            
+            let currentY = dragRect.y + padding + headerHeight;
+            
+            const keyboardComponents = enabledComponents.filter(c => c.type === 'keyboard');
+            
+            if (keyboardComponents.length > 0) {
+                const allKeys = keyboardComponents
+                    .map(c => c.keys)
+                    .filter(keys => keys && keys.trim())
+                    .join(', ');
+                
+                if (allKeys) {
+                    ctx.font = '10px -apple-system, BlinkMacSystemFont, SF Pro Text, sans-serif';
+                    ctx.fillStyle = '#e74c3c';
+                    ctx.fillText('K: ' + allKeys, dragRect.x + padding, currentY);
+                    currentY += lineHeight;
+                }
+            }
+            
+            const timelineComponents = enabledComponents.filter(c => ['audio', 'video', 'text', 'image'].includes(c.type));
+            if (timelineComponents.length > 0) {
+                const maxDuration = Math.max(
+                    ...timelineComponents.map(c => {
+                        const startTime = c.startTime || 0;
+                        const duration = c.duration || 0;
+                        return startTime + (duration > 0 ? duration : 3);
+                    }),
+                    3
+                );
+                
+                const timelineWidth = dragRect.width - padding * 2 - 30;
+                const timelineStartX = dragRect.x + padding + 20;
+                
+                const typeToKey = {
+                    'audio': 'a',
+                    'video': 'v',
+                    'text': 't',
+                    'image': 'p'
+                };
+                
+                const typeColors = {
+                    'audio': '#3498db',
+                    'video': '#9b59b6',
+                    'text': '#2ecc71',
+                    'image': '#f39c12'
+                };
+                
+                timelineComponents.forEach(comp => {
+                    const typeKey = typeToKey[comp.type];
+                    if (!typeKey) return;
+                    
+                    const startTime = comp.startTime || 0;
+                    const duration = (comp.duration > 0 ? comp.duration : 3);
+                    const endTime = startTime + duration;
+                    
+                    const startX = timelineStartX + (startTime / maxDuration) * timelineWidth;
+                    const barWidth = (duration / maxDuration) * timelineWidth;
+                    
+                    ctx.fillStyle = '#ecf0f1';
+                    ctx.fillRect(timelineStartX, currentY - 3, timelineWidth, 6);
+                    
+                    ctx.fillStyle = typeColors[comp.type];
+                    ctx.fillRect(startX, currentY - 3, Math.max(barWidth, 3), 6);
+                    
+                    ctx.font = '9px -apple-system, BlinkMacSystemFont, SF Pro Text, sans-serif';
+                    ctx.fillStyle = '#34495e';
+                    ctx.textAlign = 'right';
+                    ctx.fillText(typeKey.toUpperCase(), timelineStartX - 3, currentY);
+                    ctx.textAlign = 'left';
+                    
+                    currentY += lineHeight;
+                });
+            }
 
             if (isSelected) {
                 ctx.strokeStyle = '#0066cc';
@@ -2998,6 +3140,8 @@
                 removeBtn.onclick = (e) => {
                     e.stopPropagation();
                     component.enabled = false;
+                    updateRoutineHeight(rect);
+                    updateCanvasHeightForRoutines();
                     renderAvtpComponentsList(rect);
                     draw();
                 };
@@ -3029,6 +3173,8 @@
                     const newComponent = createAvtpkComponent(type);
                     if (newComponent) {
                         activeDragRect.avtpComponents.push(newComponent);
+                        updateRoutineHeight(activeDragRect);
+                        updateCanvasHeightForRoutines();
                         renderAvtpComponentsList(activeDragRect);
                         draw();
                     }
@@ -3132,6 +3278,8 @@
             data.startTime = parseInt(formStartTime.value) || 0;
             data.duration = parseInt(formDuration.value) || 3000;
             
+            let needsHeightUpdate = false;
+            
             if (data.type === 'text') {
                 data.text = formText.value || 'Sample Text';
                 data.font = formFont.value || 'Arial';
@@ -3167,6 +3315,7 @@
                 data.forceEndRoutine = formKeyboardForceEndRoutine.checked;
                 // 更新routine的keys属性以保持兼容性
                 activeDragRect.keys = data.keys;
+                needsHeightUpdate = true;
             } else if (data.type === 'image') {
                 data.size = [
                     formImageSizeW.value ? parseInt(formImageSizeW.value) : null,
@@ -3183,6 +3332,11 @@
                 data.textureRes = parseInt(formImageTextureRes.value) || 128;
                 data.units = formImageUnits.value || 'from exp settings';
                 data.draggable = formImageDraggable.checked;
+            }
+            
+            if (needsHeightUpdate) {
+                updateRoutineHeight(activeDragRect);
+                updateCanvasHeightForRoutines();
             }
             
             draw();
@@ -3689,6 +3843,19 @@
         function updatePoints() {
             currentRoutineCount = routineRects.length;
             canvasHeight = calculateCanvasHeight(currentRoutineCount);
+            
+            // 确保 canvas 高度足够容纳所有 routine 块
+            if (routineRects.length > 0) {
+                const maxRoutineBottom = Math.max(...routineRects.map(rect => {
+                    const snapIndex = routineRects.indexOf(rect);
+                    const snapPoint = snapPoints[snapIndex] || { y: rect.y + rect.height / 2 };
+                    const bottomY = snapPoint.y + rect.height / 2;
+                    return bottomY;
+                }));
+                const requiredHeight = maxRoutineBottom + 100;
+                canvasHeight = Math.max(canvasHeight, requiredHeight);
+            }
+            
             canvas.height = canvasHeight * dpr;
             canvas.style.height = canvasHeight + 'px';
             ctx.scale(dpr, dpr);
