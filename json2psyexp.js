@@ -4,12 +4,192 @@
  */
 
 /**
+ * 收集routine中所有的#[start,end,total_num]格式的随机数表达式
+ * @param {Object} routineRect - Routine数据
+ * @returns {Array} 随机数表达式数组
+ */
+function collectRandomPatterns(routineRect) {
+    const patterns = [];
+    const seen = new Set();
+    
+    function checkValue(value) {
+        if (typeof value === 'string' && value.startsWith('#[') && !seen.has(value)) {
+            seen.add(value);
+            patterns.push(value);
+        }
+    }
+    
+    // 检查 avtpComponents 数组方式
+    if (routineRect.avtpComponents && Array.isArray(routineRect.avtpComponents)) {
+        routineRect.avtpComponents.forEach(component => {
+            if (component && typeof component === 'object') {
+                Object.keys(component).forEach(dataKey => {
+                    checkValue(component[dataKey]);
+                });
+            }
+        });
+    }
+    // 检查 avtpData 对象方式
+    else if (routineRect.avtpData) {
+        Object.keys(routineRect.avtpData).forEach(key => {
+            const data = routineRect.avtpData[key];
+            if (data && typeof data === 'object') {
+                Object.keys(data).forEach(dataKey => {
+                    checkValue(data[dataKey]);
+                });
+            }
+        });
+    }
+    
+    return patterns;
+}
+
+/**
+ * 根据#[start,end,total_num]格式生成随机数的Python代码
+ * @param {string} pattern - #[start,end,total_num]格式的字符串
+ * @returns {Object} {varName, code} - 变量名和Python代码
+ */
+function generateRandomCodeFromPattern(pattern) {
+    // 解析 #[start,end,total_num] 格式
+    const match = pattern.match(/^#\[(\d+),(\d+),(\d+)\]$/);
+    if (!match) {
+        return { varName: null, code: null };
+    }
+    
+    const start = parseInt(match[1]);
+    const end = parseInt(match[2]);
+    const totalNum = parseInt(match[3]);
+    
+    // 生成变量名，例如 _rand_1_100_5
+    const varName = `_rand_${start}_${end}_${totalNum}`;
+    
+    // 生成Python代码
+    const code = `${varName} = random.sample(range(${start}, ${end + 1}), ${totalNum})`;
+    
+    return { varName, code };
+}
+
+/**
+ * 生成随机数初始化代码组件（Begin Experiment）
+ * @param {Array} allPatterns - 所有routine中的随机数表达式
+ * @returns {string} XML字符串
+ */
+function generateRandomInitCodeComponent(allPatterns) {
+    if (!allPatterns || allPatterns.length === 0) {
+        return '';
+    }
+    
+    // 为每个pattern生成导入和初始化代码
+    const initCodes = ['import random'];
+    const uniquePatterns = [...new Set(allPatterns)];
+    
+    uniquePatterns.forEach(pattern => {
+        const result = generateRandomCodeFromPattern(pattern);
+        if (result.varName) {
+            // 预生成随机数序列（使用固定种子保证可重复性）
+            initCodes.push(`${result.varName} = random.sample(range(${result.varName.split('_')[1]}, ${result.varName.split('_')[2] + 1}), ${result.varName.split('_')[3]})`);
+        }
+    });
+    
+    return `      <CodeComponent name="random_init" plugin="None">
+        <Param val="" valType="extendedCode" updates="constant" name="Before Experiment"/>
+        <Param val="" valType="extendedCode" updates="constant" name="Before JS Experiment"/>
+        <Param val="${initCodes.join('\\n')}" valType="extendedCode" updates="constant" name="Begin Experiment"/>
+        <Param val="" valType="extendedCode" updates="constant" name="Begin JS Experiment"/>
+        <Param val="" valType="extendedCode" updates="constant" name="Begin JS Routine"/>
+        <Param val="" valType="extendedCode" updates="constant" name="Begin Routine"/>
+        <Param val="Py" valType="str" updates="None" name="Code Type"/>
+        <Param val="" valType="extendedCode" updates="constant" name="Each Frame"/>
+        <Param val="" valType="extendedCode" updates="constant" name="Each JS Frame"/>
+        <Param val="" valType="extendedCode" updates="constant" name="End Experiment"/>
+        <Param val="" valType="extendedCode" updates="constant" name="End JS Experiment"/>
+        <Param val="" valType="extendedCode" updates="constant" name="End JS Routine"/>
+        <Param val="" valType="extendedCode" updates="constant" name="End Routine"/>
+        <Param val="False" valType="bool" updates="None" name="disabled"/>
+        <Param val="random_init" valType="code" updates="None" name="name"/>
+      </CodeComponent>\n`;
+}
+
+/**
+ * 生成routine级别的随机数获取代码组件（Begin Routine）
+ * @param {Array} patterns - 该routine中的随机数表达式
+ * @param {number} routineIndex - routine索引
+ * @returns {string} XML字符串
+ */
+function generateRoutineRandomCodeComponent(patterns, routineIndex) {
+    if (!patterns || patterns.length === 0) {
+        return '';
+    }
+    
+    const routineCodes = [];
+    
+    patterns.forEach(pattern => {
+        const result = generateRandomCodeFromPattern(pattern);
+        if (result.varName) {
+            // 将随机数序列转换为逗号分隔的字符串
+            routineCodes.push(`${result.varName}_str = ', '.join(map(str, ${result.varName}))`);
+        }
+    });
+    
+    if (routineCodes.length === 0) {
+        return '';
+    }
+    
+    return `      <CodeComponent name="routine_random_${routineIndex}" plugin="None">
+        <Param val="" valType="extendedCode" updates="constant" name="Before Experiment"/>
+        <Param val="" valType="extendedCode" updates="constant" name="Before JS Experiment"/>
+        <Param val="" valType="extendedCode" updates="constant" name="Begin Experiment"/>
+        <Param val="" valType="extendedCode" updates="constant" name="Begin JS Experiment"/>
+        <Param val="" valType="extendedCode" updates="constant" name="Begin JS Routine"/>
+        <Param val="${routineCodes.join('\\n')}" valType="extendedCode" updates="constant" name="Begin Routine"/>
+        <Param val="Py" valType="str" updates="None" name="Code Type"/>
+        <Param val="" valType="extendedCode" updates="constant" name="Each Frame"/>
+        <Param val="" valType="extendedCode" updates="constant" name="Each JS Frame"/>
+        <Param val="" valType="extendedCode" updates="constant" name="End Experiment"/>
+        <Param val="" valType="extendedCode" updates="constant" name="End JS Experiment"/>
+        <Param val="" valType="extendedCode" updates="constant" name="End JS Routine"/>
+        <Param val="" valType="extendedCode" updates="constant" name="End Routine"/>
+        <Param val="False" valType="bool" updates="None" name="disabled"/>
+        <Param val="routine_random_${routineIndex}" valType="code" updates="None" name="name"/>
+      </CodeComponent>\n`;
+}
+
+/**
+ * 将 #[start,end,total_num] 表达式替换为对应的变量名
+ * @param {string} value - 包含表达式的值
+ * @returns {string} 替换后的值
+ */
+function replaceRandomPatternsInValue(value) {
+    if (typeof value !== 'string') {
+        return value;
+    }
+    
+    // 查找所有 #[start,end,total_num] 格式
+    const pattern = /#\[(\d+),(\d+),(\d+)\]/g;
+    
+    return value.replace(pattern, (match, start, end, totalNum) => {
+        return `_rand_${start}_${end}_${totalNum}_str`;
+    });
+}
+
+/**
  * 将 JSON 项目数据转换为 PsychoPy XML
  * @param {Object} projectData - DeepPsych 项目数据
  * @returns {string} XML 字符串
  */
 function convertToPsyExpXML(projectData) {
     const { routineRects, connections } = projectData;
+    
+    // 收集所有routine中的随机数表达式
+    const allRandomPatterns = [];
+    routineRects.forEach(rect => {
+        const patterns = collectRandomPatterns(rect);
+        patterns.forEach(p => {
+            if (!allRandomPatterns.includes(p)) {
+                allRandomPatterns.push(p);
+            }
+        });
+    });
     
     // 创建 XML 文档
     let xml = '<?xml version="1.0" ?>\n';
@@ -18,15 +198,27 @@ function convertToPsyExpXML(projectData) {
     // 添加 Settings
     xml += generateSettings();
     
+    // 添加全局随机数初始化Code组件（如果存在随机数表达式）
+    if (allRandomPatterns.length > 0) {
+        xml += '  <Routines>\n';
+        xml += '    <Routine name="__init__">\n';
+        xml += generateRandomInitCodeComponent(allRandomPatterns);
+        xml += '    </Routine>\n';
+        xml += '  </Routines>\n';
+    }
+    
     // 添加 Routines
     xml += '  <Routines>\n';
     for (let i = 0; i < routineRects.length; i++) {
-        xml += generateRoutine(routineRects[i], i);
+        xml += generateRoutine(routineRects[i], i, allRandomPatterns);
     }
     xml += '  </Routines>\n';
     
     // 添加 Flow
     xml += '  <Flow>\n';
+    if (allRandomPatterns.length > 0) {
+        xml += '    <Routine name="__init__"/>\n';
+    }
     xml += generateFlow(routineRects, connections);
     xml += '  </Flow>\n';
     
@@ -122,7 +314,7 @@ function generateSettings() {
 /**
  * 生成单个 Routine
  */
-function generateRoutine(routineRect, index) {
+function generateRoutine(routineRect, index, allRandomPatterns) {
     const routineName = routineRect.name || `Routine_${index + 1}`;
     
     let xml = `    <Routine name="${routineName}">\n`;
@@ -144,6 +336,14 @@ function generateRoutine(routineRect, index) {
         <Param val="" valType="code" updates="constant" name="stopVal"/>
         <Param val="False" valType="bool" updates="None" name="useWindowParams"/>
       </RoutineSettingsComponent>\n`;
+    
+    // 收集当前routine中的随机数表达式
+    const routinePatterns = collectRandomPatterns(routineRect);
+    
+    // 添加routine级别的随机数处理Code组件（如果存在）
+    if (routinePatterns.length > 0) {
+        xml += generateRoutineRandomCodeComponent(routinePatterns, index);
+    }
     
     // 处理 avtpComponents 数组中的组件
     if (routineRect.avtpComponents && Array.isArray(routineRect.avtpComponents)) {
@@ -235,8 +435,8 @@ function generateAudioComponent(routineRect) {
  */
 function generateTextComponent(routineRect) {
     const name = routineRect.name || 'text';
-    const text = routineRect.text || '';
-    const color = routineRect.color || 'white';
+    const text = replaceRandomPatternsInValue(routineRect.text) || '';
+    const color = replaceRandomPatternsInValue(routineRect.color) || 'white';
     const pos = routineRect.pos || { x: 0, y: 0 };
     const letterHeight = routineRect.letterHeight || 0.05;
     
@@ -426,8 +626,8 @@ function generateVideoComponentFromAvtp(avtpData, routineName) {
  */
 function generateTextComponentFromAvtp(avtpData, routineName) {
     const name = avtpData.name || `${routineName}_text`;
-    const text = avtpData.text || '';
-    const color = avtpData.color || 'white';
+    const text = replaceRandomPatternsInValue(avtpData.text) || '';
+    const color = replaceRandomPatternsInValue(avtpData.color) || 'white';
     const font = avtpData.font || 'Arial';
     const letterHeight = avtpData.letterHeight || 0.05;
     const pos = avtpData.pos || [0, 0];
@@ -487,7 +687,7 @@ function generateImageComponentFromAvtp(avtpData, routineName) {
     const opacity = avtpData.opacity !== undefined && avtpData.opacity !== null ? avtpData.opacity : 1.0;
     const ori = avtpData.ori || 0;
     const contrast = avtpData.contrast !== undefined && avtpData.contrast !== null ? avtpData.contrast : 1.0;
-    const color = avtpData.color || '$[1,1,1]';
+    const color = replaceRandomPatternsInValue(avtpData.color) || '$[1,1,1]';
     const colorSpace = avtpData.colorSpace || 'rgb';
     const flip = avtpData.flip || 'None';
     const interpolate = avtpData.interpolate || 'linear';
