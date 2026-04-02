@@ -1903,11 +1903,12 @@
         }
 
         function getNestingDepth(conn, allConnections) {
-            let maxContainingDepth = -1;
             const startLabel = parseInt(conn.start.label);
             const endLabel = parseInt(conn.end.label);
             const connMin = Math.min(startLabel, endLabel);
             const connMax = Math.max(startLabel, endLabel);
+            
+            let maxContainedDepth = -1;
             
             for (const other of allConnections) {
                 if (other === conn) continue;
@@ -1916,13 +1917,12 @@
                 const otherMin = Math.min(otherStartLabel, otherEndLabel);
                 const otherMax = Math.max(otherStartLabel, otherEndLabel);
                 
-                if (otherMin <= connMin && otherMax >= connMax &&
-                    (otherMin < connMin || otherMax > connMax)) {
-                    maxContainingDepth = Math.max(maxContainingDepth, other.depth);
+                if (connMin <= otherMin && connMax >= otherMax) {
+                    maxContainedDepth = Math.max(maxContainedDepth, other.depth);
                 }
             }
             
-            return maxContainingDepth + 1;
+            return maxContainedDepth + 1;
         }
 
         function rebuildAllConnectionDepths() {
@@ -1972,11 +1972,12 @@
         }
         
         function getNestingDepthForPreview(conn, allConnections) {
-            let maxContainingDepth = -1;
             const startLabel = parseInt(conn.start.label);
             const endLabel = parseInt(conn.end.label);
             const connMin = Math.min(startLabel, endLabel);
             const connMax = Math.max(startLabel, endLabel);
+            
+            let maxContainedDepth = -1;
             
             for (const other of allConnections) {
                 if (other === conn) continue;
@@ -1985,15 +1986,14 @@
                 const otherMin = Math.min(otherStartLabel, otherEndLabel);
                 const otherMax = Math.max(otherStartLabel, otherEndLabel);
                 
-                if (otherMin <= connMin && otherMax >= connMax &&
-                    (otherMin < connMin || otherMax > connMax)) {
-                    maxContainingDepth = Math.max(maxContainingDepth, other.depth);
+                if (connMin <= otherMin && connMax >= otherMax) {
+                    maxContainedDepth = Math.max(maxContainedDepth, other.depth);
                 }
             }
             
-            return maxContainingDepth + 1;
+            return maxContainedDepth + 1;
         }
-
+        
         function getConnectionOffsetX(conn, allConnections) {
             return baseOffsetX + conn.depth * offsetXStep;
         }
@@ -2126,7 +2126,9 @@
                 allConns = allConnsWithPreview;
             }
 
-            connections.forEach(conn => {
+            const sortedConnections = [...connections].sort((a, b) => a.depth - b.depth);
+            
+            sortedConnections.forEach(conn => {
                 ctx.strokeStyle = '#000000';
                 ctx.lineWidth = 1.5;
                 ctx.lineCap = 'round';
