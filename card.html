@@ -1918,7 +1918,15 @@
                 const otherMax = Math.max(otherStartLabel, otherEndLabel);
                 
                 if (connMin <= otherMin && connMax >= otherMax) {
-                    maxContainedDepth = Math.max(maxContainedDepth, other.depth);
+                    if (connMin === otherMin && connMax === otherMax) {
+                        const connIndex = allConnections.indexOf(conn);
+                        const otherIndex = allConnections.indexOf(other);
+                        if (connIndex > otherIndex) {
+                            maxContainedDepth = Math.max(maxContainedDepth, other.depth);
+                        }
+                    } else {
+                        maxContainedDepth = Math.max(maxContainedDepth, other.depth);
+                    }
                 }
             }
             
@@ -1987,7 +1995,15 @@
                 const otherMax = Math.max(otherStartLabel, otherEndLabel);
                 
                 if (connMin <= otherMin && connMax >= otherMax) {
-                    maxContainedDepth = Math.max(maxContainedDepth, other.depth);
+                    if (connMin === otherMin && connMax === otherMax) {
+                        const connIndex = allConnections.indexOf(conn);
+                        const otherIndex = allConnections.indexOf(other);
+                        if (connIndex > otherIndex) {
+                            maxContainedDepth = Math.max(maxContainedDepth, other.depth);
+                        }
+                    } else {
+                        maxContainedDepth = Math.max(maxContainedDepth, other.depth);
+                    }
                 }
             }
             
