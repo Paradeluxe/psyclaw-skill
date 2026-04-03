@@ -15,7 +15,7 @@
             display: block;
             background: #ffffff;
             font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;
-            overflow: auto;
+            overflow: hidden;
             padding: 20px;
             padding-right: 340px;
             transition: padding-right 0.1s ease;
@@ -1561,8 +1561,8 @@
 
         const dpr = window.devicePixelRatio || 1;
         const baseHeight = 600;
-        const baseStartX = 40;
-        const baseEndX = 880;
+        const baseStartX = 60;
+        const baseEndX = 1060;
         const maxPoints = 9;
         const spacing = (baseEndX - baseStartX) / (maxPoints - 1);
         const minDisplayRoutines = 1;
@@ -1996,11 +1996,11 @@
             const rect = {
                 id: ++routineIdCounter,
                 name: 'routine_' + routineIdCounter,
-                x: snapPoint.x - 80,
-                y: snapPoint.y - 50,  // 初始位置以顶部为基准
-                width: 160,
-                height: 100,
-                borderRadius: 8,
+                x: snapPoint.x - 100,
+                y: snapPoint.y - 60,  // 初始位置以顶部为基准
+                width: 200,
+                height: 120,
+                borderRadius: 10,
                 isDragging: false,
                 offsetX: 0,
                 offsetY: 0,
@@ -2016,12 +2016,12 @@
         
         // 根据 AVTP 组件数量动态计算 routine 块的高度
         function calculateRoutineHeight(rect) {
-            const padding = 12;
-            const lineHeight = 12;
-            const timelineLineHeight = 18;
-            const headerHeight = 35;
-            const minHeight = 100;
-            const extraPadding = 10;
+            const padding = 16;
+            const lineHeight = 14;
+            const timelineLineHeight = 28;
+            const headerHeight = 50;
+            const minHeight = 140;
+            const extraPadding = 24;
             
             let requiredHeight = padding + headerHeight + extraPadding;
             
@@ -2459,16 +2459,16 @@
             const avtpComponents = dragRect.avtpComponents || [];
             const enabledComponents = avtpComponents.filter(c => c && c.enabled);
             
-            const padding = 12;
-            const lineHeight = 12;
-            const timelineLineHeight = 18;
-            const headerHeight = 35;
+            const padding = 16;
+            const lineHeight = 14;
+            const timelineLineHeight = 28;
+            const headerHeight = 50;
             
             ctx.fillStyle = isSelected ? '#0066cc' : '#000000';
-            ctx.font = '600 12px -apple-system, BlinkMacSystemFont, SF Pro Text, sans-serif';
+            ctx.font = '700 16px -apple-system, BlinkMacSystemFont, SF Pro Text, sans-serif';
             ctx.textAlign = 'left';
             ctx.textBaseline = 'middle';
-            ctx.fillText(dragRect.name, dragRect.x + padding, dragRect.y + padding + 10);
+            ctx.fillText(dragRect.name, dragRect.x + padding, dragRect.y + padding + 12);
             
             let currentY = dragRect.y + padding + headerHeight;
             
@@ -2488,8 +2488,8 @@
                     3
                 );
                 
-                const letterWidth = 12;
-                const letterGap = 2;
+                const letterWidth = 16;
+                const letterGap = 4;
                 const timelineWidth = dragRect.width - padding * 2 - letterWidth - letterGap;
                 const timelineStartX = dragRect.x + padding + letterWidth + letterGap;
                 
@@ -2521,15 +2521,15 @@
                     
                     // 绘制背景 timeline
                     ctx.fillStyle = '#ecf0f1';
-                    ctx.fillRect(timelineStartX, currentY - 3, timelineWidth, 6);
+                    ctx.fillRect(timelineStartX, currentY - 5, timelineWidth, 10);
                     
                     // 绘制组件颜色条
                     ctx.fillStyle = typeColors[comp.type];
-                    ctx.fillRect(startX, currentY - 3, Math.max(barWidth, 3), 6);
+                    ctx.fillRect(startX, currentY - 5, Math.max(barWidth, 4), 10);
                     
                     // 绘制类型字母
-                    ctx.font = '9px -apple-system, BlinkMacSystemFont, SF Pro Text, sans-serif';
-                    ctx.fillStyle = '#34495e';
+                    ctx.font = 'bold 16px -apple-system, BlinkMacSystemFont, SF Pro Text, sans-serif';
+                    ctx.fillStyle = typeColors[comp.type];
                     ctx.textAlign = 'left';
                     ctx.fillText(typeKey.toUpperCase(), dragRect.x + padding, currentY);
                     ctx.textAlign = 'left';
@@ -2538,9 +2538,9 @@
                     if (!dragRect.componentHitAreas) dragRect.componentHitAreas = [];
                     dragRect.componentHitAreas[compIndex] = {
                         x: dragRect.x + padding,
-                        y: currentY - 8,
+                        y: currentY - 14,
                         width: dragRect.width - padding * 2,
-                        height: 16,
+                        height: 28,
                         component: comp
                     };
                     
@@ -2725,23 +2725,6 @@
                     const clickedIndex = routineRects.indexOf(clickedRect);
                     selectedRoutineIndex = clickedIndex;
                     activeDragRect = clickedRect;
-                    
-                    // 检查是否点击到了某个 AVTPK 组件
-                    if (clickedRect.componentHitAreas && clickedRect.componentHitAreas.length > 0) {
-                        for (const hitArea of clickedRect.componentHitAreas) {
-                            if (hitArea && pos.x >= hitArea.x && pos.x <= hitArea.x + hitArea.width &&
-                                pos.y >= hitArea.y && pos.y <= hitArea.y + hitArea.height) {
-                                // 点击到了组件，直接打开对应的表单
-                                e.preventDefault();
-                                e.stopPropagation();
-                                saveState();
-                                activeAvtp = hitArea.component.type;
-                                activeAvtpComponent = hitArea.component;
-                                showAvtpForm(hitArea.component.type, hitArea.component);
-                                return;
-                            }
-                        }
-                    }
                     
                     clickedRect.isDragging = true;
                     clickedRect.offsetX = pos.x - clickedRect.x;
@@ -4042,6 +4025,21 @@
 
             const clickedRect = getDragRectAtPos(pos.x, pos.y);
             if (clickedRect) {
+                // 检查是否点击到了某个 AVTPK 组件
+                if (clickedRect.componentHitAreas && clickedRect.componentHitAreas.length > 0) {
+                    for (const hitArea of clickedRect.componentHitAreas) {
+                        if (hitArea && pos.x >= hitArea.x && pos.x <= hitArea.x + hitArea.width &&
+                            pos.y >= hitArea.y && pos.y <= hitArea.y + hitArea.height) {
+                            // 点击到了组件，直接打开对应的表单
+                            e.preventDefault();
+                            e.stopPropagation();
+                            activeAvtp = hitArea.component.type;
+                            activeAvtpComponent = hitArea.component;
+                            showAvtpkForm(hitArea.component.type);
+                            return;
+                        }
+                    }
+                }
                 showRoutineForm(clickedRect);
                 return;
             }
@@ -4130,7 +4128,7 @@
                     const snapPoint = snapPoints[index];
                     rect.x = snapPoint.x - rect.width / 2;
                     // 所有 routine 保持同一个顶部高度（基于 snap point 顶部对齐）
-                    rect.y = snapPoint.y - 50;
+                    rect.y = snapPoint.y - 60;
                 }
             });
         }
