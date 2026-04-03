@@ -1558,6 +1558,14 @@
         console.log('Script starting');
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
+        
+        // 预加载图标
+        const tapIcon = new Image();
+        tapIcon.src = 'icon/tap.svg';
+        let tapIconLoaded = false;
+        tapIcon.onload = () => {
+            tapIconLoaded = true;
+        };
 
         const dpr = window.devicePixelRatio || 1;
         const baseHeight = 600;
@@ -2017,7 +2025,6 @@
         // 根据 AVTP 组件数量动态计算 routine 块的高度
         function calculateRoutineHeight(rect) {
             const padding = 16;
-            const lineHeight = 14;
             const timelineLineHeight = 28;
             const headerHeight = 50;
             const minHeight = 140;
@@ -2028,16 +2035,12 @@
             const avtpComponents = rect.avtpComponents || [];
             const enabledComponents = avtpComponents.filter(c => c && c.enabled);
             
-            const hasKeyboard = enabledComponents.some(c => c.type === 'keyboard' && c.keys && c.keys.trim());
-            if (hasKeyboard) {
-                requiredHeight += lineHeight;
-            }
-            
-            const timelineComponents = enabledComponents.filter(c => 
-                ['audio', 'video', 'text', 'image'].includes(c.type)
+            // 所有 AVTPK 组件都使用 timeline 样式显示，统一使用 timelineLineHeight
+            const allAvtpkComponents = enabledComponents.filter(c => 
+                ['keyboard', 'audio', 'video', 'text', 'image'].includes(c.type)
             );
-            if (timelineComponents.length > 0) {
-                requiredHeight += timelineComponents.length * timelineLineHeight;
+            if (allAvtpkComponents.length > 0) {
+                requiredHeight += allAvtpkComponents.length * timelineLineHeight;
             }
             
             return Math.max(minHeight, requiredHeight);
@@ -2463,6 +2466,7 @@
             const lineHeight = 14;
             const timelineLineHeight = 28;
             const headerHeight = 50;
+            const extraPadding = 24;
             
             ctx.fillStyle = isSelected ? '#0066cc' : '#000000';
             ctx.font = '700 16px -apple-system, BlinkMacSystemFont, SF Pro Text, sans-serif';
@@ -2509,12 +2513,22 @@
                     'image': '#f39c12'
                 };
                 
+                // 浅色版本的颜色（用于无限 duration）
+                const typeColorsLight = {
+                    'keyboard': '#fadbd8',
+                    'audio': '#d6eaf8',
+                    'video': '#e8daef',
+                    'text': '#d5f5e3',
+                    'image': '#fdebd0'
+                };
+                
                 allAvtpkComponents.forEach((comp, compIndex) => {
                     const typeKey = typeToKey[comp.type];
                     if (!typeKey) return;
                     
                     const startTime = comp.startTime || 0;
-                    const duration = (comp.duration > 0 ? comp.duration : 3);
+                    const isInfinite = comp.duration === -1;
+                    const duration = isInfinite ? maxDuration : (comp.duration > 0 ? comp.duration : 3);
                     
                     const startX = timelineStartX + (startTime / maxDuration) * timelineWidth;
                     const barWidth = (duration / maxDuration) * timelineWidth;
@@ -2524,8 +2538,19 @@
                     ctx.fillRect(timelineStartX, currentY - 5, timelineWidth, 10);
                     
                     // 绘制组件颜色条
-                    ctx.fillStyle = typeColors[comp.type];
-                    ctx.fillRect(startX, currentY - 5, Math.max(barWidth, 4), 10);
+                    if (isInfinite) {
+                        // 无限 duration：使用浅色填充 + 边框
+                        ctx.fillStyle = typeColorsLight[comp.type];
+                        ctx.fillRect(startX, currentY - 5, Math.max(barWidth, 4), 10);
+                        // 绘制边框
+                        ctx.strokeStyle = typeColors[comp.type];
+                        ctx.lineWidth = 2;
+                        ctx.strokeRect(startX, currentY - 5, Math.max(barWidth, 4), 10);
+                    } else {
+                        // 有限 duration：使用正常颜色填充
+                        ctx.fillStyle = typeColors[comp.type];
+                        ctx.fillRect(startX, currentY - 5, Math.max(barWidth, 4), 10);
+                    }
                     
                     // 绘制类型字母
                     ctx.font = 'bold 16px -apple-system, BlinkMacSystemFont, SF Pro Text, sans-serif';
@@ -2546,6 +2571,58 @@
                     
                     currentY += timelineLineHeight;
                 });
+            }
+            
+            // 绘制起始时间和结束时间
+            if (allAvtpkComponents.length > 0) {
+                const maxDuration = Math.max(
+                    ...allAvtpkComponents.map(c => {
+                        const startTime = c.startTime || 0;
+                        const duration = c.duration > 0 ? c.duration : (c.duration === -1 ? 0 : 3);
+                        return startTime + duration;
+                    }),
+                    3
+                );
+                
+                // 检查是否有 Keyboard 组件且开启了 forceEndRoutine
+                const hasKeyboardWithForceEnd = allAvtpkComponents.some(c => 
+                    c.type === 'keyboard' && c.forceEndRoutine === true
+                );
+                
+                // 检查是否所有组件都是无限 duration
+                const allInfinite = allAvtpkComponents.every(c => c.duration === -1);
+                
+                const startTime = 0;
+                const endTime = maxDuration;
+                
+                // 时间显示区域在组件下方
+                const timeY = dragRect.y + dragRect.height - extraPadding + 8;
+                
+                ctx.font = '11px -apple-system, BlinkMacSystemFont, SF Pro Text, sans-serif';
+                ctx.fillStyle = '#7f8c8d';
+                ctx.textAlign = 'left';
+                ctx.fillText(Math.round(startTime) + ' ms', dragRect.x + padding, timeY);
+                ctx.textAlign = 'right';
+                
+                if (allInfinite && hasKeyboardWithForceEnd) {
+                    // 最大时间无限，但有 Keyboard 组件且开启了 forceEndRoutine，显示手指图标
+                    if (tapIconLoaded) {
+                        const iconSize = 16;
+                        ctx.drawImage(tapIcon, dragRect.x + dragRect.width - padding - iconSize, timeY - iconSize/2 - 2, iconSize, iconSize);
+                    } else {
+                        // 图标未加载完成，显示无限符号作为后备
+                        ctx.font = '14px -apple-system, BlinkMacSystemFont, SF Pro Text, sans-serif';
+                        ctx.fillText('∞', dragRect.x + dragRect.width - padding, timeY);
+                    }
+                } else if (allInfinite) {
+                    // 所有组件都是无限 duration，显示无限符号
+                    ctx.font = '14px -apple-system, BlinkMacSystemFont, SF Pro Text, sans-serif';
+                    ctx.fillText('∞', dragRect.x + dragRect.width - padding, timeY);
+                } else {
+                    // 正常显示结束时间
+                    ctx.fillText(Math.round(endTime) + ' ms', dragRect.x + dragRect.width - padding, timeY);
+                }
+                ctx.textAlign = 'left';
             }
 
             if (isSelected) {
@@ -4026,21 +4103,32 @@
             const clickedRect = getDragRectAtPos(pos.x, pos.y);
             if (clickedRect) {
                 // 检查是否点击到了某个 AVTPK 组件
+                let clickedComponent = null;
                 if (clickedRect.componentHitAreas && clickedRect.componentHitAreas.length > 0) {
                     for (const hitArea of clickedRect.componentHitAreas) {
                         if (hitArea && pos.x >= hitArea.x && pos.x <= hitArea.x + hitArea.width &&
                             pos.y >= hitArea.y && pos.y <= hitArea.y + hitArea.height) {
-                            // 点击到了组件，直接打开对应的表单
-                            e.preventDefault();
-                            e.stopPropagation();
-                            activeAvtp = hitArea.component.type;
-                            activeAvtpComponent = hitArea.component;
-                            showAvtpkForm(hitArea.component.type);
-                            return;
+                            clickedComponent = hitArea.component;
+                            break;
                         }
                     }
                 }
-                showRoutineForm(clickedRect);
+                
+                // 如果点击了组件，跳过 routine 表单动画，直接显示组件表单
+                if (clickedComponent) {
+                    activeAvtp = clickedComponent.type;
+                    activeAvtpComponent = clickedComponent;
+                    // 先打开 routine 表单（无动画）
+                    avtpForm.style.transition = 'none';
+                    showRoutineForm(clickedRect);
+                    avtpForm.offsetHeight; // 强制重绘
+                    avtpForm.style.transition = '';
+                    // 然后立即打开组件表单
+                    showAvtpkForm(clickedComponent.type);
+                } else {
+                    // 正常打开 routine 表单（带动画）
+                    showRoutineForm(clickedRect);
+                }
                 return;
             }
         });
