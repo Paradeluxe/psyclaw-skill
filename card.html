@@ -1510,11 +1510,11 @@
         const ctx = canvas.getContext('2d');
 
         const dpr = window.devicePixelRatio || 1;
-        const baseWidth = 600;
-        const baseStartY = 40;
-        const baseEndY = 600;
+        const baseHeight = 600;
+        const baseStartX = 40;
+        const baseEndX = 880;
         const maxPoints = 9;
-        const spacing = (baseEndY - baseStartY) / (maxPoints - 1);
+        const spacing = (baseEndX - baseStartX) / (maxPoints - 1);
         const minDisplayRoutines = 1;
 
         const chatbotPanel = document.getElementById('chatbotPanel');
@@ -1594,12 +1594,11 @@
             }
         });
          
-        // 根据最大 routine 数量计算 canvas 高度
-        function calculateCanvasHeight(routineCount) {
+        function calculateCanvasWidth(routineCount) {
             const displayCount = Math.max(routineCount, minDisplayRoutines);
             const totalPoints = displayCount * 2 + 1;
-            const contentHeight = baseStartY + (totalPoints - 1) * spacing + 80; // 底部留白
-            return Math.max(800, contentHeight); // 最小高度 800
+            const contentWidth = baseStartX + (totalPoints - 1) * spacing + 80;
+            return Math.max(800, contentWidth);
         }
         
         // 显示通知消息
@@ -1631,7 +1630,7 @@
         }
         
         let currentRoutineCount = 0;
-        let canvasHeight = calculateCanvasHeight(currentRoutineCount);
+        let canvasWidth = calculateCanvasWidth(currentRoutineCount);
 
         const backwardButton = document.getElementById('backwardButton');
         const forwardButton = document.getElementById('forwardButton');
@@ -1714,25 +1713,25 @@
         backwardButton.addEventListener('click', undo);
         forwardButton.addEventListener('click', redo);
 
-        canvas.width = baseWidth * dpr;
-        canvas.height = canvasHeight * dpr;
-        canvas.style.width = baseWidth + 'px';
-        canvas.style.height = canvasHeight + 'px';
+        canvas.width = canvasWidth * dpr;
+        canvas.height = baseHeight * dpr;
+        canvas.style.width = canvasWidth + 'px';
+        canvas.style.height = baseHeight + 'px';
         ctx.scale(dpr, dpr);
 
-        const lineX = 300;
+        const lineY = 300;
 
         function generatePoints(routineCount) {
             const totalPoints = routineCount * 2 + 1;
-            const startY = baseStartY;
-            const endY = baseStartY + (totalPoints - 1) * spacing;
+            const startX = baseStartX;
+            const endX = baseStartX + (totalPoints - 1) * spacing;
             const points = [];
             
             for (let i = 0; i < totalPoints; i++) {
                 const label = i + 1;
                 points.push({
-                    x: lineX,
-                    y: startY + i * spacing,
+                    x: startX + i * spacing,
+                    y: lineY,
                     label: label.toString(),
                     isSnapTarget: label % 2 === 0
                 });
@@ -1742,16 +1741,16 @@
                 all: points,
                 snap: points.filter(p => p.isSnapTarget),
                 line: points.filter(p => !p.isSnapTarget),
-                startY: startY,
-                endY: endY
+                startX: startX,
+                endX: endX
             };
         }
 
         let pointsData = generatePoints(minDisplayRoutines);
         let snapPoints = pointsData.snap;
         let linePoints = pointsData.line;
-        let startY = pointsData.startY;
-        let endY = pointsData.endY;
+        let flowStartX = pointsData.startX;
+        let flowEndX = pointsData.endX;
 
         let startPoint = null;
         let isDraggingLine = false;
@@ -1852,7 +1851,7 @@
         function createRoutineRect(index) {
             const snapPoint = snapPoints[index];
             const rect = {
-                id: ++routineIdCounter, // 固定的 ID，不随位置改变
+                id: ++routineIdCounter,
                 name: 'routine_' + routineIdCounter,
                 x: snapPoint.x - 80,
                 y: snapPoint.y - 50,
@@ -1876,7 +1875,8 @@
         function calculateRoutineHeight(rect) {
             const padding = 8;
             const lineHeight = 12;
-            const headerHeight = 20;
+            const timelineLineHeight = 18;
+            const headerHeight = 26;
             const minHeight = 100;
             const extraPadding = 10;
             
@@ -1894,7 +1894,7 @@
                 ['audio', 'video', 'text', 'image'].includes(c.type)
             );
             if (timelineComponents.length > 0) {
-                requiredHeight += timelineComponents.length * lineHeight;
+                requiredHeight += timelineComponents.length * timelineLineHeight;
             }
             
             return Math.max(minHeight, requiredHeight);
@@ -1910,23 +1910,23 @@
             routineRects.forEach(rect => {
                 updateRoutineHeight(rect);
             });
-            updateCanvasHeightForRoutines();
+            updateCanvasWidthForRoutines();
         }
         
         // 根据所有 routine 块的高度更新 canvas 高度
-        function updateCanvasHeightForRoutines() {
+        function updateCanvasWidthForRoutines() {
             if (routineRects.length === 0) {
-                canvasHeight = calculateCanvasHeight(0);
+                canvasWidth = calculateCanvasWidth(0);
             } else {
-                const maxRoutineBottom = Math.max(...routineRects.map(rect => rect.y + rect.height));
-                const minRoutineTop = Math.min(...routineRects.map(rect => rect.y));
-                const currentCanvasHeight = canvasHeight;
-                const requiredHeight = maxRoutineBottom + 100;
+                const maxRoutineRight = Math.max(...routineRects.map(rect => rect.x + rect.width));
+                const minRoutineLeft = Math.min(...routineRects.map(rect => rect.x));
+                const currentCanvasWidth = canvasWidth;
+                const requiredWidth = maxRoutineRight + 100;
                 
-                if (requiredHeight > currentCanvasHeight) {
-                    canvasHeight = Math.max(requiredHeight, 800);
-                    canvas.height = canvasHeight * dpr;
-                    canvas.style.height = canvasHeight + 'px';
+                if (requiredWidth > currentCanvasWidth) {
+                    canvasWidth = Math.max(requiredWidth, 800);
+                    canvas.width = canvasWidth * dpr;
+                    canvas.style.width = canvasWidth + 'px';
                     ctx.scale(dpr, dpr);
                 }
             }
@@ -1944,8 +1944,8 @@
         const snapDistance = 80;
         const pointClickRadius = 20;
         const lineSnapRadius = 80;
-        const baseOffsetX = 150;
-        const offsetXStep = 80;
+        const baseOffsetY = 150;
+        const offsetYStep = 80;
 
         function getMaxDepthForSameEndpoints(conn, allConnections) {
             const startLabel = conn.start.label;
@@ -2072,21 +2072,20 @@
             return maxContainedDepth + 1;
         }
         
-        function getConnectionOffsetX(conn, allConnections) {
-            return baseOffsetX + conn.depth * offsetXStep;
+        function getConnectionOffsetY(conn, allConnections) {
+            return baseOffsetY + conn.depth * offsetYStep;
         }
 
-        // Get the position of the follow rectangle on a connection line
         function getFollowRectPosition(conn) {
-            const offsetX = getConnectionOffsetX(conn, connections);
-            const cornerX = conn.start.x + offsetX;
-            const middleY = (conn.start.y + conn.end.y) / 2;
+            const offsetY = getConnectionOffsetY(conn, connections);
+            const cornerY = conn.start.y + offsetY;
+            const middleX = (conn.start.x + conn.end.x) / 2;
             
             return {
-                x: cornerX,
-                y: middleY,
-                width: 30,
-                height: 60,
+                x: middleX,
+                y: cornerY,
+                width: 60,
+                height: 30,
                 depth: conn.depth,
                 label: conn.depth + 1
             };
@@ -2156,25 +2155,25 @@
                 const allConnsWithRebuiltDepth = [...connections, previewConn];
                 rebuildAllConnectionDepthsForPreview(allConnsWithRebuiltDepth, previewConn);
                 
-                const offsetX = getConnectionOffsetX(previewConn, allConnsForPreview);
+                const offsetY = getConnectionOffsetY(previewConn, allConnsForPreview);
 
                 ctx.beginPath();
                 ctx.moveTo(startPoint.x, startPoint.y);
-                ctx.lineTo(startPoint.x + offsetX, startPoint.y);
-                ctx.lineTo(startPoint.x + offsetX, targetPoint.y);
+                ctx.lineTo(startPoint.x, startPoint.y + offsetY);
+                ctx.lineTo(targetPoint.x, startPoint.y + offsetY);
                 ctx.lineTo(targetPoint.x, targetPoint.y);
                 ctx.stroke();
 
-                const cornerX = startPoint.x + offsetX;
-                const middleY = (startPoint.y + targetPoint.y) / 2;
-                const followRectWidth = 30;
-                const followRectHeight = 60;
+                const cornerY = startPoint.y + offsetY;
+                const middleX = (startPoint.x + targetPoint.x) / 2;
+                const followRectWidth = 60;
+                const followRectHeight = 30;
                 const followRectRadius = 8;
 
                 ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
                 ctx.strokeStyle = '#000000';
                 ctx.lineWidth = 1.5;
-                drawRoundedRect(cornerX - followRectWidth / 2, middleY - followRectHeight / 2, followRectWidth, followRectHeight, followRectRadius);
+                drawRoundedRect(middleX - followRectWidth / 2, cornerY - followRectHeight / 2, followRectWidth, followRectHeight, followRectRadius);
                 ctx.fill();
                 ctx.stroke();
 
@@ -2182,7 +2181,7 @@
                 ctx.font = '500 16px -apple-system, BlinkMacSystemFont, SF Pro Text, sans-serif';
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
-                ctx.fillText(previewConn.depth + 1, cornerX, middleY);
+                ctx.fillText(previewConn.depth + 1, middleX, cornerY);
 
                 ctx.setLineDash([]);
             }
@@ -2213,25 +2212,25 @@
                 ctx.lineJoin = 'round';
                 ctx.setLineDash([]);
 
-                const offsetX = getConnectionOffsetX(conn, allConns);
+                const offsetY = getConnectionOffsetY(conn, allConns);
 
                 ctx.beginPath();
                 ctx.moveTo(conn.start.x, conn.start.y);
-                ctx.lineTo(conn.start.x + offsetX, conn.start.y);
-                ctx.lineTo(conn.start.x + offsetX, conn.end.y);
+                ctx.lineTo(conn.start.x, conn.start.y + offsetY);
+                ctx.lineTo(conn.end.x, conn.start.y + offsetY);
                 ctx.lineTo(conn.end.x, conn.end.y);
                 ctx.stroke();
 
-                const cornerX = conn.start.x + offsetX;
-                const middleY = (conn.start.y + conn.end.y) / 2;
-                const followRectWidth = 30;
-                const followRectHeight = 60;
+                const cornerY = conn.start.y + offsetY;
+                const middleX = (conn.start.x + conn.end.x) / 2;
+                const followRectWidth = 60;
+                const followRectHeight = 30;
                 const followRectRadius = 8;
 
                 ctx.fillStyle = '#ffffff';
                 ctx.strokeStyle = '#000000';
                 ctx.lineWidth = 1.5;
-                drawRoundedRect(cornerX - followRectWidth / 2, middleY - followRectHeight / 2, followRectWidth, followRectHeight, followRectRadius);
+                drawRoundedRect(middleX - followRectWidth / 2, cornerY - followRectHeight / 2, followRectWidth, followRectHeight, followRectRadius);
                 ctx.fill();
                 ctx.stroke();
 
@@ -2240,7 +2239,7 @@
                 ctx.textBaseline = 'middle';
                 const loopReps = conn.loopReps || 1;
                 ctx.font = 'bold 12px -apple-system, BlinkMacSystemFont, SF Pro Text, sans-serif';
-                ctx.fillText(loopReps, cornerX, middleY);
+                ctx.fillText(loopReps, middleX, cornerY);
             });
         }
 
@@ -2254,8 +2253,8 @@
             ctx.lineWidth = 1;
             ctx.lineCap = 'round';
             ctx.beginPath();
-            ctx.moveTo(lineX, startY);
-            ctx.lineTo(lineX, endY);
+            ctx.moveTo(flowStartX, lineY);
+            ctx.lineTo(flowEndX, lineY);
             ctx.stroke();
 
             drawConnectionLines();
@@ -2328,7 +2327,8 @@
             
             const padding = 8;
             const lineHeight = 12;
-            const headerHeight = 20;
+            const timelineLineHeight = 18;
+            const headerHeight = 26;
             
             ctx.fillStyle = isSelected ? '#0066cc' : '#000000';
             ctx.font = '600 12px -apple-system, BlinkMacSystemFont, SF Pro Text, sans-serif';
@@ -2405,7 +2405,7 @@
                     ctx.fillText(typeKey.toUpperCase(), timelineStartX - 3, currentY);
                     ctx.textAlign = 'left';
                     
-                    currentY += lineHeight;
+                    currentY += timelineLineHeight;
                 });
             }
 
@@ -2727,17 +2727,17 @@
 
         function isInsideConnection(pos, conn) {
             const tolerance = 20;
-            const offsetX = getConnectionOffsetX(conn, connections);
+            const offsetY = getConnectionOffsetY(conn, connections);
 
             const seg1Start = { x: conn.start.x, y: conn.start.y };
-            const seg1End = { x: conn.start.x + offsetX, y: conn.start.y };
+            const seg1End = { x: conn.start.x, y: conn.start.y + offsetY };
             if (isNearSegment(pos, seg1Start, seg1End, tolerance)) return true;
 
-            const seg2Start = { x: conn.start.x + offsetX, y: conn.start.y };
-            const seg2End = { x: conn.start.x + offsetX, y: conn.end.y };
+            const seg2Start = { x: conn.start.x, y: conn.start.y + offsetY };
+            const seg2End = { x: conn.end.x, y: conn.start.y + offsetY };
             if (isNearSegment(pos, seg2Start, seg2End, tolerance)) return true;
 
-            const seg3Start = { x: conn.start.x + offsetX, y: conn.end.y };
+            const seg3Start = { x: conn.end.x, y: conn.start.y + offsetY };
             const seg3End = { x: conn.end.x, y: conn.end.y };
             if (isNearSegment(pos, seg3Start, seg3End, tolerance)) return true;
 
@@ -2758,15 +2758,15 @@
         }
 
         function isInsideLoopBlock(pos, conn, allConns) {
-            const offsetX = getConnectionOffsetX(conn, allConns);
-            const cornerX = conn.start.x + offsetX;
-            const middleY = (conn.start.y + conn.end.y) / 2;
-            const followRectWidth = 30;
-            const followRectHeight = 60;
-            return pos.x >= cornerX - followRectWidth / 2 &&
-                   pos.x <= cornerX + followRectWidth / 2 &&
-                   pos.y >= middleY - followRectHeight / 2 &&
-                   pos.y <= middleY + followRectHeight / 2;
+            const offsetY = getConnectionOffsetY(conn, allConns);
+            const cornerY = conn.start.y + offsetY;
+            const middleX = (conn.start.x + conn.end.x) / 2;
+            const followRectWidth = 60;
+            const followRectHeight = 30;
+            return pos.x >= middleX - followRectWidth / 2 &&
+                   pos.x <= middleX + followRectWidth / 2 &&
+                   pos.y >= cornerY - followRectHeight / 2 &&
+                   pos.y <= cornerY + followRectHeight / 2;
         }
 
         canvas.addEventListener('contextmenu', (e) => {
@@ -3141,7 +3141,7 @@
                     e.stopPropagation();
                     component.enabled = false;
                     updateRoutineHeight(rect);
-                    updateCanvasHeightForRoutines();
+                    updateCanvasWidthForRoutines();
                     renderAvtpComponentsList(rect);
                     draw();
                 };
@@ -3174,7 +3174,7 @@
                     if (newComponent) {
                         activeDragRect.avtpComponents.push(newComponent);
                         updateRoutineHeight(activeDragRect);
-                        updateCanvasHeightForRoutines();
+                        updateCanvasWidthForRoutines();
                         renderAvtpComponentsList(activeDragRect);
                         draw();
                     }
@@ -3336,7 +3336,7 @@
             
             if (needsHeightUpdate) {
                 updateRoutineHeight(activeDragRect);
-                updateCanvasHeightForRoutines();
+                updateCanvasWidthForRoutines();
             }
             
             draw();
@@ -3842,26 +3842,29 @@
 
         function updatePoints() {
             currentRoutineCount = routineRects.length;
-            canvasHeight = calculateCanvasHeight(currentRoutineCount);
+            canvasWidth = calculateCanvasWidth(currentRoutineCount);
             
-            // 确保 canvas 高度足够容纳所有 routine 块
             if (routineRects.length > 0) {
-                const maxRoutineBottom = Math.max(...routineRects.map(rect => {
-                    const snapIndex = routineRects.indexOf(rect);
-                    const snapPoint = snapPoints[snapIndex] || { y: rect.y + rect.height / 2 };
-                    const bottomY = snapPoint.y + rect.height / 2;
-                    return bottomY;
-                }));
-                const requiredHeight = maxRoutineBottom + 100;
-                canvasHeight = Math.max(canvasHeight, requiredHeight);
+                const validRightXValues = routineRects
+                    .map((rect, index) => {
+                        if (!rect || rect.width === undefined || rect.height === undefined) return null;
+                        const snapPoint = snapPoints[index];
+                        if (!snapPoint) return null;
+                        return snapPoint.x + rect.width / 2;
+                    })
+                    .filter(val => val !== null && !isNaN(val));
+                
+                if (validRightXValues.length > 0) {
+                    const maxRoutineRight = Math.max(...validRightXValues);
+                    const requiredWidth = maxRoutineRight + 100;
+                    canvasWidth = Math.max(canvasWidth, requiredWidth);
+                }
             }
             
-            canvas.height = canvasHeight * dpr;
-            canvas.style.height = canvasHeight + 'px';
+            canvas.width = canvasWidth * dpr;
+            canvas.style.width = canvasWidth + 'px';
             ctx.scale(dpr, dpr);
 
-            // 保存现有 connections 的 label 信息，用于后续重新关联
-            // 如果存在 originalConnectionLabels（删除 routine 时保存的），使用它
             const connectionLabels = originalConnectionLabels !== null ?
                 originalConnectionLabels.map((labels, i) => ({
                     startLabel: labels.startLabel,
@@ -3884,16 +3887,14 @@
                     loopIsTrials: conn.loopIsTrials
                 }));
 
-            // 使用至少 minDisplayRoutines 来计算点位置
             const displayCount = Math.max(routineRects.length, minDisplayRoutines);
             pointsData = generatePoints(displayCount);
             snapPoints = pointsData.snap;
             linePoints = pointsData.line;
-            startY = pointsData.startY;
-            endY = pointsData.endY;
+            flowStartX = pointsData.startX;
+            flowEndX = pointsData.endX;
             reassignSnapPoints();
 
-            // 重新关联 connections 到新的 linePoints
             for (let i = 0; i < connections.length; i++) {
                 const labels = connectionLabels[i];
                 const newStartPoint = linePoints.find(p => p.label === labels.startLabel);
