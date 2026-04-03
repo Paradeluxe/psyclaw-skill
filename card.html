@@ -57,7 +57,7 @@
             box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25), 0 2px 10px rgba(0, 0, 0, 0.15);
             padding: 0;
             transition: left 0.3s ease;
-            z-index: 1000;
+            z-index: 2001;
             display: flex;
             flex-direction: column;
             overflow: hidden;
@@ -610,17 +610,13 @@
 
         .routine-controls {
             position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
             display: flex;
-            gap: 12px;
-            background: rgba(255, 255, 255, 0.95);
-            padding: 16px 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            flex-direction: column;
+            gap: 6px;
             z-index: 1000;
-            transition: left 0.1s ease;
         }
 
         .viewport-controls {
@@ -1579,17 +1575,6 @@
         let startX = 0;
         let startWidth = 0;
 
-        function updateRoutineControlsPosition() {
-            // Calculate the center of the left canvas area
-            const chatbotWidth = chatbotPanel.offsetWidth;
-            const containerWidth = window.innerWidth;
-            const leftPadding = 20;
-            const rightPadding = 20;
-            const leftAreaWidth = containerWidth - chatbotWidth - leftPadding - rightPadding;
-            const centerPos = leftPadding + leftAreaWidth / 2;
-            routineControls.style.left = centerPos + 'px';
-        }
-
         chatbotResizer.addEventListener('mousedown', (e) => {
             isResizingChatbot = true;
             startX = e.clientX;
@@ -1616,9 +1601,6 @@
             
             // Update body padding to match chatbot panel width
             document.body.style.paddingRight = (clampedWidth + 20) + 'px';
-            
-            // Update routine controls position
-            updateRoutineControlsPosition();
         });
 
         document.addEventListener('mouseup', () => {
@@ -1635,12 +1617,9 @@
             }
         });
 
-        // Initial position and resize listener
-        // Sync initial padding with chatbot panel width
+        // Initial padding setup
         const initialChatbotWidth = chatbotPanel.offsetWidth;
         document.body.style.paddingRight = (initialChatbotWidth + 20) + 'px';
-        updateRoutineControlsPosition();
-        window.addEventListener('resize', updateRoutineControlsPosition);
 
         let isCanvasPanning = false;
         let canvasPanStartX = 0;
@@ -1663,8 +1642,9 @@
 
         function getFlowchartCenter() {
             if (routineRects.length === 0) {
-                // 如果没有 routine，返回默认中心点
-                return { x: 400, y: 300 };
+                // 如果没有 routine，返回初始 flowchart 的中心点
+                // 初始 flowchart 有 3 个点（minDisplayRoutines=1），中心在第二个点
+                return { x: baseStartX + spacing, y: lineY };
             }
             
             // 如果有选中的 routine，以选中的 routine 为中心
@@ -2017,7 +1997,7 @@
                 id: ++routineIdCounter,
                 name: 'routine_' + routineIdCounter,
                 x: snapPoint.x - 80,
-                y: snapPoint.y - 50,
+                y: snapPoint.y - 50,  // 初始位置以顶部为基准
                 width: 160,
                 height: 100,
                 borderRadius: 8,
@@ -2578,7 +2558,7 @@
 
         function snapToPoint(rect) {
             const rectCenterX = rect.x + rect.width / 2;
-            const rectCenterY = rect.y + rect.height / 2;
+            const rectTopY = rect.y;
 
             let nearestPoint = null;
             let minDistance = Infinity;
@@ -2586,7 +2566,7 @@
             snapPoints.forEach(point => {
                 const distance = Math.sqrt(
                     Math.pow(rectCenterX - point.x, 2) +
-                    Math.pow(rectCenterY - point.y, 2)
+                    Math.pow(rectTopY - point.y, 2)
                 );
                 if (distance < minDistance) {
                     minDistance = distance;
@@ -2595,7 +2575,8 @@
             });
 
             rect.x = nearestPoint.x - rect.width / 2;
-            rect.y = nearestPoint.y - rect.height / 2;
+            // 保持 y 位置顶部对齐，不重新居中
+            rect.y = nearestPoint.y - 50;
             return true;
         }
 
@@ -4128,7 +4109,8 @@
                 if (rect.width && rect.height) {
                     const snapPoint = snapPoints[index];
                     rect.x = snapPoint.x - rect.width / 2;
-                    rect.y = snapPoint.y - rect.height / 2;
+                    // 所有 routine 保持同一个顶部高度（基于 snap point 顶部对齐）
+                    rect.y = snapPoint.y - 50;
                 }
             });
         }
@@ -4584,6 +4566,30 @@
         });
 
         updateRoutineCount();
+        
+        // 初始化 flowchart 居中
+        function centerInitialView() {
+            const chatbotWidth = chatbotPanel.offsetWidth;
+            const canvasWidth = window.innerWidth - chatbotWidth;
+            const canvasHeight = window.innerHeight;
+            
+            // 计算画布可视区域的中心
+            const canvasCenterX = canvasWidth / 2;
+            const canvasCenterY = canvasHeight / 2;
+            
+            // 使用 getFlowchartCenter 获取 flowchart 中心
+            const flowchartCenter = getFlowchartCenter();
+            
+            // 计算视口偏移，使 flowchart 中心与画布中心对齐
+            // 视口变换：ctx.translate(viewportX * scale, viewportY * scale)
+            // 屏幕坐标 = (世界坐标 + viewportX) * scale
+            // 要让 flowchart 中心在画布中心：canvasCenter = (flowchartCenter + viewportX) * scale
+            // 解得：viewportX = canvasCenter/scale - flowchartCenter
+            viewportX = canvasCenterX / scale - flowchartCenter.x;
+            viewportY = canvasCenterY / scale - flowchartCenter.y;
+        }
+        
+        centerInitialView();
         draw();
     </script>
     <script>
