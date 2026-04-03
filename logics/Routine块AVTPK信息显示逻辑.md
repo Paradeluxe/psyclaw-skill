@@ -112,10 +112,93 @@ const barWidth = (duration / maxDuration) * timelineWidth;
 
 | 参数 | 值 | 说明 |
 |------|-----|------|
-| padding | 8 | 内边距 |
+| padding | 12 | 内边距 |
 | lineHeight | 12 | 行高 |
-| headerHeight | 20 | 标题区域高度 |
-| timelineWidth | width - padding*2 - 30 | 时间轴可用宽度 |
+| headerHeight | 35 | 标题区域高度（影响标题与第一个组件的间距）|
+| letterWidth | 12 | 字母标签宽度 |
+| letterGap | 2 | 字母与时间轴之间的间距 |
+| timelineLineHeight | 18 | 时间轴组件行高 |
+| timelineWidth | width - padding*2 - letterWidth - letterGap | 时间轴可用宽度 |
+
+## 间距调整指南
+
+Routine 块的布局由以下常量控制，它们位于 [`drawDragRect`](file:///d:/Project/PsyClaw/card.html#L2309-L2421) 函数中（约第 2328-2371 行）。
+
+### 1. Routine 标题与第一个组件的间距
+
+**调整方法**：修改 `headerHeight` 常量
+
+```javascript
+const headerHeight = 35;  // 当前值
+```
+
+- **增大间距**：增加 headerHeight 值（如 40、45）
+- **减小间距**：减小 headerHeight 值（如 30、28）
+
+### 2. Routine 块的整体内边距
+
+**调整方法**：修改 `padding` 常量
+
+```javascript
+const padding = 12;  // 当前值
+```
+
+- **增大内边距**：增加 padding 值（如 15、20）
+- **减小内边距**：减小 padding 值（如 10、8）
+
+### 3. 字母标签与时间轴的间距
+
+**调整方法**：修改 `letterGap` 常量
+
+```javascript
+const letterGap = 2;  // 当前值
+```
+
+- **增大间距**：增加 letterGap 值（如 5、8）
+- **减小间距**：减小 letterGap 值（如 1、0）
+
+### 4. 字母标签宽度
+
+**调整方法**：修改 `letterWidth` 常量
+
+```javascript
+const letterWidth = 12;  // 当前值
+```
+
+- **增大宽度**：增加 letterWidth 值
+- **减小宽度**：减小 letterWidth 值
+
+### 5. 时间轴组件之间的行高
+
+**调整方法**：修改 `timelineLineHeight` 常量
+
+```javascript
+const timelineLineHeight = 18;  // 当前值
+```
+
+- **增大行间距**：增加 timelineLineHeight 值（如 20、22）
+- **减小行间距**：减小 timelineLineHeight 值（如 16、15）
+
+### 6. 键盘组件的行高
+
+**调整方法**：修改 `lineHeight` 常量
+
+```javascript
+const lineHeight = 12;  // 当前值
+```
+
+- **增大行高**：增加 lineHeight 值
+- **减小行高**：减小 lineHeight 值
+
+### 快速参考表
+
+| 调整目标 | 修改常量 | 推荐范围 |
+|---------|---------|---------|
+| 标题与组件间距 | `headerHeight` | 25-45 |
+| 块内边距 | `padding` | 8-20 |
+| 字母与时间轴间距 | `letterGap` | 0-8 |
+| 时间轴行高 | `timelineLineHeight` | 15-25 |
+| 键盘组件行高 | `lineHeight` | 10-15 |
 
 ## 组件数据结构
 
@@ -269,7 +352,7 @@ P                 ▓▓▓▓▓▓▓▓
 
 1. **添加新组件类型**：在类型映射中添加新条目，并更新 `timelineComponents` 的过滤条件
 2. **修改颜色**：直接修改 `typeColors` 对象中的颜色值
-3. **调整布局**：修改 `padding`、`lineHeight`、`headerHeight` 等参数
+3. **调整布局**：修改 `padding`、`lineHeight`、`headerHeight`、`letterGap` 等参数，详见上方的 [间距调整指南](#间距调整指南)
 4. **调试**：可以在关键位置添加 `console.log()` 观察数据流
 
 ---

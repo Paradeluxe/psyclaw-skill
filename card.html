@@ -39,9 +39,10 @@
 
         canvas {
             background: transparent;
-            cursor: crosshair;
+            cursor: grab;
             display: block;
             margin: auto;
+            overflow: hidden;
         }
 
         .avtp-form {
@@ -620,6 +621,28 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
             z-index: 1000;
             transition: left 0.1s ease;
+        }
+
+        .viewport-controls {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            display: flex;
+            gap: 6px;
+            z-index: 1000;
+            width: auto;
+            flex-shrink: 0;
+        }
+
+        .zoom-level {
+            display: flex;
+            align-items: center;
+            padding: 0 8px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+            min-width: 50px;
+            text-align: center;
         }
 
         .routine-btn {
@@ -1492,6 +1515,37 @@
             </button>
         </div>
 
+        <div class="viewport-controls">
+            <button class="action-button" id="zoomIn" title="Zoom In">
+                <span class="action-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        <line x1="11" y1="8" x2="11" y2="14"></line>
+                        <line x1="8" y1="11" x2="14" y2="11"></line>
+                    </svg>
+                </span>
+            </button>
+            <button class="action-button" id="zoomOut" title="Zoom Out">
+                <span class="action-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        <line x1="8" y1="11" x2="14" y2="11"></line>
+                    </svg>
+                </span>
+            </button>
+            <button class="action-button" id="resetView" title="Reset View">
+                <span class="action-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+                        <path d="M3 3v5h5"></path>
+                    </svg>
+                </span>
+            </button>
+            <div class="zoom-level" id="zoomLevel">100%</div>
+        </div>
+
         <div class="container">
             <canvas id="canvas"></canvas>
         </div>
@@ -1588,6 +1642,12 @@
         updateRoutineControlsPosition();
         window.addEventListener('resize', updateRoutineControlsPosition);
 
+        let isCanvasPanning = false;
+        let canvasPanStartX = 0;
+        let canvasPanStartY = 0;
+        let canvasPanStartViewportX = 0;
+        let canvasPanStartViewportY = 0;
+
         document.addEventListener('click', (e) => {
             if (!chatbotPanel.contains(e.target)) {
                 chatbotFrame.contentWindow.postMessage('closeAdvancedSettings', '*');
@@ -1599,6 +1659,29 @@
             const totalPoints = displayCount * 2 + 1;
             const contentWidth = baseStartX + (totalPoints - 1) * spacing + 80;
             return Math.max(800, contentWidth);
+        }
+
+        function getFlowchartCenter() {
+            if (routineRects.length === 0) {
+                // 如果没有 routine，返回默认中心点
+                return { x: 400, y: 300 };
+            }
+            
+            // 如果有选中的 routine，以选中的 routine 为中心
+            if (selectedRoutineIndex >= 0 && selectedRoutineIndex < routineRects.length) {
+                const selectedRect = routineRects[selectedRoutineIndex];
+                return {
+                    x: selectedRect.x + selectedRect.width / 2,
+                    y: selectedRect.y + selectedRect.height / 2
+                };
+            }
+            
+            // 如果没有选中的 routine，以第一个 routine 为中心
+            const firstRect = routineRects[0];
+            return {
+                x: firstRect.x + firstRect.width / 2,
+                y: firstRect.y + firstRect.height / 2
+            };
         }
         
         // 显示通知消息
@@ -1632,11 +1715,84 @@
         let currentRoutineCount = 0;
         let canvasWidth = calculateCanvasWidth(currentRoutineCount);
 
+        let viewportX = 0;
+        let viewportY = 0;
+        let scale = 1;
+        const minScale = 0.25;
+        const maxScale = 3;
+        let isPanning = false;
+        let panStartX = 0;
+        let panStartY = 0;
+        let lastPanX = 0;
+        let lastPanY = 0;
+        let panStartViewportX = 0;
+        let panStartViewportY = 0;
+
         const backwardButton = document.getElementById('backwardButton');
         const forwardButton = document.getElementById('forwardButton');
+        const zoomInButton = document.getElementById('zoomIn');
+        const zoomOutButton = document.getElementById('zoomOut');
+        const resetViewButton = document.getElementById('resetView');
+        const zoomLevelDisplay = document.getElementById('zoomLevel');
         const maxHistoryLength = 15;
         const historyStack = [];
         const redoStack = [];
+
+        function updateZoomLevelDisplay() {
+            zoomLevelDisplay.textContent = Math.round(scale * 100) + '%';
+        }
+
+        function zoomIn() {
+            // 计算排除 chatbot 后的画布中心
+            const chatbotWidth = chatbotPanel.offsetWidth;
+            const canvasCenterX = (window.innerWidth - chatbotWidth) / 2;
+            const canvasCenterY = window.innerHeight / 2;
+            
+            const newScale = Math.min(maxScale, scale * 1.2);
+            
+            // 获取 flowchart 内容的中心点
+            const flowchartCenter = getFlowchartCenter();
+            
+            // 将 flowchart 中心点置于画布中心（排除 chatbot）
+            viewportX = canvasCenterX / newScale - flowchartCenter.x;
+            viewportY = canvasCenterY / newScale - flowchartCenter.y;
+            scale = newScale;
+
+            draw();
+            updateZoomLevelDisplay();
+        }
+
+        function zoomOut() {
+            // 计算排除 chatbot 后的画布中心
+            const chatbotWidth = chatbotPanel.offsetWidth;
+            const canvasCenterX = (window.innerWidth - chatbotWidth) / 2;
+            const canvasCenterY = window.innerHeight / 2;
+            
+            const newScale = Math.max(minScale, scale * 0.8);
+            
+            // 获取 flowchart 内容的中心点
+            const flowchartCenter = getFlowchartCenter();
+            
+            // 将 flowchart 中心点置于画布中心（排除 chatbot）
+            viewportX = canvasCenterX / newScale - flowchartCenter.x;
+            viewportY = canvasCenterY / newScale - flowchartCenter.y;
+            scale = newScale;
+
+            draw();
+            updateZoomLevelDisplay();
+        }
+
+        function resetView() {
+            viewportX = 0;
+            viewportY = 0;
+            scale = 1;
+            draw();
+            updateZoomLevelDisplay();
+        }
+
+        zoomInButton.addEventListener('click', zoomIn);
+        zoomOutButton.addEventListener('click', zoomOut);
+        resetViewButton.addEventListener('click', resetView);
 
         function deepCopyState(state) {
             return JSON.parse(JSON.stringify(state));
@@ -1713,11 +1869,18 @@
         backwardButton.addEventListener('click', undo);
         forwardButton.addEventListener('click', redo);
 
-        canvas.width = canvasWidth * dpr;
-        canvas.height = baseHeight * dpr;
-        canvas.style.width = canvasWidth + 'px';
-        canvas.style.height = baseHeight + 'px';
-        ctx.scale(dpr, dpr);
+        canvas.width = window.innerWidth * dpr;
+        canvas.height = window.innerHeight * dpr;
+        canvas.style.width = '100vw';
+        canvas.style.height = '100vh';
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth * dpr;
+            canvas.height = window.innerHeight * dpr;
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            draw();
+        });
 
         const lineY = 300;
 
@@ -1873,10 +2036,10 @@
         
         // 根据 AVTP 组件数量动态计算 routine 块的高度
         function calculateRoutineHeight(rect) {
-            const padding = 8;
+            const padding = 12;
             const lineHeight = 12;
             const timelineLineHeight = 18;
-            const headerHeight = 26;
+            const headerHeight = 35;
             const minHeight = 100;
             const extraPadding = 10;
             
@@ -1915,21 +2078,6 @@
         
         // 根据所有 routine 块的高度更新 canvas 高度
         function updateCanvasWidthForRoutines() {
-            if (routineRects.length === 0) {
-                canvasWidth = calculateCanvasWidth(0);
-            } else {
-                const maxRoutineRight = Math.max(...routineRects.map(rect => rect.x + rect.width));
-                const minRoutineLeft = Math.min(...routineRects.map(rect => rect.x));
-                const currentCanvasWidth = canvasWidth;
-                const requiredWidth = maxRoutineRight + 100;
-                
-                if (requiredWidth > currentCanvasWidth) {
-                    canvasWidth = Math.max(requiredWidth, 800);
-                    canvas.width = canvasWidth * dpr;
-                    canvas.style.width = canvasWidth + 'px';
-                    ctx.scale(dpr, dpr);
-                }
-            }
         }
 
         // 初始时不添加任何 routine，让用户从零开始
@@ -2249,6 +2397,10 @@
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.restore();
 
+            ctx.save();
+            ctx.translate(viewportX * scale, viewportY * scale);
+            ctx.scale(scale, scale);
+
             ctx.strokeStyle = 'rgba(0, 0, 0, 0.12)';
             ctx.lineWidth = 1;
             ctx.lineCap = 'round';
@@ -2304,6 +2456,8 @@
                 const draggedIndex = routineRects.indexOf(activeDragRect);
                 drawDragRect(activeDragRect, draggedIndex);
             }
+
+            ctx.restore();
         }
 
         function drawDragRect(dragRect, index) {
@@ -2325,10 +2479,10 @@
             const avtpComponents = dragRect.avtpComponents || [];
             const enabledComponents = avtpComponents.filter(c => c && c.enabled);
             
-            const padding = 8;
+            const padding = 12;
             const lineHeight = 12;
             const timelineLineHeight = 18;
-            const headerHeight = 26;
+            const headerHeight = 35;
             
             ctx.fillStyle = isSelected ? '#0066cc' : '#000000';
             ctx.font = '600 12px -apple-system, BlinkMacSystemFont, SF Pro Text, sans-serif';
@@ -2365,8 +2519,10 @@
                     3
                 );
                 
-                const timelineWidth = dragRect.width - padding * 2 - 30;
-                const timelineStartX = dragRect.x + padding + 20;
+                const letterWidth = 12;
+                const letterGap = 2;
+                const timelineWidth = dragRect.width - padding * 2 - letterWidth - letterGap;
+                const timelineStartX = dragRect.x + padding + letterWidth + letterGap;
                 
                 const typeToKey = {
                     'audio': 'a',
@@ -2401,8 +2557,8 @@
                     
                     ctx.font = '9px -apple-system, BlinkMacSystemFont, SF Pro Text, sans-serif';
                     ctx.fillStyle = '#34495e';
-                    ctx.textAlign = 'right';
-                    ctx.fillText(typeKey.toUpperCase(), timelineStartX - 3, currentY);
+                    ctx.textAlign = 'left';
+                    ctx.fillText(typeKey.toUpperCase(), dragRect.x + padding, currentY);
                     ctx.textAlign = 'left';
                     
                     currentY += timelineLineHeight;
@@ -2515,9 +2671,11 @@
 
         function getMousePos(e) {
             const rect = canvas.getBoundingClientRect();
+            const screenX = e.clientX - rect.left;
+            const screenY = e.clientY - rect.top;
             return {
-                x: e.clientX - rect.left,
-                y: e.clientY - rect.top
+                x: (screenX / scale) - viewportX,
+                y: (screenY / scale) - viewportY
             };
         }
 
@@ -2548,21 +2706,58 @@
             return isInsideKey;
         }
 
+        canvas.addEventListener('wheel', (e) => {
+            e.preventDefault();
+
+            // 计算排除 chatbot 后的画布中心
+            const chatbotWidth = chatbotPanel.offsetWidth;
+            const canvasCenterX = (window.innerWidth - chatbotWidth) / 2;
+            const canvasCenterY = window.innerHeight / 2;
+
+            const zoomFactor = e.deltaY > 0 ? 0.9 : 1.1;
+            const newScale = Math.max(minScale, Math.min(maxScale, scale * zoomFactor));
+
+            // 获取 flowchart 内容的中心点
+            const flowchartCenter = getFlowchartCenter();
+            
+            // 将 flowchart 中心点置于画布中心（排除 chatbot）
+            // 屏幕坐标 = (世界坐标 + viewport) * scale
+            // 所以 viewport = 屏幕坐标/scale - 世界坐标
+            viewportX = canvasCenterX / newScale - flowchartCenter.x;
+            viewportY = canvasCenterY / newScale - flowchartCenter.y;
+            scale = newScale;
+
+            draw();
+            updateZoomLevelDisplay();
+        }, { passive: false });
+
         canvas.addEventListener('mousedown', (e) => {
             const pos = getMousePos(e);
 
-            const clickedRect = getDragRectAtPos(pos.x, pos.y);
-            if (clickedRect) {
-                const clickedIndex = routineRects.indexOf(clickedRect);
-                selectedRoutineIndex = clickedIndex;
-                activeDragRect = clickedRect;
-                
-                clickedRect.isDragging = true;
-                clickedRect.offsetX = pos.x - clickedRect.x;
-                clickedRect.offsetY = pos.y - clickedRect.y;
+            if (e.button === 1 || e.button === 0) {
+                const clickedRect = getDragRectAtPos(pos.x, pos.y);
+
+                if (clickedRect) {
+                    const clickedIndex = routineRects.indexOf(clickedRect);
+                    selectedRoutineIndex = clickedIndex;
+                    activeDragRect = clickedRect;
+                    
+                    clickedRect.isDragging = true;
+                    clickedRect.offsetX = pos.x - clickedRect.x;
+                    clickedRect.offsetY = pos.y - clickedRect.y;
+                    canvas.style.cursor = 'grabbing';
+                    updateRoutineCount();
+                    draw();
+                    return;
+                }
+
+                e.preventDefault();
+                isCanvasPanning = true;
+                canvasPanStartX = e.clientX;
+                canvasPanStartY = e.clientY;
+                canvasPanStartViewportX = viewportX;
+                canvasPanStartViewportY = viewportY;
                 canvas.style.cursor = 'grabbing';
-                updateRoutineCount();
-                draw();
                 return;
             }
 
@@ -2585,6 +2780,15 @@
             const pos = getMousePos(e);
             currentMousePos = pos;
 
+            if (isCanvasPanning) {
+                const deltaX = (e.clientX - canvasPanStartX) / scale;
+                const deltaY = (e.clientY - canvasPanStartY) / scale;
+                viewportX = canvasPanStartViewportX + deltaX;
+                viewportY = canvasPanStartViewportY + deltaY;
+                draw();
+                return;
+            }
+
             if (activeDragRect && activeDragRect.isDragging) {
                 activeDragRect.x = pos.x - activeDragRect.offsetX;
                 activeDragRect.y = pos.y - activeDragRect.offsetY;
@@ -2605,13 +2809,19 @@
                 } else if (getDragRectAtPos(pos.x, pos.y)) {
                     canvas.style.cursor = 'pointer';
                 } else {
-                    canvas.style.cursor = 'crosshair';
+                    canvas.style.cursor = 'grab';
                 }
             }
         });
 
         canvas.addEventListener('mouseup', (e) => {
             const pos = getMousePos(e);
+
+            if (isCanvasPanning) {
+                isCanvasPanning = false;
+                canvas.style.cursor = 'grab';
+                return;
+            }
 
             if (activeDragRect && activeDragRect.isDragging) {
                 activeDragRect.isDragging = false;
@@ -2668,7 +2878,7 @@
                 reassignSnapPoints();
                 
                 draw();
-                canvas.style.cursor = 'crosshair';
+                canvas.style.cursor = 'grab';
                 activeDragRect = null;
                 return;
             }
@@ -2712,6 +2922,10 @@
         });
 
         canvas.addEventListener('mouseleave', () => {
+            if (isCanvasPanning) {
+                isCanvasPanning = false;
+                canvas.style.cursor = 'grab';
+            }
             if (activeDragRect && activeDragRect.isDragging) {
                 activeDragRect.isDragging = false;
                 snapToPoint(activeDragRect);
@@ -3861,8 +4075,10 @@
                 }
             }
             
-            canvas.width = canvasWidth * dpr;
-            canvas.style.width = canvasWidth + 'px';
+            canvas.width = window.innerWidth * dpr;
+            canvas.height = window.innerHeight * dpr;
+            canvas.style.width = '100vw';
+            canvas.style.height = '100vh';
             ctx.scale(dpr, dpr);
 
             const connectionLabels = originalConnectionLabels !== null ?
