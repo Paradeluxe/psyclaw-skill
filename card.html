@@ -1913,6 +1913,9 @@
         const routineRects = [];
         let selectedRoutineIndex = 0;
 
+        // Routine swap animation state
+        let swapAnimation = null;
+
         let routineIdCounter = 0;
         let loopIdCounter = 0;
         let currentProjectFile = null;
@@ -2656,7 +2659,7 @@
 
             rect.x = nearestPoint.x - rect.width / 2;
             // 保持 y 位置顶部对齐，不重新居中
-            rect.y = nearestPoint.y - 50;
+            rect.y = nearestPoint.y - 60;
             return true;
         }
 
@@ -2922,23 +2925,31 @@
                     saveState();
                     currentProjectFile = null;
                     fileHandle = null;
-                    // 交换两个 routine 在数组中的位置
-                    const temp = routineRects[draggedIndex];
-                    routineRects[draggedIndex] = routineRects[targetIndex];
-                    routineRects[targetIndex] = temp;
                     
-                    // 更新选中的索引
-                    if (selectedRoutineIndex === draggedIndex) {
-                        selectedRoutineIndex = targetIndex;
-                    } else if (selectedRoutineIndex === targetIndex) {
-                        selectedRoutineIndex = draggedIndex;
-                    }
+                    // Animate the swap, then update array positions
+                    animateSwap(draggedIndex, targetIndex, () => {
+                        // 交换两个 routine 在数组中的位置
+                        const temp = routineRects[draggedIndex];
+                        routineRects[draggedIndex] = routineRects[targetIndex];
+                        routineRects[targetIndex] = temp;
+                        
+                        // 更新选中的索引
+                        if (selectedRoutineIndex === draggedIndex) {
+                            selectedRoutineIndex = targetIndex;
+                        } else if (selectedRoutineIndex === targetIndex) {
+                            selectedRoutineIndex = draggedIndex;
+                        }
+                        
+                        // 重新分配所有 routine 到正确的 snap points
+                        reassignSnapPoints();
+                        draw();
+                    });
+                } else {
+                    // 没有交换目标，吸附回原来的位置
+                    snapToPoint(activeDragRect);
+                    draw();
                 }
                 
-                // 重新分配所有 routine 到正确的 snap points
-                reassignSnapPoints();
-                
-                draw();
                 canvas.style.cursor = 'grab';
                 activeDragRect = null;
                 return;
@@ -4219,6 +4230,70 @@
                     rect.y = snapPoint.y - 60;
                 }
             });
+        }
+
+        // Animate routines swapping positions
+        function animateSwap(draggedIndex, targetIndex, onComplete) {
+            const duration = 300; // ms
+            const startTime = performance.now();
+
+            // Get target positions from snap points
+            const draggedTargetSnap = snapPoints[targetIndex];
+            const targetTargetSnap = snapPoints[draggedIndex];
+
+            // Store start positions
+            const draggedRect = routineRects[draggedIndex];
+            const targetRect = routineRects[targetIndex];
+
+            const draggedStartX = draggedRect.x;
+            const draggedStartY = draggedRect.y;
+            const targetStartX = targetRect.x;
+            const targetStartY = targetRect.y;
+
+            const draggedTargetX = draggedTargetSnap.x - draggedRect.width / 2;
+            const draggedTargetY = draggedTargetSnap.y - 60;
+            const targetTargetX = targetTargetSnap.x - targetRect.width / 2;
+            const targetTargetY = targetTargetSnap.y - 60;
+
+            swapAnimation = {
+                draggedIndex,
+                targetIndex,
+                draggedStartX,
+                draggedStartY,
+                targetStartX,
+                targetStartY,
+                draggedTargetX,
+                draggedTargetY,
+                targetTargetX,
+                targetTargetY
+            };
+
+            function easeOutCubic(t) {
+                return 1 - Math.pow(1 - t, 3);
+            }
+
+            function frame(now) {
+                const elapsed = now - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const eased = easeOutCubic(progress);
+
+                // Update positions with easing
+                draggedRect.x = draggedStartX + (draggedTargetX - draggedStartX) * eased;
+                draggedRect.y = draggedStartY + (draggedTargetY - draggedStartY) * eased;
+                targetRect.x = targetStartX + (targetTargetX - targetStartX) * eased;
+                targetRect.y = targetStartY + (targetTargetY - targetStartY) * eased;
+
+                draw();
+
+                if (progress < 1) {
+                    requestAnimationFrame(frame);
+                } else {
+                    swapAnimation = null;
+                    onComplete();
+                }
+            }
+
+            requestAnimationFrame(frame);
         }
 
         // 保存和导入功能
