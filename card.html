@@ -38,7 +38,7 @@
         }
 
         canvas {
-            background: transparent;
+            background: #ffffff;
             cursor: grab;
             display: block;
             margin: auto;
@@ -880,16 +880,16 @@
 
         .chatbot-panel {
             position: fixed;
-            right: 20px;
-            top: 50%;
-            transform: translateY(-50%);
+            right: 0;
+            top: 0;
+            transform: none;
             width: 30%;
             min-width: 20%;
             max-width: 50%;
             background: #ffffff;
-            border-radius: 12px;
+            border-radius: 0;
             overflow: hidden;
-            height: calc(100vh - 40px);
+            height: 100vh;
             z-index: 1000;
         }
 
@@ -2472,26 +2472,15 @@
             
             let currentY = dragRect.y + padding + headerHeight;
             
-            const keyboardComponents = enabledComponents.filter(c => c.type === 'keyboard');
+            // 清空组件点击区域
+            dragRect.componentHitAreas = [];
             
-            if (keyboardComponents.length > 0) {
-                const allKeys = keyboardComponents
-                    .map(c => c.keys)
-                    .filter(keys => keys && keys.trim())
-                    .join(', ');
-                
-                if (allKeys) {
-                    ctx.font = '10px -apple-system, BlinkMacSystemFont, SF Pro Text, sans-serif';
-                    ctx.fillStyle = '#e74c3c';
-                    ctx.fillText('K: ' + allKeys, dragRect.x + padding, currentY);
-                    currentY += lineHeight;
-                }
-            }
+            // 所有 AVTPK 组件使用统一的 timeline 样式显示
+            const allAvtpkComponents = enabledComponents.filter(c => ['keyboard', 'audio', 'video', 'text', 'image'].includes(c.type));
             
-            const timelineComponents = enabledComponents.filter(c => ['audio', 'video', 'text', 'image'].includes(c.type));
-            if (timelineComponents.length > 0) {
+            if (allAvtpkComponents.length > 0) {
                 const maxDuration = Math.max(
-                    ...timelineComponents.map(c => {
+                    ...allAvtpkComponents.map(c => {
                         const startTime = c.startTime || 0;
                         const duration = c.duration || 0;
                         return startTime + (duration > 0 ? duration : 3);
@@ -2505,6 +2494,7 @@
                 const timelineStartX = dragRect.x + padding + letterWidth + letterGap;
                 
                 const typeToKey = {
+                    'keyboard': 'k',
                     'audio': 'a',
                     'video': 'v',
                     'text': 't',
@@ -2512,34 +2502,47 @@
                 };
                 
                 const typeColors = {
+                    'keyboard': '#e74c3c',
                     'audio': '#3498db',
                     'video': '#9b59b6',
                     'text': '#2ecc71',
                     'image': '#f39c12'
                 };
                 
-                timelineComponents.forEach(comp => {
+                allAvtpkComponents.forEach((comp, compIndex) => {
                     const typeKey = typeToKey[comp.type];
                     if (!typeKey) return;
                     
                     const startTime = comp.startTime || 0;
                     const duration = (comp.duration > 0 ? comp.duration : 3);
-                    const endTime = startTime + duration;
                     
                     const startX = timelineStartX + (startTime / maxDuration) * timelineWidth;
                     const barWidth = (duration / maxDuration) * timelineWidth;
                     
+                    // 绘制背景 timeline
                     ctx.fillStyle = '#ecf0f1';
                     ctx.fillRect(timelineStartX, currentY - 3, timelineWidth, 6);
                     
+                    // 绘制组件颜色条
                     ctx.fillStyle = typeColors[comp.type];
                     ctx.fillRect(startX, currentY - 3, Math.max(barWidth, 3), 6);
                     
+                    // 绘制类型字母
                     ctx.font = '9px -apple-system, BlinkMacSystemFont, SF Pro Text, sans-serif';
                     ctx.fillStyle = '#34495e';
                     ctx.textAlign = 'left';
                     ctx.fillText(typeKey.toUpperCase(), dragRect.x + padding, currentY);
                     ctx.textAlign = 'left';
+                    
+                    // 存储组件绘制区域信息用于点击检测
+                    if (!dragRect.componentHitAreas) dragRect.componentHitAreas = [];
+                    dragRect.componentHitAreas[compIndex] = {
+                        x: dragRect.x + padding,
+                        y: currentY - 8,
+                        width: dragRect.width - padding * 2,
+                        height: 16,
+                        component: comp
+                    };
                     
                     currentY += timelineLineHeight;
                 });
@@ -2722,6 +2725,23 @@
                     const clickedIndex = routineRects.indexOf(clickedRect);
                     selectedRoutineIndex = clickedIndex;
                     activeDragRect = clickedRect;
+                    
+                    // 检查是否点击到了某个 AVTPK 组件
+                    if (clickedRect.componentHitAreas && clickedRect.componentHitAreas.length > 0) {
+                        for (const hitArea of clickedRect.componentHitAreas) {
+                            if (hitArea && pos.x >= hitArea.x && pos.x <= hitArea.x + hitArea.width &&
+                                pos.y >= hitArea.y && pos.y <= hitArea.y + hitArea.height) {
+                                // 点击到了组件，直接打开对应的表单
+                                e.preventDefault();
+                                e.stopPropagation();
+                                saveState();
+                                activeAvtp = hitArea.component.type;
+                                activeAvtpComponent = hitArea.component;
+                                showAvtpForm(hitArea.component.type, hitArea.component);
+                                return;
+                            }
+                        }
+                    }
                     
                     clickedRect.isDragging = true;
                     clickedRect.offsetX = pos.x - clickedRect.x;
