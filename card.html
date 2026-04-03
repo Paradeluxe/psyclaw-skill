@@ -2621,6 +2621,25 @@
                     // 所有组件都是无限 duration，显示无限符号
                     ctx.font = '14px -apple-system, BlinkMacSystemFont, SF Pro Text, sans-serif';
                     ctx.fillText('∞', dragRect.x + dragRect.width - padding, timeY);
+                } else if (hasKeyboardWithForceEnd) {
+                    // 最大时间有限，但有 Keyboard 组件且开启了 forceEndRoutine，显示手指图标和最大时间
+                    const iconSize = 16;
+                    const timeText = Math.round(endTime) + ' ms';
+                    if (tapIconLoaded) {
+                        // 计算时间文本宽度
+                        const textWidth = ctx.measureText(timeText).width;
+                        // 图标在左，时间文本在右
+                        const totalWidth = iconSize + 4 + textWidth;
+                        const startX = dragRect.x + dragRect.width - padding - totalWidth;
+                        // 先显示图标
+                        ctx.drawImage(tapIcon, startX, timeY - iconSize/2 - 2, iconSize, iconSize);
+                        // 再显示时间文本（左对齐）
+                        ctx.textAlign = 'left';
+                        ctx.fillText(timeText, startX + iconSize + 4, timeY);
+                        ctx.textAlign = 'right';
+                    } else {
+                        ctx.fillText(timeText, dragRect.x + dragRect.width - padding, timeY);
+                    }
                 } else {
                     // 正常显示结束时间
                     ctx.fillText(Math.round(endTime) + ' ms', dragRect.x + dragRect.width - padding, timeY);
