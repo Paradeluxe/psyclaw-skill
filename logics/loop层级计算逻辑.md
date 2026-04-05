@@ -57,12 +57,12 @@ height(conn) = max(height(contained_conn)) + 1
 
 ### 核心函数
 
-#### 1. getNestingDepth(conn, allConnections)
+#### 1. getNestingDepth(conn, allConnections, forPreview = false)
 
-用于计算单个连接的层级深度。
+用于计算单个连接的层级深度。支持实际计算和预览计算两种模式。
 
 ```javascript
-function getNestingDepth(conn, allConnections) {
+function getNestingDepth(conn, allConnections, forPreview = false) {
     const startLabel = parseInt(conn.start.label);
     const endLabel = parseInt(conn.end.label);
     const connMin = Math.min(startLabel, endLabel);
@@ -96,63 +96,30 @@ function getNestingDepth(conn, allConnections) {
 }
 ```
 
-#### 2. getNestingDepthForPreview(conn, allConnections)
+**使用方式：**
+- 实际计算：`getNestingDepth(conn, connections)`
+- 预览计算：`getNestingDepth(conn, allConnections, true)`
 
-用于预览时计算层级深度，功能与 `getNestingDepth` 相同。
+#### 2. rebuildAllConnectionDepths(forPreview = false, allConnections = null, previewConn = null)
 
-```javascript
-function getNestingDepthForPreview(conn, allConnections) {
-    const startLabel = parseInt(conn.start.label);
-    const endLabel = parseInt(conn.end.label);
-    const connMin = Math.min(startLabel, endLabel);
-    const connMax = Math.max(startLabel, endLabel);
-    
-    let maxContainedDepth = -1;
-    
-    for (const other of allConnections) {
-        if (other === conn) continue;
-        const otherStartLabel = parseInt(other.start.label);
-        const otherEndLabel = parseInt(other.end.label);
-        const otherMin = Math.min(otherStartLabel, otherEndLabel);
-        const otherMax = Math.max(otherStartLabel, otherEndLabel);
-        
-        if (connMin <= otherMin && connMax >= otherMax) {
-            // 特殊情况：当起点和终点完全相同时，后加入的 Loop 包含先加入的
-            if (connMin === otherMin && connMax === otherMax) {
-                const connIndex = allConnections.indexOf(conn);
-                const otherIndex = allConnections.indexOf(other);
-                if (connIndex > otherIndex) {
-                    maxContainedDepth = Math.max(maxContainedDepth, other.depth);
-                }
-            } else {
-                maxContainedDepth = Math.max(maxContainedDepth, other.depth);
-            }
-        }
-    }
-    
-    return maxContainedDepth + 1;
-}
-```
-
-#### 3. rebuildAllConnectionDepths()
-
-重建所有连接的层级，通过迭代计算直到收敛。
+重建所有连接的层级，通过迭代计算直到收敛。支持实际模式和预览模式。
 
 ```javascript
-function rebuildAllConnectionDepths() {
-    if (connections.length === 0) return;
+function rebuildAllConnectionDepths(forPreview = false, allConnections = null, previewConn = null) {
+    const conns = forPreview ? allConnections : connections;
+    if (conns.length === 0) return;
     
     let changed = true;
     let iterations = 0;
-    const maxIterations = connections.length + 1;
+    const maxIterations = conns.length + 1;
     
     while (changed && iterations < maxIterations) {
         changed = false;
         iterations++;
         
-        for (const conn of connections) {
+        for (const conn of conns) {
             const oldDepth = conn.depth;
-            const newDepth = getNestingDepth(conn, connections);
+            const newDepth = getNestingDepth(conn, conns, forPreview);
             
             if (newDepth !== oldDepth) {
                 conn.depth = newDepth;
@@ -163,34 +130,9 @@ function rebuildAllConnectionDepths() {
 }
 ```
 
-#### 4. rebuildAllConnectionDepthsForPreview(allConnections, previewConn)
-
-用于预览时的层级重建。
-
-```javascript
-function rebuildAllConnectionDepthsForPreview(allConnections, previewConn) {
-    if (allConnections.length === 0) return;
-    
-    let changed = true;
-    let iterations = 0;
-    const maxIterations = allConnections.length + 1;
-    
-    while (changed && iterations < maxIterations) {
-        changed = false;
-        iterations++;
-        
-        for (const conn of allConnections) {
-            const oldDepth = conn.depth;
-            const newDepth = getNestingDepthForPreview(conn, allConnections);
-            
-            if (newDepth !== oldDepth) {
-                conn.depth = newDepth;
-                changed = true;
-            }
-        }
-    }
-}
-```
+**使用方式：**
+- 实际重建：`rebuildAllConnectionDepths()`
+- 预览重建：`rebuildAllConnectionDepths(true, allConnections, previewConn)`
 
 ### X 偏移量计算
 
@@ -292,13 +234,23 @@ function getConnectionOffsetX(conn, allConnections) {
 
 1. **迭代收敛**：`rebuildAllConnectionDepths` 函数使用迭代直到收敛，确保所有连接的深度都正确计算。
 
-2. **预览功能**：添加新连接前会使用 `rebuildAllConnectionDepthsForPreview` 进行预览计算。
+2. **预览功能**：添加新连接前会使用 `rebuildAllConnectionDepths(true, ...)` 进行预览计算。
 
 3. **Label 解析**：使用 `parseInt()` 解析连接的 label，确保数值比较正确。
 
 4. **双向连接**：包含关系的判断与连接的起点和终点方向无关，使用 `Math.min` 和 `Math.max` 确保无论连接方向如何都能正确判断。
 
 ## 更新历史
+
+- **2026-04-05**: 合并 getNestingDepth 和 getNestingDepthForPreview 函数
+  - 使用 `forPreview` 参数统一两个函数
+  - 简化代码结构，减少重复
+
+- **2026-04-05**: 修复 label 验证逻辑 Bug
+  - 问题：删除 routine 后，loop 的验证逻辑错误地假设每个 label 只对应一个 routine
+  - 实际上，label 是相邻 routines 的共享连接点（label 2i+1 对应 routine i 的左侧和 routine i-1 的右侧）
+  - 修复：更新 `isLabelValid()` 函数，检查 label 是否对应至少一个存在的 routine
+  - 影响：`updatePoints()` 函数中的 loop 验证逻辑
 
 - **2026-04-02**: 修复相同起点终点 Bug
   - 当两个 Loop 的起点和终点完全相同时，后加入的 Loop 层级 +1

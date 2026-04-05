@@ -56,7 +56,7 @@
             border-radius: 12px;
             box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25), 0 2px 10px rgba(0, 0, 0, 0.15);
             padding: 0;
-            transition: left 0.3s ease;
+            transition: left 0.3s ease, width 0.3s ease;
             z-index: 2001;
             display: flex;
             flex-direction: column;
@@ -65,6 +65,11 @@
 
         .avtp-form.visible {
             left: 20px;
+        }
+
+        .avtp-form.wide {
+            width: 450px;
+            max-height: 70vh;
         }
 
         .avtp-form-header {
@@ -179,6 +184,74 @@
             font-weight: 600;
             color: #000000;
             font-size: 14px;
+        }
+
+        /* Component type colors - 浅色更浅，深色更深 */
+        .avtp-component-item.keyboard {
+            background: #fdf2f0;
+            border-color: #922b21;
+        }
+
+        .avtp-component-item.audio {
+            background: #eaf2f8;
+            border-color: #1a5276;
+        }
+
+        .avtp-component-item.video {
+            background: #f5eef8;
+            border-color: #6c3483;
+        }
+
+        .avtp-component-item.text {
+            background: #eafaf1;
+            border-color: #1e8449;
+        }
+
+        .avtp-component-item.image {
+            background: #fef5e7;
+            border-color: #9c640c;
+        }
+
+        /* Component title colors - 更深 */
+        .avtp-component-item.keyboard .avtp-component-title {
+            color: #7b241c;
+        }
+
+        .avtp-component-item.audio .avtp-component-title {
+            color: #154360;
+        }
+
+        .avtp-component-item.video .avtp-component-title {
+            color: #5b2c6f;
+        }
+
+        .avtp-component-item.text .avtp-component-title {
+            color: #145a32;
+        }
+
+        .avtp-component-item.image .avtp-component-title {
+            color: #7e5109;
+        }
+
+        /* Component remove button colors - 更深 */
+        .avtp-component-item.keyboard .avtp-component-remove {
+            filter: invert(18%) sepia(65%) saturate(2234%) hue-rotate(338deg) brightness(95%) contrast(96%);
+        }
+
+        .avtp-component-item.audio .avtp-component-remove {
+            filter: invert(18%) sepia(65%) saturate(2234%) hue-rotate(180deg) brightness(95%) contrast(96%);
+        }
+
+        .avtp-component-item.video .avtp-component-remove {
+            filter: invert(18%) sepia(65%) saturate(2234%) hue-rotate(270deg) brightness(95%) contrast(96%);
+        }
+
+        .avtp-component-item.text .avtp-component-remove {
+            filter: invert(18%) sepia(65%) saturate(2234%) hue-rotate(100deg) brightness(95%) contrast(96%);
+        }
+
+        .avtp-component-item.image .avtp-component-remove {
+            filter: invert(18%) sepia(65%) saturate(2234%) hue-rotate(30deg) brightness(95%) contrast(96%);
         }
 
         .avtp-component-remove {
@@ -414,6 +487,144 @@
         }
 
         .confirm-modal-btn-confirm:hover {
+            background: #333333;
+        }
+
+        .preview-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 10001;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .preview-modal.active {
+            display: flex;
+        }
+
+        .preview-modal-container {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            max-width: 800px;
+            width: 90%;
+            max-height: 80vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .preview-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            flex-shrink: 0;
+        }
+
+        .preview-modal-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #000000;
+        }
+
+        .preview-modal-close {
+            width: 28px;
+            height: 28px;
+            border: none;
+            background: #f5f5f5;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: #666666;
+        }
+
+        .preview-modal-close:hover {
+            background: #e0e0e0;
+            color: #000000;
+        }
+
+        .preview-modal-content {
+            flex: 1;
+            overflow: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .preview-canvas-container {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #fafafa;
+            min-height: 200px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .preview-canvas {
+            max-width: 100%;
+            max-height: 400px;
+        }
+
+        .preview-info {
+            font-size: 14px;
+            color: #666666;
+            line-height: 1.5;
+        }
+
+        .preview-info ul {
+            margin: 8px 0;
+            padding-left: 20px;
+        }
+
+        .preview-info li {
+            margin: 4px 0;
+        }
+
+        .preview-modal-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 16px;
+            flex-shrink: 0;
+        }
+
+        .preview-modal-btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .preview-modal-btn-cancel {
+            background: #ffffff;
+            border: 1.5px solid #000000;
+            color: #000000;
+        }
+
+        .preview-modal-btn-cancel:hover {
+            background: #f5f5f5;
+        }
+
+        .preview-modal-btn-confirm {
+            background: #000000;
+            border: 1.5px solid #000000;
+            color: #ffffff;
+        }
+
+        .preview-modal-btn-confirm:hover {
             background: #333333;
         }
 
@@ -1048,6 +1259,126 @@
             display: none;
         }
 
+        /* Variable Selector Styles */
+        .variable-selector {
+            margin-bottom: 16px;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .variable-selector-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .variable-selector-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .variable-selector-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .variable-selector-btn {
+            font-size: 11px;
+            padding: 4px 10px;
+            border: 1px solid #ddd;
+            background: #fff;
+            border-radius: 4px;
+            cursor: pointer;
+            color: #666;
+            transition: all 0.2s;
+        }
+
+        .variable-selector-btn:hover {
+            background: #f0f0f0;
+            border-color: #ccc;
+        }
+
+        .variable-tags-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            min-height: 32px;
+        }
+
+        .variable-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            user-select: none;
+            border: 2px solid transparent;
+        }
+
+        .variable-tag.selected {
+            background: #e3f2fd;
+            color: #1565c0;
+            border-color: #1565c0;
+        }
+
+        .variable-tag:not(.selected) {
+            background: #fff;
+            color: #666;
+            border-color: #ddd;
+        }
+
+        .variable-tag:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .variable-tag.selected:hover {
+            background: #bbdefb;
+        }
+
+        .variable-tag:not(.selected):hover {
+            background: #f5f5f5;
+            border-color: #bbb;
+        }
+
+        .variable-tag-checkbox {
+            width: 14px;
+            height: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .variable-tag.selected .variable-tag-checkbox::after {
+            content: '✓';
+            font-size: 10px;
+            font-weight: bold;
+        }
+
+        .variable-tag-source {
+            font-size: 10px;
+            opacity: 0.7;
+            margin-left: 4px;
+            padding: 2px 5px;
+            background: rgba(0,0,0,0.05);
+            border-radius: 3px;
+        }
+
+        .variable-selector-empty {
+            font-size: 12px;
+            color: #999;
+            font-style: italic;
+            padding: 8px 0;
+        }
+
         @keyframes slideIn {
             from {
                 transform: translateX(400px);
@@ -1432,10 +1763,20 @@
                 </div>
             </div>
             <div class="avtp-form-group">
-                <button type="button" class="conditions-btn add-btn" id="addConditionRowBtn">
-                    + Add Condition
-                </button>
                 <div id="conditionsTableView">
+                    <!-- Variable Selector -->
+                    <div class="variable-selector" id="variableSelector">
+                        <div class="variable-selector-header">
+                            <span class="variable-selector-title">Select Variables</span>
+                            <div class="variable-selector-actions">
+                                <button type="button" class="variable-selector-btn" id="selectAllVarsBtn">Select All</button>
+                                <button type="button" class="variable-selector-btn" id="deselectAllVarsBtn">Deselect All</button>
+                            </div>
+                        </div>
+                        <div class="variable-tags-container" id="variableTagsContainer">
+                            <!-- Variable tags will be dynamically inserted here -->
+                        </div>
+                    </div>
                     <div class="conditions-table-container">
                         <table class="conditions-table" id="conditionsTable">
                             <thead id="conditionsTableHead">
@@ -1453,6 +1794,9 @@
                             No variables detected. Add variables starting with '$' in your routines/loops first.
                         </div>
                     </div>
+                    <button type="button" class="conditions-btn add-btn" id="addConditionRowBtn" style="margin-top: 12px;">
+                        + Add Condition
+                    </button>
                 </div>
                 <input type="hidden" class="avtp-form-input" id="formLoopConditions" placeholder="e.g., conditions.xlsx or [{...}]">
             </div>
@@ -2062,7 +2406,7 @@
         // 更新所有 routine 块的高度
         function updateAllRoutineHeights() {
             routineRects.forEach(rect => {
-                updateRoutineHeight(rect);
+                if (rect) updateRoutineHeight(rect);
             });
             updateCanvasWidthForRoutines();
         }
@@ -2083,8 +2427,8 @@
         const snapDistance = 80;
         const pointClickRadius = 20;
         const lineSnapRadius = 80;
-        const baseOffsetY = 150;
-        const offsetYStep = 80;
+        const baseOffsetY = -150;
+        const offsetYStep = -50;
 
         function getMaxDepthForSameEndpoints(conn, allConnections) {
             const startLabel = conn.start.label;
@@ -2295,15 +2639,51 @@
                 rebuildAllConnectionDepthsForPreview(allConnsWithRebuiltDepth, previewConn);
                 
                 const offsetY = getConnectionOffsetY(previewConn, allConnsForPreview);
+                const cornerRadius = 15; // 圆角半径
+
+                const startX = previewConn.start.x;
+                const startY = previewConn.start.y;
+                const endX = previewConn.end.x;
+                const endY = previewConn.end.y;
+                const cornerY = startY + offsetY;
+
+                // 判断方向：从左到右还是从右到左
+                const isLeftToRight = startX < endX;
+                const leftX = isLeftToRight ? startX : endX;
+                const rightX = isLeftToRight ? endX : startX;
 
                 ctx.beginPath();
-                ctx.moveTo(previewConn.start.x, previewConn.start.y);
-                ctx.lineTo(previewConn.start.x, previewConn.start.y + offsetY);
-                ctx.lineTo(previewConn.end.x, previewConn.start.y + offsetY);
-                ctx.lineTo(previewConn.end.x, previewConn.end.y);
-                ctx.stroke();
 
-                const cornerY = previewConn.start.y + offsetY;
+                // 从起点开始
+                ctx.moveTo(startX, startY);
+
+                if (isLeftToRight) {
+                    // 从左到右：起点在左，终点在右
+                    // 左侧垂直线（到第一个圆角开始处）
+                    ctx.lineTo(startX, cornerY + cornerRadius);
+                    // 左下角圆弧（从垂直过渡到水平）
+                    ctx.arcTo(startX, cornerY, startX + cornerRadius, cornerY, cornerRadius);
+                    // 顶部水平线（到第二个圆角开始处）
+                    ctx.lineTo(endX - cornerRadius, cornerY);
+                    // 右下角圆弧（从水平过渡到垂直）
+                    ctx.arcTo(endX, cornerY, endX, cornerY + cornerRadius, cornerRadius);
+                    // 右侧垂直线到终点
+                    ctx.lineTo(endX, endY);
+                } else {
+                    // 从右到左：起点在右，终点在左
+                    // 右侧垂直线（到第一个圆角开始处）
+                    ctx.lineTo(startX, cornerY + cornerRadius);
+                    // 右下角圆弧（从垂直过渡到水平）
+                    ctx.arcTo(startX, cornerY, startX - cornerRadius, cornerY, cornerRadius);
+                    // 顶部水平线（到第二个圆角开始处）
+                    ctx.lineTo(endX + cornerRadius, cornerY);
+                    // 左下角圆弧（从水平过渡到垂直）
+                    ctx.arcTo(endX, cornerY, endX, cornerY + cornerRadius, cornerRadius);
+                    // 左侧垂直线到终点
+                    ctx.lineTo(endX, endY);
+                }
+
+                ctx.stroke();
                 const middleX = (previewConn.start.x + previewConn.end.x) / 2;
                 const followRectWidth = 60;
                 const followRectHeight = 30;
@@ -2348,15 +2728,49 @@
                 rebuildAllConnectionDepthsForPreview(allConnsWithRebuiltDepth, previewConn);
                 
                 const offsetY = getConnectionOffsetY(previewConn, allConnsForPreview);
+                const cornerRadius = 15; // 圆角半径
+
+                const startX = startPoint.x;
+                const startY = startPoint.y;
+                const endX = targetPoint.x;
+                const endY = targetPoint.y;
+                const cornerY = startY + offsetY;
+
+                // 判断方向：从左到右还是从右到左
+                const isLeftToRight = startX < endX;
 
                 ctx.beginPath();
-                ctx.moveTo(startPoint.x, startPoint.y);
-                ctx.lineTo(startPoint.x, startPoint.y + offsetY);
-                ctx.lineTo(targetPoint.x, startPoint.y + offsetY);
-                ctx.lineTo(targetPoint.x, targetPoint.y);
-                ctx.stroke();
 
-                const cornerY = startPoint.y + offsetY;
+                // 从起点开始
+                ctx.moveTo(startX, startY);
+
+                if (isLeftToRight) {
+                    // 从左到右：起点在左，终点在右
+                    // 左侧垂直线（到第一个圆角开始处）
+                    ctx.lineTo(startX, cornerY + cornerRadius);
+                    // 左下角圆弧（从垂直过渡到水平）
+                    ctx.arcTo(startX, cornerY, startX + cornerRadius, cornerY, cornerRadius);
+                    // 顶部水平线（到第二个圆角开始处）
+                    ctx.lineTo(endX - cornerRadius, cornerY);
+                    // 右下角圆弧（从水平过渡到垂直）
+                    ctx.arcTo(endX, cornerY, endX, cornerY + cornerRadius, cornerRadius);
+                    // 右侧垂直线到终点
+                    ctx.lineTo(endX, endY);
+                } else {
+                    // 从右到左：起点在右，终点在左
+                    // 右侧垂直线（到第一个圆角开始处）
+                    ctx.lineTo(startX, cornerY + cornerRadius);
+                    // 右下角圆弧（从垂直过渡到水平）
+                    ctx.arcTo(startX, cornerY, startX - cornerRadius, cornerY, cornerRadius);
+                    // 顶部水平线（到第二个圆角开始处）
+                    ctx.lineTo(endX + cornerRadius, cornerY);
+                    // 左下角圆弧（从水平过渡到垂直）
+                    ctx.arcTo(endX, cornerY, endX, cornerY + cornerRadius, cornerRadius);
+                    // 左侧垂直线到终点
+                    ctx.lineTo(endX, endY);
+                }
+
+                ctx.stroke();
                 const middleX = (startPoint.x + targetPoint.x) / 2;
                 const followRectWidth = 60;
                 const followRectHeight = 30;
@@ -2379,6 +2793,28 @@
             }
         }
 
+        // 获取 loop 包含的所有 routine 名称
+        function getLoopRoutines(conn) {
+            const startLabel = parseInt(conn.start.label);
+            const endLabel = parseInt(conn.end.label);
+            const minLabel = Math.min(startLabel, endLabel);
+            const maxLabel = Math.max(startLabel, endLabel);
+
+            const routines = [];
+            for (let i = 0; i < routineRects.length; i++) {
+                const rect = routineRects[i];
+                if (!rect) continue;
+                // routine i 占据的连接点范围：[i * 2 + 1, i * 2 + 3]
+                const routineLeftLabel = i * 2 + 1;
+                const routineRightLabel = i * 2 + 3;
+                // 如果 routine 在 loop 范围内
+                if (routineLeftLabel >= minLabel && routineRightLabel <= maxLabel) {
+                    routines.push(rect.name || `Routine ${i + 1}`);
+                }
+            }
+            return routines;
+        }
+
         function drawConnectionLines() {
             let previewConn = null;
             let allConns = connections;
@@ -2395,8 +2831,16 @@
                 allConns = allConnsWithPreview;
             }
 
-            const sortedConnections = [...connections].sort((a, b) => a.depth - b.depth);
-            
+            const sortedConnections = [...connections].sort((a, b) => {
+                // 被选中的 loop 放在最上方（最后绘制）
+                const aSelected = activeConnection === a ? 1 : 0;
+                const bSelected = activeConnection === b ? 1 : 0;
+                if (aSelected !== bSelected) {
+                    return aSelected - bSelected;
+                }
+                return a.depth - b.depth;
+            });
+
             sortedConnections.forEach(conn => {
                 // 端点拖拽时，隐藏正在拖拽的原始连线（预览线会显示）
                 if (isDraggingConnectionEndpoint && draggedConnection === conn) {
@@ -2406,12 +2850,12 @@
                 const isSelected = activeConnection === conn;
                 const isPreview = conn.loopName === 'preview';
 
-                // 选中状态的样式
+                // 选中状态的样式 - 只改变颜色，不加粗
                 if (isSelected && !isPreview) {
                     ctx.strokeStyle = '#0066cc';
-                    ctx.lineWidth = 3;
+                    ctx.lineWidth = 1.5;
                 } else {
-                    ctx.strokeStyle = '#000000';
+                    ctx.strokeStyle = '#808080';
                     ctx.lineWidth = 1.5;
                 }
                 ctx.lineCap = 'round';
@@ -2419,15 +2863,51 @@
                 ctx.setLineDash([]);
 
                 const offsetY = getConnectionOffsetY(conn, allConns);
+                const cornerRadius = 15; // 圆角半径
+
+                // 计算四个转角点
+                const startX = conn.start.x;
+                const startY = conn.start.y;
+                const endX = conn.end.x;
+                const endY = conn.end.y;
+                const cornerY = startY + offsetY;
+
+                // 判断方向：从左到右还是从右到左
+                const isLeftToRight = startX < endX;
 
                 ctx.beginPath();
-                ctx.moveTo(conn.start.x, conn.start.y);
-                ctx.lineTo(conn.start.x, conn.start.y + offsetY);
-                ctx.lineTo(conn.end.x, conn.start.y + offsetY);
-                ctx.lineTo(conn.end.x, conn.end.y);
+
+                // 从起点开始
+                ctx.moveTo(startX, startY);
+
+                if (isLeftToRight) {
+                    // 从左到右：起点在左，终点在右
+                    // 左侧垂直线（到第一个圆角开始处）
+                    ctx.lineTo(startX, cornerY + cornerRadius);
+                    // 左下角圆弧（从垂直过渡到水平）
+                    ctx.arcTo(startX, cornerY, startX + cornerRadius, cornerY, cornerRadius);
+                    // 顶部水平线（到第二个圆角开始处）
+                    ctx.lineTo(endX - cornerRadius, cornerY);
+                    // 右下角圆弧（从水平过渡到垂直）
+                    ctx.arcTo(endX, cornerY, endX, cornerY + cornerRadius, cornerRadius);
+                    // 右侧垂直线到终点
+                    ctx.lineTo(endX, endY);
+                } else {
+                    // 从右到左：起点在右，终点在左
+                    // 右侧垂直线（到第一个圆角开始处）
+                    ctx.lineTo(startX, cornerY + cornerRadius);
+                    // 右下角圆弧（从垂直过渡到水平）
+                    ctx.arcTo(startX, cornerY, startX - cornerRadius, cornerY, cornerRadius);
+                    // 顶部水平线（到第二个圆角开始处）
+                    ctx.lineTo(endX + cornerRadius, cornerY);
+                    // 左下角圆弧（从水平过渡到垂直）
+                    ctx.arcTo(endX, cornerY, endX, cornerY + cornerRadius, cornerRadius);
+                    // 左侧垂直线到终点
+                    ctx.lineTo(endX, endY);
+                }
+
                 ctx.stroke();
 
-                const cornerY = conn.start.y + offsetY;
                 const middleX = (conn.start.x + conn.end.x) / 2;
                 const followRectWidth = 60;
                 const followRectHeight = 30;
@@ -2440,19 +2920,46 @@
                     ctx.lineWidth = 2;
                 } else {
                     ctx.fillStyle = '#ffffff';
-                    ctx.strokeStyle = '#000000';
+                    ctx.strokeStyle = '#808080';
                     ctx.lineWidth = 1.5;
                 }
                 drawRoundedRect(middleX - followRectWidth / 2, cornerY - followRectHeight / 2, followRectWidth, followRectHeight, followRectRadius);
                 ctx.fill();
                 ctx.stroke();
 
-                ctx.fillStyle = isSelected && !isPreview ? '#0066cc' : '#000000';
+                ctx.fillStyle = isSelected && !isPreview ? '#0066cc' : '#808080';
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
                 const loopReps = conn.loopReps || 1;
-                ctx.font = 'bold 12px -apple-system, BlinkMacSystemFont, SF Pro Text, sans-serif';
+                ctx.font = 'bold 16px -apple-system, BlinkMacSystemFont, SF Pro Text, sans-serif';
                 ctx.fillText(loopReps, middleX, cornerY);
+                
+                // 绘制 loop 包含的 routines label
+                if (!isPreview) {
+                    const loopRoutines = getLoopRoutines(conn);
+                    if (loopRoutines.length > 0) {
+                        ctx.fillStyle = isSelected ? '#0066cc' : '#666666';
+                        ctx.font = '12px -apple-system, BlinkMacSystemFont, SF Pro Text, sans-serif';
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'bottom';
+                        
+                        // 构建显示文本：routine1, routine2, ...
+                        let labelText = loopRoutines.join(', ');
+                        const maxWidth = Math.abs(endX - startX) - 20; // 最大宽度为 loop 宽度减去边距
+                        
+                        // 如果文本太长，截断并添加省略号
+                        let displayText = labelText;
+                        while (ctx.measureText(displayText + '...').width > maxWidth && displayText.length > 0) {
+                            displayText = displayText.slice(0, -1);
+                        }
+                        if (displayText !== labelText) {
+                            displayText = displayText + '...';
+                        }
+                        
+                        // 在 loop 上方绘制
+                        ctx.fillText(displayText, middleX, cornerY - followRectHeight / 2 - 5);
+                    }
+                }
             });
         }
 
@@ -2481,12 +2988,30 @@
                 const isStart = startPoint && point.label === startPoint.label;
                 const isConnected = connections.some(c => c.start.label === point.label || c.end.label === point.label);
                 const isNearest = nearestValidPoint && point.label === nearestValidPoint.label;
+                // 检查是否是被拖拽的loop连线的被抓取端点（只高亮被抓取的那个点）
+                const isDraggedEndpoint = isDraggingConnectionEndpoint && draggedConnection && 
+                    ((draggedEndpoint === 'start' && draggedConnection.start.label === point.label) ||
+                     (draggedEndpoint === 'end' && draggedConnection.end.label === point.label));
+                // 检查是否是该loop的另一个端点（保持实心）
+                const isOtherEndpoint = isDraggingConnectionEndpoint && draggedConnection && 
+                    ((draggedEndpoint === 'start' && draggedConnection.end.label === point.label) ||
+                     (draggedEndpoint === 'end' && draggedConnection.start.label === point.label));
 
                 let radius = 4;
                 let fillColor = '#ffffff';
                 let strokeColor = '#000000';
 
-                if (isConnected) {
+                if (isDraggedEndpoint) {
+                    // 被抓取的loop连线端点 - 空心显示（被编辑状态）
+                    radius = 6;
+                    fillColor = '#ffffff';
+                    strokeColor = '#0066cc';
+                } else if (isOtherEndpoint) {
+                    // loop的另一个端点 - 保持实心但用蓝色边框表示关联
+                    radius = 5;
+                    fillColor = '#000000';
+                    strokeColor = '#0066cc';
+                } else if (isConnected) {
                     radius = 5;
                     fillColor = '#000000';
                     strokeColor = '#000000';
@@ -2505,13 +3030,13 @@
                 ctx.fillStyle = fillColor;
                 ctx.fill();
                 ctx.strokeStyle = strokeColor;
-                ctx.lineWidth = 1.5;
+                ctx.lineWidth = isDraggedEndpoint ? 2 : 1.5;
                 ctx.stroke();
             });
 
             // 先绘制所有非拖拽的 routine
             routineRects.forEach((rect, index) => {
-                if (rect !== activeDragRect) {
+                if (rect && rect !== activeDragRect) {
                     drawDragRect(rect, index);
                 }
             });
@@ -2784,6 +3309,7 @@
 
         function hasDragRectAtPoint(point) {
             for (const rect of routineRects) {
+                if (!rect) continue;
                 const rectCenterX = rect.x + rect.width / 2;
                 // 只检查 x 坐标是否匹配，因为 routine 是通过 x 坐标对齐到 snapPoint 的
                 // y 坐标可能不同（routine 中心与 snapPoint 不在同一水平线）
@@ -2799,11 +3325,17 @@
             const endLabel = parseInt(endPoint.label);
             const minLabel = Math.min(startLabel, endLabel);
             const maxLabel = Math.max(startLabel, endLabel);
-            
-            for (const point of snapPoints) {
-                const pointLabel = parseInt(point.label);
-                if (pointLabel > minLabel && pointLabel < maxLabel) {
-                    if (hasDragRectAtPoint(point)) {
+
+            // 检查每个 routine 是否在 loop 范围内
+            // routine i 占据的连接点范围：[i * 2 + 1, i * 2 + 3]
+            for (let i = 0; i < routineRects.length; i++) {
+                const routineLeftLabel = i * 2 + 1;
+                const routineRightLabel = i * 2 + 3;
+                // 如果 routine 在 loop 范围内
+                if (routineLeftLabel >= minLabel && routineRightLabel <= maxLabel) {
+                    // 检查这个 routine 是否有 drag rect
+                    const rect = routineRects[i];
+                    if (rect && hasDragRectAtPoint({ x: rect.x + rect.width / 2, y: rect.y + rect.height / 2 })) {
                         return true;
                     }
                 }
@@ -2847,13 +3379,14 @@
         }
 
         function isInsideRect(x, y, rect) {
+            if (!rect) return false;
             return x >= rect.x && x <= rect.x + rect.width &&
                    y >= rect.y && y <= rect.y + rect.height;
         }
 
         function getDragRectAtPos(x, y) {
             for (const rect of routineRects) {
-                if (isInsideRect(x, y, rect)) return rect;
+                if (rect && isInsideRect(x, y, rect)) return rect;
             }
             return null;
         }
@@ -2943,6 +3476,11 @@
                     const clickedIndex = routineRects.indexOf(clickedRect);
                     selectedRoutineIndex = clickedIndex;
                     activeDragRect = clickedRect;
+                    
+                    // 选中routine时，取消loop的选中状态（互斥）
+                    if (activeConnection) {
+                        activeConnection = null;
+                    }
                     
                     clickedRect.isDragging = true;
                     clickedRect.offsetX = pos.x - clickedRect.x;
@@ -3035,6 +3573,7 @@
                     if (i === draggedIndex) continue;
                     
                     const otherRect = routineRects[i];
+                    if (!otherRect) continue;
                     const otherCenter = {
                         x: otherRect.x + otherRect.width / 2,
                         y: otherRect.y + otherRect.height / 2
@@ -3260,6 +3799,11 @@
             for (let i = connections.length - 1; i >= 0; i--) {
                 if (isInsideConnection(pos, connections[i])) {
                     activeConnection = connections[i];
+                    // 双击选中loop时，取消routine的选中状态（互斥）
+                    if (selectedRoutineIndex !== -1) {
+                        selectedRoutineIndex = -1;
+                        updateRoutineCount();
+                    }
                     showLoopForm(connections[i]);
                     return;
                 }
@@ -3349,6 +3893,9 @@
         const conditionsEmptyState = document.getElementById('conditionsEmptyState');
         const noVariablesState = document.getElementById('noVariablesState');
         const addConditionRowBtn = document.getElementById('addConditionRowBtn');
+        const variableTagsContainer = document.getElementById('variableTagsContainer');
+        const selectAllVarsBtn = document.getElementById('selectAllVarsBtn');
+        const deselectAllVarsBtn = document.getElementById('deselectAllVarsBtn');
 
         function isInsideAvtp(pos, avtpKey, rect) {
             const mainRectHeight = rect.height * 0.7;
@@ -3581,7 +4128,10 @@
                 if (!component || !component.enabled) return;
                 
                 const componentDiv = document.createElement('div');
-                componentDiv.className = 'avtp-component-item';
+                // 根据 component 类型添加对应的 CSS 类
+                const validTypes = ['keyboard', 'audio', 'video', 'text', 'image'];
+                const typeClass = validTypes.includes(component.type) ? component.type : '';
+                componentDiv.className = `avtp-component-item ${typeClass}`.trim();
                 componentDiv.dataset.componentId = component.id;
                 
                 const headerDiv = document.createElement('div');
@@ -3670,9 +4220,10 @@
             formLoopType.value = conn.loopType || 'sequential';
             formLoopConditions.value = conn.loopConditions || '';
 
-            
+
             switchToTableView();
 
+            avtpForm.classList.add('wide');
             avtpForm.classList.add('visible');
         }
 
@@ -3682,6 +4233,7 @@
             loopOptions.classList.add('form-group-hidden');
             avtpForm.style.transition = 'none';
             avtpForm.classList.remove('visible');
+            avtpForm.classList.remove('wide');
             avtpForm.offsetHeight;
             avtpForm.style.transition = '';
             formStartTime.parentElement.style.display = 'block';
@@ -3856,6 +4408,7 @@
         let currentVariableNames = []; // Store variable names (column headers)
         let autoDetectedVariables = []; // Store auto-detected variables from routines/loops
         let autoDetectedRandomPatterns = []; // Store auto-detected random number patterns from routines/loops
+        let selectedVariables = new Set(); // Store selected variable names for display in table
 
         function collectAutoDetectedVariables() {
             const variableSet = new Set();
@@ -3863,6 +4416,7 @@
             
             // Collect from routineRects (支持新的 avtpComponents 数组和旧的 avtpData 对象)
             routineRects.forEach(rect => {
+                if (!rect) return;
                 // 新的 avtpComponents 数组方式
                 if (rect.avtpComponents && Array.isArray(rect.avtpComponents)) {
                     rect.avtpComponents.forEach(component => {
@@ -3931,8 +4485,8 @@
         }
 
         function parseConditionsJSON(jsonStr) {
-            if (!jsonStr || !jsonStr.trim()) return { variables: [], conditions: [] };
-            
+            if (!jsonStr || !jsonStr.trim()) return { variables: [], conditions: [], selectedVars: [] };
+
             try {
                 const parsed = JSON.parse(jsonStr);
                 if (Array.isArray(parsed) && parsed.length > 0) {
@@ -3946,57 +4500,130 @@
                         });
                     });
                     const variables = Array.from(variableSet);
-                    
+
+                    // Extract selected variables from _meta if exists
+                    let selectedVars = [];
+                    if (parsed._meta && parsed._meta.selectedVars) {
+                        selectedVars = parsed._meta.selectedVars;
+                    }
+
                     // Extract condition names (row names) and their values
-                    const conditions = parsed.map((condition, index) => {
-                        const conditionName = condition.name || `Condition ${index + 1}`;
-                        const values = {};
-                        Object.keys(condition).forEach(key => {
-                            if (key !== 'name') {
-                                values[key] = condition[key];
-                            }
+                    const conditions = parsed
+                        .filter((item, index) => index !== '_meta')  // Filter out _meta entry
+                        .map((condition, index) => {
+                            const conditionName = condition.name || `Condition ${index + 1}`;
+                            const values = {};
+                            Object.keys(condition).forEach(key => {
+                                if (key !== 'name') {
+                                    values[key] = condition[key];
+                                }
+                            });
+                            return { name: conditionName, values };
                         });
-                        return { name: conditionName, values };
-                    });
-                    
-                    return { variables, conditions };
+
+                    return { variables, conditions, selectedVars };
                 }
-                return { variables: [], conditions: [] };
+                return { variables: [], conditions: [], selectedVars: [] };
             } catch (e) {
-                return { variables: [], conditions: [] };
+                return { variables: [], conditions: [], selectedVars: [] };
             }
+        }
+
+        // Variable Selector Functions
+        function renderVariableSelector() {
+            if (!variableTagsContainer) return;
+
+            variableTagsContainer.innerHTML = '';
+
+            if (currentVariableNames.length === 0) {
+                variableTagsContainer.innerHTML = '<span class="variable-selector-empty">No variables available. Add variables starting with \'$\' in your routines/loops first.</span>';
+                return;
+            }
+
+            currentVariableNames.forEach(varName => {
+                const tag = document.createElement('div');
+                tag.className = 'variable-tag';
+                if (selectedVariables.has(varName)) {
+                    tag.classList.add('selected');
+                }
+
+                const isAutoDetected = autoDetectedVariables.includes(varName);
+                const sourceLabel = isAutoDetected ? 'Auto' : 'Manual';
+
+                tag.innerHTML = `
+                    <span class="variable-tag-checkbox"></span>
+                    <span class="variable-tag-name">${varName}</span>
+                    <span class="variable-tag-source">${sourceLabel}</span>
+                `;
+
+                tag.addEventListener('click', () => {
+                    toggleVariableSelection(varName);
+                });
+
+                variableTagsContainer.appendChild(tag);
+            });
+        }
+
+        function toggleVariableSelection(varName) {
+            if (selectedVariables.has(varName)) {
+                selectedVariables.delete(varName);
+            } else {
+                selectedVariables.add(varName);
+            }
+            renderVariableSelector();
+            updateConditionsTableHeader();
+            saveLoopFormChanges();
+        }
+
+        function selectAllVariables() {
+            currentVariableNames.forEach(varName => {
+                selectedVariables.add(varName);
+            });
+            renderVariableSelector();
+            updateConditionsTableHeader();
+            saveLoopFormChanges();
+        }
+
+        function deselectAllVariables() {
+            selectedVariables.clear();
+            renderVariableSelector();
+            updateConditionsTableHeader();
+            saveLoopFormChanges();
         }
 
         function conditionsToJSON() {
             const rows = conditionsTableBody.querySelectorAll('tr');
             if (rows.length === 0) return '';
-            
+
             const conditions = [];
             rows.forEach(row => {
                 const nameInput = row.querySelector('.condition-row-name');
                 if (nameInput && nameInput.value.trim()) {
                     const condition = { name: nameInput.value.trim() };
-                    // 直接从表头获取所有变量名（跳过第一个 Condition 列和最后一个操作列）
-                    const headerCells = Array.from(conditionsTableHeaderRow.children);
+                    // 只保存已选择的变量
+                    const selectedVarsArray = Array.from(selectedVariables);
                     const valueInputs = row.querySelectorAll('td input:not(.condition-row-name)');
-                    
-                    // 遍历所有 value 输入框，从对应的表头获取变量名
+
+                    // 遍历所有 value 输入框
                     valueInputs.forEach((valueInput, index) => {
-                        // headerCells[0] 是 Condition 列，所以 index+1 对应第一个变量列
-                        if (index + 1 < headerCells.length - 1) { // -1 是因为最后一个是操作列
-                            const th = headerCells[index + 1];
-                            const label = th.querySelector('label');
-                            if (label) {
-                                const varName = label.textContent.trim();
-                                const val = valueInput.value;
-                                condition[varName] = val !== undefined && val !== null ? val : '';
-                            }
+                        if (index < selectedVarsArray.length) {
+                            const varName = selectedVarsArray[index];
+                            const val = valueInput.value;
+                            condition[varName] = val !== undefined && val !== null ? val : '';
                         }
                     });
                     conditions.push(condition);
                 }
             });
-            
+
+            // 添加 _meta 信息来保存所有可用变量和选中的变量
+            if (conditions.length > 0) {
+                conditions._meta = {
+                    allVars: currentVariableNames,
+                    selectedVars: Array.from(selectedVariables)
+                };
+            }
+
             return conditions.length > 0 ? JSON.stringify(conditions) : '';
         }
 
@@ -4005,9 +4632,10 @@
             while (conditionsTableHeaderRow.children.length > 1) {
                 conditionsTableHeaderRow.removeChild(conditionsTableHeaderRow.lastChild);
             }
-            
-            // Add header cells for each variable
-            currentVariableNames.forEach(varName => {
+
+            // 只添加已选择的变量到表头
+            const selectedVarsArray = Array.from(selectedVariables);
+            selectedVarsArray.forEach(varName => {
                 const th = document.createElement('th');
                 th.innerHTML = `
                     <div style="display: flex; align-items: center; padding: 2px 0;">
@@ -4016,11 +4644,50 @@
                 `;
                 conditionsTableHeaderRow.appendChild(th);
             });
-            
+
             // Add header cell for remove button
             const removeBtnTh = document.createElement('th');
             removeBtnTh.style.width = '40px';
             conditionsTableHeaderRow.appendChild(removeBtnTh);
+        }
+
+        function updateConditionsTableHeader() {
+            // 重新生成表头
+            updateHeaderRow();
+
+            // 重新生成表格内容以匹配新的表头
+            const rows = conditionsTableBody.querySelectorAll('tr');
+            const selectedVarsArray = Array.from(selectedVariables);
+
+            rows.forEach(row => {
+                const nameInput = row.querySelector('.condition-row-name');
+                const rowName = nameInput ? nameInput.value : '';
+
+                // 保存现有的值
+                const existingValues = {};
+                const oldInputs = row.querySelectorAll('td input:not(.condition-row-name)');
+                oldInputs.forEach((input, index) => {
+                    if (index < selectedVarsArray.length) {
+                        existingValues[selectedVarsArray[index]] = input.value;
+                    }
+                });
+
+                // 清除现有的变量单元格（保留 Condition 列和操作列）
+                const cells = row.querySelectorAll('td');
+                for (let i = cells.length - 2; i > 0; i--) {
+                    row.removeChild(cells[i]);
+                }
+
+                // 添加新的变量单元格
+                selectedVarsArray.forEach(varName => {
+                    const td = document.createElement('td');
+                    const value = existingValues[varName] !== undefined ? existingValues[varName] : '';
+                    td.innerHTML = `<input type="text" class="condition-cell-${CSS.escape(varName)}" value="${value}" placeholder="Value" style="width: 100%; padding: 6px 8px; border: 1px solid #e0e0e0; border-radius: 4px; font-size: 12px;">`;
+                    row.insertBefore(td, row.lastElementChild);
+                });
+            });
+
+            updateConditionsTableState();
         }
 
         function updateConditionsTableBody() {
@@ -4046,15 +4713,19 @@
             }
             
             conditionsEmptyState.classList.add('hidden');
+
+            // 只使用已选择的变量来生成表格行
+            const selectedVarsArray = Array.from(selectedVariables);
             parsed.conditions.forEach(condition => {
                 const row = document.createElement('tr');
                 let cellsHtml = `<td><input type="text" class="condition-row-name" value="${condition.name}" placeholder="Condition name" style="width: 100%; padding: 6px 8px; border: 1px solid #e0e0e0; border-radius: 4px; font-size: 12px;"></td>`;
-                
-                currentVariableNames.forEach(varName => {
+
+                // 只生成已选择变量的单元格
+                selectedVarsArray.forEach(varName => {
                     const value = condition.values[varName] !== undefined ? condition.values[varName] : '';
                     cellsHtml += `<td><input type="text" class="condition-cell-${CSS.escape(varName)}" value="${value}" placeholder="Value" style="width: 100%; padding: 6px 8px; border: 1px solid #e0e0e0; border-radius: 4px; font-size: 12px;"></td>`;
                 });
-                
+
                 cellsHtml += `
                     <td class="row-actions">
                         <button type="button" class="remove-row-btn" title="Remove condition">
@@ -4065,11 +4736,11 @@
                         </button>
                     </td>
                 `;
-                
+
                 row.innerHTML = cellsHtml;
                 conditionsTableBody.appendChild(row);
             });
-            
+
             updateHeaderRow();
             updateConditionsTableState();
         }
@@ -4105,6 +4776,7 @@
                 
                 // 遍历所有 routine 中的 AVTP 元素（支持新的 avtpComponents 数组和旧的 avtpData 对象）
                 routineRects.forEach(rect => {
+                    if (!rect) return;
                     // 新的 avtpComponents 数组方式
                     if (rect.avtpComponents && Array.isArray(rect.avtpComponents)) {
                         rect.avtpComponents.forEach(component => {
@@ -4215,27 +4887,46 @@
             const detected = collectAutoDetectedVariables();
             autoDetectedVariables = detected.variables;
             autoDetectedRandomPatterns = detected.randomPatterns;
-            
+
             // Merge with existing variables from current loop conditions
             const jsonValue = formLoopConditions.value.trim();
             const parsed = parseConditionsJSON(jsonValue);
             const existingVars = parsed.variables || [];
-            
+
             // Combine auto-detected variables with existing ones, avoiding duplicates
             const allVars = [...new Set([...autoDetectedVariables, ...existingVars])];
             currentVariableNames = allVars;
-            
+
+            // 恢复之前保存的变量选择状态
+            selectedVariables.clear();
+            if (parsed.selectedVars && parsed.selectedVars.length > 0) {
+                // 使用之前保存的选择状态
+                parsed.selectedVars.forEach(varName => {
+                    if (allVars.includes(varName)) {
+                        selectedVariables.add(varName);
+                    }
+                });
+            } else {
+                // 默认选择所有变量
+                allVars.forEach(varName => selectedVariables.add(varName));
+            }
+
+            // 渲染变量选择器
+            renderVariableSelector();
+
             // Disable Add Condition button if no variables detected
             addConditionRowBtn.disabled = currentVariableNames.length === 0;
-            
+
             // Show/hide no variables message
             if (currentVariableNames.length === 0) {
                 noVariablesState.style.display = 'block';
                 conditionsEmptyState.style.display = 'none';
+                document.getElementById('variableSelector').style.display = 'none';
             } else {
                 noVariablesState.style.display = 'none';
+                document.getElementById('variableSelector').style.display = 'block';
             }
-            
+
             updateConditionsTableBody();
         }
 
@@ -4244,14 +4935,16 @@
         addConditionRowBtn.addEventListener('click', () => {
             const rows = conditionsTableBody.querySelectorAll('tr');
             const conditionNum = rows.length + 1;
-            
+
             const row = document.createElement('tr');
             let cellsHtml = `<td><input type="text" class="condition-row-name" value="Condition ${conditionNum}" placeholder="Condition name" style="width: 100%; padding: 6px 8px; border: 1px solid #e0e0e0; border-radius: 4px; font-size: 12px;"></td>`;
-            
-            currentVariableNames.forEach(varName => {
+
+            // 只添加已选择的变量单元格
+            const selectedVarsArray = Array.from(selectedVariables);
+            selectedVarsArray.forEach(varName => {
                 cellsHtml += `<td><input type="text" class="condition-cell-${CSS.escape(varName)}" value="" placeholder="Value" style="width: 100%; padding: 6px 8px; border: 1px solid #e0e0e0; border-radius: 4px; font-size: 12px;"></td>`;
             });
-            
+
             cellsHtml += `
                 <td class="row-actions">
                     <button type="button" class="remove-row-btn" title="Remove condition">
@@ -4262,12 +4955,16 @@
                     </button>
                 </td>
             `;
-            
+
             row.innerHTML = cellsHtml;
             conditionsTableBody.appendChild(row);
             updateConditionsTableState();
             saveLoopFormChanges();
         });
+
+        // Variable selector button event listeners
+        selectAllVarsBtn.addEventListener('click', selectAllVariables);
+        deselectAllVarsBtn.addEventListener('click', deselectAllVariables);
 
         canvas.addEventListener('click', (e) => {
             // 如果是双击触发的，忽略 click 事件
@@ -4282,6 +4979,11 @@
             for (let i = connections.length - 1; i >= 0; i--) {
                 if (isInsideConnection(pos, connections[i])) {
                     activeConnection = connections[i];
+                    // 选中loop时，取消routine的选中状态（互斥）
+                    if (selectedRoutineIndex !== -1) {
+                        selectedRoutineIndex = -1;
+                        updateRoutineCount();
+                    }
                     draw();
                     return;
                 }
@@ -4372,12 +5074,12 @@
                 originalConnectionLabels.map((labels, i) => ({
                     startLabel: labels.startLabel,
                     endLabel: labels.endLabel,
-                    depth: connections[i].depth,
-                    loopName: connections[i].loopName,
-                    loopReps: connections[i].loopReps,
-                    loopType: connections[i].loopType,
-                    loopConditions: connections[i].loopConditions,
-                    loopIsTrials: connections[i].loopIsTrials
+                    depth: connections[i] ? connections[i].depth : 0,
+                    loopName: connections[i] ? connections[i].loopName : '',
+                    loopReps: connections[i] ? connections[i].loopReps : 1,
+                    loopType: connections[i] ? connections[i].loopType : '',
+                    loopConditions: connections[i] ? connections[i].loopConditions : [],
+                    loopIsTrials: connections[i] ? connections[i].loopIsTrials : false
                 })) :
                 connections.map(conn => ({
                     startLabel: conn.start.label,
@@ -4398,19 +5100,43 @@
             flowEndX = pointsData.endX;
             reassignSnapPoints();
 
-            for (let i = 0; i < connections.length; i++) {
+            // 从后向前遍历，以便删除loop时不会影响索引
+            for (let i = connections.length - 1; i >= 0; i--) {
                 const labels = connectionLabels[i];
                 const newStartPoint = linePoints.find(p => p.label === labels.startLabel);
                 const newEndPoint = linePoints.find(p => p.label === labels.endLabel);
-                if (newStartPoint && newEndPoint) {
+                
+                // 检查loop的起点和终点是否都对应实际存在的routine
+                // loop使用连接点label（奇数）：label 2i+1 是 routine i 的左侧，也是 routine i-1 的右侧（i>0时）
+                function isLabelValid(label) {
+                    const i = (parseInt(label) - 1) / 2;
+                    // label 2i+1 对应左侧 routine i 和右侧 routine i-1
+                    const leftRoutineValid = i >= 0 && i < routineRects.length;
+                    const rightRoutineValid = i > 0 && (i - 1) >= 0 && (i - 1) < routineRects.length;
+                    return leftRoutineValid || rightRoutineValid;
+                }
+                const isStartValid = isLabelValid(labels.startLabel);
+                const isEndValid = isLabelValid(labels.endLabel);
+                
+                if (newStartPoint && newEndPoint && isStartValid && isEndValid) {
                     connections[i].start = newStartPoint;
                     connections[i].end = newEndPoint;
+                } else {
+                    // 如果loop的起点或终点找不到对应的点，或者对应的routine不存在，删除该loop
+                    const removedConn = connections[i];
+                    connections.splice(i, 1);
+                    // 如果删除的是当前选中的loop，清除选中状态
+                    if (activeConnection === removedConn) {
+                        activeConnection = null;
+                    }
                 }
             }
         }
 
         function reassignSnapPoints() {
             routineRects.forEach((rect, index) => {
+                // 跳过 null 占位符
+                if (!rect) return;
                 // 只更新已有完整属性的 routine
                 if (rect.width && rect.height) {
                     const snapPoint = snapPoints[index];
@@ -4802,153 +5528,540 @@
             // 当没有 routine 时，从索引 0 开始；否则在选中的后面添加
             const newIndex = routineRects.length === 0 ? 0 : (selectedRoutineIndex >= 0 ? selectedRoutineIndex + 1 : routineRects.length);
             
-            // 先增加 routine 数量（占位）
-            routineRects.splice(newIndex, 0, {});
+            // 先占位，确保 snapPoints 有足够的位置
+            routineRects.splice(newIndex, 0, null);
             
-            // 更新点，确保 snapPoints 已经包含新 routine 的位置
-            updatePoints(); // 这会调用 reassignSnapPoints() 重新分配所有 routine
+            // 更新 points，确保 snapPoints 包含新 routine 的位置
+            updatePoints();
             
-            // 现在创建实际的 routine rect 数据
+            // 创建新的 routine
             const newRect = createRoutineRect(newIndex);
             routineRects[newIndex] = newRect;
+            
+            // 重新构建整个 flowchart（自动处理 loop 的 label 调整）
+            rebuildFlowchartAfterAdd(newIndex);
             
             selectedRoutineIndex = newIndex;
             updateRoutineCount();
             draw();
         });
+        
+        // 添加 routine 后重构 flowchart
+        function rebuildFlowchartAfterAdd(addedRoutineIndex) {
+            // 1. 所有 routine 都标记为"保留"
+            const routineMarks = routineRects.map(() => 'keep');
+            
+            // 2. 所有 loop 都标记为"保留"（添加 routine 不会删除 loop）
+            const loopMarks = connections.map(() => 'keep');
+            
+            // 3. 重构 flowchart：更新所有 label
+            rebuildFlowchart(routineMarks, loopMarks);
+        }
+        
+        // 删除 routine 后重构 flowchart
+        function rebuildFlowchartAfterRemove(removedRoutineIndex) {
+            // 1. 标记 routine：被删除的标记为"delete"，其余为"keep"
+            const routineMarks = routineRects.map((_, index) =>
+                index === removedRoutineIndex ? 'delete' : 'keep'
+            );
 
-        removeRoutineBtn.addEventListener('click', () => {
+            // 2. 标记 loop：如果 loop 包含的所有 routine 都是"delete"，则标记为"delete"
+            // 新的范围界定：使用连接点 label（奇数 1, 3, 5...）
+            // routine i 的左侧连接点 label = i * 2 + 1，右侧连接点 label = i * 2 + 3
+            const loopMarks = connections.map(conn => {
+                const startLabel = parseInt(conn.start.label);
+                const endLabel = parseInt(conn.end.label);
+                const minLabel = Math.min(startLabel, endLabel);
+                const maxLabel = Math.max(startLabel, endLabel);
+
+                // 检查这个 loop 包含的所有 routine
+                let hasKeepRoutine = false;
+                for (let i = 0; i < routineRects.length; i++) {
+                    // routine i 占据的连接点范围：[i * 2 + 1, i * 2 + 3]
+                    const routineLeftLabel = i * 2 + 1;
+                    const routineRightLabel = i * 2 + 3;
+                    // 如果 routine 在 loop 范围内（loop 的连接点范围与 routine 的连接点范围有重叠）
+                    if (routineLeftLabel >= minLabel && routineRightLabel <= maxLabel) {
+                        // 如果这个 routine 不是被删除的
+                        if (i !== removedRoutineIndex) {
+                            hasKeepRoutine = true;
+                            break;
+                        }
+                    }
+                }
+
+                // 如果 loop 范围内没有保留的 routine，标记为删除
+                return hasKeepRoutine ? 'keep' : 'delete';
+            });
+            
+            // 3. 重构 flowchart
+            rebuildFlowchart(routineMarks, loopMarks);
+
+            // 4. 重建所有 loop 的高度（depth）
+            rebuildAllConnectionDepths();
+
+            // 5. 更新选中状态
+            selectedRoutineIndex = routineRects.length > 0
+                ? Math.min(removedRoutineIndex, routineRects.length - 1)
+                : -1;
+
+            updatePoints();
+            updateRoutineCount();
+            draw();
+        }
+        
+        // 核心重构函数：根据标记删除 routine 和 loop，然后重建 flowchart
+        function rebuildFlowchart(routineMarks, loopMarks) {
+            // 1. 删除标记为"delete"的 loop（从后向前删除）
+            for (let i = loopMarks.length - 1; i >= 0; i--) {
+                if (loopMarks[i] === 'delete') {
+                    connections.splice(i, 1);
+                }
+            }
+
+            // 2. 删除标记为"delete"的 routine（从后向前删除）
+            for (let i = routineMarks.length - 1; i >= 0; i--) {
+                if (routineMarks[i] === 'delete') {
+                    routineRects.splice(i, 1);
+                }
+            }
+
+            // 3. 重建所有 label
+            // loop 使用连接点 label（奇数），需要根据 routine 的新位置重新计算
+            // routine i 的左侧连接点 label = i * 2 + 1，右侧连接点 label = i * 2 + 3
+
+            // 首先，创建旧连接点 label 到新连接点 label 的映射
+            const oldLabelToNewLabel = {};
+            let newRoutineIndex = 0;
+            for (let i = 0; i < routineMarks.length; i++) {
+                if (routineMarks[i] === 'keep') {
+                    // 旧 routine i 的连接点范围：[i * 2 + 1, i * 2 + 3]
+                    const oldLeftLabel = i * 2 + 1;
+                    const oldRightLabel = i * 2 + 3;
+                    // 新 routine newRoutineIndex 的连接点范围：[newRoutineIndex * 2 + 1, newRoutineIndex * 2 + 3]
+                    const newLeftLabel = newRoutineIndex * 2 + 1;
+                    const newRightLabel = newRoutineIndex * 2 + 3;
+                    oldLabelToNewLabel[oldLeftLabel] = newLeftLabel;
+                    oldLabelToNewLabel[oldRightLabel] = newRightLabel;
+                    newRoutineIndex++;
+                }
+            }
+
+            // 更新所有 loop 的 label
+            for (const conn of connections) {
+                const oldStartLabel = parseInt(conn.start.label);
+                const oldEndLabel = parseInt(conn.end.label);
+
+                // 找到新的 label
+                // loop 使用连接点 label（奇数），使用映射更新
+                // 如果是 flowchart 的起点(1)或终点，保持不变
+                if (oldLabelToNewLabel.hasOwnProperty(oldStartLabel)) {
+                    conn.start.label = oldLabelToNewLabel[oldStartLabel].toString();
+                }
+                if (oldLabelToNewLabel.hasOwnProperty(oldEndLabel)) {
+                    conn.end.label = oldLabelToNewLabel[oldEndLabel].toString();
+                }
+            }
+        }
+
+        // 计算删除routine和loop后的flowchart状态（不修改原数据）
+        function calculateDeletionPreview(removedRoutineIndex) {
+            // 复制当前数据
+            const previewRoutines = routineRects.map(r => ({...r}));
+            const previewConnections = connections.map(c => ({
+                ...c,
+                start: {...c.start},
+                end: {...c.end}
+            }));
+            
+            // 1. 标记 routine：被删除的标记为"delete"，其余为"keep"
+            const routineMarks = previewRoutines.map((_, index) => 
+                index === removedRoutineIndex ? 'delete' : 'keep'
+            );
+            
+            // 2. 标记 loop：如果 loop 包含的所有 routine 都是"delete"，则标记为"delete"
+            // 新的范围界定：使用连接点 label（奇数 1, 3, 5...）
+            // routine i 的左侧连接点 label = i * 2 + 1，右侧连接点 label = i * 2 + 3
+            const loopMarks = previewConnections.map((conn, connIndex) => {
+                const startLabel = parseInt(conn.start.label);
+                const endLabel = parseInt(conn.end.label);
+                const minLabel = Math.min(startLabel, endLabel);
+                const maxLabel = Math.max(startLabel, endLabel);
+
+                // 检查这个 loop 包含的所有 routine
+                let hasKeepRoutine = false;
+                for (let i = 0; i < previewRoutines.length; i++) {
+                    // routine i 占据的连接点范围：[i * 2 + 1, i * 2 + 3]
+                    const routineLeftLabel = i * 2 + 1;
+                    const routineRightLabel = i * 2 + 3;
+                    // 如果 routine 在 loop 范围内（loop 的连接点范围与 routine 的连接点范围有重叠）
+                    if (routineLeftLabel >= minLabel && routineRightLabel <= maxLabel) {
+                        // 如果这个 routine 不是被删除的
+                        if (i !== removedRoutineIndex) {
+                            hasKeepRoutine = true;
+                            break;
+                        }
+                    }
+                }
+
+                // 如果 loop 范围内没有保留的 routine，标记为删除
+                return hasKeepRoutine ? 'keep' : 'delete';
+            });
+            
+            // 3. 收集将被删除的 loops 信息
+            const loopsToDelete = [];
+            for (let i = 0; i < loopMarks.length; i++) {
+                if (loopMarks[i] === 'delete') {
+                    loopsToDelete.push({
+                        index: i,
+                        name: previewConnections[i].loopName || `Loop ${i + 1}`
+                    });
+                }
+            }
+            
+            // 4. 收集将被保留的 loops 信息
+            const loopsToKeep = [];
+            for (let i = 0; i < loopMarks.length; i++) {
+                if (loopMarks[i] === 'keep') {
+                    loopsToKeep.push({
+                        index: i,
+                        name: previewConnections[i].loopName || `Loop ${i + 1}`
+                    });
+                }
+            }
+            
+            // 5. 执行重构（在副本上）
+            // 删除标记为"delete"的 loop（从后向前删除）
+            for (let i = loopMarks.length - 1; i >= 0; i--) {
+                if (loopMarks[i] === 'delete') {
+                    previewConnections.splice(i, 1);
+                }
+            }
+            
+            // 删除标记为"delete"的 routine（从后向前删除）
+            for (let i = routineMarks.length - 1; i >= 0; i--) {
+                if (routineMarks[i] === 'delete') {
+                    previewRoutines.splice(i, 1);
+                }
+            }
+            
+            // 6. 重建所有 label
+            // loop 使用连接点 label（奇数），需要根据 routine 的新位置重新计算
+            const oldLabelToNewLabel = {};
+            let newRoutineIndex = 0;
+            for (let i = 0; i < routineMarks.length; i++) {
+                if (routineMarks[i] === 'keep') {
+                    // 旧 routine i 的连接点范围：[i * 2 + 1, i * 2 + 3]
+                    const oldLeftLabel = i * 2 + 1;
+                    const oldRightLabel = i * 2 + 3;
+                    // 新 routine newRoutineIndex 的连接点范围：[newRoutineIndex * 2 + 1, newRoutineIndex * 2 + 3]
+                    const newLeftLabel = newRoutineIndex * 2 + 1;
+                    const newRightLabel = newRoutineIndex * 2 + 3;
+                    oldLabelToNewLabel[oldLeftLabel] = newLeftLabel;
+                    oldLabelToNewLabel[oldRightLabel] = newRightLabel;
+                    newRoutineIndex++;
+                }
+            }
+
+            // 更新所有 loop 的 label
+            for (const conn of previewConnections) {
+                const oldStartLabel = parseInt(conn.start.label);
+                const oldEndLabel = parseInt(conn.end.label);
+
+                if (oldLabelToNewLabel.hasOwnProperty(oldStartLabel)) {
+                    conn.start.label = oldLabelToNewLabel[oldStartLabel].toString();
+                }
+                if (oldLabelToNewLabel.hasOwnProperty(oldEndLabel)) {
+                    conn.end.label = oldLabelToNewLabel[oldEndLabel].toString();
+                }
+            }
+            
+            return {
+                routines: previewRoutines,
+                connections: previewConnections,
+                loopsToDelete: loopsToDelete,
+                loopsToKeep: loopsToKeep
+            };
+        }
+        
+        // 绘制预览flowchart到指定canvas
+        function drawPreviewFlowchart(previewData, targetCanvas) {
+            const pCtx = targetCanvas.getContext('2d');
+            const previewRoutines = previewData.routines;
+            const previewConnections = previewData.connections;
+            
+            // 计算需要的点数
+            const minRoutines = Math.max(previewRoutines.length, 1);
+            const pPointsData = generatePointsForPreview(minRoutines);
+            const pLinePoints = pPointsData.line;
+            const pFlowStartX = pPointsData.startX;
+            const pFlowEndX = pPointsData.endX;
+            
+            // 设置canvas大小
+            const padding = 40;
+            const routineWidth = 180;
+            const routineHeight = 120;
+            const routineGap = 60;
+            
+            const totalWidth = Math.max(600, previewRoutines.length * (routineWidth + routineGap) + routineGap);
+            const totalHeight = 400;
+            
+            targetCanvas.width = totalWidth;
+            targetCanvas.height = totalHeight;
+            
+            // 清空画布
+            pCtx.fillStyle = '#fafafa';
+            pCtx.fillRect(0, 0, totalWidth, totalHeight);
+            
+            // 计算中心线位置
+            const centerY = totalHeight / 2;
+            const startX = (totalWidth - (previewRoutines.length * (routineWidth + routineGap) - routineGap)) / 2;
+            
+            // 绘制主流程线
+            pCtx.strokeStyle = 'rgba(0, 0, 0, 0.12)';
+            pCtx.lineWidth = 1;
+            pCtx.lineCap = 'round';
+            pCtx.beginPath();
+            pCtx.moveTo(padding, centerY);
+            pCtx.lineTo(totalWidth - padding, centerY);
+            pCtx.stroke();
+            
+            // 绘制loop连线
+            pCtx.strokeStyle = '#0066cc';
+            pCtx.lineWidth = 2;
+            
+            for (const conn of previewConnections) {
+                const startLabel = parseInt(conn.start.label);
+                const endLabel = parseInt(conn.end.label);
+
+                // 计算routine索引
+                // 连接点 label 是奇数：routine i 的左侧连接点 label = i * 2 + 1
+                const startIndex = (startLabel - 1) / 2;
+                const endIndex = (endLabel - 1) / 2;
+                
+                if (startIndex >= 0 && startIndex < previewRoutines.length && 
+                    endIndex >= 0 && endIndex < previewRoutines.length) {
+                    const startX_pos = startX + startIndex * (routineWidth + routineGap) + routineWidth / 2;
+                    const endX_pos = startX + endIndex * (routineWidth + routineGap) + routineWidth / 2;
+                    
+                    // 计算loop高度
+                    const indexDiff = Math.abs(endIndex - startIndex);
+                    const loopHeight = 60 + indexDiff * 30;
+                    
+                    // 绘制loop弧线
+                    pCtx.beginPath();
+                    pCtx.moveTo(startX_pos, centerY - 5);
+                    pCtx.bezierCurveTo(
+                        startX_pos, centerY - loopHeight,
+                        endX_pos, centerY - loopHeight,
+                        endX_pos, centerY - 5
+                    );
+                    pCtx.stroke();
+                    
+                    // 绘制箭头
+                    pCtx.fillStyle = '#0066cc';
+                    pCtx.beginPath();
+                    pCtx.moveTo(endX_pos, centerY - 5);
+                    pCtx.lineTo(endX_pos - 5, centerY - 12);
+                    pCtx.lineTo(endX_pos + 5, centerY - 12);
+                    pCtx.fill();
+                }
+            }
+            
+            // 绘制routine矩形
+            for (let i = 0; i < previewRoutines.length; i++) {
+                const rect = previewRoutines[i];
+                const x = startX + i * (routineWidth + routineGap);
+                const y = centerY - routineHeight / 2;
+                
+                // 绘制矩形
+                pCtx.fillStyle = '#ffffff';
+                pCtx.strokeStyle = '#000000';
+                pCtx.lineWidth = 1;
+                
+                // 圆角矩形
+                const radius = 8;
+                pCtx.beginPath();
+                pCtx.moveTo(x + radius, y);
+                pCtx.lineTo(x + routineWidth - radius, y);
+                pCtx.quadraticCurveTo(x + routineWidth, y, x + routineWidth, y + radius);
+                pCtx.lineTo(x + routineWidth, y + routineHeight - radius);
+                pCtx.quadraticCurveTo(x + routineWidth, y + routineHeight, x + routineWidth - radius, y + routineHeight);
+                pCtx.lineTo(x + radius, y + routineHeight);
+                pCtx.quadraticCurveTo(x, y + routineHeight, x, y + routineHeight - radius);
+                pCtx.lineTo(x, y + radius);
+                pCtx.quadraticCurveTo(x, y, x + radius, y);
+                pCtx.closePath();
+                pCtx.fill();
+                pCtx.stroke();
+                
+                // 绘制routine名称
+                pCtx.fillStyle = '#000000';
+                pCtx.font = '600 14px -apple-system, BlinkMacSystemFont, sans-serif';
+                pCtx.textAlign = 'left';
+                pCtx.textBaseline = 'middle';
+                
+                const name = rect.name || `Routine ${i + 1}`;
+                const maxWidth = routineWidth - 20;
+                let displayName = name;
+                if (pCtx.measureText(name).width > maxWidth) {
+                    // 截断长名称
+                    let truncated = name;
+                    while (pCtx.measureText(truncated + '...').width > maxWidth && truncated.length > 0) {
+                        truncated = truncated.slice(0, -1);
+                    }
+                    displayName = truncated + '...';
+                }
+                pCtx.fillText(displayName, x + 10, y + 20);
+                
+                // 绘制连接点
+                const pointY = centerY;
+                const pointX = x + routineWidth / 2;
+                
+                pCtx.beginPath();
+                pCtx.arc(pointX, pointY, 4, 0, Math.PI * 2);
+                pCtx.fillStyle = '#000000';
+                pCtx.fill();
+            }
+            
+            // 如果没有routine，显示提示
+            if (previewRoutines.length === 0) {
+                pCtx.fillStyle = '#999999';
+                pCtx.font = '14px -apple-system, BlinkMacSystemFont, sans-serif';
+                pCtx.textAlign = 'center';
+                pCtx.textBaseline = 'middle';
+                pCtx.fillText('（空流程图）', totalWidth / 2, centerY);
+            }
+        }
+        
+        // 为预览生成点数据
+        function generatePointsForPreview(routineCount) {
+            const pointSpacing = 120;
+            const startX = 100;
+            const lineY = 200;
+            const points = [];
+
+            // 生成line points（routine连接点）
+            // 使用连接点 label（奇数）：routine i 的左侧连接点 label = i * 2 + 1
+            for (let i = 0; i < routineCount; i++) {
+                points.push({
+                    x: startX + i * pointSpacing,
+                    y: lineY,
+                    label: String(i * 2 + 1),
+                    isSnapTarget: false
+                });
+            }
+
+            return {
+                line: points,
+                startX: startX - 50,
+                endX: startX + routineCount * pointSpacing
+            };
+        }
+        
+        // 显示删除预览对话框
+        function showDeletePreviewModal(removedRoutineIndex) {
+            const previewModal = document.getElementById('previewModal');
+            const previewModalTitle = document.getElementById('previewModalTitle');
+            const previewInfo = document.getElementById('previewInfo');
+            const previewCanvas = document.getElementById('previewCanvas');
+            const previewModalCancel = document.getElementById('previewModalCancel');
+            const previewModalConfirm = document.getElementById('previewModalConfirm');
+            const previewModalClose = document.getElementById('previewModalClose');
+            
+            const removedRoutine = routineRects[removedRoutineIndex];
+            const previewData = calculateDeletionPreview(removedRoutineIndex);
+            
+            // 设置标题
+            previewModalTitle.textContent = `删除 "${removedRoutine.name || 'Routine ' + (removedRoutineIndex + 1)}" 的预览`;
+            
+            // 生成信息文本
+            let infoHTML = '';
+            
+            if (previewData.loopsToDelete.length > 0) {
+                infoHTML += `<p><strong>以下 ${previewData.loopsToDelete.length} 个 Loop 将被删除（只包含该 Routine）：</strong></p><ul>`;
+                for (const loop of previewData.loopsToDelete) {
+                    infoHTML += `<li>${loop.name}</li>`;
+                }
+                infoHTML += '</ul>';
+            } else {
+                infoHTML += '<p><strong>没有 Loop 会被删除</strong></p>';
+            }
+            
+            if (previewData.loopsToKeep.length > 0) {
+                infoHTML += `<p><strong>${previewData.loopsToKeep.length} 个 Loop 将被保留并调整范围</strong></p>`;
+            }
+            
+            infoHTML += `<p>删除后剩余 ${previewData.routines.length} 个 Routine</p>`;
+            
+            previewInfo.innerHTML = infoHTML;
+            
+            // 绘制预览
+            drawPreviewFlowchart(previewData, previewCanvas);
+            
+            // 显示对话框
+            previewModal.classList.add('active');
+            
+            // 返回Promise
+            return new Promise((resolve) => {
+                function hideModal() {
+                    previewModal.classList.remove('active');
+                    cleanup();
+                }
+                
+                function cleanup() {
+                    previewModalCancel.removeEventListener('click', onCancel);
+                    previewModalConfirm.removeEventListener('click', onConfirm);
+                    previewModalClose.removeEventListener('click', onCancel);
+                    previewModal.removeEventListener('click', onBackdropClick);
+                }
+                
+                function onCancel() {
+                    hideModal();
+                    resolve(false);
+                }
+                
+                function onConfirm() {
+                    hideModal();
+                    resolve(true);
+                }
+                
+                function onBackdropClick(e) {
+                    if (e.target === previewModal) {
+                        onCancel();
+                    }
+                }
+                
+                previewModalCancel.addEventListener('click', onCancel);
+                previewModalConfirm.addEventListener('click', onConfirm);
+                previewModalClose.addEventListener('click', onCancel);
+                previewModal.addEventListener('click', onBackdropClick);
+            });
+        }
+        
+        removeRoutineBtn.addEventListener('click', async () => {
             if (routineRects.length > 0) {
+                const removedRoutineIndex = selectedRoutineIndex;
+                const removedRoutine = routineRects[removedRoutineIndex];
+                
+                // 显示预览对话框
+                const confirmed = await showDeletePreviewModal(removedRoutineIndex);
+                
+                if (!confirmed) {
+                    return; // 用户取消
+                }
+                
+                // 用户确认，执行删除
                 saveState();
                 currentProjectFile = null;
                 fileHandle = null;
-                const removedRoutineIndex = selectedRoutineIndex;
-                const removedRoutine = routineRects[removedRoutineIndex];
-                const removedLabel = removedRoutineIndex * 2 + 2;
-
-                // 先记录哪些 Loop 包含被删除的 routine，以及是起始点、结束点还是中间
-                const loopAdjustments = [];
-                for (let i = connections.length - 1; i >= 0; i--) {
-                    const conn = connections[i];
-                    const startLabel = parseInt(conn.start.label);
-                    const endLabel = parseInt(conn.end.label);
-                    const minLabel = Math.min(startLabel, endLabel);
-                    const maxLabel = Math.max(startLabel, endLabel);
-
-                    if (minLabel <= removedLabel && maxLabel >= removedLabel) {
-                        let adjustmentType = 'middle'; // 默认是中间
-                        if (startLabel === removedLabel) {
-                            adjustmentType = 'start';
-                        } else if (endLabel === removedLabel) {
-                            adjustmentType = 'end';
-                        }
-                        loopAdjustments.push({ index: i, conn: conn, type: adjustmentType, originalStart: startLabel, originalEnd: endLabel });
-                        console.log('Loop adjustment recorded:', i, 'type:', adjustmentType, 'start:', startLabel, 'end:', endLabel);
-                    }
-                }
-                console.log('Total loop adjustments:', loopAdjustments.length);
-
+                
                 if (activeDragRect === removedRoutine) {
                     activeDragRect = null;
                 }
-
-                // 删除 routine
-                routineRects.splice(removedRoutineIndex, 1);
-                selectedRoutineIndex = routineRects.length > 0 ? Math.min(removedRoutineIndex, routineRects.length - 1) : -1;
-
-                // 先保存 connections 的原始 label，然后计算删除后的新 label
-                originalConnectionLabels = connections.map((conn, i) => {
-                    const startLabel = parseInt(conn.start.label);
-                    const endLabel = parseInt(conn.end.label);
-                    
-                    // 计算新的 label
-                    let newStartLabel = startLabel;
-                    let newEndLabel = endLabel;
-                    
-                    if (startLabel > removedLabel) {
-                        newStartLabel = startLabel - 2;
-                    }
-                    if (endLabel > removedLabel) {
-                        newEndLabel = endLabel - 2;
-                    }
-                    
-                    return {
-                        startLabel: String(newStartLabel),
-                        endLabel: String(newEndLabel)
-                    };
-                });
-
-                // 现在处理Loop的范围调整（基于更新后的label）
-                for (let i = connections.length - 1; i >= 0; i--) {
-                    const conn = connections[i];
-
-                    // 找到对应的adjustment记录
-                    const adjustment = loopAdjustments.find(adj => adj.conn === conn);
-
-                    if (adjustment) {
-                        let startLabel = parseInt(conn.start.label);
-                        let endLabel = parseInt(conn.end.label);
-
-                        // 计算Loop原本包含多少个routine（包含起始和结束）
-                        const originalRoutineCount = (adjustment.originalEnd - adjustment.originalStart) / 2 + 1;
-
-                        if (adjustment.type === 'start') {
-                            // 原来的起始点被删除了
-                            if (originalRoutineCount <= 1) {
-                                // Loop只包含1个routine，删除后Loop应该被删除
-                                conn.start.label = adjustment.originalStart.toString();
-                                conn.end.label = adjustment.originalStart.toString();
-                            } else if (originalRoutineCount === 2) {
-                                // Loop只包含2个routine，删除起始点后只剩结束点
-                                // 让start和end都指向剩下的routine（原来的结束点）
-                                conn.start.label = adjustment.originalEnd.toString();
-                                conn.end.label = adjustment.originalEnd.toString();
-                            } else {
-                                // Loop包含3个或更多routine，新的起始点是原来的下一个
-                                // 由于label已经-2，原来的下一个现在就是当前startLabel
-                                // 需要+2来移动到下一个routine
-                                conn.start.label = (startLabel + 2).toString();
-                            }
-                        } else if (adjustment.type === 'end') {
-                            // 原来的结束点被删除了
-                            if (originalRoutineCount <= 1) {
-                                // Loop只包含1个routine，删除后Loop应该被删除
-                                conn.start.label = adjustment.originalEnd.toString();
-                                conn.end.label = adjustment.originalEnd.toString();
-                            } else if (originalRoutineCount === 2) {
-                                // Loop只包含2个routine，删除结束点后只剩起始点
-                                // 让start和end都指向剩下的routine（原来的起始点）
-                                conn.start.label = adjustment.originalStart.toString();
-                                conn.end.label = adjustment.originalStart.toString();
-                            } else {
-                                // Loop包含3个或更多routine，新的结束点是原来的上一个
-                                // 由于被删除的结束点label不大于removedLabel，所以不会自动-2
-                                // 需要-2来移动到原来的上一个routine
-                                conn.end.label = (adjustment.originalEnd - 2).toString();
-                            }
-                        }
-                        // 如果是middle类型，不需要额外调整，因为label自动更新已经正确处理了范围
-                    }
-
-                    // 检查Loop是否变得无效
-                    const newStartLabel = parseInt(conn.start.label);
-                    const newEndLabel = parseInt(conn.end.label);
-
-                    // 只有当Loop范围确实为空时才删除（min > max的情况）
-                    // start==end的情况不应该删除loop，应该保留
-                    if (newStartLabel > newEndLabel) {
-                        connections.splice(i, 1);
-                    }
-                }
-
-                // 所有 label 更新完成后再调用 updatePoints()，确保重新关联到正确的点
-                updatePoints();
-
-                // 重置 originalConnectionLabels
-                originalConnectionLabels = null;
-
-                updateRoutineCount();
-                draw();
+                
+                // 使用新的重构流程删除 routine
+                rebuildFlowchartAfterRemove(removedRoutineIndex);
             }
         });
 
@@ -5186,6 +6299,24 @@
             <div class="avtp-keyboard-actions">
                 <button class="avtp-keyboard-btn-secondary" id="clearKeyboardBtn">Clear</button>
                 <button class="avtp-keyboard-btn-primary" id="confirmKeyboardBtn">Confirm</button>
+            </div>
+        </div>
+    </div>
+    <div class="preview-modal" id="previewModal">
+        <div class="preview-modal-container">
+            <div class="preview-modal-header">
+                <span class="preview-modal-title" id="previewModalTitle">删除预览</span>
+                <button class="preview-modal-close" id="previewModalClose">×</button>
+            </div>
+            <div class="preview-modal-content">
+                <div class="preview-info" id="previewInfo"></div>
+                <div class="preview-canvas-container">
+                    <canvas id="previewCanvas" class="preview-canvas"></canvas>
+                </div>
+            </div>
+            <div class="preview-modal-buttons">
+                <button class="preview-modal-btn preview-modal-btn-cancel" id="previewModalCancel">取消</button>
+                <button class="preview-modal-btn preview-modal-btn-confirm" id="previewModalConfirm">确认删除</button>
             </div>
         </div>
     </div>
