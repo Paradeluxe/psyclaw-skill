@@ -148,16 +148,61 @@
         }
 
         .psyclaw-accordion-content.open {
-            max-height: 2000px;
+            max-height: 60vh;
+            overflow-y: auto;
         }
 
         .psyclaw-accordion-inner {
-            padding: 12px 16px;
+            padding: 4px 12px 12px;
         }
 
         .psyclaw-form-group {
-            margin-bottom: 16px;
+            margin-bottom: 12px;
             width: 100%;
+        }
+
+        .psyclaw-form-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .psyclaw-form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .provider-select-btn {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1.5px solid var(--border-gray);
+            border-radius: 8px;
+            background: var(--bg-white);
+            color: var(--text-dark);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .provider-select-btn:hover {
+            border-color: var(--primary-light);
+        }
+
+        .provider-select-btn:focus {
+            outline: none;
+            border-color: var(--primary-500);
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+        }
+
+        .dropdown-arrow {
+            width: 18px;
+            height: 18px;
+            color: var(--text-muted);
+            flex-shrink: 0;
         }
 
         .psyclaw-form-label {
@@ -812,19 +857,60 @@
         }
 
         .section-heading {
-            font-family: 'Poppins', sans-serif;
-            font-size: 18px;
-            font-weight: 500;
-            margin-bottom: 12px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 10px;
             color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .section-heading::before {
+            content: '';
+            display: inline-block;
+            width: 3px;
+            height: 14px;
+            background: var(--brand-blue);
+            border-radius: 2px;
         }
 
         .section-heading-with-margin {
-            font-family: 'Poppins', sans-serif;
-            font-size: 18px;
-            font-weight: 500;
-            margin: 20px 0 12px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            margin: 16px 0 10px;
             color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .section-heading-with-margin::before {
+            content: '';
+            display: inline-block;
+            width: 3px;
+            height: 14px;
+            background: var(--brand-blue);
+            border-radius: 2px;
+        }
+
+        .settings-section {
+            background: var(--bg-white);
+            border-radius: 12px;
+            padding: 12px 16px;
+            margin-bottom: 8px;
+        }
+
+        .settings-section:first-of-type {
+            margin-top: 4px;
+        }
+
+        .slider-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
         }
 
         .full-width-btn {
@@ -911,68 +997,93 @@
                 </button>
                 <div class="psyclaw-accordion-content" id="advancedSettingsContent">
                     <div class="psyclaw-accordion-inner">
-                        <h3 class="section-heading">API Configuration</h3>
-                        
-                        <div class="psyclaw-form-group">
-                            <label class="psyclaw-form-label">API URL</label>
-                            <input type="text" class="psyclaw-form-input" id="apiUrl" placeholder="Enter API URL, e.g.: https://api.openai.com/v1">
-                        </div>
-
-                        <div class="psyclaw-form-group">
-                            <label class="psyclaw-form-label">API Key</label>
-                            <input type="password" class="psyclaw-form-input" id="apiKey" placeholder="Enter API key">
-                        </div>
-
-                        <div class="psyclaw-form-group">
+                        <!-- API Configuration Section -->
+                        <div class="settings-section">
+                            <h3 class="section-heading">API Configuration</h3>
+                            <div class="psyclaw-form-group">
+                                <label class="psyclaw-form-label">Service Provider</label>
+                                <div class="dropdown" id="providerDropdown">
+                                    <button type="button" class="provider-select-btn full-width" id="providerSelectBtn">
+                                        <span id="providerLabel">Select provider</span>
+                                        <svg class="dropdown-arrow" viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M7 10l5 5 5-5z"/>
+                                        </svg>
+                                    </button>
+                                    <div class="dropdown-content" id="providerDropdownContent">
+                                        <a href="#" data-value="aliyun" data-url="https://dashscope.aliyuncs.com/compatible-mode/v1">阿里云百炼</a>
+                                        <a href="#" data-value="minimax" data-url="https://api.minimax.chat/v1">MiniMax</a>
+                                        <a href="#" data-value="openai" data-url="https://api.openai.com/v1">OpenAI</a>
+                                        <a href="#" data-value="azure" data-url="https://{your-resource}.openai.azure.com/openai/deployments/{deployment-id}">Azure OpenAI</a>
+                                        <a href="#" data-value="anthropic" data-url="https://api.anthropic.com/v1">Anthropic</a>
+                                        <a href="#" data-value="custom" data-url="">Custom URL...</a>
+                                    </div>
+                                </div>
+                                <input type="hidden" id="providerSelect" value="">
+                            </div>
+                            <div class="psyclaw-form-group">
+                                <label class="psyclaw-form-label">API URL</label>
+                                <input type="text" class="psyclaw-form-input" id="apiUrl" placeholder="https://api.openai.com/v1">
+                            </div>
+                            <div class="psyclaw-form-group">
+                                <label class="psyclaw-form-label">API Key</label>
+                                <input type="password" class="psyclaw-form-input" id="apiKey" placeholder="Enter API key">
+                            </div>
                             <button class="psyclaw-btn full-width-btn" id="checkApiBtn">Check API</button>
                         </div>
 
-                        <h3 class="section-heading-with-margin">Model Configuration</h3>
-
-                        <div class="psyclaw-form-group">
-                            <label class="psyclaw-form-label">Model Selection</label>
-                            <div class="dropdown" id="modelDropdown">
-                                <div class="input-with-clear">
-                                    <input type="text" class="dropbtn" id="modelDropbtn" placeholder="Select or enter model name" autocomplete="off">
-                                    <button type="button" class="clear-btn" id="clearModelBtn" title="Clear selection">×</button>
+                        <!-- Model Configuration Section -->
+                        <div class="settings-section">
+                            <h3 class="section-heading">Model Configuration</h3>
+                            <div class="psyclaw-form-group">
+                                <label class="psyclaw-form-label">Model Selection</label>
+                                <div class="dropdown" id="modelDropdown">
+                                    <div class="input-with-clear">
+                                        <input type="text" class="dropbtn" id="modelDropbtn" placeholder="Select or enter model name" autocomplete="off">
+                                        <button type="button" class="clear-btn" id="clearModelBtn" title="Clear selection">×</button>
+                                    </div>
+                                    <div class="dropdown-content" id="modelDropdownContent">
+                                        <!-- Model options will be added dynamically -->
+                                    </div>
                                 </div>
-                                <div class="dropdown-content" id="modelDropdownContent">
-                                    <!-- Model options will be added dynamically -->
+                                <input type="hidden" id="modelSelect" value="">
+                                <div class="hint-text">Select from available models or enter custom model name</div>
+                            </div>
+                        </div>
+
+                        <!-- Generation Parameters Section -->
+                        <div class="settings-section">
+                            <h3 class="section-heading">Generation Parameters</h3>
+                            <div class="slider-grid">
+                                <div class="slider-container">
+                                    <div class="slider-label">
+                                        <span>Temperature</span>
+                                        <span class="slider-value" id="tempValue">0.0</span>
+                                    </div>
+                                    <input type="range" class="psyclaw-slider" id="temperature" min="0.0" max="1.0" step="0.1" value="0.0" aria-label="Temperature">
+                                </div>
+                                <div class="slider-container">
+                                    <div class="slider-label">
+                                        <span>Top-p</span>
+                                        <span class="slider-value" id="topPValue">0.0</span>
+                                    </div>
+                                    <input type="range" class="psyclaw-slider" id="topP" min="0.0" max="1.0" step="0.05" value="0.0" aria-label="Top-p">
+                                </div>
+                                <div class="slider-container">
+                                    <div class="slider-label">
+                                        <span>Max Length</span>
+                                        <span class="slider-value" id="maxLengthValue">1024</span>
+                                    </div>
+                                    <input type="range" class="psyclaw-slider" id="maxLength" min="128" max="4096" step="128" value="1024" aria-label="Max Generation Length">
                                 </div>
                             </div>
-                            <input type="hidden" id="modelSelect" value="">
-                            <div class="hint-text">Select from available models or enter custom model name</div>
                         </div>
 
-                        <h3 class="section-heading-with-margin">Generation Parameters</h3>
-
-                        <div class="slider-container">
-                            <div class="slider-label">
-                                <span>Temperature (Creativity)</span>
-                                <span class="slider-value" id="tempValue">0.0</span>
+                        <!-- System Prompt Section -->
+                        <div class="settings-section">
+                            <h3 class="section-heading">System Prompt</h3>
+                            <div class="psyclaw-form-group">
+                                <textarea class="psyclaw-form-input psyclaw-form-textarea" id="systemPrompt" placeholder="Enter system prompt to guide AI behavior and style">You are a professional, friendly AI assistant</textarea>
                             </div>
-                            <input type="range" class="psyclaw-slider" id="temperature" min="0.0" max="1.0" step="0.1" value="0.0" aria-label="Temperature (Creativity)">
-                        </div>
-
-                        <div class="slider-container">
-                            <div class="slider-label">
-                                <span>Top-p (Sampling Range)</span>
-                                <span class="slider-value" id="topPValue">0.0</span>
-                            </div>
-                            <input type="range" class="psyclaw-slider" id="topP" min="0.0" max="1.0" step="0.05" value="0.0" aria-label="Top-p (Sampling Range)">
-                        </div>
-
-                        <div class="slider-container">
-                            <div class="slider-label">
-                                <span>Max Generation Length</span>
-                                <span class="slider-value" id="maxLengthValue">1024</span>
-                            </div>
-                            <input type="range" class="psyclaw-slider" id="maxLength" min="128" max="4096" step="128" value="1024" aria-label="Max Generation Length">
-                        </div>
-
-                        <div class="psyclaw-form-group">
-                            <label class="psyclaw-form-label">System Prompt</label>
-                            <textarea class="psyclaw-form-input psyclaw-form-textarea" id="systemPrompt" placeholder="Enter system prompt to guide AI behavior and style">You are a professional, friendly AI assistant</textarea>
                         </div>
 
                         <button class="psyclaw-btn full-width-btn" id="saveSettingsBtn">Save Settings</button>
@@ -1046,6 +1157,12 @@
         const modelDropbtn = document.getElementById('modelDropbtn');
         const modelDropdownContent = document.getElementById('modelDropdownContent');
         const clearModelBtn = document.getElementById('clearModelBtn');
+
+        // Provider dropdown elements
+        const providerSelectBtn = document.getElementById('providerSelectBtn');
+        const providerLabel = document.getElementById('providerLabel');
+        const providerDropdownContent = document.getElementById('providerDropdownContent');
+        const providerSelectInput = document.getElementById('providerSelect');
         const temperatureSlider = document.getElementById('temperature');
         const topPSlider = document.getElementById('topP');
         const maxLengthSlider = document.getElementById('maxLength');
@@ -1582,7 +1699,7 @@
                 modelDropdownContent.classList.remove('show');
                 
                 // Show clear button when model is selected
-                document.querySelector('.input-with-clear').classList.add('has-value');
+                document.querySelector('#modelDropdown .input-with-clear').classList.add('has-value');
                 
                 // Update visual selection
                 modelDropdownContent.querySelectorAll('a').forEach(a => a.classList.remove('selected'));
@@ -1590,6 +1707,92 @@
                 
                 // Update model name display
                 updateModelNameDisplay();
+            }
+        });
+
+        // Provider dropdown functionality
+        let providerDropdownOpen = false;
+        
+        providerSelectBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            providerDropdownOpen = !providerDropdownOpen;
+            if (providerDropdownOpen) {
+                providerDropdownContent.classList.add('show');
+            } else {
+                providerDropdownContent.classList.remove('show');
+            }
+        });
+
+        // Handle provider selection
+        providerDropdownContent.addEventListener('click', (e) => {
+            if (e.target.tagName === 'A') {
+                e.preventDefault();
+                const selectedProvider = e.target.getAttribute('data-value');
+                const providerUrl = e.target.getAttribute('data-url');
+                const providerName = e.target.textContent;
+                
+                providerSelectInput.value = selectedProvider;
+                providerLabel.textContent = providerName;
+                providerDropdownOpen = false;
+                providerDropdownContent.classList.remove('show');
+                
+                // Update visual selection
+                providerDropdownContent.querySelectorAll('a').forEach(a => a.classList.remove('selected'));
+                e.target.classList.add('selected');
+                
+                // Auto-fill API URL
+                apiUrlInput.value = providerUrl || '';
+            }
+        });
+
+        // Close provider dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!providerSelectBtn.contains(e.target) && !providerDropdownContent.contains(e.target)) {
+                providerDropdownOpen = false;
+                providerDropdownContent.classList.remove('show');
+            }
+        });
+
+        // Provider URL mapping for auto-detection
+        const providerUrlMap = [
+            { value: 'aliyun', url: 'dashscope.aliyuncs.com', name: '阿里云百炼' },
+            { value: 'minimax', url: 'api.minimax.chat', name: 'MiniMax' },
+            { value: 'openai', url: 'api.openai.com', name: 'OpenAI' },
+            { value: 'azure', url: 'openai.azure.com', name: 'Azure OpenAI' },
+            { value: 'anthropic', url: 'api.anthropic.com', name: 'Anthropic' }
+        ];
+
+        // Auto-detect provider when URL changes
+        apiUrlInput.addEventListener('input', () => {
+            const url = apiUrlInput.value.trim().toLowerCase();
+            if (!url) {
+                providerLabel.textContent = 'Select provider';
+                providerSelectInput.value = '';
+                providerDropdownContent.querySelectorAll('a').forEach(a => a.classList.remove('selected'));
+                return;
+            }
+
+            const matchedProvider = providerUrlMap.find(p => url.includes(p.url));
+            if (matchedProvider) {
+                providerLabel.textContent = matchedProvider.name;
+                providerSelectInput.value = matchedProvider.value;
+                // Update visual selection
+                providerDropdownContent.querySelectorAll('a').forEach(a => {
+                    a.classList.remove('selected');
+                    if (a.getAttribute('data-value') === matchedProvider.value) {
+                        a.classList.add('selected');
+                    }
+                });
+            } else {
+                providerLabel.textContent = 'Custom';
+                providerSelectInput.value = 'custom';
+                providerDropdownContent.querySelectorAll('a').forEach(a => {
+                    a.classList.remove('selected');
+                    if (a.getAttribute('data-value') === 'custom') {
+                        a.classList.add('selected');
+                    }
+                });
             }
         });
 
