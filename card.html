@@ -1064,6 +1064,7 @@
             color: var(--brand-blue);
             border-color: var(--primary-200);
             background: var(--primary-200);
+            margin-top: 12px;
         }
 
         .conditions-btn.add-btn:hover {
@@ -1439,6 +1440,7 @@
             font-weight: 500;
             cursor: pointer;
             transition: all 0.2s;
+            -webkit-user-select: none;
             user-select: none;
             border: 2px solid transparent;
             font-family: var(--font-ui);
@@ -1916,7 +1918,7 @@
                             No variables detected. Add variables starting with '$' in your routines/loops first.
                         </div>
                     </div>
-                    <button type="button" class="conditions-btn add-btn" id="addConditionRowBtn" style="margin-top: 12px;">
+                    <button type="button" class="conditions-btn add-btn" id="addConditionRowBtn">
                         + Add Condition
                     </button>
                 </div>

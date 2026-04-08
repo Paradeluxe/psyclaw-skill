@@ -205,6 +205,10 @@
             flex-shrink: 0;
         }
 
+        #providerLabel {
+            line-height: 1;
+        }
+
         .psyclaw-form-label {
             display: block;
             font-family: 'Poppins', sans-serif;
@@ -522,7 +526,6 @@
         .chat-message.system {
             background: var(--primary-200);
             color: var(--brand-deep);
-            font-style: italic;
         }
 
         .chat-message.error {
@@ -537,7 +540,7 @@
         }
 
         .chat-input-area {
-            padding: 16px 24px;
+            padding: 16px 12px;
             background: var(--bg-light);
             border: 1px solid var(--border-light);
             border-radius: 20px;
@@ -1011,7 +1014,7 @@
                                     </button>
                                     <div class="dropdown-content" id="providerDropdownContent">
                                         <a href="#" data-value="aliyun" data-url="https://dashscope.aliyuncs.com/compatible-mode/v1">阿里云百炼</a>
-                                        <a href="#" data-value="minimax" data-url="https://api.minimax.chat/v1">MiniMax</a>
+                                        <a href="#" data-value="minimax" data-url="https://api.minimaxi.com/v1">MiniMax</a>
                                         <a href="#" data-value="openai" data-url="https://api.openai.com/v1">OpenAI</a>
                                         <a href="#" data-value="azure" data-url="https://{your-resource}.openai.azure.com/openai/deployments/{deployment-id}">Azure OpenAI</a>
                                         <a href="#" data-value="anthropic" data-url="https://api.anthropic.com/v1">Anthropic</a>
@@ -1757,7 +1760,7 @@
         // Provider URL mapping for auto-detection
         const providerUrlMap = [
             { value: 'aliyun', url: 'dashscope.aliyuncs.com', name: '阿里云百炼' },
-            { value: 'minimax', url: 'api.minimax.chat', name: 'MiniMax' },
+            { value: 'minimax', url: 'api.minimaxi.com', name: 'MiniMax' },
             { value: 'openai', url: 'api.openai.com', name: 'OpenAI' },
             { value: 'azure', url: 'openai.azure.com', name: 'Azure OpenAI' },
             { value: 'anthropic', url: 'api.anthropic.com', name: 'Anthropic' }
