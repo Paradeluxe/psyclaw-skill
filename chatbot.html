@@ -1014,7 +1014,8 @@
                                     </button>
                                     <div class="dropdown-content" id="providerDropdownContent">
                                         <a href="#" data-value="aliyun" data-url="https://dashscope.aliyuncs.com/compatible-mode/v1">阿里云百炼</a>
-                                        <a href="#" data-value="minimax" data-url="https://api.minimaxi.com/v1">MiniMax</a>
+                                        <a href="#" data-value="minimax" data-url="https://api.minimaxi.com/anthropic">MiniMax 国内</a>
+                                        <a href="#" data-value="minimax-intl" data-url="https://api.minimax.chat/v1">MiniMax 国际</a>
                                         <a href="#" data-value="openai" data-url="https://api.openai.com/v1">OpenAI</a>
                                         <a href="#" data-value="azure" data-url="https://{your-resource}.openai.azure.com/openai/deployments/{deployment-id}">Azure OpenAI</a>
                                         <a href="#" data-value="anthropic" data-url="https://api.anthropic.com/v1">Anthropic</a>
@@ -1479,12 +1480,47 @@
                 const saved = localStorage.getItem(SETTINGS_KEY);
                 if (saved) {
                     const settings = JSON.parse(saved);
-                    apiUrlInput.value = settings.api_url || '';
-                    apiKeyInput.value = settings.api_key || '';
-                    modelSelectInput.value = settings.model || '';
-                    if (settings.model) {
-                        modelDropbtn.value = settings.model;
-                        document.querySelector('.input-with-clear').classList.add('has-value');
+                    const currentUrl = settings.api_url || '';
+                    apiUrlInput.value = currentUrl;
+
+                    // 尝试从URL-API Key映射中获取对应Key
+                    if (settings.url_api_keys && currentUrl) {
+                        const matchedKey = Object.entries(settings.url_api_keys).find(
+                            ([url]) => currentUrl.toLowerCase().includes(url.toLowerCase())
+                        );
+                        if (matchedKey) {
+                            apiKeyInput.value = matchedKey[1] || '';
+                        } else {
+                            apiKeyInput.value = settings.api_key || '';
+                        }
+                    } else {
+                        apiKeyInput.value = settings.api_key || '';
+                    }
+
+                    // 尝试从URL-模型映射中获取对应模型
+                    if (settings.url_models && currentUrl) {
+                        const matchedModel = Object.entries(settings.url_models).find(
+                            ([url]) => currentUrl.toLowerCase().includes(url.toLowerCase())
+                        );
+                        if (matchedModel) {
+                            modelSelectInput.value = matchedModel[1] || '';
+                            modelDropbtn.value = matchedModel[1] || '';
+                            if (matchedModel[1]) {
+                                document.querySelector('.input-with-clear').classList.add('has-value');
+                            }
+                        } else {
+                            modelSelectInput.value = settings.model || '';
+                            modelDropbtn.value = settings.model || '';
+                            if (settings.model) {
+                                document.querySelector('.input-with-clear').classList.add('has-value');
+                            }
+                        }
+                    } else {
+                        modelSelectInput.value = settings.model || '';
+                        modelDropbtn.value = settings.model || '';
+                        if (settings.model) {
+                            document.querySelector('.input-with-clear').classList.add('has-value');
+                        }
                     }
                     temperatureSlider.value = settings.temperature || 0.0;
                     topPSlider.value = settings.top_p || 0.0;
@@ -1494,6 +1530,30 @@
                     document.getElementById('tempValue').textContent = settings.temperature || 0.0;
                     document.getElementById('topPValue').textContent = settings.top_p || 0.0;
                     document.getElementById('maxLengthValue').textContent = settings.max_length || 1024;
+
+                    if (currentUrl) {
+                        const url = currentUrl.trim().toLowerCase();
+                        const matchedProvider = providerUrlMap.find(p => url.includes(p.url));
+                        if (matchedProvider) {
+                            providerLabel.textContent = matchedProvider.name;
+                            providerSelectInput.value = matchedProvider.value;
+                            providerDropdownContent.querySelectorAll('a').forEach(a => {
+                                a.classList.remove('selected');
+                                if (a.getAttribute('data-value') === matchedProvider.value) {
+                                    a.classList.add('selected');
+                                }
+                            });
+                        } else if (url) {
+                            providerLabel.textContent = 'Custom';
+                            providerSelectInput.value = 'custom';
+                            providerDropdownContent.querySelectorAll('a').forEach(a => {
+                                a.classList.remove('selected');
+                                if (a.getAttribute('data-value') === 'custom') {
+                                    a.classList.add('selected');
+                                }
+                            });
+                        }
+                    }
                 }
                 updateModelNameDisplay();
             } catch (e) {
@@ -1502,15 +1562,57 @@
         }
 
         function saveSettings() {
-            const settings = {
-                api_url: apiUrlInput.value.trim(),
-                api_key: apiKeyInput.value.trim(),
-                model: modelSelectInput.value.trim(),
+            const currentUrl = apiUrlInput.value.trim();
+            const currentApiKey = apiKeyInput.value.trim();
+            const currentModel = modelSelectInput.value.trim();
+
+            // 获取现有设置
+            let settings = {
+                api_url: currentUrl,
                 temperature: parseFloat(temperatureSlider.value),
                 top_p: parseFloat(topPSlider.value),
                 max_length: parseInt(maxLengthSlider.value),
                 system_prompt: systemPromptInput.value.trim()
             };
+
+            // 尝试加载现有的URL映射
+            try {
+                const saved = localStorage.getItem(SETTINGS_KEY);
+                if (saved) {
+                    const existingSettings = JSON.parse(saved);
+                    settings.url_api_keys = existingSettings.url_api_keys || {};
+                    settings.url_models = existingSettings.url_models || {};
+                } else {
+                    settings.url_api_keys = {};
+                    settings.url_models = {};
+                }
+            } catch (e) {
+                settings.url_api_keys = {};
+                settings.url_models = {};
+            }
+
+            // 更新当前URL对应的API Key和模型
+            if (currentUrl) {
+                try {
+                    const urlObj = new URL(currentUrl);
+                    const urlKey = urlObj.host + urlObj.pathname.replace(/\/$/, '');
+
+                    if (currentApiKey) {
+                        settings.url_api_keys[urlKey] = currentApiKey;
+                    }
+                    if (currentModel) {
+                        settings.url_models[urlKey] = currentModel;
+                    }
+                } catch (e) {
+                    // 如果URL无效，只用原始URL作为key
+                    if (currentApiKey) {
+                        settings.url_api_keys[currentUrl] = currentApiKey;
+                    }
+                    if (currentModel) {
+                        settings.url_models[currentUrl] = currentModel;
+                    }
+                }
+            }
 
             try {
                 localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
@@ -1535,6 +1637,17 @@
 
         async function getModelList(baseUrl, apiKey) {
             baseUrl = baseUrl.rstrip('/');
+
+            // MiniMax：从官方文档获取模型列表
+            if (baseUrl.includes('api.minimaxi.com')) {
+                return getMiniMaxModelsFromDocs('minimax');
+            }
+
+            if (baseUrl.includes('api.minimax.chat')) {
+                return getMiniMaxModelsFromDocs('minimax-intl');
+            }
+
+            // 其他 provider 使用标准 /models API
             if (!baseUrl.endsWith('/models')) {
                 baseUrl = baseUrl + '/models';
             }
@@ -1556,6 +1669,62 @@
                 return data.data?.map(model => model.id) || [];
             } catch (e) {
                 throw new Error(`Failed to fetch models: ${e.message}`);
+            }
+        }
+
+        const providerDocsUrlMap = {
+            'minimax': 'https://platform.minimaxi.com/docs/api-reference/api-overview',
+            'minimax-intl': 'https://platform.minimax.io/docs/api-reference/api-overview'
+        };
+
+        async function getMiniMaxModelsFromDocs(provider) {
+            const docsUrl = providerDocsUrlMap[provider] || providerDocsUrlMap['minimax'];
+
+            try {
+                const response = await fetch(docsUrl);
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch docs: ${response.status}`);
+                }
+
+                const html = await response.text();
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+
+                const models = new Set();
+                const content = doc.body.innerText;
+
+                // 匹配 MiniMax 文本生成模型
+                const allPatterns = [
+                    ...content.matchAll(/MiniMax-M2\.\d+(?:-highspeed)?/gi)
+                ];
+
+                allPatterns.forEach(match => models.add(match[0]));
+
+                // 如果无法从网页提取，返回默认模型列表（按新旧顺序）
+                if (models.size === 0) {
+                    return [
+                        'MiniMax-M2.7',
+                        'MiniMax-M2.7-highspeed',
+                        'MiniMax-M2.5',
+                        'MiniMax-M2.5-highspeed',
+                        'MiniMax-M2.1',
+                        'MiniMax-M2.1-highspeed',
+                        'MiniMax-M2'
+                    ];
+                }
+
+                return Array.from(models).sort().reverse(); // 新模型放前面
+            } catch (e) {
+                // 网络错误时返回默认列表（按新旧顺序）
+                return [
+                    'MiniMax-M2.7',
+                    'MiniMax-M2.7-highspeed',
+                    'MiniMax-M2.5',
+                    'MiniMax-M2.5-highspeed',
+                    'MiniMax-M2.1',
+                    'MiniMax-M2.1-highspeed',
+                    'MiniMax-M2'
+                ];
             }
         }
 
@@ -1593,7 +1762,7 @@
                     return;
                 }
 
-                const priorityModels = ['qwen3.5-flash', 'qwen3.5-plus'];
+                const priorityModels = ['MiniMax-M2.7', 'MiniMax-M2.7-highspeed', 'MiniMax-M2.5', 'MiniMax-M2.5-highspeed', 'MiniMax-M2.1', 'MiniMax-M2.1-highspeed', 'MiniMax-M2', 'qwen3.5-flash', 'qwen3.5-plus'];
                 let defaultModel = null;
                 for (const pm of priorityModels) {
                     if (modelList.includes(pm)) {
@@ -1739,13 +1908,64 @@
                 providerLabel.textContent = providerName;
                 providerDropdownOpen = false;
                 providerDropdownContent.classList.remove('show');
-                
+
                 // Update visual selection
                 providerDropdownContent.querySelectorAll('a').forEach(a => a.classList.remove('selected'));
                 e.target.classList.add('selected');
-                
+
                 // Auto-fill API URL
                 apiUrlInput.value = providerUrl || '';
+
+                // 检查是否有对应的API Key
+                if (providerUrl) {
+                    try {
+                        const saved = localStorage.getItem(SETTINGS_KEY);
+                        if (saved) {
+                            const settings = JSON.parse(saved);
+                            const urlObj = new URL(providerUrl);
+                            const urlKey = urlObj.host + urlObj.pathname.replace(/\/$/, '');
+
+                            // 获取对应的API Key
+                            if (settings.url_api_keys) {
+                                const matchedKey = Object.entries(settings.url_api_keys).find(
+                                    ([key]) => key.toLowerCase() === urlKey.toLowerCase()
+                                );
+                                if (matchedKey) {
+                                    apiKeyInput.value = matchedKey[1] || '';
+                                }
+                            }
+
+                            // 获取对应的模型
+                            let modelFound = false;
+                            if (settings.url_models) {
+                                const matchedModel = Object.entries(settings.url_models).find(
+                                    ([key]) => key.toLowerCase() === urlKey.toLowerCase()
+                                );
+                                if (matchedModel) {
+                                    modelSelectInput.value = matchedModel[1] || '';
+                                    modelDropbtn.value = matchedModel[1] || '';
+                                    if (matchedModel[1]) {
+                                        document.querySelector('.input-with-clear').classList.add('has-value');
+                                    }
+                                    modelFound = true;
+                                }
+                            }
+
+                            // 如果没有找到已保存的模型，使用默认模型
+                            if (!modelFound && selectedProvider && providerDefaultModels[selectedProvider]) {
+                                const defaultModel = providerDefaultModels[selectedProvider];
+                                modelSelectInput.value = defaultModel;
+                                modelDropbtn.value = defaultModel;
+                                document.querySelector('.input-with-clear').classList.add('has-value');
+                            }
+                        }
+                    } catch (e) {
+                        console.error('Error loading settings for provider:', e);
+                    }
+                }
+
+                // 更新右上角模型名称显示
+                updateModelNameDisplay();
             }
         });
 
@@ -1760,11 +1980,21 @@
         // Provider URL mapping for auto-detection
         const providerUrlMap = [
             { value: 'aliyun', url: 'dashscope.aliyuncs.com', name: '阿里云百炼' },
-            { value: 'minimax', url: 'api.minimaxi.com', name: 'MiniMax' },
+            { value: 'minimax', url: 'api.minimaxi.com/anthropic', name: 'MiniMax 国内' },
+            { value: 'minimax-intl', url: 'api.minimax.chat', name: 'MiniMax 国际' },
             { value: 'openai', url: 'api.openai.com', name: 'OpenAI' },
             { value: 'azure', url: 'openai.azure.com', name: 'Azure OpenAI' },
             { value: 'anthropic', url: 'api.anthropic.com', name: 'Anthropic' }
         ];
+
+        // Provider 默认模型映射
+        const providerDefaultModels = {
+            'aliyun': 'qwen3.5-flash',
+            'minimax': 'MiniMax-M2.7',
+            'minimax-intl': 'MiniMax-M2.7',
+            'openai': 'gpt-4o-mini',
+            'anthropic': 'claude-3-5-sonnet-20241022'
+        };
 
         // Auto-detect provider when URL changes
         apiUrlInput.addEventListener('input', () => {
