@@ -815,21 +815,54 @@ function generateFlow(routineRects, connections) {
     
     // 根据 loop 的包含关系重新计算深度
     // 被包含越多的 loop，depth 应该越大
-    for (let i = 0; i < loops.length; i++) {
-        let depth = 0;
-        for (let j = 0; j < loops.length; j++) {
-            if (i === j) continue;
-            // 如果 loop j 包含 loop i（j 的范围更大，完全包含 i）
-            if (loops[j].startRoutineIndex <= loops[i].startRoutineIndex && 
-                loops[j].endRoutineIndex >= loops[i].endRoutineIndex &&
-                (loops[j].startRoutineIndex < loops[i].startRoutineIndex || 
-                 loops[j].endRoutineIndex > loops[i].endRoutineIndex)) {
-                depth++;
+    // 使用迭代方式直到 depths 稳定，解决循环依赖问题
+    let depthsChanged = true;
+    let iterationCount = 0;
+    const maxIterations = loops.length + 1;
+    
+    // 初始化 depth 为 0
+    loops.forEach(loop => {
+        loop.depth = 0;
+    });
+    
+    while (depthsChanged && iterationCount < maxIterations) {
+        depthsChanged = false;
+        iterationCount++;
+        
+        for (let i = 0; i < loops.length; i++) {
+            let newDepth = 0;
+            for (let j = 0; j < loops.length; j++) {
+                if (i === j) continue;
+                // 如果 loop j 包含 loop i（j 的范围更大，完全包含 i）
+                const jContainsI = loops[j].startRoutineIndex <= loops[i].startRoutineIndex && 
+                                   loops[j].endRoutineIndex >= loops[i].endRoutineIndex;
+                
+                if (jContainsI) {
+                    // 检查是否真的是包含（start 更小 或 end 更大）
+                    // 或者起点终点都相同但 j 是后加入的（在 connections 数组中索引更大）
+                    const isStrictlyLarger = (loops[j].startRoutineIndex < loops[i].startRoutineIndex || 
+                                              loops[j].endRoutineIndex > loops[i].endRoutineIndex);
+                    
+                    // 相同起点和终点时，后加入的 loop 包含先加入的
+                    const isSameRange = (loops[j].startRoutineIndex === loops[i].startRoutineIndex && 
+                                         loops[j].endRoutineIndex === loops[i].endRoutineIndex);
+                    
+                    if (isStrictlyLarger || (isSameRange && j > i)) {
+                        newDepth = Math.max(newDepth, loops[j].depth + 1);
+                    }
+                }
+            }
+            
+            if (newDepth !== loops[i].depth) {
+                loops[i].depth = newDepth;
+                depthsChanged = true;
             }
         }
-        loops[i].depth = depth;
-        console.log(`Loop ${loops[i].name} recalculated depth: ${depth}`);
     }
+    
+    loops.forEach(loop => {
+        console.log(`Loop ${loop.name} final depth: ${loop.depth}`);
+    });
     
     loops.sort((a, b) => a.depth - b.depth);
     

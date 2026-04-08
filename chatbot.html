@@ -515,6 +515,9 @@
             background: var(--text-charcoal);
             color: var(--bg-white);
             margin-left: auto;
+            text-align: right;
+            width: fit-content;
+            max-width: 85%;
         }
 
         .chat-message.assistant {
@@ -1013,11 +1016,10 @@
                                         </svg>
                                     </button>
                                     <div class="dropdown-content" id="providerDropdownContent">
-                                        <a href="#" data-value="aliyun" data-url="https://dashscope.aliyuncs.com/compatible-mode/v1">阿里云百炼</a>
-                                        <a href="#" data-value="minimax" data-url="https://api.minimaxi.com/anthropic">MiniMax 国内</a>
-                                        <a href="#" data-value="minimax-intl" data-url="https://api.minimax.chat/v1">MiniMax 国际</a>
+                                        <a href="#" data-value="aliyun" data-url="https://dashscope.aliyuncs.com/compatible-mode/v1">Aliyun Dashscope (阿里云百炼)</a>
+                                        <a href="#" data-value="minimax" data-url="https://api.minimaxi.com/v1">MiniMax CN (国内)</a>
+                                        <a href="#" data-value="minimax-intl" data-url="https://api.minimax.chat/v1">MiniMax INT'L (国际)</a>
                                         <a href="#" data-value="openai" data-url="https://api.openai.com/v1">OpenAI</a>
-                                        <a href="#" data-value="azure" data-url="https://{your-resource}.openai.azure.com/openai/deployments/{deployment-id}">Azure OpenAI</a>
                                         <a href="#" data-value="anthropic" data-url="https://api.anthropic.com/v1">Anthropic</a>
                                         <a href="#" data-value="custom" data-url="">Custom URL...</a>
                                     </div>
@@ -1079,14 +1081,6 @@
                                     </div>
                                     <input type="range" class="psyclaw-slider" id="maxLength" min="128" max="4096" step="128" value="1024" aria-label="Max Generation Length">
                                 </div>
-                            </div>
-                        </div>
-
-                        <!-- System Prompt Section -->
-                        <div class="settings-section">
-                            <h3 class="section-heading">System Prompt</h3>
-                            <div class="psyclaw-form-group">
-                                <textarea class="psyclaw-form-input psyclaw-form-textarea" id="systemPrompt" placeholder="Enter system prompt to guide AI behavior and style">You are a professional, friendly AI assistant</textarea>
                             </div>
                         </div>
 
@@ -1170,7 +1164,6 @@
         const temperatureSlider = document.getElementById('temperature');
         const topPSlider = document.getElementById('topP');
         const maxLengthSlider = document.getElementById('maxLength');
-        const systemPromptInput = document.getElementById('systemPrompt');
         const checkApiBtn = document.getElementById('checkApiBtn');
         const saveSettingsBtn = document.getElementById('saveSettingsBtn');
         const advancedSettingsHeader = document.getElementById('advancedSettingsHeader');
@@ -1385,9 +1378,9 @@
         let flowchartSchema = defaultFlowchartSchema;
 
         function updateModelNameDisplay() {
-            const modelName = modelSelectInput.value || modelDropbtn.value || 'No model selected';
+            const modelName = modelSelectInput.value || modelDropbtn.value || '';
             if (modelNameDisplay) {
-                modelNameDisplay.textContent = modelName;
+                modelNameDisplay.textContent = modelName || 'No model selected';
             }
             
             // Enable/disable send button based on model selection
@@ -1475,6 +1468,17 @@
         // 测试 removeFileBtn 是否存在
         console.log('removeFileBtn element:', removeFileBtn);
 
+        // 辅助函数：从URL生成标准化的key
+        function getNormalizedUrlKey(url) {
+            if (!url) return null;
+            try {
+                const urlObj = new URL(url.trim());
+                return (urlObj.host + urlObj.pathname.replace(/\/$/, '')).toLowerCase();
+            } catch (e) {
+                return url.trim().toLowerCase();
+            }
+        }
+
         function loadSettings() {
             try {
                 const saved = localStorage.getItem(SETTINGS_KEY);
@@ -1483,55 +1487,64 @@
                     const currentUrl = settings.api_url || '';
                     apiUrlInput.value = currentUrl;
 
-                    // 尝试从URL-API Key映射中获取对应Key
+                    // 使用标准化的URL key来匹配API Key
                     if (settings.url_api_keys && currentUrl) {
-                        const matchedKey = Object.entries(settings.url_api_keys).find(
-                            ([url]) => currentUrl.toLowerCase().includes(url.toLowerCase())
-                        );
-                        if (matchedKey) {
-                            apiKeyInput.value = matchedKey[1] || '';
+                        const urlKey = getNormalizedUrlKey(currentUrl);
+                        if (urlKey && settings.url_api_keys[urlKey]) {
+                            apiKeyInput.value = settings.url_api_keys[urlKey];
                         } else {
-                            apiKeyInput.value = settings.api_key || '';
+                            // 兼容旧数据：尝试查找匹配的key
+                            const matchedKey = Object.entries(settings.url_api_keys).find(
+                                ([key]) => urlKey && key.toLowerCase() === urlKey
+                            );
+                            if (matchedKey) {
+                                apiKeyInput.value = matchedKey[1] || '';
+                            } else {
+                                apiKeyInput.value = settings.api_key || '';
+                            }
                         }
                     } else {
                         apiKeyInput.value = settings.api_key || '';
                     }
 
-                    // 尝试从URL-模型映射中获取对应模型
-                    if (settings.url_models && currentUrl) {
-                        const matchedModel = Object.entries(settings.url_models).find(
-                            ([url]) => currentUrl.toLowerCase().includes(url.toLowerCase())
-                        );
-                        if (matchedModel) {
-                            modelSelectInput.value = matchedModel[1] || '';
-                            modelDropbtn.value = matchedModel[1] || '';
-                            if (matchedModel[1]) {
-                                document.querySelector('.input-with-clear').classList.add('has-value');
-                            }
-                        } else {
-                            modelSelectInput.value = settings.model || '';
-                            modelDropbtn.value = settings.model || '';
-                            if (settings.model) {
-                                document.querySelector('.input-with-clear').classList.add('has-value');
-                            }
-                        }
-                    } else {
-                        modelSelectInput.value = settings.model || '';
-                        modelDropbtn.value = settings.model || '';
-                        if (settings.model) {
-                            document.querySelector('.input-with-clear').classList.add('has-value');
-                        }
-                    }
+                    // 模型只在点击 Check API 后加载，这里不自动加载
+                    modelSelectInput.value = '';
+                    modelDropbtn.value = '';
+                    document.querySelector('.input-with-clear')?.classList.remove('has-value');
                     temperatureSlider.value = settings.temperature || 0.0;
                     topPSlider.value = settings.top_p || 0.0;
                     maxLengthSlider.value = settings.max_length || 1024;
-                    systemPromptInput.value = settings.system_prompt || 'You are a professional, friendly AI assistant';
 
                     document.getElementById('tempValue').textContent = settings.temperature || 0.0;
                     document.getElementById('topPValue').textContent = settings.top_p || 0.0;
                     document.getElementById('maxLengthValue').textContent = settings.max_length || 1024;
 
-                    if (currentUrl) {
+                    // 加载Provider：优先使用保存的provider值
+                    const savedProvider = settings.provider;
+                    if (savedProvider) {
+                        // 使用保存的provider
+                        const providerOption = providerDropdownContent.querySelector(`a[data-value="${savedProvider}"]`);
+                        if (providerOption) {
+                            providerLabel.textContent = providerOption.textContent;
+                            providerSelectInput.value = savedProvider;
+                            providerDropdownContent.querySelectorAll('a').forEach(a => {
+                                a.classList.remove('selected');
+                                if (a.getAttribute('data-value') === savedProvider) {
+                                    a.classList.add('selected');
+                                }
+                            });
+                        } else if (savedProvider === 'custom') {
+                            providerLabel.textContent = 'Custom';
+                            providerSelectInput.value = 'custom';
+                            providerDropdownContent.querySelectorAll('a').forEach(a => {
+                                a.classList.remove('selected');
+                                if (a.getAttribute('data-value') === 'custom') {
+                                    a.classList.add('selected');
+                                }
+                            });
+                        }
+                    } else if (currentUrl) {
+                        // 兼容旧数据：从URL推断provider
                         const url = currentUrl.trim().toLowerCase();
                         const matchedProvider = providerUrlMap.find(p => url.includes(p.url));
                         if (matchedProvider) {
@@ -1565,51 +1578,54 @@
             const currentUrl = apiUrlInput.value.trim();
             const currentApiKey = apiKeyInput.value.trim();
             const currentModel = modelSelectInput.value.trim();
+            const currentProvider = providerSelectInput.value;
 
             // 获取现有设置
             let settings = {
                 api_url: currentUrl,
+                api_key: currentApiKey,
+                model: currentModel,
+                provider: currentProvider,
                 temperature: parseFloat(temperatureSlider.value),
                 top_p: parseFloat(topPSlider.value),
-                max_length: parseInt(maxLengthSlider.value),
-                system_prompt: systemPromptInput.value.trim()
+                max_length: parseInt(maxLengthSlider.value)
             };
 
             // 尝试加载现有的URL映射
+            settings.url_api_keys = {};
+            settings.url_models = {};
             try {
                 const saved = localStorage.getItem(SETTINGS_KEY);
                 if (saved) {
                     const existingSettings = JSON.parse(saved);
-                    settings.url_api_keys = existingSettings.url_api_keys || {};
-                    settings.url_models = existingSettings.url_models || {};
-                } else {
-                    settings.url_api_keys = {};
-                    settings.url_models = {};
+                    if (existingSettings.url_api_keys) {
+                        settings.url_api_keys = existingSettings.url_api_keys;
+                    }
+                    if (existingSettings.url_models) {
+                        settings.url_models = existingSettings.url_models;
+                    }
                 }
             } catch (e) {
-                settings.url_api_keys = {};
-                settings.url_models = {};
+                console.error('Error loading existing settings:', e);
             }
 
-            // 更新当前URL对应的API Key和模型
+            // 更新当前URL对应的API Key和模型（使用标准化的key）
             if (currentUrl) {
-                try {
-                    const urlObj = new URL(currentUrl);
-                    const urlKey = urlObj.host + urlObj.pathname.replace(/\/$/, '');
-
+                const urlKey = getNormalizedUrlKey(currentUrl);
+                if (urlKey) {
                     if (currentApiKey) {
                         settings.url_api_keys[urlKey] = currentApiKey;
                     }
                     if (currentModel) {
                         settings.url_models[urlKey] = currentModel;
                     }
-                } catch (e) {
-                    // 如果URL无效，只用原始URL作为key
+                } else {
+                    // 如果URL无效，使用原始URL作为key
                     if (currentApiKey) {
-                        settings.url_api_keys[currentUrl] = currentApiKey;
+                        settings.url_api_keys[currentUrl.toLowerCase()] = currentApiKey;
                     }
                     if (currentModel) {
-                        settings.url_models[currentUrl] = currentModel;
+                        settings.url_models[currentUrl.toLowerCase()] = currentModel;
                     }
                 }
             }
@@ -1713,7 +1729,23 @@
                     ];
                 }
 
-                return Array.from(models).sort().reverse(); // 新模型放前面
+                // 按版本号从新到旧排序
+                return Array.from(models).sort((a, b) => {
+                    // 提取版本号，例如 "MiniMax-M2.7" -> 2.7
+                    const getVersion = (name) => {
+                        const match = name.match(/M(\d+\.?\d*)/);
+                        return match ? parseFloat(match[1]) : 0;
+                    };
+                    const verA = getVersion(a);
+                    const verB = getVersion(b);
+                    if (verB !== verA) {
+                        return verB - verA; // 版本号大的在前
+                    }
+                    // 版本号相同，highspeed 排在后面
+                    if (a.includes('highspeed') && !b.includes('highspeed')) return 1;
+                    if (!a.includes('highspeed') && b.includes('highspeed')) return -1;
+                    return a.localeCompare(b);
+                });
             } catch (e) {
                 // 网络错误时返回默认列表（按新旧顺序）
                 return [
@@ -1740,28 +1772,41 @@
             const apiUrl = apiUrlInput.value.trim();
             const apiKey = apiKeyInput.value.trim();
 
+            // Step 0: Clear model selection
+            modelSelectInput.value = '';
+            modelDropbtn.value = '';
+            document.querySelector('#modelDropdown .input-with-clear')?.classList.remove('has-value');
+            modelDropdownContent.innerHTML = '';
+            modelList = [];
+            apiCheckSuccessful = false;
+            updateModelNameDisplay();
+
+            // Step 1: Validate API URL and Key format
             const validation = validateApi(apiUrl, apiKey);
             if (validation.includes('❌')) {
                 checkApiBtn.textContent = validation;
                 checkApiBtn.className = 'psyclaw-btn full-width-btn error';
-                modelDropdownContent.innerHTML = '';
                 return;
             }
 
-            checkApiBtn.innerHTML = '<span class="loading-indicator"></span>Checking...';
+            checkApiBtn.innerHTML = '<span class="loading-indicator"></span>Checking API...';
             checkApiBtn.className = 'psyclaw-btn full-width-btn';
 
             try {
+                // Step 2: Fetch model list (this validates the API key)
                 const fetchedModels = await getModelList(apiUrl, apiKey);
                 modelList = fetchedModels;
 
                 if (modelList.length === 0) {
                     checkApiBtn.textContent = '⚠️ No models found';
                     checkApiBtn.className = 'psyclaw-btn full-width-btn warning';
-                    modelDropdownContent.innerHTML = '';
                     return;
                 }
 
+                // Populate dropdown
+                modelDropdownContent.innerHTML = modelList.map(m => `<a href="#" data-value="${m}">${m}</a>`).join('');
+
+                // Select default model
                 const priorityModels = ['MiniMax-M2.7', 'MiniMax-M2.7-highspeed', 'MiniMax-M2.5', 'MiniMax-M2.5-highspeed', 'MiniMax-M2.1', 'MiniMax-M2.1-highspeed', 'MiniMax-M2', 'qwen3.5-flash', 'qwen3.5-plus'];
                 let defaultModel = null;
                 for (const pm of priorityModels) {
@@ -1774,36 +1819,53 @@
                     defaultModel = modelList[0];
                 }
 
-                // Populate custom dropdown
-                modelDropdownContent.innerHTML = modelList.map(m => `<a href="#" data-value="${m}">${m}</a>`).join('');
-                
-                if (defaultModel && !modelSelectInput.value) {
+                if (defaultModel) {
                     modelSelectInput.value = defaultModel;
                     modelDropbtn.value = defaultModel;
-                    document.querySelector('.input-with-clear').classList.add('has-value');
+                    document.querySelector('#modelDropdown .input-with-clear')?.classList.add('has-value');
                 }
 
                 updateModelNameDisplay();
                 checkApiBtn.textContent = `${modelList.length} models found`;
                 checkApiBtn.className = 'psyclaw-btn full-width-btn success';
+                apiCheckSuccessful = true;
             } catch (e) {
                 checkApiBtn.textContent = `❌ ${e.message}`;
                 checkApiBtn.className = 'psyclaw-btn full-width-btn error';
-                modelDropdownContent.innerHTML = '';
             }
         }
 
-        // Dropdown toggle - show on focus
+        // Dropdown toggle - show on focus when API check is successful
+        let apiCheckSuccessful = false;
+        let isModelDropdownOpen = false;
+        
         modelDropbtn.addEventListener('focus', (e) => {
-            if (modelList.length > 0) {
+            if (apiCheckSuccessful && modelList.length > 0 && !isModelDropdownOpen) {
                 filterModelOptions(modelDropbtn.value);
                 modelDropdownContent.classList.add('show');
+                isModelDropdownOpen = true;
             }
         });
 
         modelDropbtn.addEventListener('blur', (e) => {
             if (!modelDropdownContent.contains(e.relatedTarget)) {
                 modelDropdownContent.classList.remove('show');
+                isModelDropdownOpen = false;
+            }
+        });
+
+        // Handle dropdown toggle on click
+        modelDropbtn.addEventListener('mousedown', (e) => {
+            if (apiCheckSuccessful && modelList.length > 0) {
+                e.preventDefault();
+                if (isModelDropdownOpen) {
+                    modelDropdownContent.classList.remove('show');
+                    isModelDropdownOpen = false;
+                } else {
+                    filterModelOptions(modelDropbtn.value);
+                    modelDropdownContent.classList.add('show');
+                    isModelDropdownOpen = true;
+                }
             }
         });
 
@@ -1841,16 +1903,32 @@
             updateModelNameDisplay();
         });
 
-        // Filter function
+        // Filter function - sort by relevance, show all
         function filterModelOptions(searchTerm) {
-            const options = modelDropdownContent.querySelectorAll('a');
+            const options = Array.from(modelDropdownContent.querySelectorAll('a'));
+            const term = searchTerm.toLowerCase();
+            
+            // Sort options by relevance (startsWith > includes > not match)
+            options.sort((a, b) => {
+                const nameA = a.getAttribute('data-value').toLowerCase();
+                const nameB = b.getAttribute('data-value').toLowerCase();
+                
+                const aStartsWith = nameA.startsWith(term);
+                const bStartsWith = nameB.startsWith(term);
+                const aIncludes = nameA.includes(term);
+                const bIncludes = nameB.includes(term);
+                
+                if (aStartsWith && !bStartsWith) return -1;
+                if (!aStartsWith && bStartsWith) return 1;
+                if (aIncludes && !bIncludes) return -1;
+                if (!aIncludes && bIncludes) return 1;
+                return nameA.localeCompare(nameB);
+            });
+            
+            // Re-append in sorted order and show all
             options.forEach(option => {
-                const modelName = option.getAttribute('data-value').toLowerCase();
-                if (modelName.includes(searchTerm)) {
-                    option.style.display = 'block';
-                } else {
-                    option.style.display = 'none';
-                }
+                modelDropdownContent.appendChild(option);
+                option.style.display = 'block';
             });
         }
 
@@ -1895,6 +1973,15 @@
                 providerDropdownContent.classList.remove('show');
             }
         });
+        
+        // Close when clicking outside (using mousedown to catch clicks before focus)
+        document.addEventListener('mousedown', (e) => {
+            const isClickInsideProvider = providerSelectBtn.contains(e.target) || providerDropdownContent.contains(e.target);
+            if (!isClickInsideProvider && providerDropdownOpen) {
+                providerDropdownOpen = false;
+                providerDropdownContent.classList.remove('show');
+            }
+        });
 
         // Handle provider selection
         providerDropdownContent.addEventListener('click', (e) => {
@@ -1913,77 +2000,95 @@
                 providerDropdownContent.querySelectorAll('a').forEach(a => a.classList.remove('selected'));
                 e.target.classList.add('selected');
 
+                // Clear model selection when provider changes
+                modelSelectInput.value = '';
+                modelDropbtn.value = '';
+                document.querySelector('#modelDropdown .input-with-clear')?.classList.remove('has-value');
+                modelList = [];
+                modelDropdownContent.innerHTML = '';
+                apiCheckSuccessful = false;
+                updateModelNameDisplay();
+
+                // Reset Check API button
+                checkApiBtn.textContent = 'Check API';
+                checkApiBtn.className = 'psyclaw-btn full-width-btn';
+
                 // Auto-fill API URL
                 apiUrlInput.value = providerUrl || '';
 
-                // 检查是否有对应的API Key
-                if (providerUrl) {
-                    try {
-                        const saved = localStorage.getItem(SETTINGS_KEY);
-                        if (saved) {
-                            const settings = JSON.parse(saved);
-                            const urlObj = new URL(providerUrl);
-                            const urlKey = urlObj.host + urlObj.pathname.replace(/\/$/, '');
+                // 加载保存的设置
+                let hasApiKeyForProvider = false;
+                try {
+                    const saved = localStorage.getItem(SETTINGS_KEY);
+                    if (saved) {
+                        const settings = JSON.parse(saved);
 
-                            // 获取对应的API Key
-                            if (settings.url_api_keys) {
-                                const matchedKey = Object.entries(settings.url_api_keys).find(
-                                    ([key]) => key.toLowerCase() === urlKey.toLowerCase()
-                                );
-                                if (matchedKey) {
-                                    apiKeyInput.value = matchedKey[1] || '';
-                                }
-                            }
+                        // 如果有预设的provider URL，尝试加载对应的API Key和模型
+                        if (providerUrl) {
+                            const urlKey = getNormalizedUrlKey(providerUrl);
 
-                            // 获取对应的模型
-                            let modelFound = false;
-                            if (settings.url_models) {
-                                const matchedModel = Object.entries(settings.url_models).find(
-                                    ([key]) => key.toLowerCase() === urlKey.toLowerCase()
-                                );
-                                if (matchedModel) {
-                                    modelSelectInput.value = matchedModel[1] || '';
-                                    modelDropbtn.value = matchedModel[1] || '';
-                                    if (matchedModel[1]) {
-                                        document.querySelector('.input-with-clear').classList.add('has-value');
+                            if (urlKey) {
+                                // 获取对应的API Key
+                                if (settings.url_api_keys && settings.url_api_keys[urlKey]) {
+                                    apiKeyInput.value = settings.url_api_keys[urlKey];
+                                    hasApiKeyForProvider = true;
+                                } else {
+                                    // 兼容旧数据：尝试精确匹配
+                                    const matchedKey = Object.entries(settings.url_api_keys || {}).find(
+                                        ([key]) => key.toLowerCase() === urlKey
+                                    );
+                                    if (matchedKey) {
+                                        apiKeyInput.value = matchedKey[1];
+                                        hasApiKeyForProvider = true;
+                                    } else {
+                                        apiKeyInput.value = '';
                                     }
-                                    modelFound = true;
                                 }
-                            }
 
-                            // 如果没有找到已保存的模型，使用默认模型
-                            if (!modelFound && selectedProvider && providerDefaultModels[selectedProvider]) {
-                                const defaultModel = providerDefaultModels[selectedProvider];
-                                modelSelectInput.value = defaultModel;
-                                modelDropbtn.value = defaultModel;
-                                document.querySelector('.input-with-clear').classList.add('has-value');
+                                // 不自动加载模型，只有在点击 Check API 后才显示模型
+                                // 清空模型选择
+                                modelSelectInput.value = '';
+                                modelDropbtn.value = '';
+                                document.querySelector('.input-with-clear')?.classList.remove('has-value');
+                                modelList = [];
+                                modelDropdownContent.innerHTML = '';
+                                apiCheckSuccessful = false;
+                            } else {
+                                apiKeyInput.value = '';
                             }
+                        } else {
+                            // Custom URL 或空URL，清空API Key
+                            apiKeyInput.value = '';
                         }
-                    } catch (e) {
-                        console.error('Error loading settings for provider:', e);
+                    } else {
+                        // 没有保存的设置，清空API Key
+                        apiKeyInput.value = '';
                     }
+                } catch (e) {
+                    console.error('Error loading settings for provider:', e);
+                    apiKeyInput.value = '';
                 }
 
                 // 更新右上角模型名称显示
                 updateModelNameDisplay();
+
+                // 如果有该provider的API Key，自动触发Check API
+                if (hasApiKeyForProvider && providerUrl) {
+                    setTimeout(() => {
+                        checkAvailableModels();
+                    }, 100);
+                }
             }
         });
 
-        // Close provider dropdown when clicking outside
-        document.addEventListener('click', (e) => {
-            if (!providerSelectBtn.contains(e.target) && !providerDropdownContent.contains(e.target)) {
-                providerDropdownOpen = false;
-                providerDropdownContent.classList.remove('show');
-            }
-        });
+
 
         // Provider URL mapping for auto-detection
         const providerUrlMap = [
-            { value: 'aliyun', url: 'dashscope.aliyuncs.com', name: '阿里云百炼' },
-            { value: 'minimax', url: 'api.minimaxi.com/anthropic', name: 'MiniMax 国内' },
-            { value: 'minimax-intl', url: 'api.minimax.chat', name: 'MiniMax 国际' },
+            { value: 'aliyun', url: 'dashscope.aliyuncs.com', name: 'Aliyun Dashscope' },
+            { value: 'minimax', url: 'api.minimaxi.com', name: 'MiniMax CN' },
+            { value: 'minimax-intl', url: 'api.minimax.chat', name: "MiniMax INT'L" },
             { value: 'openai', url: 'api.openai.com', name: 'OpenAI' },
-            { value: 'azure', url: 'openai.azure.com', name: 'Azure OpenAI' },
             { value: 'anthropic', url: 'api.anthropic.com', name: 'Anthropic' }
         ];
 
@@ -2060,8 +2165,7 @@
                 model: modelSelectInput.value.trim(),
                 temperature: parseFloat(temperatureSlider.value),
                 top_p: parseFloat(topPSlider.value),
-                max_length: parseInt(maxLengthSlider.value),
-                system_prompt: systemPromptInput.value.trim()
+                max_length: parseInt(maxLengthSlider.value)
             };
 
             if (!message && !currentFile) {
@@ -2105,16 +2209,9 @@ ${JSON.stringify(flowchartSchema, null, 2)}
 5. Output must be compact JSON without extra whitespace or newlines
 6. Keep text content concise to avoid token limits`;
 
-            if (settings.system_prompt) {
-                messages.push({ role: 'system', content: settings.system_prompt + '\n\n' + flowchartSystemPrompt });
-            } else {
-                messages.push({ role: 'system', content: flowchartSystemPrompt });
-            }
+            messages.push({ role: 'system', content: flowchartSystemPrompt });
 
             let userContent = message || '';
-            
-            // 添加 JSON 输出要求，这是使用 response_format 的必要条件
-            userContent += '\n\nPlease output JSON strictly according to the schema above, without any explanatory text.';
             
             if (currentFile) {
                 try {
@@ -2131,7 +2228,7 @@ ${JSON.stringify(flowchartSchema, null, 2)}
 
             messages.push({ role: 'user', content: userContent });
 
-            addMessage(userContent, 'user');
+            addMessage(message, 'user');
             chatInput.value = '';
             clearFile();
             sendBtn.disabled = true;
@@ -2254,6 +2351,27 @@ ${JSON.stringify(flowchartSchema, null, 2)}
         checkApiBtn.addEventListener('click', checkAvailableModels);
         saveSettingsBtn.addEventListener('click', saveSettings);
 
+        // 自动保存：输入框失去焦点时保存
+        apiUrlInput.addEventListener('blur', saveSettings);
+        apiKeyInput.addEventListener('blur', saveSettings);
+
+        // 自动保存：模型选择变化时保存
+        modelDropbtn.addEventListener('blur', saveSettings);
+        modelSelectInput.addEventListener('change', saveSettings);
+
+        // 自动保存：参数滑块变化时保存（使用防抖）
+        let saveTimeout;
+        function debouncedSave() {
+            clearTimeout(saveTimeout);
+            saveTimeout = setTimeout(saveSettings, 500);
+        }
+        temperatureSlider.addEventListener('input', debouncedSave);
+        topPSlider.addEventListener('input', debouncedSave);
+        maxLengthSlider.addEventListener('input', debouncedSave);
+
+        // 页面关闭前自动保存
+        window.addEventListener('beforeunload', saveSettings);
+
         temperatureSlider.addEventListener('input', (e) => {
             document.getElementById('tempValue').textContent = e.target.value;
         });
@@ -2352,11 +2470,13 @@ ${JSON.stringify(flowchartSchema, null, 2)}
         // Initialize send button state
         updateModelNameDisplay();
         
-        // Auto-check API if credentials are saved
-        const savedApiUrl = apiUrlInput.value.trim();
-        const savedApiKey = apiKeyInput.value.trim();
-        if (savedApiUrl && savedApiKey) {
-            checkAvailableModels();
+        // 初始化时，如果当前Provider有API Key，自动触发Check API
+        const currentApiUrl = apiUrlInput.value.trim();
+        const currentApiKey = apiKeyInput.value.trim();
+        if (currentApiUrl && currentApiKey) {
+            setTimeout(() => {
+                checkAvailableModels();
+            }, 100);
         }
         
         console.log('PsyClaw Chatbot ready');
