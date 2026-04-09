@@ -1159,6 +1159,58 @@
             color: #c62828;
         }
 
+        .loop-contents-display {
+            background: var(--bg-light);
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            padding: 12px;
+        }
+
+        .loop-contents-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .loop-contents-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-family: var(--font-ui);
+        }
+
+        .loop-contents-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .loop-content-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            border-radius: 9999px;
+            font-size: 11px;
+            font-weight: 500;
+            font-family: var(--font-ui);
+        }
+
+        .loop-content-tag.routine {
+            background: var(--primary-100);
+            color: var(--primary-700);
+        }
+
+        .loop-content-tag.loop {
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+
+        .loop-content-tag-icon {
+            width: 12px;
+            height: 12px;
+        }
+
         .conditions-empty-state {
             padding: 24px;
             text-align: center;
@@ -1884,6 +1936,16 @@
                         <option value="sequential">sequential</option>
                         <option value="fullRandom">fullRandom</option>
                     </select>
+                </div>
+            </div>
+            <div class="avtp-form-group">
+                <div class="loop-contents-display" id="loopContentsDisplay">
+                    <div class="loop-contents-header">
+                        <span class="loop-contents-title">Contains</span>
+                    </div>
+                    <div class="loop-contents-list" id="loopContentsList">
+                        <!-- Routines and loops will be listed here -->
+                    </div>
                 </div>
             </div>
             <div class="avtp-form-group">
@@ -2809,7 +2871,10 @@
 
                 ctx.stroke();
                 const middleX = (previewConn.start.x + previewConn.end.x) / 2;
-                const followRectWidth = 60;
+                const previewLoopName = draggedConnection.loopName || 'trials';
+                ctx.font = '500 14px DM Sans, Outfit, sans-serif';
+                const previewTextWidth = ctx.measureText(previewLoopName).width;
+                const followRectWidth = Math.max(60, previewTextWidth + 24);
                 const followRectHeight = 30;
                 const followRectRadius = 8;
 
@@ -2821,10 +2886,9 @@
                 ctx.stroke();
 
                 ctx.fillStyle = '#222222';
-                ctx.font = '500 16px DM Sans, Outfit, sans-serif';
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
-                ctx.fillText(previewConn.depth + 1, middleX, cornerY);
+                ctx.fillText(previewLoopName, middleX, cornerY);
 
                 ctx.setLineDash([]);
                 return;
@@ -2896,7 +2960,10 @@
 
                 ctx.stroke();
                 const middleX = (startPoint.x + targetPoint.x) / 2;
-                const followRectWidth = 60;
+                const newLoopName = previewConn.loopName || 'trials';
+                ctx.font = '500 14px DM Sans, Outfit, sans-serif';
+                const newTextWidth = ctx.measureText(newLoopName).width;
+                const followRectWidth = Math.max(60, newTextWidth + 24);
                 const followRectHeight = 30;
                 const followRectRadius = 8;
 
@@ -2908,10 +2975,9 @@
                 ctx.stroke();
 
                 ctx.fillStyle = '#222222';
-                ctx.font = '500 16px DM Sans, Outfit, sans-serif';
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
-                ctx.fillText(previewConn.depth + 1, middleX, cornerY);
+                ctx.fillText(newLoopName, middleX, cornerY);
 
                 ctx.setLineDash([]);
             }
@@ -2937,6 +3003,92 @@
                 }
             }
             return routines;
+        }
+        
+        // 获取 loop 包含的所有 routines 和 nested loops
+        function getLoopContents(conn, allConnections) {
+            const startLabel = parseInt(conn.start.label);
+            const endLabel = parseInt(conn.end.label);
+            const minLabel = Math.min(startLabel, endLabel);
+            const maxLabel = Math.max(startLabel, endLabel);
+            const connDepth = conn.depth || 0;
+
+            const routines = [];
+            const loops = [];
+            
+            // 获取包含的 routines
+            for (let i = 0; i < routineRects.length; i++) {
+                const rect = routineRects[i];
+                if (!rect) continue;
+                const routineLeftLabel = i * 2 + 1;
+                const routineRightLabel = i * 2 + 3;
+                if (routineLeftLabel >= minLabel && routineRightLabel <= maxLabel) {
+                    routines.push({ name: rect.name || `Routine ${i + 1}`, type: 'routine', index: i });
+                }
+            }
+            
+            // 获取直接嵌套的 loops（需要满足：1. 在范围内 2. depth = connDepth - 1）
+            for (let i = 0; i < allConnections.length; i++) {
+                const otherConn = allConnections[i];
+                if (otherConn === conn) continue;
+                
+                const otherStartLabel = parseInt(otherConn.start.label);
+                const otherEndLabel = parseInt(otherConn.end.label);
+                const otherMinLabel = Math.min(otherStartLabel, otherEndLabel);
+                const otherMaxLabel = Math.max(otherStartLabel, otherEndLabel);
+                const otherDepth = otherConn.depth || 0;
+                
+                // 检查这个 loop 是否完全在当前 loop 范围内，且是直接子级（depth = connDepth - 1）
+                // 注意：depth 越大表示越外层（包含更多内容），所以被包含的 loop 有更小的 depth
+                if (otherMinLabel >= minLabel && otherMaxLabel <= maxLabel && otherDepth === connDepth - 1) {
+                    loops.push({ name: otherConn.loopName || `Loop ${i + 1}`, type: 'loop', index: i });
+                }
+            }
+            
+            return { routines, loops };
+        }
+        
+        function updateLoopContentsDisplay(conn) {
+            const loopContentsList = document.getElementById('loopContentsList');
+            if (!loopContentsList) return;
+            
+            const contents = getLoopContents(conn, connections);
+            
+            let html = '';
+            
+            // Add routine tags
+            contents.routines.forEach(routine => {
+                html += `
+                    <span class="loop-content-tag routine">
+                        <svg class="loop-content-tag-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="18" height="18" rx="2"/>
+                            <path d="M9 9h6v6H9z"/>
+                        </svg>
+                        ${routine.name}
+                    </span>
+                `;
+            });
+            
+            // Add nested loop tags
+            contents.loops.forEach(loop => {
+                html += `
+                    <span class="loop-content-tag loop">
+                        <svg class="loop-content-tag-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M17 2l4 4-4 4"/>
+                            <path d="M3 11v-1a4 4 0 014-4h14"/>
+                            <path d="M7 22l-4-4 4-4"/>
+                            <path d="M21 13v1a4 4 0 01-4 4H3"/>
+                        </svg>
+                        ${loop.name}
+                    </span>
+                `;
+            });
+            
+            if (html === '') {
+                html = '<span style="color: var(--text-muted); font-size: 11px;">No routines or loops</span>';
+            }
+            
+            loopContentsList.innerHTML = html;
         }
 
         function drawConnectionLines() {
@@ -3033,7 +3185,11 @@
                 ctx.stroke();
 
                 const middleX = (conn.start.x + conn.end.x) / 2;
-                const followRectWidth = 60;
+                const loopName = conn.loopName || 'trials';
+                ctx.font = '600 14px DM Sans, Outfit, sans-serif';
+                // 根据文字宽度计算矩形宽度，最小60，两边各留12px边距
+                const textWidth = ctx.measureText(loopName).width;
+                const followRectWidth = Math.max(60, textWidth + 24);
                 const followRectHeight = 30;
                 const followRectRadius = 8;
 
@@ -3053,24 +3209,25 @@
 
                 ctx.fillStyle = isSelected && !isPreview ? '#1456f0' : '#8e8e93';
                 ctx.textAlign = 'center';
-                ctx.textBaseline = 'alphabetic';
-                const loopReps = conn.loopReps || 1;
-                ctx.font = '600 16px DM Sans, Outfit, sans-serif';
-                // 调整Y坐标使数字在矩形中垂直居中
-                const textY = cornerY + 5;
-                ctx.fillText(loopReps, middleX, textY);
+                ctx.textBaseline = 'middle';
+                // 在矩形中垂直居中
+                ctx.fillText(loopName, middleX, cornerY);
 
-                // 绘制 loop 包含的 routines label
+                // 绘制 loop 包含的 routines 和 nested loops label
                 if (!isPreview) {
-                    const loopRoutines = getLoopRoutines(conn);
-                    if (loopRoutines.length > 0) {
+                    const loopContents = getLoopContents(conn, allConns);
+                    const allItems = [
+                        ...loopContents.routines.map(r => r.name),
+                        ...loopContents.loops.map(l => l.name)
+                    ];
+                    if (allItems.length > 0) {
                         ctx.fillStyle = isSelected ? '#1456f0' : '#45515e';
                         ctx.font = '12px DM Sans, sans-serif';
                         ctx.textAlign = 'center';
                         ctx.textBaseline = 'bottom';
                         
-                        // 构建显示文本：routine1, routine2, ...
-                        let labelText = loopRoutines.join(', ');
+                        // 构建显示文本：routine1, routine2, loop1, ...
+                        let labelText = allItems.join(', ');
                         const maxWidth = Math.abs(endX - startX) - 20; // 最大宽度为 loop 宽度减去边距
                         
                         // 如果文本太长，截断并添加省略号
@@ -4348,6 +4505,8 @@
             formLoopType.value = conn.loopType || 'sequential';
             formLoopConditions.value = conn.loopConditions || '';
 
+            updateLoopContentsDisplay(conn);
+
 
             switchToTableView();
 
@@ -4526,6 +4685,13 @@
         formAudioStopWithRoutine.addEventListener('change', saveFormChanges);
         formAudioForceEndRoutine.addEventListener('change', saveFormChanges);
         formKeyboardForceEndRoutine.addEventListener('change', saveFormChanges);
+        // Loop name 实时更新（类似 routine name）
+        formLoopName.addEventListener('input', () => {
+            if (activeConnection) {
+                activeConnection.loopName = formLoopName.value || 'trials';
+                draw();
+            }
+        });
         formLoopName.addEventListener('change', saveLoopFormChanges);
         formLoopReps.addEventListener('change', saveLoopFormChanges);
         formLoopType.addEventListener('change', saveLoopFormChanges);
@@ -4618,11 +4784,11 @@
             try {
                 const parsed = JSON.parse(jsonStr);
                 if (Array.isArray(parsed) && parsed.length > 0) {
-                    // Extract all unique variable names from all conditions (excluding 'name')
+                    // Extract all unique variable names from all conditions (excluding 'name' and 'weight')
                     const variableSet = new Set();
                     parsed.forEach(condition => {
                         Object.keys(condition).forEach(key => {
-                            if (key !== 'name') {
+                            if (key !== 'name' && key !== 'weight') {
                                 variableSet.add(key);
                             }
                         });
@@ -4635,18 +4801,19 @@
                         selectedVars = parsed._meta.selectedVars;
                     }
 
-                    // Extract condition names (row names) and their values
+                    // Extract condition names (row names), weight, and their values
                     const conditions = parsed
                         .filter((item, index) => index !== '_meta')  // Filter out _meta entry
                         .map((condition, index) => {
                             const conditionName = condition.name || `Condition ${index + 1}`;
+                            const weight = condition.weight !== undefined ? condition.weight : 1;
                             const values = {};
                             Object.keys(condition).forEach(key => {
-                                if (key !== 'name') {
+                                if (key !== 'name' && key !== 'weight') {
                                     values[key] = condition[key];
                                 }
                             });
-                            return { name: conditionName, values };
+                            return { name: conditionName, weight: weight, values };
                         });
 
                     return { variables, conditions, selectedVars };
@@ -4728,9 +4895,15 @@
                 const nameInput = row.querySelector('.condition-row-name');
                 if (nameInput && nameInput.value.trim()) {
                     const condition = { name: nameInput.value.trim() };
+                    
+                    // 获取 weight 值，默认值为 1
+                    const weightInput = row.querySelector('.condition-row-weight');
+                    const weightValue = weightInput && weightInput.value ? parseInt(weightInput.value) || 1 : 1;
+                    condition.weight = weightValue;
+                    
                     // 只保存已选择的变量
                     const selectedVarsArray = Array.from(selectedVariables);
-                    const valueInputs = row.querySelectorAll('td input:not(.condition-row-name)');
+                    const valueInputs = row.querySelectorAll('td input:not(.condition-row-name):not(.condition-row-weight)');
 
                     // 遍历所有 value 输入框
                     valueInputs.forEach((valueInput, index) => {
@@ -4773,6 +4946,16 @@
                 conditionsTableHeaderRow.appendChild(th);
             });
 
+            // Add header cell for Weight column
+            const weightTh = document.createElement('th');
+            weightTh.style.width = '70px';
+            weightTh.innerHTML = `
+                <div style="display: flex; align-items: center; padding: 2px 0;">
+                    <label style="flex: 1; padding: 4px 6px; font-size: 11px; text-align: center;">Weight</label>
+                </div>
+            `;
+            conditionsTableHeaderRow.appendChild(weightTh);
+
             // Add header cell for remove button
             const removeBtnTh = document.createElement('th');
             removeBtnTh.style.width = '40px';
@@ -4793,14 +4976,18 @@
 
                 // 保存现有的值
                 const existingValues = {};
-                const oldInputs = row.querySelectorAll('td input:not(.condition-row-name)');
+                const oldInputs = row.querySelectorAll('td input:not(.condition-row-name):not(.condition-row-weight)');
                 oldInputs.forEach((input, index) => {
                     if (index < selectedVarsArray.length) {
                         existingValues[selectedVarsArray[index]] = input.value;
                     }
                 });
 
-                // 清除现有的变量单元格（保留 Condition 列和操作列）
+                // 保存现有的 weight 值
+                const weightInput = row.querySelector('.condition-row-weight');
+                const existingWeight = weightInput ? weightInput.value : '1';
+
+                // 清除现有的变量单元格（保留 Condition 列、Weight 列和操作列）
                 const cells = row.querySelectorAll('td');
                 for (let i = cells.length - 2; i > 0; i--) {
                     row.removeChild(cells[i]);
@@ -4813,6 +5000,11 @@
                     td.innerHTML = `<input type="text" class="condition-cell-${CSS.escape(varName)}" value="${value}" placeholder="Value" style="width: 100%; padding: 6px 8px; border: 1px solid #e0e0e0; border-radius: 4px; font-size: 12px;">`;
                     row.insertBefore(td, row.lastElementChild);
                 });
+
+                // 添加 weight 单元格
+                const weightTd = document.createElement('td');
+                weightTd.innerHTML = `<input type="number" class="condition-row-weight" value="${existingWeight}" min="0" step="1" placeholder="1" style="width: 100%; padding: 6px 8px; border: 1px solid #e0e0e0; border-radius: 4px; font-size: 12px; text-align: center;">`;
+                row.insertBefore(weightTd, row.lastElementChild);
             });
 
             updateConditionsTableState();
@@ -4854,6 +5046,10 @@
                     cellsHtml += `<td><input type="text" class="condition-cell-${CSS.escape(varName)}" value="${value}" placeholder="Value" style="width: 100%; padding: 6px 8px; border: 1px solid #e0e0e0; border-radius: 4px; font-size: 12px;"></td>`;
                 });
 
+                // Add weight cell
+                const weightValue = condition.weight !== undefined ? condition.weight : 1;
+                cellsHtml += `<td><input type="number" class="condition-row-weight" value="${weightValue}" min="0" step="1" placeholder="1" style="width: 100%; padding: 6px 8px; border: 1px solid #e0e0e0; border-radius: 4px; font-size: 12px; text-align: center;"></td>`;
+
                 cellsHtml += `
                     <td class="row-actions">
                         <button type="button" class="remove-row-btn" title="Remove condition">
@@ -4877,7 +5073,7 @@
             const rows = conditionsTableBody.querySelectorAll('tr');
             rows.forEach(row => {
                 // Update cell classes to match new variable names
-                const cells = row.querySelectorAll('td input:not(.condition-row-name)');
+                const cells = row.querySelectorAll('td input:not(.condition-row-name):not(.condition-row-weight)');
                 cells.forEach((cell, index) => {
                     if (index < currentVariableNames.length) {
                         cell.className = `condition-cell-${CSS.escape(currentVariableNames[index])}`;
@@ -5002,11 +5198,17 @@
                     nameInput.addEventListener('input', saveLoopFormChanges);
                 }
                 
-                // 绑定所有非 condition-row-name 的输入框的 input 事件
-                const valueInputs = row.querySelectorAll('td input:not(.condition-row-name)');
+                // 绑定所有非 condition-row-name、非 condition-row-weight 的输入框的 input 事件
+                const valueInputs = row.querySelectorAll('td input:not(.condition-row-name):not(.condition-row-weight)');
                 valueInputs.forEach(valueInput => {
                     valueInput.addEventListener('input', saveLoopFormChanges);
                 });
+                
+                // 绑定 weight 输入框的 input 事件
+                const weightInput = row.querySelector('.condition-row-weight');
+                if (weightInput) {
+                    weightInput.addEventListener('input', saveLoopFormChanges);
+                }
             });
         }
 
@@ -5072,6 +5274,9 @@
             selectedVarsArray.forEach(varName => {
                 cellsHtml += `<td><input type="text" class="condition-cell-${CSS.escape(varName)}" value="" placeholder="Value" style="width: 100%; padding: 6px 8px; border: 1px solid #e0e0e0; border-radius: 4px; font-size: 12px;"></td>`;
             });
+
+            // Add weight cell with default value of 1
+            cellsHtml += `<td><input type="number" class="condition-row-weight" value="1" min="0" step="1" placeholder="1" style="width: 100%; padding: 6px 8px; border: 1px solid #e0e0e0; border-radius: 4px; font-size: 12px; text-align: center;"></td>`;
 
             cellsHtml += `
                 <td class="row-actions">
