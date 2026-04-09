@@ -784,15 +784,29 @@ function generateFlow(routineRects, connections) {
         const startLabel = parseInt(conn.start.label);
         const endLabel = parseInt(conn.end.label);
         
+        // 连接点 label 为奇数：label = 2*i + 1 表示 routine i 的左侧连接点
+        // 连接点 label 为奇数：label = 2*i + 3 表示 routine i 的右侧连接点
+        // 因此：routine i 的左侧 label = 2*i + 1，右侧 label = 2*i + 3
+        // 从 label 计算 routine 索引：i = (label - 1) / 2
         const startRoutineIndex = Math.floor((startLabel - 1) / 2);
         let endRoutineIndex;
         
         if (startLabel === endLabel) {
+            // 起点和终点相同，loop 只包含一个 routine
             endRoutineIndex = startRoutineIndex;
-        } else if (endLabel % 2 === 1) {
-            endRoutineIndex = Math.floor((endLabel - 1) / 2);
         } else {
-            endRoutineIndex = Math.floor((endLabel - 1) / 2) - 1;
+            // endLabel 是奇数，表示连接到某个 routine 的左侧或右侧
+            // 当 endLabel = 2*i + 1（routine i 的左侧），表示 loop 在 routine i-1 结束
+            // 当 endLabel = 2*i + 3（routine i 的右侧），表示 loop 在 routine i 结束
+            // 由于 label 都是奇数，可以通过判断 endLabel 与 startLabel 的关系来确定
+            const endConnIndex = Math.floor((endLabel - 1) / 2);
+            if (endLabel > startLabel) {
+                // 向右连接：endLabel 是某个 routine 的右侧，loop 在该 routine 结束
+                endRoutineIndex = endConnIndex - 1;
+            } else {
+                // 向左连接：endLabel 是某个 routine 的左侧，loop 在前一个 routine 结束
+                endRoutineIndex = endConnIndex - 1;
+            }
         }
         
         console.log(`Loop ${conn.loopName}: startLabel=${startLabel}, endLabel=${endLabel}, startRoutineIndex=${startRoutineIndex}, endRoutineIndex=${endRoutineIndex}`);
@@ -862,19 +876,27 @@ function generateFlow(routineRects, connections) {
     
     loops.sort((a, b) => a.depth - b.depth);
     
+    const activeLoops = new Set();
+    
     for (let i = 0; i < routineRects.length; i++) {
-        // 按 depth 降序排列，外层 loop（depth 小）先放置
-        const loopsStartingHere = loops.filter(l => l.startRoutineIndex === i).sort((a, b) => a.depth - b.depth);
+        // 找出在这个 routine 处开始的循环（深度小的先开始）
+        const loopsStartingHere = loops.filter(l => 
+            l.startRoutineIndex === i && !activeLoops.has(l.name)
+        ).sort((a, b) => a.depth - b.depth);
         loopsStartingHere.forEach(loop => {
             xml += generateLoopInitiator(loop);
+            activeLoops.add(loop.name);
         });
         
         xml += `    <Routine name="${routineNames[i]}"/>\n`;
         
-        // 按 depth 升序排列，内层 loop（depth 大）先结束
-        const loopsEndingHere = loops.filter(l => l.endRoutineIndex === i).sort((a, b) => b.depth - a.depth);
+        // 找出在这个 routine 处结束的循环（深度大的先结束）
+        const loopsEndingHere = loops.filter(l => 
+            l.endRoutineIndex === i && activeLoops.has(l.name)
+        ).sort((a, b) => b.depth - a.depth);
         loopsEndingHere.forEach(loop => {
             xml += generateLoopTerminator(loop);
+            activeLoops.delete(loop.name);
         });
     }
     
@@ -908,7 +930,6 @@ function generateLoopInitiator(loop) {
       <Param name="nReps" updates="None" val="${loop.reps}" valType="code"/>
       <Param name="name" updates="None" val="${loop.name}" valType="code"/>
       <Param name="random seed" updates="None" val="" valType="code"/>
-      <Param name="term" updates="None" val="${loop.name}" valType="code"/>
     </LoopInitiator>\n`;
 }
 
