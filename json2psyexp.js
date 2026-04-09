@@ -784,19 +784,15 @@ function generateFlow(routineRects, connections) {
         const startLabel = parseInt(conn.start.label);
         const endLabel = parseInt(conn.end.label);
         
-        // linePoints label 是奇数 (1,3,5,7...)，对应 routine 索引 (0,1,2,3...)
-        // 转换公式：index = (label - 1) / 2
         const startRoutineIndex = Math.floor((startLabel - 1) / 2);
-        // endLabel 指向 loop 结束的 point，该 point 对应的 routine 索引需要减 1 才是 loop 实际包含的最后一个 routine
-        // 例如：endLabel=7 → index=3，但实际包含的是 routine 2（索引从 0），即 routine 3
-        let endRoutineIndex = Math.floor((endLabel - 1) / 2);
+        let endRoutineIndex;
         
-        // 如果 startLabel != endLabel，说明是范围 loop，endRoutineIndex 需要减 1
-        // 如果 startLabel == endLabel，说明是 single-point loop，endRoutineIndex 应该等于 startRoutineIndex
-        if (startLabel !== endLabel) {
-            endRoutineIndex = endRoutineIndex - 1;
-        } else {
+        if (startLabel === endLabel) {
             endRoutineIndex = startRoutineIndex;
+        } else if (endLabel % 2 === 1) {
+            endRoutineIndex = Math.floor((endLabel - 1) / 2);
+        } else {
+            endRoutineIndex = Math.floor((endLabel - 1) / 2) - 1;
         }
         
         console.log(`Loop ${conn.loopName}: startLabel=${startLabel}, endLabel=${endLabel}, startRoutineIndex=${startRoutineIndex}, endRoutineIndex=${endRoutineIndex}`);
@@ -912,6 +908,7 @@ function generateLoopInitiator(loop) {
       <Param name="nReps" updates="None" val="${loop.reps}" valType="code"/>
       <Param name="name" updates="None" val="${loop.name}" valType="code"/>
       <Param name="random seed" updates="None" val="" valType="code"/>
+      <Param name="term" updates="None" val="${loop.name}" valType="code"/>
     </LoopInitiator>\n`;
 }
 
