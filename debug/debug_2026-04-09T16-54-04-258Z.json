@@ -1,0 +1,103 @@
+{
+  "version": "1.0.0",
+  "timestamp": "2024-01-15T10:00:00.000Z",
+  "routineRects": [
+    {
+      "id": 0,
+      "name": "stroop_trial",
+      "x": 400,
+      "y": 300,
+      "width": 200,
+      "height": 150,
+      "borderRadius": 8,
+      "isDragging": false,
+      "offsetX": 0,
+      "offsetY": 0,
+      "keys": "r,g,b",
+      "duration": -1,
+      "avtpComponents": [
+        {
+          "enabled": true,
+          "type": "text",
+          "name": "fixation",
+          "text": "+",
+          "font": "Arial",
+          "letterHeight": 0.1,
+          "color": "white",
+          "pos": [
+            0,
+            0
+          ],
+          "ori": 0,
+          "opacity": 1,
+          "units": "height",
+          "startTime": 0,
+          "duration": 500,
+          "contrast": 1,
+          "wrapWidth": null,
+          "flip": "None",
+          "languageStyle": "LTR",
+          "draggable": false
+        },
+        {
+          "enabled": true,
+          "type": "text",
+          "name": "stimulus",
+          "text": "$colorWord",
+          "font": "Arial",
+          "letterHeight": 0.15,
+          "color": "$inkColor",
+          "pos": [
+            0,
+            0
+          ],
+          "ori": 0,
+          "opacity": 1,
+          "units": "height",
+          "startTime": 0.5,
+          "duration": -1,
+          "contrast": 1,
+          "wrapWidth": null,
+          "flip": "None",
+          "languageStyle": "LTR",
+          "draggable": false
+        },
+        {
+          "enabled": true,
+          "type": "keyboard",
+          "name": "response",
+          "keys": "r,g,b",
+          "startTime": 0,
+          "duration": -1,
+          "forceEndRoutine": true,
+          "discardPrevious": true,
+          "registerOn": "press",
+          "store": "all keys",
+          "storeCorrect": true,
+          "correctAns": ""
+        }
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "start": {
+        "routineId": 0,
+        "position": "left"
+      },
+      "end": {
+        "routineId": 0,
+        "position": "right"
+      },
+      "depth": 0,
+      "loopName": "trials",
+      "loopReps": 20,
+      "loopType": "random",
+      "loopConditions": "",
+      "loopIsTrials": true
+    }
+  ],
+  "currentRoutineCount": 1,
+  "routineIdCounter": 1,
+  "loopIdCounter": 1
+}

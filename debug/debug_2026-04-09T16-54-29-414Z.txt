@@ -1,0 +1,134 @@
+{
+  "version": "1.0.0",
+  "timestamp": "2025-01-13T10:30:00.000Z",
+  "routineRects": [
+    {
+      "id": 0,
+      "name": "welcome",
+      "x": 100,
+      "y": 300,
+      "width": 120,
+      "height": 80,
+      "borderRadius": 8,
+      "isDragging": false,
+      "duration": -1,
+      "avtp": {
+        "a": false,
+        "v": false,
+        "t": true,
+        "p": false,
+        "k": false
+      },
+      "avtpData": {
+        "t": {
+          "enabled": true,
+          "text": "Welcome to the experiment",
+          "font": "Arial",
+          "letterHeight": 0.05,
+          "color": "white"
+        }
+      }
+    },
+    {
+      "id": 1,
+      "name": "instructions",
+      "x": 280,
+      "y": 300,
+      "width": 120,
+      "height": 80,
+      "borderRadius": 8,
+      "isDragging": false,
+      "duration": -1,
+      "avtp": {
+        "a": false,
+        "v": false,
+        "t": true,
+        "p": false,
+        "k": false
+      },
+      "avtpData": {
+        "t": {
+          "enabled": true,
+          "text": "Press SPACE to begin",
+          "font": "Arial",
+          "letterHeight": 0.05,
+          "color": "white"
+        }
+      }
+    },
+    {
+      "id": 2,
+      "name": "fixation",
+      "x": 460,
+      "y": 300,
+      "width": 120,
+      "height": 80,
+      "borderRadius": 8,
+      "isDragging": false,
+      "duration": 1000,
+      "avtp": {
+        "a": false,
+        "v": false,
+        "t": true,
+        "p": false,
+        "k": false
+      },
+      "avtpData": {
+        "t": {
+          "enabled": true,
+          "text": "+",
+          "font": "Arial",
+          "letterHeight": 0.08,
+          "color": "white"
+        }
+      }
+    },
+    {
+      "id": 3,
+      "name": "stimulus",
+      "x": 640,
+      "y": 300,
+      "width": 120,
+      "height": 80,
+      "borderRadius": 8,
+      "isDragging": false,
+      "duration": 500,
+      "avtp": {
+        "a": false,
+        "v": false,
+        "t": true,
+        "p": false,
+        "k": false
+      },
+      "avtpData": {
+        "t": {
+          "enabled": true,
+          "text": "Stimulus",
+          "font": "Arial",
+          "letterHeight": 0.05,
+          "color": "white"
+        }
+      }
+    },
+    {
+      "id": 4,
+      "name": "response",
+      "x": 820,
+      "y": 300,
+      "width": 120,
+      "height": 80,
+      "borderRadius": 8,
+      "isDragging": false,
+      "duration": -1,
+      "avtp": {
+        "a": false,
+        "v": false,
+        "t": false,
+        "p": false,
+        "k": true
+      },
+      "avtpData": {
+        "k": {
+          "enabled": true,
+          "keys": "f,j",
+          "forceEndRoutine":

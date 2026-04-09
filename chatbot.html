@@ -1175,7 +1175,7 @@
         const defaultFlowchartSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "PsyClaw Flowchart Project",
-  "description": "JSON schema for PsyClaw flowchart projects that convert to PsychoPy .psyexp format",
+  "description": "JSON schema for PsyClaw flowchart projects that convert to PsychoPy .psyexp format. A flowchart consists of routines (experiment steps) connected by connections (flow arrows). Loops (trial handlers) repeat sets of routines with varying conditions.",
   "type": "object",
   "required": ["version", "timestamp", "routineRects", "connections"],
   "additionalProperties": false,
@@ -1192,7 +1192,7 @@
     },
     "routineRects": {
       "type": "array",
-      "description": "Array of routine objects representing experiment trials",
+      "description": "Array of routine objects representing experiment trials. Each routine is a single step in the experiment (e.g., fixation, stimulus presentation, response collection).",
       "minItems": 1,
       "items": {
         "$ref": "#/definitions/Routine"
@@ -1200,7 +1200,7 @@
     },
     "connections": {
       "type": "array",
-      "description": "Array of connection objects defining the experiment flow",
+      "description": "Array of connection objects defining the experiment flow between routines. Each connection links two routines. A connection where start and end point to the same routine or form a cycle represents a loop that repeats the enclosed routines.",
       "items": {
         "$ref": "#/definitions/Connection"
       }
@@ -1213,13 +1213,13 @@
     },
     "routineIdCounter": {
       "type": "integer",
-      "description": "Counter for generating unique routine IDs",
+      "description": "Counter for generating unique routine IDs. Should be > max routine id.",
       "minimum": 0,
       "default": 0
     },
     "loopIdCounter": {
       "type": "integer",
-      "description": "Counter for generating unique loop IDs",
+      "description": "Counter for generating unique loop IDs. Should be > max loop id.",
       "minimum": 0,
       "default": 0
     }
@@ -1961,8 +1961,8 @@
     },
     "Connection": {
       "type": "object",
-      "description": "A connection object defining flow between routines",
-      "required": ["start", "end", "depth", "loopIsTrials"],
+      "description": "A connection object defining flow between routines. For simple sequential flow, only start and end are required. For loops (when start and end connect to the same routine or form a cycle), additional loop properties should be set.",
+      "required": ["start", "end"],
       "additionalProperties": false,
       "properties": {
         "start": {
@@ -1974,11 +1974,14 @@
         "depth": {
           "type": "integer",
           "minimum": 0,
-          "description": "Nesting depth for loops"
+          "description": "Nesting depth for loops (0 for normal flow, 1+ for nested loops). This is auto-calculated.",
+          "default": 0
         },
         "loopName": {
           "type": "string",
-          "description": "Name of the loop (if this connection creates a loop)"
+          "description": "Name of the loop (required for loops). Must be a valid Python identifier.",
+          "pattern": "^[a-zA-Z_][a-zA-Z0-9_]*$",
+          "default": "trials"
         },
         "loopReps": {
           "type": "integer",
@@ -1988,60 +1991,107 @@
         },
         "loopType": {
           "type": "string",
-          "enum": ["sequential", "random"],
-          "description": "Loop type",
+          "enum": ["sequential", "random", "fullRandom"],
+          "description": "Loop type: sequential (in order), random (shuffle trials), fullRandom (completely random)",
           "default": "sequential"
         },
         "loopConditions": {
           "type": "string",
-          "description": "Conditions file path or JSON array string for loop"
+          "description": "JSON string representing array of condition objects, one per trial. Each object contains parameter values for that trial. Example: '[{\"word\":\"RED\",\"color\":\"red\"},{\"word\":\"BLUE\",\"color\":\"blue\"}]'"
         },
         "loopIsTrials": {
           "type": "boolean",
-          "description": "Whether this loop is a trial handler",
+          "description": "Whether this loop is a trial handler (true) or just a simple loop (false)",
           "default": true
         }
       }
     },
     "ConnectionEndpoint": {
       "type": "object",
-      "description": "An endpoint of a connection",
-      "required": ["x", "y", "label", "isSnapTarget"],
+      "description": "An endpoint of a connection representing a connection point on a routine. The label should match the routine's index in the routineRects array (0, 1, 2, etc.)",
+      "required": ["label", "position"],
       "additionalProperties": false,
       "properties": {
+        "label": {
+          "type": "string",
+          "description": "The routine index as a string (e.g., '0', '1', '2'). Must match the routine's position in routineRects array.",
+          "pattern": "^\\d+$"
+        },
+        "position": {
+          "type": "string",
+          "enum": ["left", "right"],
+          "description": "Position of the connection point: 'right' for exit/starting point, 'left' for entry/ending point"
+        },
         "x": {
-          "type": "number"
+          "type": "number",
+          "description": "X coordinate (optional, for internal use)"
         },
         "y": {
-          "type": "number"
-        },
-        "label": {
-          "type": "integer",
-          "description": "Connection point label (odd numbers for left, odd+2 for right)"
-        },
-        "isSnapTarget": {
-          "type": "boolean",
-          "default": false
+          "type": "number",
+          "description": "Y coordinate (optional, for internal use)"
         }
       }
     },
-    "LoopCondition": {
+    "Loop": {
       "type": "object",
-      "description": "A condition object for conditional loop execution",
+      "description": "A loop (trial handler) that repeats a set of routines multiple times with varying conditions",
+      "required": ["id", "name", "startRoutineId", "endRoutineId", "reps"],
       "additionalProperties": false,
       "properties": {
-        "variable": {
-          "type": "string",
-          "description": "Variable name to check"
+        "id": {
+          "type": "integer",
+          "description": "Unique identifier for the loop",
+          "minimum": 0
         },
-        "operator": {
+        "name": {
           "type": "string",
-          "enum": ["==", "!=", ">", "<", ">=", "<="],
-          "description": "Comparison operator"
+          "description": "Name of the loop. Must be a valid Python identifier.",
+          "pattern": "^[a-zA-Z_][a-zA-Z0-9_]*$"
         },
-        "value": {
-          "type": ["string", "number", "boolean"],
-          "description": "Value to compare against"
+        "startRoutineId": {
+          "type": "integer",
+          "description": "ID of the first routine in the loop"
+        },
+        "endRoutineId": {
+          "type": "integer",
+          "description": "ID of the last routine in the loop"
+        },
+        "reps": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Number of repetitions/trials",
+          "default": 1
+        },
+        "loopType": {
+          "type": "string",
+          "enum": ["sequential", "random", "fullRandom"],
+          "description": "How to order trials: sequential (fixed order), random (shuffle), fullRandom (completely random)",
+          "default": "sequential"
+        },
+        "conditions": {
+          "type": "array",
+          "description": "Array of condition objects, one per trial/repetition. Each object contains parameter values for that trial.",
+          "items": {
+            "type": "object",
+            "description": "Parameters for a single trial",
+            "additionalProperties": {
+              "type": ["string", "number", "boolean"],
+              "description": "Parameter value (e.g., stimulus text, image filename, correct answer)"
+            },
+            "examples": [
+              {"stimulus": "red.jpg", "correctAns": "f", "condition": "congruent"},
+              {"stimulus": "blue.jpg", "correctAns": "j", "condition": "incongruent"}
+            ]
+          }
+        },
+        "conditionsFile": {
+          "type": "string",
+          "description": "Path to external CSV/Excel file with conditions (alternative to 'conditions' array)"
+        },
+        "isTrials": {
+          "type": "boolean",
+          "description": "Whether this is a trial handler (true) or just a loop (false)",
+          "default": true
         }
       }
     }
@@ -2150,6 +2200,109 @@
             } catch (e) {
                 return url.trim().toLowerCase();
             }
+        }
+
+        // 辅助函数：从AI响应中提取JSON内容
+        function extractJSON(text) {
+            console.log('Extracting JSON from text, length:', text.length);
+
+            // 首先尝试找到 <think> 标签外的 JSON
+            const thinkMatch = text.match(/<think>[\s\S]*?<\/think>/gi);
+            let textWithoutThink = text.replace(/<think>[\s\S]*?<\/think>/gi, '');
+
+            // 尝试在剩余文本中找到 JSON
+            let firstChar = textWithoutThink.search(/[\[{]/);
+
+            // 如果没有找到，尝试在整个文本中找（JSON 可能在 think 标签内）
+            if (firstChar === -1) {
+                console.log('No JSON found outside think tags, searching entire text...');
+                firstChar = text.search(/[\[{]/);
+                textWithoutThink = text;
+            }
+
+            if (firstChar === -1) {
+                console.warn('No JSON start character found');
+                return text;
+            }
+
+            // 计数括号/方括号，找到正确的结束位置
+            let braceCount = 0;
+            let bracketCount = 0;
+            let inString = false;
+            let escape = false;
+
+            for (let i = firstChar; i < textWithoutThink.length; i++) {
+                const char = textWithoutThink[i];
+
+                if (escape) {
+                    escape = false;
+                    continue;
+                }
+
+                if (char === '\\') {
+                    escape = true;
+                    continue;
+                }
+
+                if (char === '"' && !inString) {
+                    inString = true;
+                    continue;
+                } else if (char === '"' && inString) {
+                    // 检查是否是转义的引号
+                    let backslashCount = 0;
+                    for (let j = i - 1; j >= 0 && textWithoutThink[j] === '\\'; j--) {
+                        backslashCount++;
+                    }
+                    if (backslashCount % 2 === 0) {
+                        inString = false;
+                    }
+                    continue;
+                }
+
+                if (inString) continue;
+
+                if (char === '{') braceCount++;
+                else if (char === '}') braceCount--;
+                else if (char === '[') bracketCount++;
+                else if (char === ']') bracketCount--;
+
+                // 当所有括号都匹配完时，找到结束位置
+                if (braceCount === 0 && bracketCount === 0 && (char === '}' || char === ']')) {
+                    let result = textWithoutThink.substring(firstChar, i + 1);
+                    // 清理反引号
+                    result = result.replace(/`/g, '');
+                    console.log('Extracted JSON successfully, length:', result.length);
+                    return result;
+                }
+            }
+
+            // 如果没找到匹配，说明 JSON 不完整，返回找到的部分
+            console.warn('Incomplete JSON detected, returning trimmed text');
+            return textWithoutThink.substring(firstChar).replace(/`/g, '');
+        }
+
+        // 辅助函数：修复常见的JSON格式问题
+        function fixJSONContent(content) {
+            let fixed = content.trim();
+
+            // 修复1：移除末尾的逗号
+            if (fixed.endsWith(',}')) {
+                fixed = fixed.slice(0, -2) + '}';
+            }
+            if (fixed.endsWith(',]')) {
+                fixed = fixed.slice(0, -2) + ']';
+            }
+
+            // 修复2：移除对象/数组末尾的逗号
+            fixed = fixed.replace(/,(\s*[}\]])/g, '$1');
+
+            // 修复3：修复未加引号的属性名
+            fixed = fixed.replace(/([{,]\s*)([a-zA-Z_][a-zA-Z0-9_]*)\s*:/g, '$1"$2":');
+
+            // 修复4：修复单引号（简单情况）
+            fixed = fixed.replace(/'([^'\\]*)'/g, '"$1"');
+
+            return fixed;
         }
 
         function loadSettings() {
@@ -2869,18 +3022,38 @@
             const messages = [];
             
             // 构建 system prompt，使用内置的 schema
-            const flowchartSystemPrompt = `You are a DeepPsych flowchart JSON generator. Please generate a complete JSON data structure based on user requests that conforms to the following JSON Schema:
+            const flowchartSystemPrompt =
+`You are a PsychoPy experiment designer. Generate a complete JSON data structure for a PsyClaw flowchart project based on the user's request.
+
+IMPORTANT RULES:
+1. Generate ONLY valid JSON that strictly follows the schema below
+2. Routine IDs must be sequential integers starting from 0 (0, 1, 2, 3...)
+3. For connections:
+   - Use "label" field with string value ("0", "1", "2") to reference routines by their index
+   - Use "position": "right" for the starting point (exit), "left" for the ending point (entry)
+4. For loops (trial handlers):
+   - A loop is created when a connection goes from a later routine back to an earlier routine
+   - The loop connection must have start.label > end.label (e.g., from routine 3 back to routine 1)
+   - Set connection.loopName to a valid Python identifier (e.g., "trials", "practice_loop")
+   - Set connection.loopReps to the number of repetitions
+   - Set connection.loopType to "sequential", "random", or "fullRandom"
+   - Set connection.loopIsTrials to true for trial handlers
+   - Set connection.loopConditions as a JSON STRING (not array) representing condition objects
+5. Example loop structure for a Stroop task with 4 routines:
+   - Routine positions: routine 0 at x=100, routine 1 at x=400, routine 2 at x=700, routine 3 at x=1000 (all y=200, width=200, height=100)
+   - Connection points: right side at x+200, left side at x, y center at y+50
+   - Sequential flow: 0->1, 1->2, 2->3 (these have depth=0, no loop properties)
+   - Loop connection (3->1): start={"label":"3","position":"right","x":1200,"y":250}, end={"label":"1","position":"left","x":400,"y":250}, depth=1, loopName="trials", loopReps=5, loopType="random", loopIsTrials=true, loopConditions="[{\"word\":\"RED\",\"color\":\"red\"},{\"word\":\"BLUE\",\"color\":\"blue\"}]"
+6. CRITICAL: Do NOT include any thinking process, explanations, markdown formatting, or code blocks
+7. CRITICAL: Return ONLY the raw JSON object, nothing else
+8. CRITICAL: Ensure the JSON is complete and properly closed
+
+[User Request]
+${message || ''}
+
 
 [JSON Schema]
-${JSON.stringify(flowchartSchema, null, 2)}
-
-[Important Notes]
-1. routineRects must contain at least 1 routine
-2. Each routine must include all required fields
-3. Components set to true in avtp must have corresponding configuration in avtpData
-4. connections describe the flow relationships between routines
-5. Output must be compact JSON without extra whitespace or newlines
-6. Keep text content concise to avoid token limits`;
+${JSON.stringify(flowchartSchema, null, 2)}`;
 
             messages.push({ role: 'system', content: flowchartSystemPrompt });
 
@@ -2909,13 +3082,13 @@ ${JSON.stringify(flowchartSchema, null, 2)}
             const responseMsg = addMessage('Thinking...', 'assistant');
 
             try {
-                // 构建请求体 - 增加 max_tokens 并禁用流式传输
+                // 构建请求体 - 使用固定的较大 max_tokens 值以确保完整响应
                 const requestBody = {
                     model: settings.model,
                     messages: messages,
                     temperature: settings.temperature,
                     top_p: settings.top_p,
-                    max_tokens: settings.max_length || 16000,  // 进一步增加到 16000
+                    max_tokens: 16000,  // 固定使用 16000 tokens 以确保完整 JSON 输出
                     response_format: {
                         type: "json_object"
                     },
@@ -2953,6 +3126,35 @@ ${JSON.stringify(flowchartSchema, null, 2)}
                 }
                 cleanContent = cleanContent.trim();
                 
+                // 提取真正的JSON内容（移除LLM思考过程）
+                cleanContent = extractJSON(cleanContent);
+                
+                // 验证 JSON 是否有效（宽松处理）
+                if (!cleanContent || cleanContent.trim() === '') {
+                    console.error('Failed to extract JSON: empty content');
+                    throw new Error('Failed to extract JSON from AI response');
+                }
+
+                // 测试解析，失败时尝试修复
+                let isValidJSON = true;
+                try {
+                    JSON.parse(cleanContent);
+                } catch (e) {
+                    console.warn('JSON validation warning:', e.message);
+                    console.log('Attempting to fix JSON...');
+
+                    const fixedContent = fixJSONContent(cleanContent);
+                    try {
+                        JSON.parse(fixedContent);
+                        console.log('JSON fixed successfully');
+                        cleanContent = fixedContent;
+                    } catch (fixError) {
+                        console.warn('Failed to fix JSON:', fixError.message);
+                        console.log('Will save as TXT format instead');
+                        isValidJSON = false;
+                    }
+                }
+
                 console.log('Cleaned content:', cleanContent);
                 
                 // 通过 postMessage 发送到父窗口（card.html），让父窗口解析和保存
@@ -2964,7 +3166,7 @@ ${JSON.stringify(flowchartSchema, null, 2)}
                 }, '*');
                 
                 // 显示生成完成消息
-                updateMessage(responseMsg, '✅ Generation completed! The flowchart has been loaded in the editor.');
+                updateMessage(responseMsg, '✅ Generation completed! The flowchart has been loaded in the editor. (Debug saved)');
                 responseMsg.classList.add('success');
             } catch (e) {
                 updateMessage(responseMsg, `❌ ${e.message}`);

@@ -1,0 +1,310 @@
+{
+  "version": "1.0.0",
+  "timestamp": "2024-01-15T10:30:00.000Z",
+  "routineRects": [
+    {
+      "id": 0,
+      "name": "fixation",
+      "x": 100,
+      "y": 150,
+      "width": 120,
+      "height": 80,
+      "borderRadius": 8,
+      "isDragging": false,
+      "offsetX": 0,
+      "offsetY": 0,
+      "duration": 1000,
+      "avtp": {
+        "a": false,
+        "v": false,
+        "t": true,
+        "p": false,
+        "k": false
+      },
+      "avtpData": {
+        "t": {
+          "enabled": true,
+          "label": "fixation_text",
+          "type": "text",
+          "text": "+",
+          "font": "Arial",
+          "letterHeight": 0.1,
+          "color": "white",
+          "pos": [
+            0,
+            0
+          ],
+          "ori": 0,
+          "opacity": 1,
+          "units": "from exp settings",
+          "startTime": 0,
+          "duration": 1000,
+          "contrast": 1,
+          "wrapWidth": null,
+          "flip": "None",
+          "languageStyle": "LTR",
+          "draggable": false
+        }
+      },
+      "avtpComponents": [
+        {
+          "enabled": true,
+          "type": "text",
+          "name": "fixation_text",
+          "text": "+",
+          "color": "white",
+          "font": "Arial",
+          "letterHeight": 0.1,
+          "pos": [
+            0,
+            0
+          ],
+          "size": [
+            null,
+            null
+          ],
+          "ori": 0,
+          "opacity": 1,
+          "startTime": 0,
+          "duration": 1000,
+          "units": "from exp settings",
+          "wrapWidth": null,
+          "anchor": "center",
+          "languageStyle": "LTR",
+          "forceEndRoutine": false,
+          "contrast": 1,
+          "flip": "None",
+          "draggable": false
+        }
+      ],
+      "type": "Text"
+    },
+    {
+      "id": 1,
+      "name": "stroop_trial",
+      "x": 300,
+      "y": 150,
+      "width": 120,
+      "height": 80,
+      "borderRadius": 8,
+      "isDragging": false,
+      "offsetX": 0,
+      "offsetY": 0,
+      "duration": 3000,
+      "avtp": {
+        "a": false,
+        "v": false,
+        "t": true,
+        "p": false,
+        "k": true
+      },
+      "avtpData": {
+        "t": {
+          "enabled": true,
+          "label": "stim_text",
+          "type": "text",
+          "text": "$word",
+          "font": "Arial",
+          "letterHeight": 0.15,
+          "color": "$color",
+          "pos": [
+            0,
+            0
+          ],
+          "ori": 0,
+          "opacity": 1,
+          "units": "from exp settings",
+          "startTime": 0,
+          "duration": 3000,
+          "contrast": 1,
+          "wrapWidth": null,
+          "flip": "None",
+          "languageStyle": "LTR",
+          "draggable": false
+        },
+        "k": {
+          "enabled": true,
+          "label": "response",
+          "type": "keyboard",
+          "keys": "f,j",
+          "startTime": 0,
+          "duration": 3000,
+          "forceEndRoutine": true,
+          "discardPrevious": true,
+          "registerOn": "press",
+          "store": "last key",
+          "storeCorrect": true,
+          "correctAns": "$correctAns"
+        }
+      },
+      "avtpComponents": [
+        {
+          "enabled": true,
+          "type": "text",
+          "name": "stim_text",
+          "text": "$word",
+          "color": "$color",
+          "font": "Arial",
+          "letterHeight": 0.15,
+          "pos": [
+            0,
+            0
+          ],
+          "size": [
+            null,
+            null
+          ],
+          "ori": 0,
+          "opacity": 1,
+          "startTime": 0,
+          "duration": 3000,
+          "units": "from exp settings",
+          "wrapWidth": null,
+          "anchor": "center",
+          "languageStyle": "LTR",
+          "forceEndRoutine": false,
+          "contrast": 1,
+          "flip": "None",
+          "draggable": false
+        },
+        {
+          "enabled": true,
+          "type": "keyboard",
+          "name": "response",
+          "keys": "f,j",
+          "text": "",
+          "color": "white",
+          "pos": [
+            0,
+            0
+          ],
+          "startTime": 0,
+          "duration": 3000,
+          "units": "from exp settings",
+          "forceEndRoutine": true,
+          "discardPrevious": true,
+          "registerOn": "press",
+          "store": "last key",
+          "storeCorrect": true,
+          "correctAns": "$correctAns",
+          "opacity": 1,
+          "flip": "None",
+          "contrast": 1
+        }
+      ],
+      "type": "Text"
+    }
+  ],
+  "connections": [
+    {
+      "start": {
+        "routineId": null,
+        "position": "right"
+      },
+      "end": {
+        "routineId": 0,
+        "position": "left"
+      },
+      "id": 0,
+      "isLoop": false,
+      "depth": 0
+    },
+    {
+      "start": {
+        "routineId": 0,
+        "position": "right"
+      },
+      "end": {
+        "routineId": 1,
+        "position": "left"
+      },
+      "id": 1,
+      "isLoop": true,
+      "loopId": 0,
+      "loopName": "trials",
+      "loopReps": 5,
+      "loopType": "sequential",
+      "loopConditions": [
+        {
+          "word": "RED",
+          "color": "$[1,0,0]",
+          "correctAns": "f",
+          "condition": "congruent"
+        },
+        {
+          "word": "BLUE",
+          "color": "$[0,0,1]",
+          "correctAns": "j",
+          "condition": "congruent"
+        },
+        {
+          "word": "RED",
+          "color": "$[0,0,1]",
+          "correctAns": "f",
+          "condition": "incongruent"
+        },
+        {
+          "word": "BLUE",
+          "color": "$[1,0,0]",
+          "correctAns": "j",
+          "condition": "incongruent"
+        }
+      ],
+      "depth": 0
+    },
+    {
+      "start": {
+        "routineId": 1,
+        "position": "right"
+      },
+      "end": {
+        "routineId": null,
+        "position": "left"
+      },
+      "id": 2,
+      "isLoop": false,
+      "depth": 0
+    }
+  ],
+  "loops": [
+    {
+      "id": 0,
+      "name": "trials",
+      "startRoutineId": 1,
+      "endRoutineId": 1,
+      "reps": 5,
+      "loopType": "sequential",
+      "conditions": [
+        {
+          "word": "RED",
+          "color": "$[1,0,0]",
+          "correctAns": "f",
+          "condition": "congruent"
+        },
+        {
+          "word": "BLUE",
+          "color": "$[0,0,1]",
+          "correctAns": "j",
+          "condition": "congruent"
+        },
+        {
+          "word": "RED",
+          "color": "$[0,0,1]",
+          "correctAns": "f",
+          "condition": "incongruent"
+        },
+        {
+          "word": "BLUE",
+          "color": "$[1,0,0]",
+          "correctAns": "j",
+          "condition": "incongruent"
+        }
+      ],
+      "isTrials": true
+    }
+  ],
+  "currentRoutineCount": 2,
+  "routineIdCounter": 2,
+  "loopIdCounter": 1,
+  "connectionIdCounter": 3
+}

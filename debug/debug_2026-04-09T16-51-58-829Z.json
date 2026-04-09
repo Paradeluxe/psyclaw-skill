@@ -1,0 +1,66 @@
+{
+  "version": "1.0.0",
+  "timestamp": "2024-01-15T10:30:00.000Z",
+  "routineRects": [
+    {
+      "id": 0,
+      "name": "test_routine",
+      "x": 100,
+      "y": 100,
+      "width": 150,
+      "height": 80,
+      "borderRadius": 8,
+      "isDragging": false,
+      "duration": -1,
+      "avtp": {
+        "a": false,
+        "v": false,
+        "t": true,
+        "p": false,
+        "k": false
+      },
+      "avtpData": {
+        "t": {
+          "enabled": true,
+          "label": "text",
+          "type": "text",
+          "text": "Test",
+          "font": "Arial",
+          "letterHeight": 0.05,
+          "color": "white",
+          "pos": [
+            0,
+            0
+          ],
+          "ori": 0,
+          "opacity": 1,
+          "units": "from exp settings",
+          "startTime": 0,
+          "duration": -1,
+          "contrast": 1,
+          "languageStyle": "LTR",
+          "draggable": false
+        }
+      }
+    }
+  ],
+  "connections": [
+    {
+      "start": {
+        "routineId": 0,
+        "position": "left"
+      },
+      "end": {
+        "routineId": 0,
+        "position": "right"
+      },
+      "depth": 0,
+      "loopType": "sequential",
+      "loopReps": 1,
+      "loopIsTrials": false
+    }
+  ],
+  "currentRoutineCount": 1,
+  "routineIdCounter": 1,
+  "loopIdCounter": 0
+}

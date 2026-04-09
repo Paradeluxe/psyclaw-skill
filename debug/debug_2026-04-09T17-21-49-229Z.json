@@ -1,0 +1,113 @@
+{
+  "version": "1.0.0",
+  "timestamp": "2024-01-15T10:30:00.000Z",
+  "routineRects": [
+    {
+      "id": 0,
+      "name": "fixation",
+      "x": 100,
+      "y": 200,
+      "width": 150,
+      "height": 80,
+      "avtp": {
+        "a": false,
+        "v": false,
+        "t": true,
+        "p": false,
+        "k": false
+      },
+      "avtpData": {
+        "t": {
+          "enabled": true,
+          "label": "fixation_text",
+          "type": "text",
+          "text": "+",
+          "font": "Arial",
+          "letterHeight": 0.1,
+          "color": "white",
+          "pos": [
+            0,
+            0
+          ],
+          "startTime": 0,
+          "duration": 1000
+        }
+      }
+    },
+    {
+      "id": 1,
+      "name": "trial",
+      "x": 400,
+      "y": 200,
+      "width": 180,
+      "height": 100,
+      "keys": "space",
+      "avtp": {
+        "a": false,
+        "v": false,
+        "t": true,
+        "p": false,
+        "k": true
+      },
+      "avtpData": {
+        "t": {
+          "enabled": true,
+          "label": "color_text",
+          "type": "text",
+          "text": "$color",
+          "font": "Arial",
+          "letterHeight": 0.15,
+          "color": "$color",
+          "pos": [
+            0,
+            0
+          ],
+          "startTime": 0,
+          "duration": 2000
+        },
+        "k": {
+          "enabled": true,
+          "label": "keyboard",
+          "type": "keyboard",
+          "keys": "space",
+          "startTime": 0,
+          "duration": 2000,
+          "forceEndRoutine": true,
+          "store": "last key"
+        }
+      }
+    }
+  ],
+  "connections": [
+    {
+      "start": {
+        "label": "0",
+        "position": "right"
+      },
+      "end": {
+        "label": "1",
+        "position": "left"
+      },
+      "depth": 0
+    },
+    {
+      "start": {
+        "label": "1",
+        "position": "right"
+      },
+      "end": {
+        "label": "1",
+        "position": "left"
+      },
+      "depth": 0,
+      "loopName": "trials",
+      "loopReps": 3,
+      "loopType": "sequential",
+      "loopConditions": "[{\"color\":\"red\"},{\"color\":\"green\"},{\"color\":\"blue\"}]",
+      "loopIsTrials": true
+    }
+  ],
+  "currentRoutineCount": 2,
+  "routineIdCounter": 2,
+  "loopIdCounter": 1
+}

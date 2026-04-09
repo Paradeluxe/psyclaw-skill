@@ -1,0 +1,151 @@
+{
+  "version": "1.0.0",
+  "timestamp": "2025-01-13T12:00:00.000Z",
+  "routineRects": [
+    {
+      "id": 0,
+      "name": "fixation",
+      "x": 150,
+      "y": 200,
+      "width": 150,
+      "height": 100,
+      "borderRadius": 8,
+      "isDragging": false,
+      "offsetX": 0,
+      "offsetY": 0,
+      "duration": 1000,
+      "avtp": {
+        "a": false,
+        "v": false,
+        "t": true,
+        "p": false,
+        "k": false
+      },
+      "avtpData": {
+        "t": {
+          "enabled": true,
+          "label": "fixation_text",
+          "type": "text",
+          "text": "+",
+          "font": "Arial",
+          "letterHeight": 0.15,
+          "color": "white",
+          "pos": [
+            0,
+            0
+          ],
+          "ori": 0,
+          "opacity": 1,
+          "units": "from exp settings",
+          "startTime": 0,
+          "duration": 1000,
+          "contrast": 1,
+          "wrapWidth": null,
+          "flip": "None",
+          "languageStyle": "LTR",
+          "draggable": false
+        }
+      },
+      "avtpComponents": null,
+      "type": "Text"
+    },
+    {
+      "id": 1,
+      "name": "trial",
+      "x": 400,
+      "y": 200,
+      "width": 150,
+      "height": 100,
+      "borderRadius": 8,
+      "isDragging": false,
+      "offsetX": 0,
+      "offsetY": 0,
+      "duration": 2000,
+      "avtp": {
+        "a": false,
+        "v": false,
+        "t": true,
+        "p": false,
+        "k": true
+      },
+      "avtpData": {
+        "t": {
+          "enabled": true,
+          "label": "stimulus",
+          "type": "text",
+          "text": "$word",
+          "font": "Arial",
+          "letterHeight": 0.2,
+          "color": "$color",
+          "pos": [
+            0,
+            0
+          ],
+          "ori": 0,
+          "opacity": 1,
+          "units": "from exp settings",
+          "startTime": 0,
+          "duration": 2000,
+          "contrast": 1,
+          "wrapWidth": null,
+          "flip": "None",
+          "languageStyle": "LTR",
+          "draggable": false
+        },
+        "k": {
+          "enabled": true,
+          "label": "response",
+          "type": "keyboard",
+          "keys": "f,j",
+          "startTime": 0,
+          "duration": 2000,
+          "forceEndRoutine": true,
+          "discardPrevious": true,
+          "registerOn": "press",
+          "store": "last key",
+          "storeCorrect": true,
+          "correctAns": "$correctAns"
+        }
+      },
+      "avtpComponents": null,
+      "type": "Keyboard"
+    }
+  ],
+  "connections": [
+    {
+      "start": {
+        "label": "0",
+        "position": "right"
+      },
+      "end": {
+        "label": "1",
+        "position": "left"
+      },
+      "depth": 0,
+      "loopName": null,
+      "loopReps": 1,
+      "loopType": "sequential",
+      "loopConditions": null,
+      "loopIsTrials": false
+    },
+    {
+      "start": {
+        "label": "1",
+        "position": "right"
+      },
+      "end": {
+        "label": "1",
+        "position": "left"
+      },
+      "depth": 1,
+      "loopName": "trials",
+      "loopReps": 4,
+      "loopType": "sequential",
+      "loopConditions": "[{\"word\":\"RED\",\"color\":\"red\",\"correctAns\":\"f\"},{\"word\":\"BLUE\",\"color\":\"blue\",\"correctAns\":\"j\"},{\"word\":\"RED\",\"color\":\"blue\",\"correctAns\":\"j\"},{\"word\":\"BLUE\",\"color\":\"red\",\"correctAns\":\"f\"}]",
+      "loopIsTrials": true
+    }
+  ],
+  "currentRoutineCount": 2,
+  "routineIdCounter": 2,
+  "loopIdCounter": 1
+}

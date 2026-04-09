@@ -1,0 +1,67 @@
+{
+  "version": "1.0.0",
+  "timestamp": "2024-01-15T10:00:00.000Z",
+  "currentRoutineCount": 1,
+  "routineIdCounter": 1,
+  "loopIdCounter": 0,
+  "routineRects": [
+    {
+      "id": 0,
+      "name": "stroop_trial",
+      "x": 400,
+      "y": 300,
+      "width": 200,
+      "height": 150,
+      "borderRadius": 8,
+      "isDragging": false,
+      "duration": -1,
+      "avtpComponents": [
+        {
+          "enabled": true,
+          "type": "text",
+          "name": "stimulus",
+          "text": "RED",
+          "color": "blue",
+          "font": "Arial",
+          "letterHeight": 0.15,
+          "pos": [
+            0,
+            0
+          ],
+          "startTime": 0,
+          "duration": 2000,
+          "units": "height"
+        },
+        {
+          "enabled": true,
+          "type": "keyboard",
+          "name": "response",
+          "keys": "f,j",
+          "startTime": 0,
+          "duration": 2000,
+          "store": "last key",
+          "storeCorrect": true,
+          "correctAns": "f",
+          "forceEndRoutine": true,
+          "discardPrevious": true
+        }
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "start": {
+        "routineId": 0,
+        "position": "right"
+      },
+      "end": {
+        "routineId": 0,
+        "position": "left"
+      },
+      "depth": 0,
+      "loopReps": 1,
+      "loopType": "sequential",
+      "loopIsTrials": false
+    }
+  ]
+}

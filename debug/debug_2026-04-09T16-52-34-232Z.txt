@@ -1,0 +1,112 @@
+{
+  "version": "1.0.0",
+  "timestamp": "2024-01-15T10:30:00.000Z",
+  "routineRects": [
+    {
+      "id": 0,
+      "name": "instructions",
+      "x": 100,
+      "y": 200,
+      "width": 200,
+      "height": 120,
+      "borderRadius": 8,
+      "isDragging": false,
+      "offsetX": 0,
+      "offsetY": 0,
+      "duration": -1,
+      "avtp": {
+        "a": false,
+        "v": false,
+        "t": true,
+        "p": false,
+        "k": true
+      },
+      "avtpData": {
+        "t": {
+          "enabled": true,
+          "label": "instrText",
+          "type": "text",
+          "text": "Welcome to the Stroop Task!\n\nYou will see color words (RED, BLUE, GREEN, YELLOW) displayed in colored ink.\n\nYour task: Press the key that matches the INK COLOR, not the word.\n\n- Press 'f' for RED\n- Press 'j' for GREEN\n- Press 'd' for BLUE\n- Press 'k' for YELLOW\n\nPress SPACE to begin.",
+          "font": "Arial",
+          "letterHeight": 0.05,
+          "color": "white",
+          "pos": [0, 0],
+          "ori": 0,
+          "opacity": 1,
+          "units": "height",
+          "startTime": 0,
+          "duration": -1,
+          "contrast": 1,
+          "wrapWidth": 0.8,
+          "flip": "None",
+          "languageStyle": "LTR",
+          "draggable": false
+        },
+        "k": {
+          "enabled": true,
+          "label": "instrKey",
+          "type": "keyboard",
+          "keys": "space",
+          "startTime": 0,
+          "duration": -1,
+          "forceEndRoutine": false,
+          "discardPrevious": true,
+          "registerOn": "press",
+          "store": "last key",
+          "storeCorrect": false,
+          "correctAns": ""
+        }
+      }
+    },
+    {
+      "id": 1,
+      "name": "fixation",
+      "x": 350,
+      "y": 200,
+      "width": 150,
+      "height": 100,
+      "borderRadius": 8,
+      "isDragging": false,
+      "offsetX": 0,
+      "offsetY": 0,
+      "duration": 500,
+      "avtp": {
+        "a": false,
+        "v": false,
+        "t": true,
+        "p": false,
+        "k": false
+      },
+      "avtpData": {
+        "t": {
+          "enabled": true,
+          "label": "fixCross",
+          "type": "text",
+          "text": "+",
+          "font": "Arial",
+          "letterHeight": 0.1,
+          "color": "white",
+          "pos": [0, 0],
+          "ori": 0,
+          "opacity": 1,
+          "units": "height",
+          "startTime": 0,
+          "duration": 500,
+          "contrast": 1,
+          "wrapWidth": null,
+          "flip": "None",
+          "languageStyle": "LTR",
+          "draggable": false
+        }
+      }
+    },
+    {
+      "id": 2,
+      "name": "trial",
+      "x": 550,
+      "y": 200,
+      "width": 220,
+      "height": 140,
+      "borderRadius": 8,
+      "isDragging": false,
+      "offsetX": 0,

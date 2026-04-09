@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loop Test - PsyClaw</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: 'DM Sans', sans-serif;
+            background: #f0f0f0;
+        }
+        .container {
+            display: flex;
+            gap: 20px;
+        }
+        .canvas-wrapper {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        canvas {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+        }
+        .controls {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            width: 300px;
+        }
+        h2 {
+            margin-top: 0;
+            color: #18181b;
+        }
+        button {
+            background: #181e25;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            margin: 5px 0;
+            width: 100%;
+        }
+        button:hover {
+            background: #17437d;
+        }
+        .status {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 12px;
+        }
+        .status.success {
+            background: #e8ffea;
+            color: #2e7d32;
+        }
+        .status.error {
+            background: #ffebee;
+            color: #c62828;
+        }
+        pre {
+            background: #f5f5f5;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 11px;
+            overflow-x: auto;
+            max-height: 200px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="canvas-wrapper">
+            <h2>Flowchart Canvas</h2>
+            <canvas id="flowchartCanvas" width="1400" height="500"></canvas>
+        </div>
+        <div class="controls">
+            <h2>Test Controls</h2>
+            <button onclick="loadTestData()">Load Test Data (with Loop)</button>
+            <button onclick="clearCanvas()">Clear Canvas</button>
+            <button onclick="simulateAIGeneration()">Simulate AI Generation</button>
+            <div id="status" class="status" style="display:none;"></div>
+            <h3>Current Data:</h3>
+            <pre id="dataDisplay">No data loaded</pre>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('flowchartCanvas');
+        const ctx = canvas.getContext('2d');
+        let routineRects = [];
+        let connections = [];
+
+        // Test data with loop
+        const testData = {
+            "version": "1.0.0",
+            "timestamp": "2026-04-10T10:00:00Z",
+            "routineRects": [
+                {
+                    "id": 0,
+                    "name": "instruction",
+                    "x": 100,
+                    "y": 200,
+                    "width": 200,
+                    "height": 100,
+                    "borderRadius": 8,
+                    "avtpComponents": [
+                        {"enabled": true, "type": "text", "text": "Welcome!", "color": "white", "letterHeight": 0.05}
+                    ]
+                },
+                {
+                    "id": 1,
+                    "name": "fixation",
+                    "x": 400,
+                    "y": 200,
+                    "width": 200,
+                    "height": 100,
+                    "borderRadius": 8,
+                    "avtpComponents": [
+                        {"enabled": true, "type": "text", "text": "+", "color": "white", "letterHeight": 0.1}
+                    ]
+                },
+                {
+                    "id": 2,
+                    "name": "stimulus",
+                    "x": 700,
+                    "y": 200,
+                    "width": 200,
+                    "height": 100,
+                    "borderRadius": 8,
+                    "avtpComponents": [
+                        {"enabled": true, "type": "text", "text": "$word", "color": "$color", "letterHeight": 0.05},
+                        {"enabled": true, "type": "keyboard", "keys": "f,j"}
+                    ]
+                },
+                {
+                    "id": 3,
+                    "name": "feedback",
+                    "x": 1000,
+                    "y": 200,
+                    "width": 200,
+                    "height": 100,
+                    "borderRadius": 8,
+                    "avtpComponents": [
+                        {"enabled": true, "type": "text", "text": "Feedback", "color": "white", "letterHeight": 0.05}
+                    ]
+                }
+            ],
+            "connections": [
+                {
+                    "start": {"label": "0", "position": "right", "x": 300, "y": 250},
+                    "end": {"label": "1", "position": "left", "x": 400, "y": 250},
+                    "depth": 0
+                },
+                {
+                    "start": {"label": "1", "position": "right", "x": 600, "y": 250},
+                    "end": {"label": "2", "position": "left", "x": 700, "y": 250},
+                    "depth": 0
+                },
+                {
+                    "start": {"label": "2", "position": "right", "x": 900, "y": 250},
+                    "end": {"label": "3", "position": "left", "x": 1000, "y": 250},
+                    "depth": 0
+                },
+                {
+                    "start": {"label": "3", "position": "right", "x": 1200, "y": 250},
+                    "end": {"label": "1", "position": "left", "x": 400, "y": 250},
+                    "depth": 1,
+                    "loopName": "trials",
+                    "loopReps": 5,
+                    "loopType": "random",
+                    "loopConditions": "[{\"word\":\"RED\",\"color\":\"red\"},{\"word\":\"BLUE\",\"color\":\"blue\"}]",
+                    "loopIsTrials": true
+                }
+            ],
+            "currentRoutineCount": 4,
+            "routineIdCounter": 4,
+            "loopIdCounter": 1
+        };
+
+        function showStatus(message, isError = false) {
+            const status = document.getElementById('status');
+            status.textContent = message;
+            status.className = 'status ' + (isError ? 'error' : 'success');
+            status.style.display = 'block';
+        }
+
+        function updateDataDisplay() {
+            const display = document.getElementById('dataDisplay');
+            const data = {
+                routines: routineRects.length,
+                connections: connections.length,
+                loops: connections.filter(c => c.loopName).length
+            };
+            display.textContent = JSON.stringify(data, null, 2);
+        }
+
+        function drawRoundedRect(x, y, width, height, radius, fillStyle, strokeStyle) {
+            ctx.beginPath();
+            ctx.moveTo(x + radius, y);
+            ctx.lineTo(x + width - radius, y);
+            ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+            ctx.lineTo(x + width, y + height - radius);
+            ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+            ctx.lineTo(x + radius, y + height);
+            ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+            ctx.lineTo(x, y + radius);
+            ctx.quadraticCurveTo(x, y, x + radius, y);
+            ctx.closePath();
+            
+            if (fillStyle) {
+                ctx.fillStyle = fillStyle;
+                ctx.fill();
+            }
+            if (strokeStyle) {
+                ctx.strokeStyle = strokeStyle;
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
+            }
+        }
+
+        function drawRoutine(rect) {
+            // Draw routine rectangle
+            drawRoundedRect(rect.x, rect.y, rect.width, rect.height, rect.borderRadius || 8, '#181e25', '#181e25');
+            
+            // Draw routine name
+            ctx.fillStyle = 'white';
+            ctx.font = '600 14px DM Sans, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(rect.name, rect.x + rect.width / 2, rect.y + rect.height / 2);
+            
+            // Draw connection points
+            const leftPoint = { x: rect.x, y: rect.y + rect.height / 2 };
+            const rightPoint = { x: rect.x + rect.width, y: rect.y + rect.height / 2 };
+            
+            ctx.fillStyle = '#3b82f6';
+            ctx.beginPath();
+            ctx.arc(leftPoint.x, leftPoint.y, 4, 0, Math.PI * 2);
+            ctx.arc(rightPoint.x, rightPoint.y, 4, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        function getConnectionOffsetY(conn, allConnections) {
+            const startLabel = parseInt(conn.start.label);
+            const endLabel = parseInt(conn.end.label);
+            const minLabel = Math.min(startLabel, endLabel);
+            const maxLabel = Math.max(startLabel, endLabel);
+            const connDepth = conn.depth || 0;
+            
+            let offsetY = 60 + connDepth * 40;
+            
+            // Check for overlapping connections at the same depth
+            for (const other of allConnections) {
+                if (other === conn) continue;
+                
+                const otherStart = parseInt(other.start.label);
+                const otherEnd = parseInt(other.end.label);
+                const otherMin = Math.min(otherStart, otherEnd);
+                const otherMax = Math.max(otherStart, otherEnd);
+                const otherDepth = other.depth || 0;
+                
+                // Check if connections overlap and have same depth
+                if (otherDepth === connDepth && 
+                    !(maxLabel < otherMin || minLabel > otherMax)) {
+                    offsetY += 20;
+                }
+            }
+            
+            return offsetY;
+        }
+
+        function drawConnection(conn) {
+            const startX = conn.start.x;
+            const startY = conn.start.y;
+            const endX = conn.end.x;
+            const endY = conn.end.y;
+            
+            const offsetY = getConnectionOffsetY(conn, connections);
+            const cornerRadius = 15;
+            
+            ctx.strokeStyle = conn.loopName ? '#1456f0' : '#8e8e93';
+            ctx.lineWidth = conn.loopName ? 2 : 1.5;
+            ctx.beginPath();
+            
+            if (conn.loopName) {
+                // Draw loop connection with rounded corners
+                const cornerY = startY + offsetY;
+                
+                ctx.moveTo(startX, startY);
+                // Right side down
+                ctx.lineTo(startX + cornerRadius, startY);
+                ctx.quadraticCurveTo(startX, startY, startX, startY + cornerRadius);
+                ctx.lineTo(startX, cornerY - cornerRadius);
+                ctx.quadraticCurveTo(startX, cornerY, startX - cornerRadius, cornerY);
+                // Bottom line (right to left)
+                ctx.lineTo(endX + cornerRadius, cornerY);
+                ctx.quadraticCurveTo(endX, cornerY, endX, cornerY - cornerRadius);
+                // Left side up
+                ctx.lineTo(endX, endY + cornerRadius);
+                ctx.quadraticCurveTo(endX, endY, endX + cornerRadius, endY);
+                ctx.lineTo(endX, endY);
+                
+                ctx.stroke();
+                
+                // Draw loop label box
+                const middleX = (startX + endX) / 2;
+                const loopName = conn.loopName || 'trials';
+                ctx.font = '600 14px DM Sans, sans-serif';
+                const textWidth = ctx.measureText(loopName).width;
+                const rectWidth = Math.max(60, textWidth + 24);
+                const rectHeight = 30;
+                const rectRadius = 8;
+                
+                // Draw label background
+                drawRoundedRect(middleX - rectWidth / 2, cornerY - rectHeight / 2, rectWidth, rectHeight, rectRadius, '#1456f0', '#1456f0');
+                
+                // Draw label text
+                ctx.fillStyle = 'white';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.font = '500 14px DM Sans, sans-serif';
+                ctx.fillText(loopName, middleX, cornerY);
+                
+                // Draw reps indicator
+                if (conn.loopReps) {
+                    ctx.fillStyle = '#1456f0';
+                    ctx.font = '600 12px DM Sans, sans-serif';
+                    ctx.fillText(`n=${conn.loopReps}`, middleX, cornerY + rectHeight / 2 + 15);
+                }
+            } else {
+                // Draw simple connection
+                ctx.moveTo(startX, startY);
+                ctx.lineTo(endX, endY);
+                ctx.stroke();
+            }
+        }
+
+        function draw() {
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw connections first (so they appear behind routines)
+            connections.forEach(conn => drawConnection(conn));
+            
+            // Draw routines
+            routineRects.forEach(rect => drawRoutine(rect));
+        }
+
+        function loadTestData() {
+            routineRects = [...testData.routineRects];
+            connections = [...testData.connections];
+            draw();
+            updateDataDisplay();
+            showStatus('✅ Test data loaded with loop!');
+        }
+
+        function clearCanvas() {
+            routineRects = [];
+            connections = [];
+            draw();
+            updateDataDisplay();
+            showStatus('Canvas cleared');
+        }
+
+        function simulateAIGeneration() {
+            // Simulate receiving data from AI via postMessage
+            window.postMessage({
+                type: 'flowchart-generated',
+                content: JSON.stringify(testData),
+                fileName: 'ai_generated.json'
+            }, '*');
+        }
+
+        // Listen for postMessage (simulating chatbot -> card communication)
+        window.addEventListener('message', (e) => {
+            if (e.data && e.data.type === 'flowchart-generated') {
+                try {
+                    const data = JSON.parse(e.data.content);
+                    routineRects = data.routineRects || [];
+                    connections = data.connections || [];
+                    draw();
+                    updateDataDisplay();
+                    showStatus('✅ AI generated flowchart loaded with loop!');
+                } catch (err) {
+                    showStatus('❌ Error parsing AI data: ' + err.message, true);
+                }
+            }
+        });
+
+        // Initial draw
+        draw();
+        updateDataDisplay();
+    </script>
+</body>
+</html>
