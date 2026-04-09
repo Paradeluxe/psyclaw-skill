@@ -1174,38 +1174,335 @@
 
         const defaultFlowchartSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "PsyClaw Flowchart Project",
+  "description": "JSON schema for PsyClaw flowchart projects that convert to PsychoPy .psyexp format",
   "type": "object",
-  "required": ["version", "timestamp", "routineRects", "connections", "currentRoutineCount", "routineIdCounter", "loopIdCounter"],
+  "required": ["version", "timestamp", "routineRects", "connections"],
   "additionalProperties": false,
   "properties": {
-    "version": {"type": "string", "description": "Schema version identifier", "examples": ["1.0.0"]},
-    "timestamp": {"type": "string", "format": "date-time", "description": "ISO 8601 datetime string"},
-    "routineRects": {"type": "array", "description": "Array of routine objects", "minItems": 1, "items": {"$ref": "#/definitions/Routine"}, "uniqueItems": false},
-    "connections": {"type": "array", "description": "Array of connection objects", "items": {"$ref": "#/definitions/Connection"}},
-    "currentRoutineCount": {"type": "integer", "description": "Current number of routines", "minimum": 1},
-    "routineIdCounter": {"type": "integer", "description": "Counter for generating unique routine IDs", "minimum": 0},
-    "loopIdCounter": {"type": "integer", "description": "Counter for generating unique loop IDs", "minimum": 0}
+    "version": {
+      "type": "string",
+      "description": "Schema version identifier",
+      "examples": ["1.0.0"]
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 datetime string when the project was created/updated"
+    },
+    "routineRects": {
+      "type": "array",
+      "description": "Array of routine objects representing experiment trials",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/definitions/Routine"
+      }
+    },
+    "connections": {
+      "type": "array",
+      "description": "Array of connection objects defining the experiment flow",
+      "items": {
+        "$ref": "#/definitions/Connection"
+      }
+    },
+    "currentRoutineCount": {
+      "type": "integer",
+      "description": "Current number of routines in the project",
+      "minimum": 0,
+      "default": 0
+    },
+    "routineIdCounter": {
+      "type": "integer",
+      "description": "Counter for generating unique routine IDs",
+      "minimum": 0,
+      "default": 0
+    },
+    "loopIdCounter": {
+      "type": "integer",
+      "description": "Counter for generating unique loop IDs",
+      "minimum": 0,
+      "default": 0
+    }
   },
   "definitions": {
     "Routine": {
       "type": "object",
-      "description": "A routine object with AVTP (Audio, Video, Text, Picture, Keyboard) configurations",
-      "required": ["id", "x", "y", "width", "height", "keys", "duration", "avtp", "avtpData"],
+      "description": "A routine representing a single trial/stimulus presentation in PsychoPy",
+      "required": ["id", "name", "x", "y", "width", "height"],
       "additionalProperties": false,
       "properties": {
-        "id": {"type": "integer", "description": "Unique identifier for the routine", "minimum": 0},
-        "x": {"type": "number", "description": "X coordinate position on the canvas"},
-        "y": {"type": "number", "description": "Y coordinate position on the canvas"},
-        "width": {"type": "number", "description": "Width of the routine rectangle", "minimum": 0},
-        "height": {"type": "number", "description": "Height of the routine rectangle", "minimum": 0},
-        "borderRadius": {"type": "number", "description": "Border radius for rounded corners", "minimum": 0},
-        "isDragging": {"type": "boolean", "description": "Whether the routine is currently being dragged"},
-        "offsetX": {"type": "number", "description": "X offset for drag operation"},
-        "offsetY": {"type": "number", "description": "Y offset for drag operation"},
-        "keys": {"type": "string", "description": "Comma-separated key names", "examples": ["Key1, Key2, Key3"]},
-        "duration": {"type": "integer", "description": "Duration in milliseconds", "minimum": -1},
-        "avtp": {"$ref": "#/definitions/AVTPFlags"},
-        "avtpData": {"$ref": "#/definitions/AVTPData"}
+        "id": {
+          "type": "integer",
+          "description": "Unique identifier for the routine",
+          "minimum": 0
+        },
+        "name": {
+          "type": "string",
+          "description": "Display name of the routine",
+          "pattern": "^[a-zA-Z_][a-zA-Z0-9_]*$"
+        },
+        "x": {
+          "type": "number",
+          "description": "X coordinate position on the canvas"
+        },
+        "y": {
+          "type": "number",
+          "description": "Y coordinate position on the canvas"
+        },
+        "width": {
+          "type": "number",
+          "description": "Width of the routine rectangle",
+          "minimum": 50
+        },
+        "height": {
+          "type": "number",
+          "description": "Height of the routine rectangle",
+          "minimum": 50
+        },
+        "borderRadius": {
+          "type": "number",
+          "description": "Border radius for rounded corners",
+          "minimum": 0,
+          "default": 8
+        },
+        "isDragging": {
+          "type": "boolean",
+          "description": "Whether the routine is currently being dragged",
+          "default": false
+        },
+        "offsetX": {
+          "type": "number",
+          "description": "X offset for drag operation"
+        },
+        "offsetY": {
+          "type": "number",
+          "description": "Y offset for drag operation"
+        },
+        "keys": {
+          "type": "string",
+          "description": "Comma-separated key names for keyboard responses",
+          "examples": ["f", "j", "space"]
+        },
+        "duration": {
+          "type": "integer",
+          "description": "Default duration in milliseconds (-1 for indefinite)",
+          "minimum": -1,
+          "default": -1
+        },
+        "avtp": {
+          "$ref": "#/definitions/AVTPFlags"
+        },
+        "avtpData": {
+          "$ref": "#/definitions/AVTPData"
+        },
+        "avtpComponents": {
+          "type": "array",
+          "description": "Alternative array-based component configuration",
+          "items": {
+            "$ref": "#/definitions/AvtpComponent"
+          }
+        },
+        "type": {
+          "type": "string",
+          "description": "Legacy type designation (Audio, Text, Image, Keyboard, Code)",
+          "enum": ["Audio", "Text", "Image", "Keyboard", "Code"]
+        }
+      }
+    },
+    "AvtpComponent": {
+      "type": "object",
+      "description": "A component within a routine using array-based configuration",
+      "required": ["enabled", "type"],
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Whether this component is enabled"
+        },
+        "type": {
+          "type": "string",
+          "description": "Component type",
+          "enum": ["audio", "video", "text", "image", "keyboard"]
+        },
+        "name": {
+          "type": "string",
+          "description": "Component name/label"
+        },
+        "path": {
+          "type": "string",
+          "description": "File path for media components"
+        },
+        "text": {
+          "type": "string",
+          "description": "Text content for text components"
+        },
+        "color": {
+          "type": "string",
+          "description": "Color value (e.g., 'white', 'red', '#ffffff')"
+        },
+        "font": {
+          "type": "string",
+          "description": "Font family name"
+        },
+        "letterHeight": {
+          "type": "number",
+          "description": "Font size in height units",
+          "default": 0.05
+        },
+        "pos": {
+          "type": "array",
+          "description": "Position [x, y]",
+          "items": { "type": "number" },
+          "minItems": 2,
+          "maxItems": 2,
+          "default": [0, 0]
+        },
+        "size": {
+          "type": "array",
+          "description": "Size [width, height] (null values auto-calculate)",
+          "items": { "type": ["number", "null"] },
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "ori": {
+          "type": "number",
+          "description": "Orientation in degrees",
+          "default": 0
+        },
+        "opacity": {
+          "type": "number",
+          "description": "Opacity value",
+          "minimum": 0,
+          "maximum": 1,
+          "default": 1
+        },
+        "volume": {
+          "type": "number",
+          "description": "Volume for audio/video",
+          "minimum": 0,
+          "maximum": 1,
+          "default": 1
+        },
+        "startTime": {
+          "type": "number",
+          "description": "Start time in milliseconds",
+          "minimum": 0,
+          "default": 0
+        },
+        "duration": {
+          "type": "number",
+          "description": "Duration in milliseconds (-1 for indefinite)",
+          "minimum": -1,
+          "default": -1
+        },
+        "stopWithRoutine": {
+          "type": "boolean",
+          "description": "Whether to stop when routine ends",
+          "default": true
+        },
+        "forceEndRoutine": {
+          "type": "boolean",
+          "description": "Whether to force end routine on response",
+          "default": false
+        },
+        "keys": {
+          "type": "string",
+          "description": "Comma-separated keyboard keys"
+        },
+        "loop": {
+          "type": "boolean",
+          "description": "Whether to loop video/audio",
+          "default": false
+        },
+        "contrast": {
+          "type": "number",
+          "description": "Contrast value",
+          "minimum": 0,
+          "maximum": 1,
+          "default": 1
+        },
+        "flip": {
+          "type": "string",
+          "description": "Flip mode",
+          "enum": ["None", "Horizontal", "Vertical", "Both"],
+          "default": "None"
+        },
+        "units": {
+          "type": "string",
+          "description": "Units for positioning",
+          "enum": ["from exp settings", "height", "norm", "pix", "cm", "deg"],
+          "default": "from exp settings"
+        },
+        "languageStyle": {
+          "type": "string",
+          "description": "Language direction",
+          "enum": ["LTR", "RTL"],
+          "default": "LTR"
+        },
+        "wrapWidth": {
+          "type": "number",
+          "description": "Text wrap width"
+        },
+        "anchor": {
+          "type": "string",
+          "description": "Anchor point for positioning",
+          "enum": ["center", "top-center", "bottom-center", "left-center", "right-center", "top-left", "top-right", "bottom-left", "bottom-right"],
+          "default": "center"
+        },
+        "interpolate": {
+          "type": "string",
+          "description": "Image interpolation method",
+          "enum": ["linear", "nearest"],
+          "default": "linear"
+        },
+        "textureRes": {
+          "type": "integer",
+          "description": "Texture resolution for images",
+          "enum": [32, 64, 128, 256, 512],
+          "default": 128
+        },
+        "colorSpace": {
+          "type": "string",
+          "description": "Color space",
+          "enum": ["rgb", "dkl", "hsv", "hex"],
+          "default": "rgb"
+        },
+        "draggable": {
+          "type": "boolean",
+          "description": "Whether the stimulus is draggable",
+          "default": false
+        },
+        "hamming": {
+          "type": "boolean",
+          "description": "Apply Hamming window to audio",
+          "default": true
+        },
+        "discardPrevious": {
+          "type": "boolean",
+          "description": "Discard previous key presses",
+          "default": true
+        },
+        "registerOn": {
+          "type": "string",
+          "description": "When to register key press",
+          "enum": ["press", "release"],
+          "default": "press"
+        },
+        "store": {
+          "type": "string",
+          "description": "What to store",
+          "enum": ["last key", "all keys", "nothing"],
+          "default": "last key"
+        },
+        "storeCorrect": {
+          "type": "boolean",
+          "description": "Store whether response was correct",
+          "default": false
+        },
+        "deviceLabel": {
+          "type": "string",
+          "description": "Audio device label"
+        }
       }
     },
     "AVTPFlags": {
@@ -1214,11 +1511,26 @@
       "required": ["a", "v", "t", "p", "k"],
       "additionalProperties": false,
       "properties": {
-        "a": {"type": "boolean", "description": "Audio enabled flag"},
-        "v": {"type": "boolean", "description": "Video enabled flag"},
-        "t": {"type": "boolean", "description": "Text enabled flag"},
-        "p": {"type": "boolean", "description": "Picture enabled flag"},
-        "k": {"type": "boolean", "description": "Keyboard enabled flag"}
+        "a": {
+          "type": "boolean",
+          "description": "Audio component enabled"
+        },
+        "v": {
+          "type": "boolean",
+          "description": "Video component enabled"
+        },
+        "t": {
+          "type": "boolean",
+          "description": "Text component enabled"
+        },
+        "p": {
+          "type": "boolean",
+          "description": "Picture/Image component enabled"
+        },
+        "k": {
+          "type": "boolean",
+          "description": "Keyboard component enabled"
+        }
       }
     },
     "AVTPData": {
@@ -1226,127 +1538,469 @@
       "description": "Configuration data for AVTP components",
       "additionalProperties": false,
       "properties": {
-        "a": {"$ref": "#/definitions/AudioConfig"},
-        "v": {"$ref": "#/definitions/VideoConfig"},
-        "t": {"$ref": "#/definitions/TextConfig"},
-        "p": {"$ref": "#/definitions/PictureConfig"},
-        "k": {"$ref": "#/definitions/KeyboardConfig"}
+        "a": {
+          "$ref": "#/definitions/AudioConfig"
+        },
+        "v": {
+          "$ref": "#/definitions/VideoConfig"
+        },
+        "t": {
+          "$ref": "#/definitions/TextConfig"
+        },
+        "p": {
+          "$ref": "#/definitions/PictureConfig"
+        },
+        "k": {
+          "$ref": "#/definitions/KeyboardConfig"
+        }
       }
     },
     "TextConfig": {
       "type": "object",
       "description": "Configuration for text stimulus",
-      "required": ["enabled", "label", "type", "text", "font", "letterHeight", "color", "pos", "ori", "opacity", "units", "startTime", "duration", "contrast", "flip", "languageStyle", "draggable"],
       "additionalProperties": false,
       "properties": {
-        "enabled": {"type": "boolean"},
-        "label": {"type": "string"},
-        "type": {"type": "string", "const": "text"},
-        "text": {"type": "string"},
-        "font": {"type": "string"},
-        "letterHeight": {"type": "number"},
-        "color": {"type": "string"},
-        "pos": {"type": "array", "items": {"type": "number"}, "minItems": 2, "maxItems": 2},
-        "ori": {"type": "integer"},
-        "opacity": {"type": "number", "minimum": 0, "maximum": 1},
-        "units": {"type": "string"},
-        "startTime": {"type": "integer", "minimum": 0},
-        "duration": {"type": "integer", "minimum": -1},
-        "contrast": {"type": "number", "minimum": 0, "maximum": 1},
-        "wrapWidth": {"type": "number"},
-        "flip": {"type": "string", "enum": ["None", "Horizontal", "Vertical", "Both"]},
-        "languageStyle": {"type": "string", "enum": ["LTR", "RTL"]},
-        "draggable": {"type": "boolean"}
+        "enabled": {
+          "type": "boolean",
+          "description": "Whether this component is active"
+        },
+        "label": {
+          "type": "string",
+          "description": "Component label"
+        },
+        "type": {
+          "type": "string",
+          "const": "text",
+          "description": "Component type discriminator"
+        },
+        "text": {
+          "type": "string",
+          "description": "Text content to display"
+        },
+        "font": {
+          "type": "string",
+          "description": "Font family",
+          "default": "Arial"
+        },
+        "letterHeight": {
+          "type": "number",
+          "description": "Letter height in units",
+          "default": 0.05
+        },
+        "color": {
+          "type": "string",
+          "description": "Text color",
+          "default": "white"
+        },
+        "pos": {
+          "type": "array",
+          "items": { "type": "number" },
+          "minItems": 2,
+          "maxItems": 2,
+          "default": [0, 0]
+        },
+        "ori": {
+          "type": "number",
+          "description": "Orientation in degrees",
+          "default": 0
+        },
+        "opacity": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "default": 1
+        },
+        "units": {
+          "type": "string",
+          "enum": ["from exp settings", "height", "norm", "pix", "cm", "deg"],
+          "default": "from exp settings"
+        },
+        "startTime": {
+          "type": "number",
+          "minimum": 0,
+          "default": 0
+        },
+        "duration": {
+          "type": "number",
+          "minimum": -1,
+          "default": -1
+        },
+        "contrast": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "default": 1
+        },
+        "wrapWidth": {
+          "type": "number",
+          "description": "Width for text wrapping"
+        },
+        "flip": {
+          "type": "string",
+          "enum": ["None", "Horizontal", "Vertical", "Both"],
+          "default": "None"
+        },
+        "languageStyle": {
+          "type": "string",
+          "enum": ["LTR", "RTL"],
+          "default": "LTR"
+        },
+        "draggable": {
+          "type": "boolean",
+          "default": false
+        }
       }
     },
     "PictureConfig": {
       "type": "object",
       "description": "Configuration for image/picture stimulus",
-      "required": ["enabled", "label", "type", "path", "size", "pos", "opacity", "startTime", "duration", "ori", "flip", "units"],
       "additionalProperties": false,
       "properties": {
-        "enabled": {"type": "boolean"},
-        "label": {"type": "string"},
-        "type": {"type": "string", "const": "image"},
-        "path": {"type": "string"},
-        "size": {"type": "array", "items": {"type": ["number", "null"]}, "minItems": 2, "maxItems": 2},
-        "pos": {"type": "array", "items": {"type": "number"}, "minItems": 2, "maxItems": 2},
-        "opacity": {"type": "number", "minimum": 0, "maximum": 1},
-        "startTime": {"type": "integer", "minimum": 0},
-        "duration": {"type": "integer", "minimum": -1},
-        "ori": {"type": "integer"},
-        "flip": {"type": "string", "enum": ["None", "Horizontal", "Vertical", "Both"]},
-        "units": {"type": "string"}
+        "enabled": {
+          "type": "boolean"
+        },
+        "label": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "const": "image"
+        },
+        "path": {
+          "type": "string",
+          "description": "Image file path"
+        },
+        "size": {
+          "type": "array",
+          "items": { "type": ["number", "null"] },
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "pos": {
+          "type": "array",
+          "items": { "type": "number" },
+          "minItems": 2,
+          "maxItems": 2,
+          "default": [0, 0]
+        },
+        "opacity": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "default": 1
+        },
+        "startTime": {
+          "type": "number",
+          "minimum": 0,
+          "default": 0
+        },
+        "duration": {
+          "type": "number",
+          "minimum": -1,
+          "default": -1
+        },
+        "ori": {
+          "type": "number",
+          "default": 0
+        },
+        "flip": {
+          "type": "string",
+          "enum": ["None", "Horizontal", "Vertical", "Both"],
+          "default": "None"
+        },
+        "units": {
+          "type": "string",
+          "enum": ["from exp settings", "height", "norm", "pix", "cm", "deg"],
+          "default": "from exp settings"
+        },
+        "color": {
+          "type": "string",
+          "default": "$[1,1,1]"
+        },
+        "colorSpace": {
+          "type": "string",
+          "enum": ["rgb", "dkl", "hsv", "hex"],
+          "default": "rgb"
+        },
+        "contrast": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "default": 1
+        },
+        "interpolate": {
+          "type": "string",
+          "enum": ["linear", "nearest"],
+          "default": "linear"
+        },
+        "textureRes": {
+          "type": "integer",
+          "enum": [32, 64, 128, 256, 512],
+          "default": 128
+        },
+        "anchor": {
+          "type": "string",
+          "enum": ["center", "top-center", "bottom-center", "left-center", "right-center", "top-left", "top-right", "bottom-left", "bottom-right"],
+          "default": "center"
+        },
+        "draggable": {
+          "type": "boolean",
+          "default": false
+        }
       }
     },
     "AudioConfig": {
       "type": "object",
       "description": "Configuration for audio stimulus",
-      "required": ["enabled", "label", "type", "path", "volume", "startTime", "duration", "stopWithRoutine", "forceEndRoutine"],
       "additionalProperties": false,
       "properties": {
-        "enabled": {"type": "boolean"},
-        "label": {"type": "string"},
-        "type": {"type": "string", "const": "audio"},
-        "path": {"type": "string"},
-        "volume": {"type": "number", "minimum": 0, "maximum": 1},
-        "startTime": {"type": "integer", "minimum": 0},
-        "duration": {"type": "integer", "minimum": -1},
-        "stopWithRoutine": {"type": "boolean"},
-        "forceEndRoutine": {"type": "boolean"}
+        "enabled": {
+          "type": "boolean"
+        },
+        "label": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "const": "audio"
+        },
+        "path": {
+          "type": "string",
+          "description": "Audio file path"
+        },
+        "volume": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "default": 1
+        },
+        "startTime": {
+          "type": "number",
+          "minimum": 0,
+          "default": 0
+        },
+        "duration": {
+          "type": "number",
+          "minimum": -1,
+          "default": -1
+        },
+        "stopWithRoutine": {
+          "type": "boolean",
+          "default": true
+        },
+        "forceEndRoutine": {
+          "type": "boolean",
+          "default": false
+        },
+        "deviceLabel": {
+          "type": "string",
+          "description": "Audio device label"
+        },
+        "hamming": {
+          "type": "boolean",
+          "description": "Apply Hamming window",
+          "default": true
+        }
       }
     },
     "VideoConfig": {
       "type": "object",
       "description": "Configuration for video stimulus",
-      "required": ["enabled", "label", "type", "path", "volume", "size", "anchor", "loop", "startTime", "duration", "units", "opacity", "stopWithRoutine", "forceEndRoutine"],
       "additionalProperties": false,
       "properties": {
-        "enabled": {"type": "boolean"},
-        "label": {"type": "string"},
-        "type": {"type": "string", "const": "video"},
-        "path": {"type": "string"},
-        "volume": {"type": "number", "minimum": 0, "maximum": 1},
-        "size": {"type": "array", "items": {"type": ["number", "null"]}, "minItems": 2, "maxItems": 2},
-        "anchor": {"type": "string"},
-        "loop": {"type": "boolean"},
-        "startTime": {"type": "integer", "minimum": 0},
-        "duration": {"type": "integer", "minimum": -1},
-        "units": {"type": "string"},
-        "opacity": {"type": "number", "minimum": 0, "maximum": 1},
-        "stopWithRoutine": {"type": "boolean"},
-        "forceEndRoutine": {"type": "boolean"}
+        "enabled": {
+          "type": "boolean"
+        },
+        "label": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "const": "video"
+        },
+        "path": {
+          "type": "string",
+          "description": "Video file path"
+        },
+        "volume": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "default": 1
+        },
+        "size": {
+          "type": "array",
+          "items": { "type": ["number", "null"] },
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "anchor": {
+          "type": "string",
+          "enum": ["center", "top-center", "bottom-center", "left-center", "right-center", "top-left", "top-right", "bottom-left", "bottom-right"],
+          "default": "center"
+        },
+        "loop": {
+          "type": "boolean",
+          "default": false
+        },
+        "startTime": {
+          "type": "number",
+          "minimum": 0,
+          "default": 0
+        },
+        "duration": {
+          "type": "number",
+          "minimum": -1,
+          "default": -1
+        },
+        "units": {
+          "type": "string",
+          "enum": ["from exp settings", "height", "norm", "pix", "cm", "deg"],
+          "default": "from exp settings"
+        },
+        "opacity": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "default": 1
+        },
+        "stopWithRoutine": {
+          "type": "boolean",
+          "default": true
+        },
+        "forceEndRoutine": {
+          "type": "boolean",
+          "default": false
+        }
       }
     },
     "KeyboardConfig": {
       "type": "object",
       "description": "Configuration for keyboard response component",
-      "required": ["enabled", "label", "type", "keys", "startTime", "duration", "forceEndRoutine"],
       "additionalProperties": false,
       "properties": {
-        "enabled": {"type": "boolean"},
-        "label": {"type": "string"},
-        "type": {"type": "string", "const": "keyboard"},
-        "keys": {"type": "string"},
-        "startTime": {"type": "integer", "minimum": 0},
-        "duration": {"type": "integer", "minimum": -1},
-        "forceEndRoutine": {"type": "boolean"}
+        "enabled": {
+          "type": "boolean"
+        },
+        "label": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "const": "keyboard"
+        },
+        "keys": {
+          "type": "string",
+          "description": "Comma-separated keyboard keys",
+          "examples": ["f,j", "space,enter", "'f','j'"]
+        },
+        "startTime": {
+          "type": "number",
+          "minimum": 0,
+          "default": 0
+        },
+        "duration": {
+          "type": "number",
+          "minimum": -1,
+          "default": -1
+        },
+        "forceEndRoutine": {
+          "type": "boolean",
+          "default": false
+        },
+        "discardPrevious": {
+          "type": "boolean",
+          "description": "Discard previous key presses",
+          "default": true
+        },
+        "registerOn": {
+          "type": "string",
+          "enum": ["press", "release"],
+          "default": "press"
+        },
+        "store": {
+          "type": "string",
+          "enum": ["last key", "all keys", "nothing"],
+          "default": "last key"
+        },
+        "storeCorrect": {
+          "type": "boolean",
+          "default": false
+        },
+        "correctAns": {
+          "type": "string",
+          "description": "Correct answer for scoring"
+        }
+      }
+    },
+    "CodeConfig": {
+      "type": "object",
+      "description": "Configuration for code component (Python/JS execution)",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "label": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "const": "code"
+        },
+        "code": {
+          "type": "string",
+          "description": "Python code to execute"
+        },
+        "codeType": {
+          "type": "string",
+          "enum": ["Py", "JS", "Both"],
+          "default": "Py"
+        }
       }
     },
     "Connection": {
       "type": "object",
-      "description": "A connection object between routines",
+      "description": "A connection object defining flow between routines",
       "required": ["start", "end", "depth", "loopIsTrials"],
       "additionalProperties": false,
       "properties": {
-        "start": {"$ref": "#/definitions/ConnectionEndpoint"},
-        "end": {"$ref": "#/definitions/ConnectionEndpoint"},
-        "depth": {"type": "integer", "minimum": 0},
-        "loopName": {"type": "string"},
-        "loopReps": {"type": "integer", "minimum": 1},
-        "loopType": {"type": "string", "enum": ["sequential", "random"]},
-        "loopConditions": {"type": "string", "contentMediaType": "application/json", "contentSchema": {"type": "array", "items": {"$ref": "#/definitions/LoopCondition"}}},
-        "loopIsTrials": {"type": "boolean"}
+        "start": {
+          "$ref": "#/definitions/ConnectionEndpoint"
+        },
+        "end": {
+          "$ref": "#/definitions/ConnectionEndpoint"
+        },
+        "depth": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Nesting depth for loops"
+        },
+        "loopName": {
+          "type": "string",
+          "description": "Name of the loop (if this connection creates a loop)"
+        },
+        "loopReps": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Number of loop repetitions",
+          "default": 1
+        },
+        "loopType": {
+          "type": "string",
+          "enum": ["sequential", "random"],
+          "description": "Loop type",
+          "default": "sequential"
+        },
+        "loopConditions": {
+          "type": "string",
+          "description": "Conditions file path or JSON array string for loop"
+        },
+        "loopIsTrials": {
+          "type": "boolean",
+          "description": "Whether this loop is a trial handler",
+          "default": true
+        }
       }
     },
     "ConnectionEndpoint": {
@@ -1355,21 +2009,40 @@
       "required": ["x", "y", "label", "isSnapTarget"],
       "additionalProperties": false,
       "properties": {
-        "x": {"type": "number"},
-        "y": {"type": "number"},
-        "label": {"type": "integer"},
-        "isSnapTarget": {"type": "boolean"}
+        "x": {
+          "type": "number"
+        },
+        "y": {
+          "type": "number"
+        },
+        "label": {
+          "type": "integer",
+          "description": "Connection point label (odd numbers for left, odd+2 for right)"
+        },
+        "isSnapTarget": {
+          "type": "boolean",
+          "default": false
+        }
       }
     },
     "LoopCondition": {
       "type": "object",
-      "description": "A condition object for loop execution",
-      "required": ["variable", "operator", "value"],
+      "description": "A condition object for conditional loop execution",
       "additionalProperties": false,
       "properties": {
-        "variable": {"type": "string"},
-        "operator": {"type": "string", "enum": ["==", "!=", ">", "<", ">=", "<="]},
-        "value": {"type": ["string", "number"]}
+        "variable": {
+          "type": "string",
+          "description": "Variable name to check"
+        },
+        "operator": {
+          "type": "string",
+          "enum": ["==", "!=", ">", "<", ">=", "<="],
+          "description": "Comparison operator"
+        },
+        "value": {
+          "type": ["string", "number", "boolean"],
+          "description": "Value to compare against"
+        }
       }
     }
   }
