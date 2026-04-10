@@ -25,6 +25,7 @@
             --brand-deep: #17437d;
             
             /* Blue Scale */
+            --primary-100: #dbeafe;
             --primary-200: #bfdbfe;
             --primary-light: #60a5fa;
             --primary-500: #3b82f6;
@@ -1011,12 +1012,13 @@
         }
 
         .conditions-table-container {
-            border: 1.5px solid var(--border-gray);
-            border-radius: 12px;
+            border: 1px solid var(--border-light);
+            border-radius: 16px;
             overflow: auto;
-            margin-top: 8px;
-            box-shadow: var(--shadow-standard);
+            margin-top: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 4px 12px rgba(44, 30, 116, 0.06);
             max-width: 100%;
+            background: var(--bg-white);
         }
 
         .conditions-table-header {
@@ -1041,38 +1043,41 @@
         }
 
         .conditions-btn {
-            padding: 6px 12px;
+            padding: 8px 16px;
             border: 1px solid var(--border-gray);
             background: var(--bg-white);
-            border-radius: 8px;
+            border-radius: 9999px;
             font-size: 12px;
             font-weight: 600;
             color: var(--text-secondary);
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.2s ease;
             display: flex;
             align-items: center;
-            gap: 4px;
+            gap: 6px;
             font-family: var(--font-ui);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
         }
 
         .conditions-btn:hover {
-            background: var(--primary-200);
+            background: rgba(20, 86, 240, 0.08);
             border-color: var(--brand-blue);
             color: var(--brand-blue);
+            box-shadow: 0 2px 6px rgba(20, 86, 240, 0.1);
         }
 
         .conditions-btn.add-btn {
             color: var(--brand-blue);
-            border-color: var(--primary-200);
-            background: var(--primary-200);
-            margin-top: 12px;
+            border-color: rgba(20, 86, 240, 0.2);
+            background: rgba(20, 86, 240, 0.08);
+            margin-top: 16px;
         }
 
         .conditions-btn.add-btn:hover {
             background: var(--brand-blue);
             color: var(--bg-white);
             border-color: var(--brand-blue);
+            box-shadow: 0 4px 12px rgba(20, 86, 240, 0.25);
         }
 
         .conditions-btn.delete-btn {
@@ -1093,37 +1098,39 @@
         }
 
         .conditions-table th {
-            padding: 10px 12px;
+            padding: 12px 16px;
             text-align: left;
             font-size: 12px;
             font-weight: 600;
             color: var(--text-secondary);
-            background: var(--bg-light);
-            border-bottom: 1.5px solid var(--border-gray);
+            background: #fafafa;
+            border-bottom: 1px solid var(--border-light);
             white-space: nowrap;
             font-family: var(--font-ui);
+            letter-spacing: 0.3px;
         }
 
         .conditions-table td {
-            padding: 8px 12px;
+            padding: 10px 16px;
             border-bottom: 1px solid var(--border-light);
             white-space: nowrap;
         }
 
         .conditions-table input {
             width: 100%;
-            padding: 8px 10px;
+            padding: 8px 12px;
             border: 1px solid var(--border-gray);
-            border-radius: 6px;
+            border-radius: 8px;
             font-size: 13px;
             font-family: var(--font-ui);
-            transition: all 0.2s;
+            transition: all 0.2s ease;
             color: var(--text-primary);
             box-sizing: border-box;
+            background: var(--bg-white);
         }
 
         .conditions-table tr:hover {
-            background: var(--bg-light);
+            background: rgba(20, 86, 240, 0.02);
         }
 
         .conditions-table tr:last-child td {
@@ -1133,7 +1140,11 @@
         .conditions-table input:focus {
             outline: none;
             border-color: var(--brand-blue);
-            box-shadow: 0 0 0 2px rgba(20, 86, 240, 0.1);
+            box-shadow: 0 0 0 3px rgba(20, 86, 240, 0.08);
+        }
+
+        .conditions-table input:hover {
+            border-color: var(--primary-light);
         }
 
         .conditions-table .row-actions {
@@ -1162,30 +1173,89 @@
             color: #c62828;
         }
 
+        .remove-col-btn-header {
+            width: 24px;
+            height: 24px;
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            padding: 0;
+            flex-shrink: 0;
+        }
+
+        .remove-col-btn-header:hover {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .condition-col-name {
+            font-family: var(--font-ui);
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-primary);
+            transition: all 0.2s ease;
+        }
+
+        .condition-col-name:focus {
+            outline: none;
+            border-color: var(--brand-blue) !important;
+            box-shadow: 0 0 0 3px rgba(20, 86, 240, 0.08);
+        }
+
+        .condition-var-name-header {
+            font-weight: 600;
+            color: var(--text-secondary);
+            min-width: 120px;
+        }
+
+        .condition-row-name {
+            font-weight: 600;
+            color: var(--text-dark);
+            background: transparent !important;
+            border: none !important;
+            padding: 8px 0 !important;
+            pointer-events: none;
+        }
+
+        .conditions-table tr:nth-child(odd) {
+            background: rgba(250, 250, 250, 0.5);
+        }
+
+        .conditions-table tr:nth-child(even) {
+            background: var(--bg-white);
+        }
+
         .loop-contents-display {
-            background: var(--bg-light);
+            background: #fafafa;
             border: 1px solid var(--border-light);
-            border-radius: 8px;
-            padding: 12px;
+            border-radius: 12px;
+            padding: 16px;
         }
 
         .loop-contents-header {
             display: flex;
             align-items: center;
-            margin-bottom: 8px;
+            margin-bottom: 12px;
         }
 
         .loop-contents-title {
-            font-size: 12px;
+            font-size: 13px;
             font-weight: 600;
             color: var(--text-secondary);
             font-family: var(--font-ui);
+            letter-spacing: 0.3px;
         }
 
         .loop-contents-list {
             display: flex;
             flex-wrap: wrap;
-            gap: 6px;
+            gap: 8px;
             max-height: 120px;
             overflow-y: auto;
             padding-right: 4px;
@@ -1208,21 +1278,30 @@
             display: inline-flex;
             align-items: center;
             gap: 4px;
-            padding: 4px 10px;
+            padding: 6px 12px;
             border-radius: 9999px;
-            font-size: 11px;
+            font-size: 12px;
             font-weight: 500;
             font-family: var(--font-ui);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+            transition: all 0.2s ease;
+        }
+
+        .loop-content-tag:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
         }
 
         .loop-content-tag.routine {
             background: var(--primary-100);
             color: var(--primary-700);
+            border: 1px solid var(--primary-200);
         }
 
         .loop-content-tag.loop {
-            background: #e3f2fd;
-            color: #1565c0;
+            background: rgba(234, 94, 193, 0.1);
+            color: var(--brand-pink);
+            border: 1px solid rgba(234, 94, 193, 0.15);
         }
 
         .loop-content-tag-icon {
@@ -1449,18 +1528,18 @@
 
         /* Variable Selector Styles */
         .variable-selector {
-            margin-bottom: 16px;
-            padding: 16px;
-            background: var(--bg-light);
-            border-radius: 12px;
-            border: 1px solid var(--border-gray);
+            margin-bottom: 20px;
+            padding: 20px;
+            background: #fafafa;
+            border-radius: 16px;
+            border: 1px solid var(--border-light);
         }
 
         .variable-selector-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 12px;
+            margin-bottom: 16px;
         }
 
         .variable-selector-title {
@@ -1468,6 +1547,7 @@
             font-weight: 600;
             color: var(--text-dark);
             font-family: var(--font-ui);
+            letter-spacing: 0.3px;
         }
 
         .variable-selector-actions {
@@ -1477,27 +1557,29 @@
 
         .variable-selector-btn {
             font-size: 12px;
-            padding: 6px 12px;
+            padding: 6px 14px;
             border: 1px solid var(--border-gray);
             background: var(--bg-white);
-            border-radius: 8px;
+            border-radius: 9999px;
             cursor: pointer;
             color: var(--text-secondary);
-            transition: all 0.2s;
+            transition: all 0.2s ease;
             font-family: var(--font-ui);
             font-weight: 500;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
         }
 
         .variable-selector-btn:hover {
-            background: var(--primary-200);
+            background: rgba(20, 86, 240, 0.08);
             border-color: var(--brand-blue);
             color: var(--brand-blue);
+            box-shadow: 0 2px 6px rgba(20, 86, 240, 0.1);
         }
 
         .variable-tags-container {
             display: flex;
             flex-wrap: wrap;
-            gap: 8px;
+            gap: 10px;
             min-height: 32px;
         }
 
@@ -1505,42 +1587,43 @@
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            padding: 8px 14px;
+            padding: 8px 16px;
             border-radius: 9999px;
-            font-size: 12px;
+            font-size: 13px;
             font-weight: 500;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.2s ease;
             -webkit-user-select: none;
             user-select: none;
-            border: 2px solid transparent;
+            border: 1.5px solid transparent;
             font-family: var(--font-ui);
-        }
-
-        .variable-tag.selected {
-            background: var(--primary-200);
-            color: var(--brand-blue);
-            border-color: var(--brand-blue);
-        }
-
-        .variable-tag:not(.selected) {
             background: var(--bg-white);
             color: var(--text-secondary);
             border-color: var(--border-gray);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+        }
+
+        .variable-tag.selected {
+            background: rgba(20, 86, 240, 0.08);
+            color: var(--brand-blue);
+            border-color: var(--brand-blue);
+            box-shadow: 0 0 0 1px rgba(20, 86, 240, 0.1);
         }
 
         .variable-tag:hover {
             transform: translateY(-1px);
-            box-shadow: var(--shadow-standard);
+            box-shadow: 0 2px 8px rgba(44, 30, 116, 0.08);
         }
 
         .variable-tag.selected:hover {
-            background: var(--primary-200);
+            background: rgba(20, 86, 240, 0.12);
+            box-shadow: 0 2px 8px rgba(20, 86, 240, 0.15);
         }
 
         .variable-tag:not(.selected):hover {
-            background: var(--bg-light);
-            border-color: var(--text-secondary);
+            background: var(--bg-white);
+            border-color: var(--brand-blue);
+            color: var(--brand-blue);
         }
 
         .variable-tag-checkbox {
@@ -4940,17 +5023,18 @@
                 const th = document.createElement('th');
                 th.style.minWidth = '100px';
                 th.innerHTML = `
-                    <div style="display: flex; align-items: center; padding: 2px 0;">
-                        <input type="text" class="condition-col-name" data-index="${index}" value="${cond.name}" placeholder="Cond ${index + 1}" style="flex: 1; padding: 4px 6px; font-size: 11px; min-width: 80px; border: 1px solid #e0e0e0; border-radius: 4px;">
+                    <div style="display: flex; align-items: center; gap: 6px; padding: 2px 0;">
+                        <input type="text" class="condition-col-name" data-index="${index}" value="${cond.name}" placeholder="Cond ${index + 1}" style="flex: 1; padding: 6px 8px; font-size: 12px; font-weight: 500; min-width: 60px; border: 1px solid var(--border-gray); border-radius: 6px; font-family: var(--font-ui); color: var(--text-primary);">
+                        <button type="button" class="remove-col-btn-header" data-index="${index}" title="Remove condition">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                <line x1="18" y1="6" x2="6" y2="18"></line>
+                                <line x1="6" y1="6" x2="18" y2="18"></line>
+                            </svg>
+                        </button>
                     </div>
                 `;
                 conditionsTableHeaderRow.appendChild(th);
             });
-
-            // Add header cell for remove column button
-            const removeBtnTh = document.createElement('th');
-            removeBtnTh.style.width = '40px';
-            conditionsTableHeaderRow.appendChild(removeBtnTh);
         }
 
         // 辅助函数：从表格获取当前 conditions 数据
@@ -5071,24 +5155,6 @@
             weightRow.innerHTML = weightCellsHtml;
             conditionsTableBody.appendChild(weightRow);
 
-            // 删除按钮行
-            const removeRow = document.createElement('tr');
-            let removeCellsHtml = `<td style="min-width: 120px;"></td>`;
-            conditions.forEach((condition, condIndex) => {
-                removeCellsHtml += `
-                    <td style="min-width: 100px; text-align: center;">
-                        <button type="button" class="remove-row-btn remove-col-btn" data-index="${condIndex}" title="Remove condition">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <line x1="18" y1="6" x2="6" y2="18"></line>
-                                <line x1="6" y1="6" x2="18" y2="18"></line>
-                            </svg>
-                        </button>
-                    </td>
-                `;
-            });
-            removeRow.innerHTML = removeCellsHtml;
-            conditionsTableBody.appendChild(removeRow);
-
             updateHeaderRow();
             updateConditionsTableState();
         }
@@ -5155,56 +5221,70 @@
         function updateConditionsTableState() {
             const rows = conditionsTableBody.querySelectorAll('tr');
             const hasRows = rows.length > 0;
-            
+
             if (!hasRows) {
                 conditionsEmptyState.classList.remove('hidden');
             } else {
                 conditionsEmptyState.classList.add('hidden');
             }
-            
+
+            // 绑定表头删除按钮事件
+            const headerRemoveBtns = conditionsTableHeaderRow.querySelectorAll('.remove-col-btn-header');
+            headerRemoveBtns.forEach(btn => {
+                // 移除旧的事件监听器（通过克隆替换）
+                const newBtn = btn.cloneNode(true);
+                btn.parentNode.replaceChild(newBtn, btn);
+                newBtn.addEventListener('click', () => {
+                    const index = parseInt(newBtn.dataset.index);
+                    removeConditionColumn(index);
+                });
+            });
+
             rows.forEach((row, index) => {
-                const removeBtn = row.querySelector('.remove-row-btn');
-                if (removeBtn) {
-                    removeBtn.addEventListener('click', () => {
-                        row.remove();
-                        
-                        // Remove from autoDetectedVariables if no more rows use this variable
-                        currentVariableNames.forEach(varName => {
-                            const isUsed = Array.from(conditionsTableBody.querySelectorAll('tr')).some(r => {
-                                const cell = r.querySelector(`.condition-cell-${CSS.escape(varName)}`);
-                                return cell && cell.value && cell.value.trim() !== '';
-                            });
-                            if (!isUsed) {
-                                const autoIndex = autoDetectedVariables.indexOf(varName);
-                                if (autoIndex !== -1) {
-                                    autoDetectedVariables.splice(autoIndex, 1);
-                                }
-                            }
-                        });
-                        
-                        updateHeaderRow();
-                        updateConditionsTableState();
-                        saveLoopFormChanges();
-                    });
-                }
-                
                 const nameInput = row.querySelector('.condition-row-name');
                 if (nameInput) {
                     nameInput.addEventListener('input', saveLoopFormChanges);
                 }
-                
+
                 // 绑定所有非 condition-row-name、非 condition-row-weight 的输入框的 input 事件
                 const valueInputs = row.querySelectorAll('td input:not(.condition-row-name):not(.condition-row-weight)');
                 valueInputs.forEach(valueInput => {
                     valueInput.addEventListener('input', saveLoopFormChanges);
                 });
-                
+
                 // 绑定 weight 输入框的 input 事件
                 const weightInput = row.querySelector('.condition-row-weight');
                 if (weightInput) {
                     weightInput.addEventListener('input', saveLoopFormChanges);
                 }
             });
+        }
+
+        // 删除指定索引的 condition 列
+        function removeConditionColumn(index) {
+            const conditions = getConditionsFromTable();
+            if (index >= 0 && index < conditions.length) {
+                conditions.splice(index, 1);
+
+                // 更新隐藏的 input 值
+                if (conditions.length === 0) {
+                    formLoopConditions.value = '';
+                } else {
+                    // 保留 _meta 信息
+                    const meta = conditions._meta;
+                    const conditionsToSave = conditions.map(c => ({
+                        name: c.name,
+                        values: c.values,
+                        weight: c.weight
+                    }));
+                    conditionsToSave._meta = meta;
+                    formLoopConditions.value = JSON.stringify(conditionsToSave);
+                }
+
+                // 重新渲染表格
+                renderConditionsTable();
+                saveLoopFormChanges();
+            }
         }
 
         function switchToTableView() {

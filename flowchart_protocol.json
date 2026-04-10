@@ -191,46 +191,20 @@
     
     "Routine": {
       "type": "object",
-      "description": "A routine representing a single trial/stimulus presentation. Routines are located at even-numbered points (2, 4, 6, 8...) on the flowchart canvas. The point number can be calculated as: pointNumber = (routineId * 2) + 2",
-      "required": ["id", "name", "x", "y", "width", "height"],
+      "description": "A routine representing a single trial/stimulus presentation",
+      "required": ["id", "name", "components"],
       "properties": {
         "id": {
           "type": "integer",
-          "description": "Unique routine identifier (0, 2, 4, 6...). Even numbers only, corresponding to even points (2, 4, 6, 8...)",
-          "minimum": 0,
-          "multipleOf": 2
+          "description": "Unique identifier for the routine"
         },
         "name": {
           "type": "string",
-          "description": "Routine name (valid Python identifier)",
-          "pattern": "^[a-zA-Z_][a-zA-Z0-9_]*$"
+          "description": "Name of the routine"
         },
-        "x": {
-          "type": "number",
-          "description": "X coordinate on canvas"
-        },
-        "y": {
-          "type": "number",
-          "description": "Y coordinate on canvas"
-        },
-        "width": {
-          "type": "number",
-          "description": "Routine box width",
-          "default": 200
-        },
-        "height": {
-          "type": "number",
-          "description": "Routine box height",
-          "default": 150
-        },
-        "duration": {
-          "type": "integer",
-          "description": "Duration in milliseconds (-1 for indefinite)",
-          "default": -1
-        },
-        "avtpComponents": {
+        "components": {
           "type": "array",
-          "description": "Array of stimulus/response components",
+          "description": "Components to include in the routine",
           "items": {
             "$ref": "#/definitions/Component"
           }
@@ -239,14 +213,24 @@
     },
     
     "Component": {
+      "oneOf": [
+        { "$ref": "#/definitions/AudioComponent" },
+        { "$ref": "#/definitions/VideoComponent" },
+        { "$ref": "#/definitions/TextComponent" },
+        { "$ref": "#/definitions/ImageComponent" },
+        { "$ref": "#/definitions/KeyboardComponent" }
+      ]
+    },
+
+    "AudioComponent": {
       "type": "object",
-      "description": "A stimulus or response component in a routine",
+      "description": "Audio stimulus component",
       "required": ["type"],
       "properties": {
         "type": {
           "type": "string",
-          "enum": ["audio", "video", "text", "image", "keyboard", "code"],
-          "description": "Component type"
+          "const": "audio",
+          "description": "Component type identifier"
         },
         "enabled": {
           "type": "boolean",
@@ -255,15 +239,100 @@
         },
         "path": {
           "type": "string",
-          "description": "File path for media components"
+          "description": "Audio file path"
+        },
+        "volume": {
+          "type": "number",
+          "description": "Volume level (0-1)",
+          "minimum": 0,
+          "maximum": 1,
+          "default": 1
+        },
+        "duration": {
+          "type": "integer",
+          "description": "Duration in milliseconds (-1 for indefinite)",
+          "default": -1
+        }
+      }
+    },
+
+    "VideoComponent": {
+      "type": "object",
+      "description": "Video stimulus component",
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "video",
+          "description": "Component type identifier"
+        },
+        "enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether component is enabled"
+        },
+        "path": {
+          "type": "string",
+          "description": "Video file path"
+        },
+        "pos": {
+          "type": "array",
+          "description": "Position [x, y]",
+          "items": { "type": "number" },
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "size": {
+          "type": "array",
+          "description": "Size [width, height]",
+          "items": { "type": ["number", "null"] },
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "volume": {
+          "type": "number",
+          "description": "Volume level (0-1)",
+          "minimum": 0,
+          "maximum": 1,
+          "default": 1
+        },
+        "duration": {
+          "type": "integer",
+          "description": "Duration in milliseconds (-1 for indefinite)",
+          "default": -1
+        }
+      }
+    },
+
+    "TextComponent": {
+      "type": "object",
+      "description": "Text stimulus component",
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "text",
+          "description": "Component type identifier"
+        },
+        "enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether component is enabled"
         },
         "text": {
           "type": "string",
-          "description": "Text content for text components"
+          "description": "Text content to display"
+        },
+        "pos": {
+          "type": "array",
+          "description": "Position [x, y]",
+          "items": { "type": "number" },
+          "minItems": 2,
+          "maxItems": 2
         },
         "color": {
           "type": "string",
-          "description": "Color value (e.g., 'white', 'red', '#ffffff')"
+          "description": "Text color (e.g., 'white', 'red', '#ffffff')"
         },
         "font": {
           "type": "string",
@@ -273,6 +342,33 @@
           "type": "number",
           "description": "Font size in height units",
           "default": 0.05
+        },
+        "duration": {
+          "type": "integer",
+          "description": "Duration in milliseconds (-1 for indefinite)",
+          "default": -1
+        }
+      }
+    },
+
+    "ImageComponent": {
+      "type": "object",
+      "description": "Image stimulus component",
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "image",
+          "description": "Component type identifier"
+        },
+        "enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether component is enabled"
+        },
+        "path": {
+          "type": "string",
+          "description": "Image file path"
         },
         "pos": {
           "type": "array",
@@ -289,24 +385,36 @@
           "maxItems": 2
         },
         "duration": {
-          "type": "number",
+          "type": "integer",
           "description": "Duration in milliseconds (-1 for indefinite)",
           "default": -1
+        }
+      }
+    },
+
+    "KeyboardComponent": {
+      "type": "object",
+      "description": "Keyboard response component",
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "keyboard",
+          "description": "Component type identifier"
         },
-        "volume": {
-          "type": "number",
-          "description": "Volume for audio/video (0-1)",
-          "minimum": 0,
-          "maximum": 1,
-          "default": 1
+        "enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether component is enabled"
         },
         "keys": {
           "type": "string",
-          "description": "Comma-separated keyboard keys"
+          "description": "Comma-separated allowed keys (e.g., 'space,return,escape')"
         },
-        "code": {
-          "type": "string",
-          "description": "Python/JS code to execute (for code components)"
+        "duration": {
+          "type": "integer",
+          "description": "Maximum wait time in milliseconds (-1 for indefinite)",
+          "default": -1
         }
       }
     },

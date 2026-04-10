@@ -1,24 +1,107 @@
 {
   "version": "2.0",
-  "timestamp": "2026-04-10T09:06:27.595Z",
+  "timestamp": "2026-04-10T09:13:10.836Z",
   "routines": [
     {
-      "id": 1,
-      "name": "routine_1",
+      "id": 0,
+      "name": "fixation",
       "x": 85,
       "y": 240,
       "width": 200,
       "height": 140,
-      "duration": 3000,
+      "duration": 1000,
       "avtpComponents": [
         {
-          "label": "Keyboard",
-          "type": "keyboard",
-          "keys": "",
+          "type": "text",
+          "text": "+",
+          "color": "white",
+          "font": "Arial",
+          "letterHeight": 0.1,
+          "pos": [
+            0,
+            0
+          ],
+          "opacity": 1,
+          "units": "norm",
+          "enabled": true,
+          "path": "",
           "startTime": 0,
-          "duration": -1,
+          "duration": 3000,
+          "ori": 0,
+          "contrast": 1,
+          "flip": "None",
+          "languageStyle": "LTR",
+          "draggable": false
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "stimulus",
+      "x": 335,
+      "y": 240,
+      "width": 200,
+      "height": 140,
+      "duration": 2000,
+      "avtpComponents": [
+        {
+          "type": "text",
+          "text": "$word",
+          "color": "$color",
+          "font": "Arial",
+          "letterHeight": 0.15,
+          "pos": [
+            0,
+            0
+          ],
+          "opacity": 1,
+          "units": "norm",
+          "enabled": true
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "name": "response",
+      "x": 585,
+      "y": 240,
+      "width": 200,
+      "height": 140,
+      "duration": -1,
+      "avtpComponents": [
+        {
+          "type": "keyboard",
+          "keys": "1,2,3,4",
+          "store": "last key",
+          "storeCorrect": true,
+          "discardPrevious": true,
+          "registerOn": "press",
           "forceEndRoutine": true,
-          "id": "17758119861656vdmhg09x",
+          "enabled": true
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "name": "feedback",
+      "x": 835,
+      "y": 240,
+      "width": 200,
+      "height": 140,
+      "duration": 1000,
+      "avtpComponents": [
+        {
+          "type": "text",
+          "text": "Correct!",
+          "color": "green",
+          "font": "Arial",
+          "letterHeight": 0.1,
+          "pos": [
+            0,
+            0
+          ],
+          "opacity": 1,
+          "units": "norm",
           "enabled": true
         }
       ]
@@ -29,10 +112,10 @@
       "id": 0,
       "name": "trials",
       "startPoint": 1,
-      "endPoint": 3,
-      "reps": 1,
+      "endPoint": 7,
+      "reps": 10,
       "type": "random",
-      "conditions": "",
+      "conditions": "[{\"word\":\"RED\",\"color\":\"red\"},{\"word\":\"BLUE\",\"color\":\"blue\"},{\"word\":\"GREEN\",\"color\":\"green\"},{\"word\":\"YELLOW\",\"color\":\"yellow\"}]",
       "conditionsFile": "",
       "isTrials": true
     }
