@@ -1013,9 +1013,10 @@
         .conditions-table-container {
             border: 1.5px solid var(--border-gray);
             border-radius: 12px;
-            overflow: hidden;
+            overflow: auto;
             margin-top: 8px;
             box-shadow: var(--shadow-standard);
+            max-width: 100%;
         }
 
         .conditions-table-header {
@@ -1084,10 +1085,11 @@
         }
 
         .conditions-table {
-            width: 100%;
+            width: auto;
+            min-width: 100%;
             border-collapse: collapse;
             background: var(--bg-white);
-            table-layout: fixed;
+            table-layout: auto;
         }
 
         .conditions-table th {
@@ -1184,6 +1186,22 @@
             display: flex;
             flex-wrap: wrap;
             gap: 6px;
+            max-height: 120px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .loop-contents-list::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .loop-contents-list::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .loop-contents-list::-webkit-scrollbar-thumb {
+            background: var(--border-gray);
+            border-radius: 2px;
         }
 
         .loop-content-tag {
@@ -1968,7 +1986,7 @@
                         <table class="conditions-table" id="conditionsTable">
                             <thead id="conditionsTableHead">
                                 <tr id="conditionsTableHeaderRow">
-                                    <th class="condition-row-name-header">Condition</th>
+                                    <th class="condition-var-name-header">Variable</th>
                                 </tr>
                             </thead>
                             <tbody id="conditionsTableBody">
@@ -1981,7 +1999,7 @@
                             No variables detected. Add variables starting with '$' in your routines/loops first.
                         </div>
                     </div>
-                    <button type="button" class="conditions-btn add-btn" id="addConditionRowBtn">
+                    <button type="button" class="conditions-btn add-btn" id="addConditionColBtn">
                         + Add Condition
                     </button>
                 </div>
@@ -3468,13 +3486,14 @@
             
             // 绘制起始时间和结束时间
             if (allAvtpkComponents.length > 0) {
-                const maxDuration = Math.max(
+                // duration 存储的是毫秒，需要转换为秒用于计算
+                const maxDurationMs = Math.max(
                     ...allAvtpkComponents.map(c => {
-                        const startTime = c.startTime || 0;
-                        const duration = c.duration > 0 ? c.duration : (c.duration === -1 ? 0 : 3);
+                        const startTime = (c.startTime || 0);
+                        const duration = c.duration > 0 ? c.duration : (c.duration === -1 ? 0 : 3000);
                         return startTime + duration;
                     }),
-                    3
+                    3000
                 );
                 
                 // 检查是否有 Keyboard 组件且开启了 forceEndRoutine
@@ -3485,8 +3504,8 @@
                 // 检查是否所有组件都是无限 duration
                 const allInfinite = allAvtpkComponents.every(c => c.duration === -1);
                 
-                const startTime = 0;
-                const endTime = maxDuration;
+                const startTimeMs = 0;
+                const endTimeMs = maxDurationMs;
                 
                 // 时间显示区域在组件下方
                 const timeY = dragRect.y + dragRect.height - extraPadding + 8;
@@ -3494,7 +3513,7 @@
                 ctx.font = '500 12px DM Sans, Roboto, sans-serif';
                 ctx.fillStyle = '#8e8e93';
                 ctx.textAlign = 'left';
-                ctx.fillText(Math.round(startTime) + ' ms', dragRect.x + padding, timeY);
+                ctx.fillText(Math.round(startTimeMs) + ' ms', dragRect.x + padding, timeY);
                 ctx.textAlign = 'right';
 
                 if (allInfinite && hasKeyboardWithForceEnd) {
@@ -3514,7 +3533,7 @@
                 } else if (hasKeyboardWithForceEnd) {
                     // 最大时间有限，但有 Keyboard 组件且开启了 forceEndRoutine，显示手指图标和最大时间
                     const iconSize = 16;
-                    const timeText = Math.round(endTime) + ' ms';
+                    const timeText = Math.round(endTimeMs) + ' ms';
                     if (tapIconLoaded) {
                         // 计算时间文本宽度
                         const textWidth = ctx.measureText(timeText).width;
@@ -3532,7 +3551,7 @@
                     }
                 } else {
                     // 正常显示结束时间
-                    ctx.fillText(Math.round(endTime) + ' ms', dragRect.x + dragRect.width - padding, timeY);
+                    ctx.fillText(Math.round(endTimeMs) + ' ms', dragRect.x + dragRect.width - padding, timeY);
                 }
                 ctx.textAlign = 'left';
             }
@@ -4178,7 +4197,7 @@
         const conditionsTableHeaderRow = document.getElementById('conditionsTableHeaderRow');
         const conditionsEmptyState = document.getElementById('conditionsEmptyState');
         const noVariablesState = document.getElementById('noVariablesState');
-        const addConditionRowBtn = document.getElementById('addConditionRowBtn');
+        const addConditionColBtn = document.getElementById('addConditionColBtn');
         const variableTagsContainer = document.getElementById('variableTagsContainer');
         const selectAllVarsBtn = document.getElementById('selectAllVarsBtn');
         const deselectAllVarsBtn = document.getElementById('deselectAllVarsBtn');
@@ -4709,10 +4728,9 @@
             const variableSet = new Set();
             const randomPatternSet = new Set();
             
-            // Collect from routineRects (支持新的 avtpComponents 数组和旧的 avtpData 对象)
+            // Collect from routineRects (avtpComponents 数组方式)
             routineRects.forEach(rect => {
                 if (!rect) return;
-                // 新的 avtpComponents 数组方式
                 if (rect.avtpComponents && Array.isArray(rect.avtpComponents)) {
                     rect.avtpComponents.forEach(component => {
                         if (component && typeof component === 'object') {
@@ -4721,25 +4739,6 @@
                                 if (typeof value === 'string' && value.startsWith('$')) {
                                     variableSet.add(value);
                                 }
-                                // 检测 #[start,end,total_num] 格式的随机数表达式
-                                if (typeof value === 'string' && value.startsWith('#[')) {
-                                    randomPatternSet.add(value);
-                                }
-                            });
-                        }
-                    });
-                }
-                // 旧的 avtpData 对象方式（向后兼容）
-                else if (rect.avtpData) {
-                    Object.keys(rect.avtpData).forEach(key => {
-                        const data = rect.avtpData[key];
-                        if (data && typeof data === 'object') {
-                            Object.keys(data).forEach(dataKey => {
-                                const value = data[dataKey];
-                                if (typeof value === 'string' && value.startsWith('$')) {
-                                    variableSet.add(value);
-                                }
-                                // 检测 #[start,end,total_num] 格式的随机数表达式
                                 if (typeof value === 'string' && value.startsWith('#[')) {
                                     randomPatternSet.add(value);
                                 }
@@ -4930,37 +4929,45 @@
         }
 
         function updateHeaderRow() {
-            // Clear existing header cells (except the first one for row names)
+            // Clear existing header cells (except the first one for variable names)
             while (conditionsTableHeaderRow.children.length > 1) {
                 conditionsTableHeaderRow.removeChild(conditionsTableHeaderRow.lastChild);
             }
 
-            // 只添加已选择的变量到表头
-            const selectedVarsArray = Array.from(selectedVariables);
-            selectedVarsArray.forEach(varName => {
+            // 添加 Condition 列到表头（横向扩展）
+            const conditions = getConditionsFromTable();
+            conditions.forEach((cond, index) => {
                 const th = document.createElement('th');
+                th.style.minWidth = '100px';
                 th.innerHTML = `
                     <div style="display: flex; align-items: center; padding: 2px 0;">
-                        <label style="flex: 1; padding: 4px 6px; font-size: 11px; min-width: 80px;">${varName}</label>
+                        <input type="text" class="condition-col-name" data-index="${index}" value="${cond.name}" placeholder="Cond ${index + 1}" style="flex: 1; padding: 4px 6px; font-size: 11px; min-width: 80px; border: 1px solid #e0e0e0; border-radius: 4px;">
                     </div>
                 `;
                 conditionsTableHeaderRow.appendChild(th);
             });
 
-            // Add header cell for Weight column
-            const weightTh = document.createElement('th');
-            weightTh.style.width = '70px';
-            weightTh.innerHTML = `
-                <div style="display: flex; align-items: center; padding: 2px 0;">
-                    <label style="flex: 1; padding: 4px 6px; font-size: 11px; text-align: center;">Weight</label>
-                </div>
-            `;
-            conditionsTableHeaderRow.appendChild(weightTh);
-
-            // Add header cell for remove button
+            // Add header cell for remove column button
             const removeBtnTh = document.createElement('th');
             removeBtnTh.style.width = '40px';
             conditionsTableHeaderRow.appendChild(removeBtnTh);
+        }
+
+        // 辅助函数：从表格获取当前 conditions 数据
+        function getConditionsFromTable() {
+            const jsonValue = formLoopConditions.value.trim();
+            if (!jsonValue) return [];
+            try {
+                const parsed = JSON.parse(jsonValue);
+                if (Array.isArray(parsed) && parsed.length > 0) {
+                    return parsed.map((c, i) => ({
+                        name: c.name || `Condition ${i + 1}`,
+                        values: c.values || c,
+                        weight: c.weight || 1
+                    }));
+                }
+            } catch (e) {}
+            return [];
         }
 
         function updateConditionsTableHeader() {
@@ -5014,46 +5021,63 @@
         function updateConditionsTableBody() {
             const jsonValue = formLoopConditions.value.trim();
             const parsed = parseConditionsJSON(jsonValue);
-            
+
             conditionsTableBody.innerHTML = '';
-            
+
             if (currentVariableNames.length === 0) {
                 noVariablesState.style.display = 'block';
                 conditionsEmptyState.style.display = 'none';
                 updateHeaderRow();
                 return;
             }
-            
+
             noVariablesState.style.display = 'none';
-            
+
             if (parsed.conditions.length === 0) {
                 conditionsEmptyState.classList.remove('hidden');
-                addConditionRowBtn.disabled = false;
+                addConditionColBtn.disabled = false;
                 updateHeaderRow();
                 return;
             }
-            
+
             conditionsEmptyState.classList.add('hidden');
 
-            // 只使用已选择的变量来生成表格行
+            // 【横竖交换】行 = 变量名，列 = Condition
             const selectedVarsArray = Array.from(selectedVariables);
-            parsed.conditions.forEach(condition => {
-                const row = document.createElement('tr');
-                let cellsHtml = `<td><input type="text" class="condition-row-name" value="${condition.name}" placeholder="Condition name" style="width: 100%; padding: 6px 8px; border: 1px solid #e0e0e0; border-radius: 4px; font-size: 12px;"></td>`;
+            const conditions = parsed.conditions;
 
-                // 只生成已选择变量的单元格
-                selectedVarsArray.forEach(varName => {
+            // 为每个变量创建一行
+            selectedVarsArray.forEach(varName => {
+                const row = document.createElement('tr');
+                let cellsHtml = `<td style="min-width: 120px; font-weight: 600; color: var(--text-secondary);">${varName}</td>`;
+
+                // 为每个 Condition 创建一个单元格
+                conditions.forEach((condition, condIndex) => {
                     const value = condition.values[varName] !== undefined ? condition.values[varName] : '';
-                    cellsHtml += `<td><input type="text" class="condition-cell-${CSS.escape(varName)}" value="${value}" placeholder="Value" style="width: 100%; padding: 6px 8px; border: 1px solid #e0e0e0; border-radius: 4px; font-size: 12px;"></td>`;
+                    cellsHtml += `<td style="min-width: 100px;"><input type="text" class="condition-cell-${CSS.escape(varName)}" data-cond="${condIndex}" value="${value}" placeholder="Value" style="width: 100%; padding: 6px 8px; border: 1px solid #e0e0e0; border-radius: 4px; font-size: 12px;"></td>`;
                 });
 
-                // Add weight cell
-                const weightValue = condition.weight !== undefined ? condition.weight : 1;
-                cellsHtml += `<td><input type="number" class="condition-row-weight" value="${weightValue}" min="0" step="1" placeholder="1" style="width: 100%; padding: 6px 8px; border: 1px solid #e0e0e0; border-radius: 4px; font-size: 12px; text-align: center;"></td>`;
+                row.innerHTML = cellsHtml;
+                conditionsTableBody.appendChild(row);
+            });
 
-                cellsHtml += `
-                    <td class="row-actions">
-                        <button type="button" class="remove-row-btn" title="Remove condition">
+            // Weight 行
+            const weightRow = document.createElement('tr');
+            let weightCellsHtml = `<td style="min-width: 120px; font-weight: 600; color: var(--text-secondary);">Weight</td>`;
+            conditions.forEach((condition, condIndex) => {
+                const weightValue = condition.weight !== undefined ? condition.weight : 1;
+                weightCellsHtml += `<td style="min-width: 100px;"><input type="number" class="condition-col-weight" data-cond="${condIndex}" value="${weightValue}" min="0" step="1" placeholder="1" style="width: 100%; padding: 6px 8px; border: 1px solid #e0e0e0; border-radius: 4px; font-size: 12px; text-align: center;"></td>`;
+            });
+            weightRow.innerHTML = weightCellsHtml;
+            conditionsTableBody.appendChild(weightRow);
+
+            // 删除按钮行
+            const removeRow = document.createElement('tr');
+            let removeCellsHtml = `<td style="min-width: 120px;"></td>`;
+            conditions.forEach((condition, condIndex) => {
+                removeCellsHtml += `
+                    <td style="min-width: 100px; text-align: center;">
+                        <button type="button" class="remove-row-btn remove-col-btn" data-index="${condIndex}" title="Remove condition">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <line x1="18" y1="6" x2="6" y2="18"></line>
                                 <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -5061,10 +5085,9 @@
                         </button>
                     </td>
                 `;
-
-                row.innerHTML = cellsHtml;
-                conditionsTableBody.appendChild(row);
             });
+            removeRow.innerHTML = removeCellsHtml;
+            conditionsTableBody.appendChild(removeRow);
 
             updateHeaderRow();
             updateConditionsTableState();
@@ -5099,51 +5122,22 @@
                     variableNames.push(...Object.keys(conditions[0]).filter(key => key !== 'name'));
                 }
                 
-                // 遍历所有 routine 中的 AVTP 元素（支持新的 avtpComponents 数组和旧的 avtpData 对象）
+                // 遍历所有 routine 中的 AVTP 元素（avtpComponents 数组方式）
                 routineRects.forEach(rect => {
                     if (!rect) return;
-                    // 新的 avtpComponents 数组方式
                     if (rect.avtpComponents && Array.isArray(rect.avtpComponents)) {
                         rect.avtpComponents.forEach(component => {
                             if (component && typeof component === 'object') {
-                                // 检查并更新所有可能包含变量的字段
                                 Object.keys(component).forEach(key => {
                                     const value = component[key];
                                     if (typeof value === 'string' && value.includes('$')) {
-                                        // 替换变量值
                                         let updatedValue = value;
                                         variableNames.forEach(varName => {
                                             if (updatedValue.includes(varName)) {
-                                                // 对于循环变量，这里只做占位符处理
-                                                // 实际的值会在运行时由 PsychoPy 处理
                                                 updatedValue = updatedValue.replace(new RegExp(varName, 'g'), varName);
                                             }
                                         });
                                         component[key] = updatedValue;
-                                    }
-                                });
-                            }
-                        });
-                    }
-                    // 旧的 avtpData 对象方式（向后兼容）
-                    else if (rect.avtpData) {
-                        Object.keys(rect.avtpData).forEach(avtpKey => {
-                            const data = rect.avtpData[avtpKey];
-                            if (data && typeof data === 'object') {
-                                // 检查并更新所有可能包含变量的字段
-                                Object.keys(data).forEach(key => {
-                                    const value = data[key];
-                                    if (typeof value === 'string' && value.includes('$')) {
-                                        // 替换变量值
-                                        let updatedValue = value;
-                                        variableNames.forEach(varName => {
-                                            if (updatedValue.includes(varName)) {
-                                                // 对于循环变量，这里只做占位符处理
-                                                // 实际的值会在运行时由 PsychoPy 处理
-                                                updatedValue = updatedValue.replace(new RegExp(varName, 'g'), varName);
-                                            }
-                                        });
-                                        data[key] = updatedValue;
                                     }
                                 });
                             }
@@ -5246,7 +5240,7 @@
             renderVariableSelector();
 
             // Disable Add Condition button if no variables detected
-            addConditionRowBtn.disabled = currentVariableNames.length === 0;
+            addConditionColBtn.disabled = currentVariableNames.length === 0;
 
             // Show/hide no variables message
             if (currentVariableNames.length === 0) {
@@ -5263,36 +5257,24 @@
 
 
 
-        addConditionRowBtn.addEventListener('click', () => {
-            const rows = conditionsTableBody.querySelectorAll('tr');
-            const conditionNum = rows.length + 1;
+        addConditionColBtn.addEventListener('click', () => {
+            // 【横竖交换】添加一列（一个 Condition）
+            const conditions = getConditionsFromTable();
+            const newCondIndex = conditions.length;
+            const newCondName = `Condition ${newCondIndex + 1}`;
 
-            const row = document.createElement('tr');
-            let cellsHtml = `<td><input type="text" class="condition-row-name" value="Condition ${conditionNum}" placeholder="Condition name" style="width: 100%; padding: 6px 8px; border: 1px solid #e0e0e0; border-radius: 4px; font-size: 12px;"></td>`;
-
-            // 只添加已选择的变量单元格
-            const selectedVarsArray = Array.from(selectedVariables);
-            selectedVarsArray.forEach(varName => {
-                cellsHtml += `<td><input type="text" class="condition-cell-${CSS.escape(varName)}" value="" placeholder="Value" style="width: 100%; padding: 6px 8px; border: 1px solid #e0e0e0; border-radius: 4px; font-size: 12px;"></td>`;
+            // 添加新的 condition 到数据
+            conditions.push({
+                name: newCondName,
+                values: {},
+                weight: 1
             });
 
-            // Add weight cell with default value of 1
-            cellsHtml += `<td><input type="number" class="condition-row-weight" value="1" min="0" step="1" placeholder="1" style="width: 100%; padding: 6px 8px; border: 1px solid #e0e0e0; border-radius: 4px; font-size: 12px; text-align: center;"></td>`;
+            // 更新隐藏的 input
+            formLoopConditions.value = JSON.stringify(conditions);
 
-            cellsHtml += `
-                <td class="row-actions">
-                    <button type="button" class="remove-row-btn" title="Remove condition">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <line x1="18" y1="6" x2="6" y2="18"></line>
-                            <line x1="6" y1="6" x2="18" y2="18"></line>
-                        </svg>
-                    </button>
-                </td>
-            `;
-
-            row.innerHTML = cellsHtml;
-            conditionsTableBody.appendChild(row);
-            updateConditionsTableState();
+            // 重新渲染表格
+            updateConditionsTableBody();
             saveLoopFormChanges();
         });
 
@@ -5817,30 +5799,76 @@
                     }
                 }
                 
-                // 验证数据格式
-                if (!projectData.routineRects || !Array.isArray(projectData.routineRects) || projectData.routineRects.length === 0) {
-                    console.error('Invalid flowchart data: missing or empty routineRects');
+                // 验证数据格式 - 支持新的 'routines' 字段和旧的 'routineRects' 字段
+                const routinesData = projectData.routines || projectData.routineRects;
+                if (!routinesData || !Array.isArray(routinesData) || routinesData.length === 0) {
+                    console.error('Invalid flowchart data: missing or empty routines/routineRects');
                     showNotification('❌ Invalid flowchart: no routines found');
                     return;
                 }
-                
+
                 // 确保 connections 是数组（可以是空数组）
                 if (!projectData.connections) {
                     projectData.connections = [];
                 }
-                
+
                 // 清空当前项目
                 routineRects.length = 0;
                 connections.length = 0;
                 selectedRoutineIndex = -1;
                 activeDragRect = null;
-                
-                // 导入数据
-                routineRects.push(...projectData.routineRects);
-                connections.push(...projectData.connections);
-                currentRoutineCount = projectData.currentRoutineCount || routineRects.length;
-                routineIdCounter = projectData.routineIdCounter || routineRects.length;
-                loopIdCounter = projectData.loopIdCounter || 0;
+
+                // 导入 routines 数据 - AI 只生成内容，前端自动处理布局
+                routinesData.forEach((routine, index) => {
+                    // 自动计算位置（水平排列，间距 250px）
+                    const x = 50 + index * 250;
+                    const y = 200;
+
+                    // 转换新的 'components' 字段到内部的 'avtpComponents'
+                    const avtpComponents = routine.components ? routine.components.map(comp => ({
+                        ...comp,
+                        enabled: true // 新格式中没有 enabled 字段，默认启用
+                    })) : (routine.avtpComponents || []);
+
+                    routineRects.push({
+                        id: routine.id ?? index,
+                        name: routine.name ?? `routine_${index}`,
+                        duration: routine.duration ?? -1,
+                        avtpComponents: avtpComponents,
+                        x: x,
+                        y: y,
+                        width: 200,
+                        height: 150, // 初始高度，会被 updateAllRoutineHeights 更新
+                        borderRadius: 8,
+                        isDragging: false
+                    });
+                });
+
+                // 导入 connections 数据 - 转换新的 'from/to' 格式到内部格式
+                if (projectData.connections) {
+                    projectData.connections.forEach(conn => {
+                        if (typeof conn.from === 'number' && typeof conn.to === 'number') {
+                            // 新的简单格式：from/to 是 routine ID
+                            connections.push({
+                                start: { label: String(conn.from), position: 'right' },
+                                end: { label: String(conn.to), position: 'left' },
+                                depth: 0,
+                                loopName: conn.loopName,
+                                loopReps: conn.loopReps,
+                                loopType: conn.loopType,
+                                loopConditions: conn.loopConditions,
+                                loopIsTrials: conn.loopIsTrials
+                            });
+                        } else if (conn.start && conn.end) {
+                            // 旧的格式：直接使用
+                            connections.push(conn);
+                        }
+                    });
+                }
+
+                currentRoutineCount = routineRects.length;
+                routineIdCounter = routineRects.length;
+                loopIdCounter = 0;
 
                 // 统一所有 routine 的宽度为 200（与创建时保持一致）
                 routineRects.forEach(rect => {

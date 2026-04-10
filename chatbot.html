@@ -542,6 +542,79 @@
             border: 1px solid #c8e6c9;
         }
 
+        /* Think Chain 可折叠区域样式 */
+        .think-chain-container {
+            margin-bottom: 8px;
+            border: 1px solid var(--border-gray);
+            border-radius: 12px;
+            overflow: hidden;
+            background: var(--bg-light);
+        }
+
+        .think-chain-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 12px;
+            background: var(--primary-200);
+            cursor: pointer;
+            -webkit-user-select: none;
+            user-select: none;
+            transition: background 0.2s;
+        }
+
+        .think-chain-header:hover {
+            background: var(--primary-light);
+        }
+
+        .think-chain-title {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--brand-deep);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .think-chain-icon {
+            width: 14px;
+            height: 14px;
+            fill: var(--brand-deep);
+        }
+
+        .think-chain-toggle {
+            width: 16px;
+            height: 16px;
+            fill: var(--brand-deep);
+            transition: transform 0.2s;
+        }
+
+        .think-chain-toggle.collapsed {
+            transform: rotate(-90deg);
+        }
+
+        .think-chain-content {
+            max-height: 300px;
+            overflow-y: auto;
+            padding: 12px;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 12px;
+            line-height: 1.6;
+            color: var(--text-secondary);
+            background: var(--bg-white);
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .think-chain-content.collapsed {
+            display: none;
+        }
+
+        .message-wrapper {
+            margin-bottom: 16px;
+        }
+
         .chat-input-area {
             padding: 16px 12px;
             background: var(--bg-light);
@@ -1175,9 +1248,9 @@
         const defaultFlowchartSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "PsyClaw Flowchart Project",
-  "description": "JSON schema for PsyClaw flowchart projects that convert to PsychoPy .psyexp format. A flowchart consists of routines (experiment steps) connected by connections (flow arrows). Loops (trial handlers) repeat sets of routines with varying conditions.",
+  "description": "Schema for AI-generated PsychoPy experiment content. IMPORTANT: The visual flowchart layout (routine positions, sizes, connection paths) is handled by the frontend - AI should ONLY generate the experiment logic: routine contents (stimuli, responses) and loop configurations (conditions, repetitions).",
   "type": "object",
-  "required": ["version", "timestamp", "routineRects", "connections"],
+  "required": ["version", "timestamp", "routines", "connections"],
   "additionalProperties": false,
   "properties": {
     "version": {
@@ -1190,9 +1263,9 @@
       "format": "date-time",
       "description": "ISO 8601 datetime string when the project was created/updated"
     },
-    "routineRects": {
+    "routines": {
       "type": "array",
-      "description": "Array of routine objects representing experiment trials. Each routine is a single step in the experiment (e.g., fixation, stimulus presentation, response collection).",
+      "description": "Array of routines (experiment steps). Each routine contains stimuli and responses for a single trial phase. The frontend handles visual layout - AI only generates the content.",
       "minItems": 1,
       "items": {
         "$ref": "#/definitions/Routine"
@@ -1200,88 +1273,29 @@
     },
     "connections": {
       "type": "array",
-      "description": "Array of connection objects defining the experiment flow between routines. Each connection links two routines. A connection where start and end point to the same routine or form a cycle represents a loop that repeats the enclosed routines.",
+      "description": "Array of connections defining experiment flow between routines. Use 'from' and 'to' with routine IDs. When from=to or connections form a cycle, it creates a loop. The frontend handles visual routing - AI only specifies logical connections.",
       "items": {
         "$ref": "#/definitions/Connection"
       }
-    },
-    "currentRoutineCount": {
-      "type": "integer",
-      "description": "Current number of routines in the project",
-      "minimum": 0,
-      "default": 0
-    },
-    "routineIdCounter": {
-      "type": "integer",
-      "description": "Counter for generating unique routine IDs. Should be > max routine id.",
-      "minimum": 0,
-      "default": 0
-    },
-    "loopIdCounter": {
-      "type": "integer",
-      "description": "Counter for generating unique loop IDs. Should be > max loop id.",
-      "minimum": 0,
-      "default": 0
     }
   },
   "definitions": {
     "Routine": {
       "type": "object",
-      "description": "A routine representing a single trial/stimulus presentation in PsychoPy",
-      "required": ["id", "name", "x", "y", "width", "height"],
+      "description": "A routine representing a single trial/stimulus presentation in PsychoPy. The routine's visual layout (position, size) is handled by the frontend - AI should only generate the experiment content. IMPORTANT: Routine IDs must be even numbers (0, 2, 4, 6, 8...).",
+      "required": ["id", "name"],
       "additionalProperties": false,
       "properties": {
         "id": {
           "type": "integer",
-          "description": "Unique identifier for the routine",
-          "minimum": 0
+          "description": "Unique identifier for the routine. Must be an even number (0, 2, 4, 6, 8...). Odd numbers are reserved for loop boundary points.",
+          "minimum": 0,
+          "multipleOf": 2
         },
         "name": {
           "type": "string",
           "description": "Display name of the routine",
           "pattern": "^[a-zA-Z_][a-zA-Z0-9_]*$"
-        },
-        "x": {
-          "type": "number",
-          "description": "X coordinate position on the canvas"
-        },
-        "y": {
-          "type": "number",
-          "description": "Y coordinate position on the canvas"
-        },
-        "width": {
-          "type": "number",
-          "description": "Width of the routine rectangle",
-          "minimum": 50
-        },
-        "height": {
-          "type": "number",
-          "description": "Height of the routine rectangle",
-          "minimum": 50
-        },
-        "borderRadius": {
-          "type": "number",
-          "description": "Border radius for rounded corners",
-          "minimum": 0,
-          "default": 8
-        },
-        "isDragging": {
-          "type": "boolean",
-          "description": "Whether the routine is currently being dragged",
-          "default": false
-        },
-        "offsetX": {
-          "type": "number",
-          "description": "X offset for drag operation"
-        },
-        "offsetY": {
-          "type": "number",
-          "description": "Y offset for drag operation"
-        },
-        "keys": {
-          "type": "string",
-          "description": "Comma-separated key names for keyboard responses",
-          "examples": ["f", "j", "space"]
         },
         "duration": {
           "type": "integer",
@@ -1289,17 +1303,11 @@
           "minimum": -1,
           "default": -1
         },
-        "avtp": {
-          "$ref": "#/definitions/AVTPFlags"
-        },
-        "avtpData": {
-          "$ref": "#/definitions/AVTPData"
-        },
-        "avtpComponents": {
+        "components": {
           "type": "array",
-          "description": "Alternative array-based component configuration",
+          "description": "Array of stimulus/response components in this routine (e.g., text, image, audio, keyboard). Each component represents a visual or interactive element.",
           "items": {
-            "$ref": "#/definitions/AvtpComponent"
+            "$ref": "#/definitions/Component"
           }
         },
         "type": {
@@ -1309,24 +1317,16 @@
         }
       }
     },
-    "AvtpComponent": {
+    "Component": {
       "type": "object",
-      "description": "A component within a routine using array-based configuration",
-      "required": ["enabled", "type"],
+      "description": "A stimulus or response component in a routine (audio, video, text, image, keyboard, code)",
+      "required": ["type"],
       "additionalProperties": false,
       "properties": {
-        "enabled": {
-          "type": "boolean",
-          "description": "Whether this component is enabled"
-        },
         "type": {
           "type": "string",
           "description": "Component type",
-          "enum": ["audio", "video", "text", "image", "keyboard"]
-        },
-        "name": {
-          "type": "string",
-          "description": "Component name/label"
+          "enum": ["audio", "video", "text", "image", "keyboard", "code"]
         },
         "path": {
           "type": "string",
@@ -1502,458 +1502,14 @@
         "deviceLabel": {
           "type": "string",
           "description": "Audio device label"
-        }
-      }
-    },
-    "AVTPFlags": {
-      "type": "object",
-      "description": "Flags indicating which AVTP components are enabled",
-      "required": ["a", "v", "t", "p", "k"],
-      "additionalProperties": false,
-      "properties": {
-        "a": {
-          "type": "boolean",
-          "description": "Audio component enabled"
-        },
-        "v": {
-          "type": "boolean",
-          "description": "Video component enabled"
-        },
-        "t": {
-          "type": "boolean",
-          "description": "Text component enabled"
-        },
-        "p": {
-          "type": "boolean",
-          "description": "Picture/Image component enabled"
-        },
-        "k": {
-          "type": "boolean",
-          "description": "Keyboard component enabled"
-        }
-      }
-    },
-    "AVTPData": {
-      "type": "object",
-      "description": "Configuration data for AVTP components",
-      "additionalProperties": false,
-      "properties": {
-        "a": {
-          "$ref": "#/definitions/AudioConfig"
-        },
-        "v": {
-          "$ref": "#/definitions/VideoConfig"
-        },
-        "t": {
-          "$ref": "#/definitions/TextConfig"
-        },
-        "p": {
-          "$ref": "#/definitions/PictureConfig"
-        },
-        "k": {
-          "$ref": "#/definitions/KeyboardConfig"
-        }
-      }
-    },
-    "TextConfig": {
-      "type": "object",
-      "description": "Configuration for text stimulus",
-      "additionalProperties": false,
-      "properties": {
-        "enabled": {
-          "type": "boolean",
-          "description": "Whether this component is active"
-        },
-        "label": {
-          "type": "string",
-          "description": "Component label"
-        },
-        "type": {
-          "type": "string",
-          "const": "text",
-          "description": "Component type discriminator"
-        },
-        "text": {
-          "type": "string",
-          "description": "Text content to display"
-        },
-        "font": {
-          "type": "string",
-          "description": "Font family",
-          "default": "Arial"
-        },
-        "letterHeight": {
-          "type": "number",
-          "description": "Letter height in units",
-          "default": 0.05
-        },
-        "color": {
-          "type": "string",
-          "description": "Text color",
-          "default": "white"
-        },
-        "pos": {
-          "type": "array",
-          "items": { "type": "number" },
-          "minItems": 2,
-          "maxItems": 2,
-          "default": [0, 0]
-        },
-        "ori": {
-          "type": "number",
-          "description": "Orientation in degrees",
-          "default": 0
-        },
-        "opacity": {
-          "type": "number",
-          "minimum": 0,
-          "maximum": 1,
-          "default": 1
-        },
-        "units": {
-          "type": "string",
-          "enum": ["from exp settings", "height", "norm", "pix", "cm", "deg"],
-          "default": "from exp settings"
-        },
-        "startTime": {
-          "type": "number",
-          "minimum": 0,
-          "default": 0
-        },
-        "duration": {
-          "type": "number",
-          "minimum": -1,
-          "default": -1
-        },
-        "contrast": {
-          "type": "number",
-          "minimum": 0,
-          "maximum": 1,
-          "default": 1
-        },
-        "wrapWidth": {
-          "type": "number",
-          "description": "Width for text wrapping"
-        },
-        "flip": {
-          "type": "string",
-          "enum": ["None", "Horizontal", "Vertical", "Both"],
-          "default": "None"
-        },
-        "languageStyle": {
-          "type": "string",
-          "enum": ["LTR", "RTL"],
-          "default": "LTR"
-        },
-        "draggable": {
-          "type": "boolean",
-          "default": false
-        }
-      }
-    },
-    "PictureConfig": {
-      "type": "object",
-      "description": "Configuration for image/picture stimulus",
-      "additionalProperties": false,
-      "properties": {
-        "enabled": {
-          "type": "boolean"
-        },
-        "label": {
-          "type": "string"
-        },
-        "type": {
-          "type": "string",
-          "const": "image"
-        },
-        "path": {
-          "type": "string",
-          "description": "Image file path"
-        },
-        "size": {
-          "type": "array",
-          "items": { "type": ["number", "null"] },
-          "minItems": 2,
-          "maxItems": 2
-        },
-        "pos": {
-          "type": "array",
-          "items": { "type": "number" },
-          "minItems": 2,
-          "maxItems": 2,
-          "default": [0, 0]
-        },
-        "opacity": {
-          "type": "number",
-          "minimum": 0,
-          "maximum": 1,
-          "default": 1
-        },
-        "startTime": {
-          "type": "number",
-          "minimum": 0,
-          "default": 0
-        },
-        "duration": {
-          "type": "number",
-          "minimum": -1,
-          "default": -1
-        },
-        "ori": {
-          "type": "number",
-          "default": 0
-        },
-        "flip": {
-          "type": "string",
-          "enum": ["None", "Horizontal", "Vertical", "Both"],
-          "default": "None"
-        },
-        "units": {
-          "type": "string",
-          "enum": ["from exp settings", "height", "norm", "pix", "cm", "deg"],
-          "default": "from exp settings"
-        },
-        "color": {
-          "type": "string",
-          "default": "$[1,1,1]"
-        },
-        "colorSpace": {
-          "type": "string",
-          "enum": ["rgb", "dkl", "hsv", "hex"],
-          "default": "rgb"
-        },
-        "contrast": {
-          "type": "number",
-          "minimum": 0,
-          "maximum": 1,
-          "default": 1
-        },
-        "interpolate": {
-          "type": "string",
-          "enum": ["linear", "nearest"],
-          "default": "linear"
-        },
-        "textureRes": {
-          "type": "integer",
-          "enum": [32, 64, 128, 256, 512],
-          "default": 128
-        },
-        "anchor": {
-          "type": "string",
-          "enum": ["center", "top-center", "bottom-center", "left-center", "right-center", "top-left", "top-right", "bottom-left", "bottom-right"],
-          "default": "center"
-        },
-        "draggable": {
-          "type": "boolean",
-          "default": false
-        }
-      }
-    },
-    "AudioConfig": {
-      "type": "object",
-      "description": "Configuration for audio stimulus",
-      "additionalProperties": false,
-      "properties": {
-        "enabled": {
-          "type": "boolean"
-        },
-        "label": {
-          "type": "string"
-        },
-        "type": {
-          "type": "string",
-          "const": "audio"
-        },
-        "path": {
-          "type": "string",
-          "description": "Audio file path"
-        },
-        "volume": {
-          "type": "number",
-          "minimum": 0,
-          "maximum": 1,
-          "default": 1
-        },
-        "startTime": {
-          "type": "number",
-          "minimum": 0,
-          "default": 0
-        },
-        "duration": {
-          "type": "number",
-          "minimum": -1,
-          "default": -1
-        },
-        "stopWithRoutine": {
-          "type": "boolean",
-          "default": true
-        },
-        "forceEndRoutine": {
-          "type": "boolean",
-          "default": false
-        },
-        "deviceLabel": {
-          "type": "string",
-          "description": "Audio device label"
-        },
-        "hamming": {
-          "type": "boolean",
-          "description": "Apply Hamming window",
-          "default": true
-        }
-      }
-    },
-    "VideoConfig": {
-      "type": "object",
-      "description": "Configuration for video stimulus",
-      "additionalProperties": false,
-      "properties": {
-        "enabled": {
-          "type": "boolean"
-        },
-        "label": {
-          "type": "string"
-        },
-        "type": {
-          "type": "string",
-          "const": "video"
-        },
-        "path": {
-          "type": "string",
-          "description": "Video file path"
-        },
-        "volume": {
-          "type": "number",
-          "minimum": 0,
-          "maximum": 1,
-          "default": 1
-        },
-        "size": {
-          "type": "array",
-          "items": { "type": ["number", "null"] },
-          "minItems": 2,
-          "maxItems": 2
-        },
-        "anchor": {
-          "type": "string",
-          "enum": ["center", "top-center", "bottom-center", "left-center", "right-center", "top-left", "top-right", "bottom-left", "bottom-right"],
-          "default": "center"
-        },
-        "loop": {
-          "type": "boolean",
-          "default": false
-        },
-        "startTime": {
-          "type": "number",
-          "minimum": 0,
-          "default": 0
-        },
-        "duration": {
-          "type": "number",
-          "minimum": -1,
-          "default": -1
-        },
-        "units": {
-          "type": "string",
-          "enum": ["from exp settings", "height", "norm", "pix", "cm", "deg"],
-          "default": "from exp settings"
-        },
-        "opacity": {
-          "type": "number",
-          "minimum": 0,
-          "maximum": 1,
-          "default": 1
-        },
-        "stopWithRoutine": {
-          "type": "boolean",
-          "default": true
-        },
-        "forceEndRoutine": {
-          "type": "boolean",
-          "default": false
-        }
-      }
-    },
-    "KeyboardConfig": {
-      "type": "object",
-      "description": "Configuration for keyboard response component",
-      "additionalProperties": false,
-      "properties": {
-        "enabled": {
-          "type": "boolean"
-        },
-        "label": {
-          "type": "string"
-        },
-        "type": {
-          "type": "string",
-          "const": "keyboard"
-        },
-        "keys": {
-          "type": "string",
-          "description": "Comma-separated keyboard keys",
-          "examples": ["f,j", "space,enter", "'f','j'"]
-        },
-        "startTime": {
-          "type": "number",
-          "minimum": 0,
-          "default": 0
-        },
-        "duration": {
-          "type": "number",
-          "minimum": -1,
-          "default": -1
-        },
-        "forceEndRoutine": {
-          "type": "boolean",
-          "default": false
-        },
-        "discardPrevious": {
-          "type": "boolean",
-          "description": "Discard previous key presses",
-          "default": true
-        },
-        "registerOn": {
-          "type": "string",
-          "enum": ["press", "release"],
-          "default": "press"
-        },
-        "store": {
-          "type": "string",
-          "enum": ["last key", "all keys", "nothing"],
-          "default": "last key"
-        },
-        "storeCorrect": {
-          "type": "boolean",
-          "default": false
-        },
-        "correctAns": {
-          "type": "string",
-          "description": "Correct answer for scoring"
-        }
-      }
-    },
-    "CodeConfig": {
-      "type": "object",
-      "description": "Configuration for code component (Python/JS execution)",
-      "additionalProperties": false,
-      "properties": {
-        "enabled": {
-          "type": "boolean"
-        },
-        "label": {
-          "type": "string"
-        },
-        "type": {
-          "type": "string",
-          "const": "code"
         },
         "code": {
           "type": "string",
-          "description": "Python code to execute"
+          "description": "Python/JS code to execute (for code components)"
         },
         "codeType": {
           "type": "string",
+          "description": "Code language type",
           "enum": ["Py", "JS", "Both"],
           "default": "Py"
         }
@@ -1961,21 +1517,19 @@
     },
     "Connection": {
       "type": "object",
-      "description": "A connection object defining flow between routines. For simple sequential flow, only start and end are required. For loops (when start and end connect to the same routine or form a cycle), additional loop properties should be set.",
-      "required": ["start", "end"],
+      "description": "A connection defining flow between routines. The connection's visual layout is handled by the frontend - AI should only specify which routines are connected and loop configuration. IMPORTANT: Routine IDs are even numbers (0, 2, 4...), loop boundary points are odd numbers (1, 3, 5...). Forward connections go from even to even (e.g., 0→2). Loop connections go from odd to odd (e.g., 3→1).",
+      "required": ["from", "to"],
       "additionalProperties": false,
       "properties": {
-        "start": {
-          "$ref": "#/definitions/ConnectionEndpoint"
-        },
-        "end": {
-          "$ref": "#/definitions/ConnectionEndpoint"
-        },
-        "depth": {
+        "from": {
           "type": "integer",
-          "minimum": 0,
-          "description": "Nesting depth for loops (0 for normal flow, 1+ for nested loops). This is auto-calculated.",
-          "default": 0
+          "description": "ID of the source routine or loop point. Even numbers (0, 2, 4...) are routines, odd numbers (1, 3, 5...) are loop boundaries.",
+          "minimum": 0
+        },
+        "to": {
+          "type": "integer",
+          "description": "ID of the target routine or loop point. Even numbers (0, 2, 4...) are routines, odd numbers (1, 3, 5...) are loop boundaries.",
+          "minimum": 0
         },
         "loopName": {
           "type": "string",
@@ -2003,32 +1557,6 @@
           "type": "boolean",
           "description": "Whether this loop is a trial handler (true) or just a simple loop (false)",
           "default": true
-        }
-      }
-    },
-    "ConnectionEndpoint": {
-      "type": "object",
-      "description": "An endpoint of a connection representing a connection point on a routine. The label should match the routine's index in the routineRects array (0, 1, 2, etc.)",
-      "required": ["label", "position"],
-      "additionalProperties": false,
-      "properties": {
-        "label": {
-          "type": "string",
-          "description": "The routine index as a string (e.g., '0', '1', '2'). Must match the routine's position in routineRects array.",
-          "pattern": "^\\d+$"
-        },
-        "position": {
-          "type": "string",
-          "enum": ["left", "right"],
-          "description": "Position of the connection point: 'right' for exit/starting point, 'left' for entry/ending point"
-        },
-        "x": {
-          "type": "number",
-          "description": "X coordinate (optional, for internal use)"
-        },
-        "y": {
-          "type": "number",
-          "description": "Y coordinate (optional, for internal use)"
         }
       }
     },
@@ -2281,6 +1809,24 @@
             return textWithoutThink.substring(firstChar).replace(/`/g, '');
         }
 
+        // 辅助函数：分离 think 内容和消息内容
+        function separateThinkContent(text) {
+            // 匹配 <think> 标签内容
+            const thinkRegex = /<think>([\s\S]*?)<\/think>/gi;
+            const thinkMatches = [];
+            let match;
+
+            while ((match = thinkRegex.exec(text)) !== null) {
+                thinkMatches.push(match[1]);
+            }
+
+            // 移除所有 think 标签内容得到消息内容
+            const message = text.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
+            const think = thinkMatches.join('\n\n').trim();
+
+            return { think, message };
+        }
+
         // 辅助函数：修复常见的JSON格式问题
         function fixJSONContent(content) {
             let fixed = content.trim();
@@ -2480,13 +2026,9 @@
         async function getModelList(baseUrl, apiKey) {
             baseUrl = baseUrl.rstrip('/');
 
-            // MiniMax：从官方文档获取模型列表
-            if (baseUrl.includes('api.minimaxi.com')) {
-                return getMiniMaxModelsFromDocs('minimax');
-            }
-
-            if (baseUrl.includes('api.minimax.chat')) {
-                return getMiniMaxModelsFromDocs('minimax-intl');
+            // MiniMax：使用硬编码的模型列表（MiniMax 无公开 models API）
+            if (baseUrl.includes('api.minimaxi.com') || baseUrl.includes('api.minimax.chat')) {
+                return [...MINIMAX_TEXT_MODELS];
             }
 
             // 其他 provider 使用标准 /models API
@@ -2514,77 +2056,21 @@
             }
         }
 
-        const providerDocsUrlMap = {
-            'minimax': 'https://platform.minimaxi.com/docs/api-reference/api-overview',
-            'minimax-intl': 'https://platform.minimax.io/docs/api-reference/api-overview'
-        };
-
-        async function getMiniMaxModelsFromDocs(provider) {
-            const docsUrl = providerDocsUrlMap[provider] || providerDocsUrlMap['minimax'];
-
-            try {
-                const response = await fetch(docsUrl);
-                if (!response.ok) {
-                    throw new Error(`Failed to fetch docs: ${response.status}`);
-                }
-
-                const html = await response.text();
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(html, 'text/html');
-
-                const models = new Set();
-                const content = doc.body.innerText;
-
-                // 匹配 MiniMax 文本生成模型
-                const allPatterns = [
-                    ...content.matchAll(/MiniMax-M2\.\d+(?:-highspeed)?/gi)
-                ];
-
-                allPatterns.forEach(match => models.add(match[0]));
-
-                // 如果无法从网页提取，返回默认模型列表（按新旧顺序）
-                if (models.size === 0) {
-                    return [
-                        'MiniMax-M2.7',
-                        'MiniMax-M2.7-highspeed',
-                        'MiniMax-M2.5',
-                        'MiniMax-M2.5-highspeed',
-                        'MiniMax-M2.1',
-                        'MiniMax-M2.1-highspeed',
-                        'MiniMax-M2'
-                    ];
-                }
-
-                // 按版本号从新到旧排序
-                return Array.from(models).sort((a, b) => {
-                    // 提取版本号，例如 "MiniMax-M2.7" -> 2.7
-                    const getVersion = (name) => {
-                        const match = name.match(/M(\d+\.?\d*)/);
-                        return match ? parseFloat(match[1]) : 0;
-                    };
-                    const verA = getVersion(a);
-                    const verB = getVersion(b);
-                    if (verB !== verA) {
-                        return verB - verA; // 版本号大的在前
-                    }
-                    // 版本号相同，highspeed 排在后面
-                    if (a.includes('highspeed') && !b.includes('highspeed')) return 1;
-                    if (!a.includes('highspeed') && b.includes('highspeed')) return -1;
-                    return a.localeCompare(b);
-                });
-            } catch (e) {
-                // 网络错误时返回默认列表（按新旧顺序）
-                return [
-                    'MiniMax-M2.7',
-                    'MiniMax-M2.7-highspeed',
-                    'MiniMax-M2.5',
-                    'MiniMax-M2.5-highspeed',
-                    'MiniMax-M2.1',
-                    'MiniMax-M2.1-highspeed',
-                    'MiniMax-M2'
-                ];
-            }
-        }
+        // MiniMax 模型列表（基于官方文档 https://www.minimaxi.com/en/platform）
+        // 最后更新：2026-04-10
+        const MINIMAX_TEXT_MODELS = [
+            'MiniMax-M2.7',
+            'MiniMax-M2.7-highspeed',
+            'MiniMax-M2.5',
+            'MiniMax-M2.5-highspeed',
+            'MiniMax-M1',
+            'MiniMax-M1-highspeed',
+            'MiniMax-M2.1',
+            'MiniMax-M2.1-highspeed',
+            'MiniMax-M2',
+            'MiniMax-Text-01',
+            'M2-her'
+        ];
 
         String.prototype.rstrip = function(chars) {
             let str = this;
@@ -2632,15 +2118,40 @@
                 // Populate dropdown
                 modelDropdownContent.innerHTML = modelList.map(m => `<a href="#" data-value="${m}">${m}</a>`).join('');
 
-                // Select default model
-                const priorityModels = ['MiniMax-M2.7', 'MiniMax-M2.7-highspeed', 'MiniMax-M2.5', 'MiniMax-M2.5-highspeed', 'MiniMax-M2.1', 'MiniMax-M2.1-highspeed', 'MiniMax-M2', 'qwen3.5-flash', 'qwen3.5-plus'];
+                // Select default model: prioritize saved model, then use priority list, finally use first available
+                const savedSettings = (() => {
+                    try {
+                        const saved = localStorage.getItem(SETTINGS_KEY);
+                        return saved ? JSON.parse(saved) : null;
+                    } catch { return null; }
+                })();
+                
                 let defaultModel = null;
-                for (const pm of priorityModels) {
-                    if (modelList.includes(pm)) {
-                        defaultModel = pm;
-                        break;
+                
+                // Step 1: Check if there's a saved model for this URL
+                if (savedSettings && savedSettings.url_models) {
+                    const urlKey = getNormalizedUrlKey(apiUrl);
+                    if (urlKey && savedSettings.url_models[urlKey]) {
+                        const savedModel = savedSettings.url_models[urlKey];
+                        if (modelList.includes(savedModel)) {
+                            defaultModel = savedModel;
+                            console.log(`Using saved model for ${urlKey}: ${savedModel}`);
+                        }
                     }
                 }
+                
+                // Step 2: If no saved model or saved model not available, use priority list
+                if (!defaultModel) {
+                    const priorityModels = ['MiniMax-M2.7', 'MiniMax-M2.7-highspeed', 'MiniMax-M2.5', 'MiniMax-M2.5-highspeed', 'MiniMax-M2.1', 'MiniMax-M2.1-highspeed', 'MiniMax-M2', 'qwen3.5-flash', 'qwen3.5-plus'];
+                    for (const pm of priorityModels) {
+                        if (modelList.includes(pm)) {
+                            defaultModel = pm;
+                            break;
+                        }
+                    }
+                }
+                
+                // Step 3: If still no default model, use first available
                 if (!defaultModel && modelList.length > 0) {
                     defaultModel = modelList[0];
                 }
@@ -2969,6 +2480,95 @@
             return msgDiv;
         }
 
+        function addAssistantMessageWithThink() {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'message-wrapper';
+
+            // 创建 Think Chain 容器 - 初始就显示，但内容折叠
+            const thinkContainer = document.createElement('div');
+            thinkContainer.className = 'think-chain-container';
+            // 不设置 display: none，让容器始终可见
+
+            const thinkHeader = document.createElement('div');
+            thinkHeader.className = 'think-chain-header';
+            thinkHeader.innerHTML = `
+                <span class="think-chain-title">
+                    <svg class="think-chain-icon" viewBox="0 0 24 24">
+                        <path d="M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7zm2.85 11.1l-.85.6V16h-4v-2.3l-.85-.6A4.997 4.997 0 017 9c0-2.76 2.24-5 5-5s5 2.24 5 5c0 1.63-.8 3.16-2.15 4.1z"/>
+                    </svg>
+                    Thinking Process
+                </span>
+                <svg class="think-chain-toggle collapsed" viewBox="0 0 24 24">
+                    <path d="M7 10l5 5 5-5z"/>
+                </svg>
+            `;
+
+            const thinkContent = document.createElement('div');
+            thinkContent.className = 'think-chain-content collapsed'; // 默认折叠内容
+
+            const toggleIcon = thinkHeader.querySelector('.think-chain-toggle');
+
+            thinkHeader.addEventListener('click', () => {
+                const isCollapsed = thinkContent.classList.toggle('collapsed');
+                toggleIcon.classList.toggle('collapsed', isCollapsed);
+            });
+
+            thinkContainer.appendChild(thinkHeader);
+            thinkContainer.appendChild(thinkContent);
+
+            // 创建消息主体 - 初始隐藏，有内容时再显示
+            const msgDiv = document.createElement('div');
+            msgDiv.className = 'chat-message assistant';
+            msgDiv.style.display = 'none'; // 初始隐藏
+
+            wrapper.appendChild(thinkContainer);
+            wrapper.appendChild(msgDiv);
+            chatMessagesDiv.appendChild(wrapper);
+            chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
+
+            return {
+                wrapper,
+                thinkContainer,
+                thinkContent,
+                msgDiv,
+                updateThink: (content) => {
+                    thinkContent.textContent = content;
+                },
+                updateMessage: (content, isStreaming = true) => {
+                    // 有内容时才显示消息容器
+                    if (content && content.trim()) {
+                        msgDiv.style.display = 'block';
+                        msgDiv.style.whiteSpace = 'pre-wrap';
+                        msgDiv.style.fontFamily = 'Roboto Mono, monospace';
+                        msgDiv.textContent = content;
+                        // 只在用户已经在底部时才自动滚动
+                        const isAtBottom = chatMessagesDiv.scrollHeight - chatMessagesDiv.scrollTop - chatMessagesDiv.clientHeight < 50;
+                        if (isAtBottom) {
+                            chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
+                        }
+                    }
+                },
+                finalizeMessage: (content) => {
+                    // 最终显示时尝试格式化JSON
+                    let displayContent = content;
+                    try {
+                        const parsed = JSON.parse(content);
+                        displayContent = JSON.stringify(parsed, null, 2);
+                    } catch (e) {
+                        // 不是有效的JSON，按原样显示
+                    }
+                    msgDiv.style.whiteSpace = 'pre-wrap';
+                    msgDiv.style.fontFamily = 'Roboto Mono, monospace';
+                    msgDiv.textContent = displayContent;
+                    // 只在用户已经在底部时才自动滚动
+                    const isAtBottom = chatMessagesDiv.scrollHeight - chatMessagesDiv.scrollTop - chatMessagesDiv.clientHeight < 50;
+                    if (isAtBottom) {
+                        chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
+                    }
+                }
+            };
+        }
+
         function updateMessage(msgDiv, content) {
             msgDiv.textContent = content;
             chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
@@ -3033,7 +2633,8 @@ IMPORTANT RULES:
    - Use "position": "right" for the starting point (exit), "left" for the ending point (entry)
 4. For loops (trial handlers):
    - A loop is created when a connection goes from a later routine back to an earlier routine
-   - The loop connection must have start.label > end.label (e.g., from routine 3 back to routine 1)
+   - The loop connection must have start.label > end.label
+   - IMPORTANT: For loop connections, use ODD numbers for both start.label and end.label: 1, 3, 5, 7, 9...
    - Set connection.loopName to a valid Python identifier (e.g., "trials", "practice_loop")
    - Set connection.loopReps to the number of repetitions
    - Set connection.loopType to "sequential", "random", or "fullRandom"
@@ -3044,6 +2645,7 @@ IMPORTANT RULES:
    - Connection points: right side at x+200, left side at x, y center at y+50
    - Sequential flow: 0->1, 1->2, 2->3 (these have depth=0, no loop properties)
    - Loop connection (3->1): start={"label":"3","position":"right","x":1200,"y":250}, end={"label":"1","position":"left","x":400,"y":250}, depth=1, loopName="trials", loopReps=5, loopType="random", loopIsTrials=true, loopConditions="[{\"word\":\"RED\",\"color\":\"red\"},{\"word\":\"BLUE\",\"color\":\"blue\"}]"
+   - Note: The example uses 3->1 which follows the ODD number rule
 6. CRITICAL: Do NOT include any thinking process, explanations, markdown formatting, or code blocks
 7. CRITICAL: Return ONLY the raw JSON object, nothing else
 8. CRITICAL: Ensure the JSON is complete and properly closed
@@ -3079,9 +2681,23 @@ ${JSON.stringify(flowchartSchema, null, 2)}`;
             clearFile();
             sendBtn.disabled = true;
 
-            const responseMsg = addMessage('Thinking...', 'assistant');
+            // 使用新的带 think chain 的消息组件
+            const assistantMsg = addAssistantMessageWithThink();
+            let fullContent = '';
+            let thinkContent = '';
+            let inThinkBlock = false;
+            let thinkBuffer = '';
 
             try {
+                // 检测是否是 MiniMax 模型
+                const isMiniMax = settings.model.toLowerCase().includes('minimax');
+
+                // 如果启用了 DeepThink，修改 system prompt 添加更详细的思考指导
+                if (deepThinkEnabled) {
+                    const deepThinkPrompt = `\n\nDEEP THINK MODE ENABLED:\n- Take extra time to think through the experiment design step by step\n- Consider edge cases and potential issues\n- Provide detailed reasoning for each design decision\n- Ensure the generated flowchart is robust and follows best practices`;
+                    messages[0].content += deepThinkPrompt;
+                }
+
                 // 构建请求体 - 使用固定的较大 max_tokens 值以确保完整响应
                 const requestBody = {
                     model: settings.model,
@@ -3089,11 +2705,13 @@ ${JSON.stringify(flowchartSchema, null, 2)}`;
                     temperature: settings.temperature,
                     top_p: settings.top_p,
                     max_tokens: 16000,  // 固定使用 16000 tokens 以确保完整 JSON 输出
-                    response_format: {
-                        type: "json_object"
-                    },
-                    stream: false  // 明确禁用流式传输
+                    stream: true  // 启用流式传输
                 };
+
+                // MiniMax 模型支持 reasoning_split 参数来分离思考内容
+                if (isMiniMax) {
+                    requestBody.reasoning_split = true;
+                }
 
                 const response = await fetch(apiUrl, {
                     method: 'POST',
@@ -3109,12 +2727,102 @@ ${JSON.stringify(flowchartSchema, null, 2)}`;
                     throw new Error(`API Error: ${response.status} ${errorData.error?.message || response.statusText}`);
                 }
 
-                const result = await response.json();
-                const responseContent = result.choices?.[0]?.message?.content || '⚠️ Unexpected response format from API';
-                console.log('Raw AI response:', responseContent);
-                
+                // 处理流式响应
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+
+                    const chunk = decoder.decode(value, { stream: true });
+                    const lines = chunk.split('\n');
+
+                    for (const line of lines) {
+                        if (line.startsWith('data: ')) {
+                            const data = line.slice(6);
+                            if (data === '[DONE]') continue;
+
+                            try {
+                                const parsed = JSON.parse(data);
+                                const choice = parsed.choices?.[0];
+                                const delta = choice?.delta;
+
+                                if (delta) {
+                                    // 优先使用 API 返回的 reasoning_details（MiniMax reasoning_split）
+                                    let reasoning = delta.reasoning_details;
+                                    let content = delta.content;
+
+                                    // 处理 reasoning_details 可能是对象的情况
+                                    if (reasoning) {
+                                        if (typeof reasoning === 'object') {
+                                            // 如果是数组，提取所有文本
+                                            if (Array.isArray(reasoning)) {
+                                                reasoning = reasoning.map(r => typeof r === 'object' ? (r.content || r.text || JSON.stringify(r)) : r).join('');
+                                            } else {
+                                                // 如果是对象，尝试提取 content 或 text 字段
+                                                reasoning = reasoning.content || reasoning.text || JSON.stringify(reasoning);
+                                            }
+                                        }
+                                        if (typeof reasoning === 'string') {
+                                            thinkContent += reasoning;
+                                            assistantMsg.updateThink(thinkContent);
+                                        }
+                                    }
+
+                                    // 处理 content（可能是字符串或对象）
+                                    if (content) {
+                                        // 处理 content 可能是对象的情况
+                                        if (typeof content === 'object') {
+                                            content = content.content || content.text || JSON.stringify(content);
+                                        }
+                                        if (typeof content === 'string') {
+                                            fullContent += content;
+
+                                            // 尝试从累积内容中分离 think
+                                            const thinkMatch = fullContent.match(/<think>([\s\S]*?)<\/think>/);
+                                            if (thinkMatch) {
+                                                // 提取 think 内容（只取第一个匹配的）
+                                                const extractedThink = thinkMatch[1];
+                                                if (extractedThink && extractedThink !== thinkContent) {
+                                                    thinkContent = extractedThink;
+                                                    assistantMsg.updateThink(thinkContent);
+                                                }
+
+                                                // 从 fullContent 中移除 think 标签得到消息内容
+                                                const messageWithoutThink = fullContent.replace(/<think>[\s\S]*?<\/think>/, '').trim();
+                                                assistantMsg.updateMessage(messageWithoutThink);
+                                            } else if (!fullContent.includes('<think>')) {
+                                                // 没有 think 标签，直接显示
+                                                assistantMsg.updateMessage(fullContent);
+                                            }
+                                            // 如果正在积累 think 标签（有 <think> 但没有 </think>），不更新消息
+                                        }
+                                    }
+                                }
+                            } catch (e) {
+                                // 忽略解析错误
+                            }
+                        }
+                    }
+                }
+
+                console.log('Raw AI response:', fullContent);
+                console.log('Think content:', thinkContent);
+
+                // 如果 API 没有分离思考内容，使用正则分离作为 fallback
+                let messageContent = fullContent;
+                if (!thinkContent && fullContent.includes('<think>')) {
+                    const result = separateThinkContent(fullContent);
+                    thinkContent = result.think;
+                    messageContent = result.message;
+                    if (thinkContent) {
+                        assistantMsg.updateThink(thinkContent);
+                    }
+                }
+
                 // 清理响应内容，移除可能的 markdown 代码块标记
-                let cleanContent = responseContent.trim();
+                let cleanContent = messageContent.trim();
                 if (cleanContent.startsWith('```json')) {
                     cleanContent = cleanContent.slice(7);
                 }
@@ -3125,10 +2833,10 @@ ${JSON.stringify(flowchartSchema, null, 2)}`;
                     cleanContent = cleanContent.slice(0, -3);
                 }
                 cleanContent = cleanContent.trim();
-                
-                // 提取真正的JSON内容（移除LLM思考过程）
+
+                // 提取真正的JSON内容
                 cleanContent = extractJSON(cleanContent);
-                
+
                 // 验证 JSON 是否有效（宽松处理）
                 if (!cleanContent || cleanContent.trim() === '') {
                     console.error('Failed to extract JSON: empty content');
@@ -3156,7 +2864,7 @@ ${JSON.stringify(flowchartSchema, null, 2)}`;
                 }
 
                 console.log('Cleaned content:', cleanContent);
-                
+
                 // 通过 postMessage 发送到父窗口（card.html），让父窗口解析和保存
                 const tempFileName = 'temp_generated_flowchart.json';
                 window.parent.postMessage({
@@ -3164,13 +2872,12 @@ ${JSON.stringify(flowchartSchema, null, 2)}`;
                     content: cleanContent,
                     fileName: tempFileName
                 }, '*');
-                
-                // 显示生成完成消息
-                updateMessage(responseMsg, '✅ Generation completed! The flowchart has been loaded in the editor. (Debug saved)');
-                responseMsg.classList.add('success');
+
+                // 显示生成的JSON内容（最终格式化）
+                assistantMsg.finalizeMessage(cleanContent);
             } catch (e) {
-                updateMessage(responseMsg, `❌ ${e.message}`);
-                responseMsg.classList.add('error');
+                assistantMsg.updateMessage(`❌ ${e.message}`);
+                assistantMsg.msgDiv.classList.add('error');
             } finally {
                 sendBtn.disabled = false;
                 chatInput.focus();

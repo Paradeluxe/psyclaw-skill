@@ -1,14 +1,14 @@
 {
-  "version": "1.0.0",
-  "timestamp": "2024-01-15T10:30:00.000Z",
+  "version": "1.0",
+  "timestamp": "2026-04-10T04:03:40.068Z",
   "routineRects": [
     {
       "id": 0,
       "name": "fixation",
-      "x": 100,
-      "y": 200,
-      "width": 150,
-      "height": 80,
+      "x": 85,
+      "y": 240,
+      "width": 200,
+      "height": 140,
       "avtp": {
         "a": false,
         "v": false,
@@ -25,19 +25,23 @@
           "font": "Arial",
           "letterHeight": 0.1,
           "color": "white",
-          "pos": [0, 0],
+          "pos": [
+            0,
+            0
+          ],
           "startTime": 0,
           "duration": 1000
         }
-      }
+      },
+      "componentHitAreas": []
     },
     {
       "id": 1,
       "name": "trial",
-      "x": 400,
-      "y": 200,
-      "width": 180,
-      "height": 100,
+      "x": 335,
+      "y": 240,
+      "width": 200,
+      "height": 140,
       "keys": "space",
       "avtp": {
         "a": false,
@@ -55,7 +59,10 @@
           "font": "Arial",
           "letterHeight": 0.15,
           "color": "$color",
-          "pos": [0, 0],
+          "pos": [
+            0,
+            0
+          ],
           "startTime": 0,
           "duration": 2000
         },
@@ -69,29 +76,23 @@
           "forceEndRoutine": true,
           "store": "last key"
         }
-      }
+      },
+      "componentHitAreas": []
     }
   ],
   "connections": [
     {
       "start": {
-        "label": "0",
-        "position": "right"
+        "x": 60,
+        "y": 300,
+        "label": "1",
+        "isSnapTarget": false
       },
       "end": {
+        "x": 60,
+        "y": 300,
         "label": "1",
-        "position": "left"
-      },
-      "depth": 0
-    },
-    {
-      "start": {
-        "label": "1",
-        "position": "right"
-      },
-      "end": {
-        "label": "1",
-        "position": "left"
+        "isSnapTarget": false
       },
       "depth": 0,
       "loopName": "trials",
