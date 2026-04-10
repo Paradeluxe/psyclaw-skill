@@ -1,0 +1,460 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "PsyClaw Flowchart Protocol",
+  "description": "Unified protocol for save, import, and render operations between chatbot and flowchart editor",
+  "version": "1.0.0",
+  "type": "object",
+  
+  "messageTypes": {
+    "FLOWCHART_GENERATED": {
+      "description": "Message sent from chatbot to parent when AI generates flowchart data",
+      "type": "object",
+      "required": ["type", "content", "fileName"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "flowchart-generated",
+          "description": "Message type identifier"
+        },
+        "content": {
+          "type": "string",
+          "description": "Generated flowchart JSON content as string"
+        },
+        "fileName": {
+          "type": "string",
+          "description": "Suggested file name for the generated flowchart"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO 8601 timestamp when the flowchart was generated"
+        }
+      }
+    },
+    
+    "SAVE_PROJECT": {
+      "description": "Command to save the current flowchart project",
+      "type": "object",
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "save-project",
+          "description": "Message type identifier"
+        },
+        "projectData": {
+          "description": "The complete project data to save",
+          "$ref": "#/definitions/ProjectData"
+        },
+        "fileName": {
+          "type": "string",
+          "description": "Optional file name override"
+        }
+      }
+    },
+    
+    "IMPORT_PROJECT": {
+      "description": "Command to import a flowchart project",
+      "type": "object",
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "import-project",
+          "description": "Message type identifier"
+        },
+        "file": {
+          "type": "object",
+          "description": "File object from File System Access API",
+          "properties": {
+            "name": { "type": "string" },
+            "text": { "type": "function" }
+          }
+        }
+      }
+    },
+    
+    "RENDER_FLOWCHART": {
+      "description": "Command to render a flowchart in the editor",
+      "type": "object",
+      "required": ["type", "content"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "render-flowchart",
+          "description": "Message type identifier"
+        },
+        "content": {
+          "type": "string",
+          "description": "Flowchart JSON content as string"
+        },
+        "autoLayout": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether to auto-calculate positions for routines"
+        }
+      }
+    },
+    
+    "PROJECT_SAVED": {
+      "description": "Response when project is successfully saved",
+      "type": "object",
+      "required": ["type", "success"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "project-saved",
+          "description": "Message type identifier"
+        },
+        "success": {
+          "type": "boolean",
+          "description": "Whether the save was successful"
+        },
+        "fileName": {
+          "type": "string",
+          "description": "The file name that was saved"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO 8601 timestamp when saved"
+        },
+        "error": {
+          "type": "string",
+          "description": "Error message if save failed"
+        }
+      }
+    },
+    
+    "PROJECT_IMPORTED": {
+      "description": "Response when project is successfully imported",
+      "type": "object",
+      "required": ["type", "success"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "project-imported",
+          "description": "Message type identifier"
+        },
+        "success": {
+          "type": "boolean",
+          "description": "Whether the import was successful"
+        },
+        "routinesCount": {
+          "type": "integer",
+          "description": "Number of routines imported"
+        },
+        "loopsCount": {
+          "type": "integer",
+          "description": "Number of loops imported"
+        },
+        "error": {
+          "type": "string",
+          "description": "Error message if import failed"
+        }
+      }
+    }
+  },
+  
+  "definitions": {
+    "ProjectData": {
+      "type": "object",
+      "description": "Complete flowchart project data structure",
+      "required": ["version", "routines", "loops"],
+      "properties": {
+        "version": {
+          "type": "string",
+          "description": "Protocol version (2.0 or higher)",
+          "examples": ["2.0"]
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO 8601 datetime when project was created/updated"
+        },
+        "routines": {
+          "type": "array",
+          "description": "Array of routine definitions",
+          "items": {
+            "$ref": "#/definitions/Routine"
+          }
+        },
+        "loops": {
+          "type": "array",
+          "description": "Array of loop/trial handler definitions",
+          "items": {
+            "$ref": "#/definitions/Loop"
+          }
+        }
+      }
+    },
+    
+    "Routine": {
+      "type": "object",
+      "description": "A routine representing a single trial/stimulus presentation. Routines are located at even-numbered points (2, 4, 6, 8...) on the flowchart canvas. The point number can be calculated as: pointNumber = (routineId * 2) + 2",
+      "required": ["id", "name", "x", "y", "width", "height"],
+      "properties": {
+        "id": {
+          "type": "integer",
+          "description": "Unique routine identifier (0, 2, 4, 6...). Even numbers only, corresponding to even points (2, 4, 6, 8...)",
+          "minimum": 0,
+          "multipleOf": 2
+        },
+        "name": {
+          "type": "string",
+          "description": "Routine name (valid Python identifier)",
+          "pattern": "^[a-zA-Z_][a-zA-Z0-9_]*$"
+        },
+        "x": {
+          "type": "number",
+          "description": "X coordinate on canvas"
+        },
+        "y": {
+          "type": "number",
+          "description": "Y coordinate on canvas"
+        },
+        "width": {
+          "type": "number",
+          "description": "Routine box width",
+          "default": 200
+        },
+        "height": {
+          "type": "number",
+          "description": "Routine box height",
+          "default": 150
+        },
+        "duration": {
+          "type": "integer",
+          "description": "Duration in milliseconds (-1 for indefinite)",
+          "default": -1
+        },
+        "avtpComponents": {
+          "type": "array",
+          "description": "Array of stimulus/response components",
+          "items": {
+            "$ref": "#/definitions/Component"
+          }
+        }
+      }
+    },
+    
+    "Component": {
+      "type": "object",
+      "description": "A stimulus or response component in a routine",
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["audio", "video", "text", "image", "keyboard", "code"],
+          "description": "Component type"
+        },
+        "enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether component is enabled"
+        },
+        "path": {
+          "type": "string",
+          "description": "File path for media components"
+        },
+        "text": {
+          "type": "string",
+          "description": "Text content for text components"
+        },
+        "color": {
+          "type": "string",
+          "description": "Color value (e.g., 'white', 'red', '#ffffff')"
+        },
+        "font": {
+          "type": "string",
+          "description": "Font family name"
+        },
+        "letterHeight": {
+          "type": "number",
+          "description": "Font size in height units",
+          "default": 0.05
+        },
+        "pos": {
+          "type": "array",
+          "description": "Position [x, y]",
+          "items": { "type": "number" },
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "size": {
+          "type": "array",
+          "description": "Size [width, height]",
+          "items": { "type": ["number", "null"] },
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "duration": {
+          "type": "number",
+          "description": "Duration in milliseconds (-1 for indefinite)",
+          "default": -1
+        },
+        "volume": {
+          "type": "number",
+          "description": "Volume for audio/video (0-1)",
+          "minimum": 0,
+          "maximum": 1,
+          "default": 1
+        },
+        "keys": {
+          "type": "string",
+          "description": "Comma-separated keyboard keys"
+        },
+        "code": {
+          "type": "string",
+          "description": "Python/JS code to execute (for code components)"
+        }
+      }
+    },
+    
+    "Loop": {
+      "type": "object",
+      "description": "A loop/trial handler that repeats routines. Loops are located at odd-numbered points (1, 3, 5, 7...) on the flowchart canvas. The point number can be calculated as: pointNumber = (loopId * 2) + 1. Loop connects from startPoint (left side) to endPoint (right side).",
+      "required": ["id", "name", "startPoint", "endPoint"],
+      "properties": {
+        "id": {
+          "type": "integer",
+          "description": "Unique loop identifier (0, 1, 2, 3...). Loop IDs map to odd points (1, 3, 5, 7...)",
+          "minimum": 0
+        },
+        "name": {
+          "type": "string",
+          "description": "Loop name (valid Python identifier)",
+          "pattern": "^[a-zA-Z_][a-zA-Z0-9_]*$"
+        },
+        "startPoint": {
+          "type": "integer",
+          "description": "The point number where the loop starts (left side). Must be an odd number (1, 3, 5, 7...). This is the loop entry point.",
+          "minimum": 1,
+          "multipleOf": 2,
+          "enum": [1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31, 33, 35, 37, 39]
+        },
+        "endPoint": {
+          "type": "integer",
+          "description": "The point number where the loop ends (right side). Must be an odd number (1, 3, 5, 7...). This is the loop exit point. If endPoint < startPoint, the loop goes backward (repeating routines).",
+          "minimum": 1,
+          "multipleOf": 2,
+          "enum": [1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31, 33, 35, 37, 39]
+        },
+        "reps": {
+          "type": "integer",
+          "description": "Number of repetitions",
+          "minimum": 1,
+          "default": 1
+        },
+        "type": {
+          "type": "string",
+          "enum": ["sequential", "random", "fullRandom"],
+          "description": "Trial ordering method",
+          "default": "sequential"
+        },
+        "conditions": {
+          "type": "string",
+          "description": "JSON string representing condition objects array"
+        },
+        "conditionsFile": {
+          "type": "string",
+          "description": "Path to external conditions file"
+        },
+        "isTrials": {
+          "type": "boolean",
+          "description": "Whether this is a trial handler",
+          "default": true
+        }
+      }
+    }
+  },
+  
+  "operations": {
+    "save": {
+      "description": "Save flowchart project to file",
+      "pointSystem": {
+        "description": "Point numbering: points start from 1. ODD points (1, 3, 5, 7...) are loop connection points. EVEN points (2, 4, 6, 8...) are routine locations.",
+        "example": "Routine 0 at point 2, Routine 2 at point 4, Routine 4 at point 6. Loop connects from odd point to odd point (e.g., point 1 to point 5)."
+      },
+      "steps": [
+        "1. Collect current state from flowchart editor (routines, loops, connections)",
+        "2. Transform connections (with point labels) to loops format (with startPoint/endPoint)",
+        "3. Build ProjectData object with version 2.0+",
+        "4. Convert to JSON string with pretty printing",
+        "5. Trigger file download or write to file handle",
+        "6. Send 'project-saved' response message"
+      ],
+      "dataTransform": {
+        "connectionsToLoops": "Convert internal connection format (with point labels) to standardized loop format (with startPoint/endPoint)",
+        "routineRectsToRoutines": "Extract routine properties for export"
+      }
+    },
+
+    "import": {
+      "description": "Import flowchart project from file",
+      "pointSystem": {
+        "description": "Point numbering: points start from 1. ODD points (1, 3, 5, 7...) are loop connection points. EVEN points (2, 4, 6, 8...) are routine locations.",
+        "example": "Routine 0 at point 2, Routine 2 at point 4, Routine 4 at point 6. Loop connects from odd point to odd point (e.g., point 1 to point 5)."
+      },
+      "steps": [
+        "1. Open file picker dialog (File System Access API or fallback)",
+        "2. Read and parse JSON file",
+        "3. Validate project data structure",
+        "4. Call parseProjectData to normalize format (support v1 and v2)",
+        "5. Clear current project state",
+        "6. Load routines and loops into editor",
+        "7. Recalculate routine heights based on components",
+        "8. Send 'project-imported' response message"
+      ],
+      "dataTransform": {
+        "parseProjectData": "Normalize old (v1) and new (v2+) formats to internal format",
+        "loopsToConnections": "Convert loop format (with startPoint/endPoint) to internal connection format (with point labels)"
+      }
+    },
+
+    "render": {
+      "description": "Render AI-generated flowchart in editor",
+      "pointSystem": {
+        "description": "Point numbering: points start from 1. ODD points (1, 3, 5, 7...) are loop connection points. EVEN points (2, 4, 6, 8...) are routine locations.",
+        "example": "Routine 0 at point 2, Routine 2 at point 4, Routine 4 at point 6. Loop connects from odd point to odd point (e.g., point 1 to point 5)."
+      },
+      "steps": [
+        "1. Receive 'flowchart-generated' message from chatbot iframe",
+        "2. Parse JSON content from message",
+        "3. Apply JSON fixes for common format issues (trailing commas, unquoted keys, single quotes)",
+        "4. Validate JSON structure (check for routines/loops arrays)",
+        "5. Clear current project state",
+        "6. Import routines with auto-calculated positions (if autoLayout enabled)",
+        "7. Transform components to avtpComponents format",
+        "8. Import loops and convert to connections (startPoint/endPoint to point labels)",
+        "9. Recalculate all routine heights",
+        "10. Redraw canvas",
+        "11. Update UI state (selected routine, form values)"
+      ],
+      "dataTransform": {
+        "componentsToAvtpComponents": "Transform AI-generated components to internal avtpComponents format",
+        "autoLayout": "Calculate X/Y positions for routines (horizontal layout, 250px spacing)",
+        "pointCalculation": "Routines are placed at even points (2, 4, 6...). Loops connect odd points (1, 3, 5...)"
+      }
+    }
+  },
+  
+  "compatibility": {
+    "v1Format": {
+      "description": "Legacy format used in older project files",
+      "fields": {
+        "routineRects": "Array of routine objects (replaced by 'routines')",
+        "connections": "Array of connection objects (replaced by 'loops')",
+        "routineIdCounter": "Internal counter (not exported)",
+        "loopIdCounter": "Internal counter (not exported)"
+      }
+    },
+    "v2Format": {
+      "description": "Current standard format (version 2.0+)",
+      "fields": {
+        "routines": "Standardized array of routine objects",
+        "loops": "Standardized array of loop objects"
+      }
+    }
+  }
+}

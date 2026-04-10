@@ -1,6 +1,6 @@
 {
   "version": "2.0",
-  "timestamp": "2026-04-10T08:14:08.051Z",
+  "timestamp": "2026-04-10T09:06:27.595Z",
   "routines": [
     {
       "id": 1,
@@ -18,28 +18,7 @@
           "startTime": 0,
           "duration": -1,
           "forceEndRoutine": true,
-          "id": "1775808835916es39bnfm6",
-          "enabled": true
-        }
-      ]
-    },
-    {
-      "id": 2,
-      "name": "routine_2",
-      "x": 335,
-      "y": 240,
-      "width": 200,
-      "height": 140,
-      "duration": 3000,
-      "avtpComponents": [
-        {
-          "label": "Keyboard",
-          "type": "keyboard",
-          "keys": "",
-          "startTime": 0,
-          "duration": -1,
-          "forceEndRoutine": true,
-          "id": "1775808836064foks91jld",
+          "id": "17758119861656vdmhg09x",
           "enabled": true
         }
       ]
@@ -48,11 +27,11 @@
   "loops": [
     {
       "id": 0,
-      "name": "trials_1",
-      "startRoutineId": -1,
-      "endRoutineId": 1,
+      "name": "trials",
+      "startPoint": 1,
+      "endPoint": 3,
       "reps": 1,
-      "type": "sequential",
+      "type": "random",
       "conditions": "",
       "conditionsFile": "",
       "isTrials": true

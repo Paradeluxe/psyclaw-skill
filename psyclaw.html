@@ -5530,20 +5530,14 @@
         // 辅助函数：将 connections 转换为 loops 数组
         function connectionsToLoops(conns) {
             return conns.map((conn, index) => {
-                const startLabel = parseInt(conn.start.label);
-                const endLabel = parseInt(conn.end.label);
-                // linePoints 使用奇数 label (1, 3, 5, 7...)
-                // label 2i+1 是 routine i 的左侧（也是 routine i-1 的右侧，i>0时）
-                // startLabel = 2*startRoutineId + 3 => startRoutineId = (startLabel - 3) / 2
-                // endLabel = 2*endRoutineId + 1 => endRoutineId = (endLabel - 1) / 2
-                const startRoutineId = (startLabel - 3) / 2;
-                const endRoutineId = (endLabel - 1) / 2;
+                const startPoint = parseInt(conn.start.label);
+                const endPoint = parseInt(conn.end.label);
                 
                 return {
                     id: index,
                     name: conn.loopName || `loop_${index}`,
-                    startRoutineId: startRoutineId,
-                    endRoutineId: endRoutineId,
+                    startPoint: startPoint,
+                    endPoint: endPoint,
                     reps: conn.loopReps || 1,
                     type: conn.loopType || 'sequential',
                     conditions: conn.loopConditions || '',
@@ -5556,16 +5550,12 @@
         // 辅助函数：将 loops 数组转换为 connections（用于内部渲染）
         function loopsToConnections(loops) {
             return loops.map((loop, index) => {
-                // linePoints 使用奇数 label (1, 3, 5, 7...)
-                // label 2i+1 是 routine i 的左侧（也是 routine i-1 的右侧，i>0时）
-                // loop 起点是 startRoutineId 的右侧 = 2*startRoutineId + 3
-                // loop 终点是 endRoutineId 的左侧 = 2*endRoutineId + 1
-                const startLabel = 2 * loop.startRoutineId + 3;
-                const endLabel = 2 * loop.endRoutineId + 1;
+                const startPoint = loop.startPoint;
+                const endPoint = loop.endPoint;
                 
                 return {
-                    start: { label: String(startLabel), position: 'right' },
-                    end: { label: String(endLabel), position: 'left' },
+                    start: { label: String(startPoint), position: 'right' },
+                    end: { label: String(endPoint), position: 'left' },
                     depth: 0,
                     loopName: loop.name || `loop_${index}`,
                     loopReps: loop.reps || 1,
@@ -5609,8 +5599,8 @@
                         loops.push({
                             id: l.id,
                             name: l.name,
-                            startRoutineId: l.startRoutineId,
-                            endRoutineId: l.endRoutineId,
+                            startPoint: l.startPoint,
+                            endPoint: l.endPoint,
                             reps: l.reps || 1,
                             type: l.type || 'sequential',
                             conditions: l.conditions || '',
@@ -5628,12 +5618,13 @@
                     // 转换旧格式的 connections 为新格式的 loops
                     projectData.connections.forEach((conn, index) => {
                         if (typeof conn.from === 'number' && typeof conn.to === 'number') {
-                            // 旧简单格式：from/to 是 routine ID
+                            // 旧简单格式：from/to 是点编号
+                            // from 是奇数点（loop 起点），to 是奇数点（loop 终点）
                             loops.push({
                                 id: index,
                                 name: conn.loopName || `loop_${index}`,
-                                startRoutineId: conn.from,
-                                endRoutineId: conn.to,
+                                startPoint: conn.from,
+                                endPoint: conn.to,
                                 reps: conn.loopReps || 1,
                                 type: conn.loopType || 'sequential',
                                 conditions: conn.loopConditions || '',
@@ -5641,16 +5632,14 @@
                                 isTrials: conn.loopIsTrials !== false
                             });
                         } else if (conn.start && conn.end) {
-                            // 旧详细格式：有 start/end，需要计算 routine ID
-                            const startLabel = parseInt(conn.start.label);
-                            const endLabel = parseInt(conn.end.label);
-                            const startRoutineId = (startLabel - 3) / 2;
-                            const endRoutineId = (endLabel - 1) / 2;
+                            // 旧详细格式：有 start/end 点
+                            const startPoint = parseInt(conn.start.label);
+                            const endPoint = parseInt(conn.end.label);
                             loops.push({
                                 id: index,
                                 name: conn.loopName || `loop_${index}`,
-                                startRoutineId: startRoutineId,
-                                endRoutineId: endRoutineId,
+                                startPoint: startPoint,
+                                endPoint: endPoint,
                                 reps: conn.loopReps || 1,
                                 type: conn.loopType || 'sequential',
                                 conditions: conn.loopConditions || '',
@@ -5708,6 +5697,8 @@
             };
 
             const jsonData = JSON.stringify(projectData, null, 2);
+            const fileName = currentProjectFile || `deeppsych_project_${saveCounter++}.json`;
+            const timestamp = new Date().toISOString();
 
             // 如果已经有文件句柄，直接保存
             if (fileHandle) {
@@ -5715,6 +5706,14 @@
                     const writable = await fileHandle.createWritable();
                     await writable.write(jsonData);
                     await writable.close();
+
+                    // 发送成功响应消息（按照 protocol）
+                    window.parent.postMessage({
+                        type: 'project-saved',
+                        success: true,
+                        fileName: fileName,
+                        timestamp: timestamp
+                    }, '*');
                     return;
                 } catch (error) {
                     console.error('保存失败:', error);
@@ -5726,11 +5725,19 @@
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = currentProjectFile || `deeppsych_project_${saveCounter++}.json`;
+            a.download = fileName;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
+
+            // 发送成功响应消息（按照 protocol）
+            window.parent.postMessage({
+                type: 'project-saved',
+                success: true,
+                fileName: fileName,
+                timestamp: timestamp
+            }, '*');
         });
 
         // 保存 XML 功能
@@ -5826,15 +5833,30 @@
                     updatePoints();
                     updateRoutineCount();
                     draw();
-                    
+
                     // 保存初始状态并启用按钮
                     saveState();
+
+                    // 发送成功响应消息（按照 protocol）
+                    window.parent.postMessage({
+                        type: 'project-imported',
+                        success: true,
+                        routinesCount: routineRects.length,
+                        loopsCount: loops.length,
+                        fileName: handle.name
+                    }, '*');
                     return;
                 } catch (error) {
                     if (error.name === 'AbortError') {
                         return;
                     }
                     console.error('导入失败:', error);
+                    // 发送失败响应消息
+                    window.parent.postMessage({
+                        type: 'project-imported',
+                        success: false,
+                        error: error.message
+                    }, '*');
                     // 回退到传统方式
                 }
             }
@@ -5894,8 +5916,24 @@
 
                         // 保存初始状态并启用按钮
                         saveState();
+
+                        // 发送成功响应消息（按照 protocol）
+                        window.parent.postMessage({
+                            type: 'project-imported',
+                            success: true,
+                            routinesCount: routineRects.length,
+                            loopsCount: loops.length,
+                            fileName: file.name
+                        }, '*');
                     } catch (error) {
                         alert('导入失败：' + error.message);
+
+                        // 发送失败响应消息
+                        window.parent.postMessage({
+                            type: 'project-imported',
+                            success: false,
+                            error: error.message
+                        }, '*');
                     }
                 };
                 reader.readAsText(file);
@@ -6065,9 +6103,18 @@
                 
                 // 保存初始状态并启用按钮
                 saveState();
-                
+
                 console.log('Flowchart successfully loaded from chatbot');
-                
+
+                // 发送成功响应消息（按照 protocol）
+                window.parent.postMessage({
+                    type: 'flowchart-rendered',
+                    success: true,
+                    routinesCount: routineRects.length,
+                    loopsCount: connections.length,
+                    timestamp: new Date().toISOString()
+                }, '*');
+
                 // 显示通知
                 showNotification('✅ Flowchart loaded: ' + fileName);
             }
@@ -6620,14 +6667,6 @@
                 const removedRoutineIndex = selectedRoutineIndex;
                 const removedRoutine = routineRects[removedRoutineIndex];
                 
-                // 显示预览对话框
-                const confirmed = await showDeletePreviewModal(removedRoutineIndex);
-                
-                if (!confirmed) {
-                    return; // 用户取消
-                }
-                
-                // 用户确认，执行删除
                 saveState();
                 currentProjectFile = null;
                 fileHandle = null;
@@ -6636,7 +6675,6 @@
                     activeDragRect = null;
                 }
                 
-                // 使用新的重构流程删除 routine
                 rebuildFlowchartAfterRemove(removedRoutineIndex);
             }
         });
