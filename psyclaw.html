@@ -3573,10 +3573,10 @@
                 const maxDurationMs = Math.max(
                     ...allAvtpkComponents.map(c => {
                         const startTime = (c.startTime || 0);
-                        const duration = c.duration > 0 ? c.duration : (c.duration === -1 ? 0 : 3000);
+                        const duration = c.duration > 0 ? c.duration : (c.duration === -1 ? 0 : 0);
                         return startTime + duration;
                     }),
-                    3000
+                    0
                 );
                 
                 // 检查是否有 Keyboard 组件且开启了 forceEndRoutine
