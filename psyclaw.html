@@ -5527,6 +5527,144 @@
             requestAnimationFrame(frame);
         }
 
+        // 辅助函数：将 connections 转换为 loops 数组
+        function connectionsToLoops(conns) {
+            return conns.map((conn, index) => {
+                const startLabel = parseInt(conn.start.label);
+                const endLabel = parseInt(conn.end.label);
+                // linePoints 使用奇数 label (1, 3, 5, 7...)
+                // label 2i+1 是 routine i 的左侧（也是 routine i-1 的右侧，i>0时）
+                // startLabel = 2*startRoutineId + 3 => startRoutineId = (startLabel - 3) / 2
+                // endLabel = 2*endRoutineId + 1 => endRoutineId = (endLabel - 1) / 2
+                const startRoutineId = (startLabel - 3) / 2;
+                const endRoutineId = (endLabel - 1) / 2;
+                
+                return {
+                    id: index,
+                    name: conn.loopName || `loop_${index}`,
+                    startRoutineId: startRoutineId,
+                    endRoutineId: endRoutineId,
+                    reps: conn.loopReps || 1,
+                    type: conn.loopType || 'sequential',
+                    conditions: conn.loopConditions || '',
+                    conditionsFile: conn.loopConditionsFile || '',
+                    isTrials: conn.loopIsTrials !== false
+                };
+            });
+        }
+
+        // 辅助函数：将 loops 数组转换为 connections（用于内部渲染）
+        function loopsToConnections(loops) {
+            return loops.map((loop, index) => {
+                // linePoints 使用奇数 label (1, 3, 5, 7...)
+                // label 2i+1 是 routine i 的左侧（也是 routine i-1 的右侧，i>0时）
+                // loop 起点是 startRoutineId 的右侧 = 2*startRoutineId + 3
+                // loop 终点是 endRoutineId 的左侧 = 2*endRoutineId + 1
+                const startLabel = 2 * loop.startRoutineId + 3;
+                const endLabel = 2 * loop.endRoutineId + 1;
+                
+                return {
+                    start: { label: String(startLabel), position: 'right' },
+                    end: { label: String(endLabel), position: 'left' },
+                    depth: 0,
+                    loopName: loop.name || `loop_${index}`,
+                    loopReps: loop.reps || 1,
+                    loopType: loop.type || 'sequential',
+                    loopConditions: loop.conditions || '',
+                    loopConditionsFile: loop.conditionsFile || '',
+                    loopIsTrials: loop.isTrials !== false
+                };
+            });
+        }
+
+        // 辅助函数：解析导入的项目数据，支持新旧两种格式
+        function parseProjectData(projectData) {
+            const routines = [];
+            const loops = [];
+            
+            // 检查版本：新格式（version 2.0+）或旧格式
+            if (projectData.version && projectData.version.startsWith('2.')) {
+                // 新格式：routines + loops
+                if (projectData.routines && Array.isArray(projectData.routines)) {
+                    projectData.routines.forEach(r => {
+                        routines.push({
+                            id: r.id,
+                            name: r.name,
+                            x: r.x,
+                            y: r.y,
+                            width: r.width || 200,
+                            height: r.height,
+                            duration: r.duration,
+                            avtpComponents: r.avtpComponents || [],
+                            borderRadius: 10,
+                            isDragging: false,
+                            offsetX: 0,
+                            offsetY: 0,
+                            keys: r.keys || 'Space, F, J'
+                        });
+                    });
+                }
+                if (projectData.loops && Array.isArray(projectData.loops)) {
+                    projectData.loops.forEach(l => {
+                        loops.push({
+                            id: l.id,
+                            name: l.name,
+                            startRoutineId: l.startRoutineId,
+                            endRoutineId: l.endRoutineId,
+                            reps: l.reps || 1,
+                            type: l.type || 'sequential',
+                            conditions: l.conditions || '',
+                            conditionsFile: l.conditionsFile || '',
+                            isTrials: l.isTrials !== false
+                        });
+                    });
+                }
+            } else {
+                // 旧格式：routineRects + connections
+                if (projectData.routineRects && Array.isArray(projectData.routineRects)) {
+                    routines.push(...projectData.routineRects);
+                }
+                if (projectData.connections && Array.isArray(projectData.connections)) {
+                    // 转换旧格式的 connections 为新格式的 loops
+                    projectData.connections.forEach((conn, index) => {
+                        if (typeof conn.from === 'number' && typeof conn.to === 'number') {
+                            // 旧简单格式：from/to 是 routine ID
+                            loops.push({
+                                id: index,
+                                name: conn.loopName || `loop_${index}`,
+                                startRoutineId: conn.from,
+                                endRoutineId: conn.to,
+                                reps: conn.loopReps || 1,
+                                type: conn.loopType || 'sequential',
+                                conditions: conn.loopConditions || '',
+                                conditionsFile: conn.loopConditionsFile || '',
+                                isTrials: conn.loopIsTrials !== false
+                            });
+                        } else if (conn.start && conn.end) {
+                            // 旧详细格式：有 start/end，需要计算 routine ID
+                            const startLabel = parseInt(conn.start.label);
+                            const endLabel = parseInt(conn.end.label);
+                            const startRoutineId = (startLabel - 3) / 2;
+                            const endRoutineId = (endLabel - 1) / 2;
+                            loops.push({
+                                id: index,
+                                name: conn.loopName || `loop_${index}`,
+                                startRoutineId: startRoutineId,
+                                endRoutineId: endRoutineId,
+                                reps: conn.loopReps || 1,
+                                type: conn.loopType || 'sequential',
+                                conditions: conn.loopConditions || '',
+                                conditionsFile: conn.loopConditionsFile || '',
+                                isTrials: conn.loopIsTrials !== false
+                            });
+                        }
+                    });
+                }
+            }
+
+            return { routines, loops };
+        }
+
         // 保存和导入功能
         const saveButton = document.getElementById('saveButton');
         const importButton = document.getElementById('importButton');
@@ -5547,14 +5685,26 @@
                 saveLoopFormChanges();
             }
 
+            // 构建 routines 数据
+            const routines = routineRects.map(rect => ({
+                id: rect.id,
+                name: rect.name,
+                x: rect.x,
+                y: rect.y,
+                width: rect.width,
+                height: rect.height,
+                duration: rect.duration,
+                avtpComponents: rect.avtpComponents || []
+            }));
+
+            // 将 connections 转换为 loops
+            const loops = connectionsToLoops(connections);
+
             const projectData = {
-                version: '1.0',
+                version: '2.0',
                 timestamp: new Date().toISOString(),
-                routineRects: routineRects,
-                connections: connections,
-                currentRoutineCount: currentRoutineCount,
-                routineIdCounter: routineIdCounter,
-                loopIdCounter: loopIdCounter
+                routines: routines,
+                loops: loops
             };
 
             const jsonData = JSON.stringify(projectData, null, 2);
@@ -5638,8 +5788,9 @@
                     const projectData = JSON.parse(text);
 
                     // 验证数据格式
-                    if (!projectData.routineRects || !Array.isArray(projectData.connections)) {
-                        throw new Error('无效的项目文件格式');
+                    const { routines, loops } = parseProjectData(projectData);
+                    if (routines.length === 0) {
+                        throw new Error('无效的项目文件格式：缺少 routines');
                     }
 
                     // 清空当前项目
@@ -5649,11 +5800,12 @@
                     activeDragRect = null;  // 重置 activeDragRect，避免指向旧的无效对象
 
                     // 导入数据
-                    routineRects.push(...projectData.routineRects);
-                    connections.push(...projectData.connections);
-                    currentRoutineCount = projectData.currentRoutineCount || routineRects.length;
-                    routineIdCounter = projectData.routineIdCounter || routineRects.length;
-                    loopIdCounter = projectData.loopIdCounter || 0;
+                    routineRects.push(...routines);
+                    // 转换 loops 为 connections（新格式和旧格式都统一转换为 connections）
+                    connections.push(...loopsToConnections(loops));
+                    currentRoutineCount = routineRects.length;
+                    routineIdCounter = routineRects.length;
+                    loopIdCounter = 0;
 
                     // 统一所有 routine 的宽度为 200（与创建时保持一致）
                     routineRects.forEach(rect => {
@@ -5701,8 +5853,9 @@
                         const projectData = JSON.parse(event.target.result);
                         
                         // 验证数据格式
-                        if (!projectData.routineRects || !Array.isArray(projectData.connections)) {
-                            throw new Error('无效的项目文件格式');
+                        const { routines, loops } = parseProjectData(projectData);
+                        if (routines.length === 0) {
+                            throw new Error('无效的项目文件格式：缺少 routines');
                         }
 
                         // 清空当前项目
@@ -5712,11 +5865,12 @@
                         activeDragRect = null;  // 重置 activeDragRect，避免指向旧的无效对象
 
                         // 导入数据
-                        routineRects.push(...projectData.routineRects);
-                        connections.push(...projectData.connections);
-                        currentRoutineCount = projectData.currentRoutineCount || routineRects.length;
-                        routineIdCounter = projectData.routineIdCounter || routineRects.length;
-                        loopIdCounter = projectData.loopIdCounter || 0;
+                        routineRects.push(...routines);
+                        // 转换 loops 为 connections（新格式和旧格式都统一转换为 connections）
+                        connections.push(...loopsToConnections(loops));
+                        currentRoutineCount = routineRects.length;
+                        routineIdCounter = routineRects.length;
+                        loopIdCounter = 0;
 
                         // 统一所有 routine 的宽度为 200（与创建时保持一致）
                         routineRects.forEach(rect => {
@@ -5807,11 +5961,6 @@
                     return;
                 }
 
-                // 确保 connections 是数组（可以是空数组）
-                if (!projectData.connections) {
-                    projectData.connections = [];
-                }
-
                 // 清空当前项目
                 routineRects.length = 0;
                 connections.length = 0;
@@ -5844,26 +5993,50 @@
                     });
                 });
 
-                // 导入 connections 数据 - 转换新的 'from/to' 格式到内部格式
-                if (projectData.connections) {
-                    projectData.connections.forEach(conn => {
+                // 导入 loops 数据 - 支持新旧两种格式
+                const loopsData = projectData.loops || projectData.connections || [];
+                
+                if (projectData.loops) {
+                    // 新格式：使用 loops 数组
+                    connections.push(...loopsToConnections(projectData.loops));
+                } else {
+                    // 旧格式：使用 connections 数组，转换为标准 loops 格式后再转换
+                    const tempLoops = [];
+                    loopsData.forEach((conn, index) => {
                         if (typeof conn.from === 'number' && typeof conn.to === 'number') {
-                            // 新的简单格式：from/to 是 routine ID
-                            connections.push({
-                                start: { label: String(conn.from), position: 'right' },
-                                end: { label: String(conn.to), position: 'left' },
-                                depth: 0,
-                                loopName: conn.loopName,
-                                loopReps: conn.loopReps,
-                                loopType: conn.loopType,
-                                loopConditions: conn.loopConditions,
-                                loopIsTrials: conn.loopIsTrials
+                            // 旧的简单格式：from/to 是 routine ID
+                            tempLoops.push({
+                                id: index,
+                                name: conn.loopName || `loop_${index}`,
+                                startRoutineId: conn.from,
+                                endRoutineId: conn.to,
+                                reps: conn.loopReps || 1,
+                                type: conn.loopType || 'sequential',
+                                conditions: conn.loopConditions || '',
+                                conditionsFile: conn.loopConditionsFile || '',
+                                isTrials: conn.loopIsTrials !== false
                             });
                         } else if (conn.start && conn.end) {
-                            // 旧的格式：直接使用
-                            connections.push(conn);
+                            // 旧的详细格式：计算 routine ID
+                            const startLabel = parseInt(conn.start.label);
+                            const endLabel = parseInt(conn.end.label);
+                            const startRoutineId = (startLabel - 3) / 2;
+                            const endRoutineId = (endLabel - 1) / 2;
+                            tempLoops.push({
+                                id: index,
+                                name: conn.loopName || `loop_${index}`,
+                                startRoutineId: startRoutineId,
+                                endRoutineId: endRoutineId,
+                                reps: conn.loopReps || 1,
+                                type: conn.loopType || 'sequential',
+                                conditions: conn.loopConditions || '',
+                                conditionsFile: conn.loopConditionsFile || '',
+                                isTrials: conn.loopIsTrials !== false
+                            });
                         }
                     });
+                    // 统一使用 loopsToConnections 转换
+                    connections.push(...loopsToConnections(tempLoops));
                 }
 
                 currentRoutineCount = routineRects.length;

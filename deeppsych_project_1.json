@@ -1,463 +1,61 @@
 {
-  "version": "1.0",
-  "timestamp": "2026-03-30T06:00:29.876Z",
-  "routineRects": [
+  "version": "2.0",
+  "timestamp": "2026-04-10T08:14:08.051Z",
+  "routines": [
     {
       "id": 1,
-      "x": 220,
-      "y": 60,
-      "width": 160,
-      "height": 100,
-      "borderRadius": 8,
-      "isDragging": false,
-      "offsetX": 0,
-      "offsetY": 0,
-      "keys": "Space, F, J",
+      "name": "routine_1",
+      "x": 85,
+      "y": 240,
+      "width": 200,
+      "height": 140,
       "duration": 3000,
-      "avtp": {
-        "a": false,
-        "v": false,
-        "t": true,
-        "p": true,
-        "k": true
-      },
-      "avtpData": {
-        "a": {
-          "enabled": false,
-          "label": "Audio",
-          "type": "audio",
-          "path": "",
-          "volume": 1,
-          "startTime": 0,
-          "duration": -1,
-          "stopWithRoutine": true,
-          "forceEndRoutine": true
-        },
-        "v": {
-          "enabled": false,
-          "label": "Video",
-          "type": "video",
-          "path": "",
-          "volume": 1,
-          "size": [
-            null,
-            null
-          ],
-          "anchor": "center",
-          "loop": false,
-          "startTime": 0,
-          "duration": -1,
-          "units": "from exp settings",
-          "opacity": 1,
-          "stopWithRoutine": true,
-          "forceEndRoutine": true
-        },
-        "t": {
-          "enabled": true,
-          "label": "Text",
-          "type": "text",
-          "text": "Sample Text",
-          "font": "Arial",
-          "letterHeight": 0.05,
-          "color": "white",
-          "pos": [
-            0,
-            0
-          ],
-          "ori": 0,
-          "opacity": 1,
-          "units": "from exp settings",
-          "startTime": 0,
-          "duration": 3000,
-          "contrast": 1,
-          "flip": "None",
-          "languageStyle": "LTR",
-          "draggable": false
-        },
-        "p": {
-          "enabled": true,
-          "label": "Picture",
-          "type": "image",
-          "path": "",
-          "size": [
-            null,
-            null
-          ],
-          "pos": [
-            0,
-            0
-          ],
-          "opacity": 1,
-          "startTime": 0,
-          "duration": 3000,
-          "ori": 0,
-          "flip": "None",
-          "units": "from exp settings"
-        },
-        "k": {
-          "enabled": true,
-          "label": "Key",
+      "avtpComponents": [
+        {
+          "label": "Keyboard",
           "type": "keyboard",
-          "keys": "Space, F, J",
+          "keys": "",
           "startTime": 0,
-          "duration": 3000,
-          "forceEndRoutine": true
+          "duration": -1,
+          "forceEndRoutine": true,
+          "id": "1775808835916es39bnfm6",
+          "enabled": true
         }
-      }
+      ]
     },
     {
       "id": 2,
-      "x": 220,
-      "y": 200,
-      "width": 160,
-      "height": 100,
-      "borderRadius": 8,
-      "isDragging": false,
-      "offsetX": 0,
-      "offsetY": 0,
-      "keys": "Space, F, J",
+      "name": "routine_2",
+      "x": 335,
+      "y": 240,
+      "width": 200,
+      "height": 140,
       "duration": 3000,
-      "avtp": {
-        "a": false,
-        "v": false,
-        "t": true,
-        "p": true,
-        "k": true
-      },
-      "avtpData": {
-        "a": {
-          "enabled": false,
-          "label": "Audio",
-          "type": "audio",
-          "path": "",
-          "volume": 1,
-          "startTime": 0,
-          "duration": -1,
-          "stopWithRoutine": true,
-          "forceEndRoutine": true
-        },
-        "v": {
-          "enabled": false,
-          "label": "Video",
-          "type": "video",
-          "path": "",
-          "volume": 1,
-          "size": [
-            null,
-            null
-          ],
-          "anchor": "center",
-          "loop": false,
-          "startTime": 0,
-          "duration": -1,
-          "units": "from exp settings",
-          "opacity": 1,
-          "stopWithRoutine": true,
-          "forceEndRoutine": true
-        },
-        "t": {
-          "enabled": true,
-          "label": "Text",
-          "type": "text",
-          "text": "Sample Text",
-          "font": "Arial",
-          "letterHeight": 0.05,
-          "color": "white",
-          "pos": [
-            0,
-            0
-          ],
-          "ori": 0,
-          "opacity": 1,
-          "units": "from exp settings",
-          "startTime": 0,
-          "duration": 3000,
-          "contrast": 1,
-          "flip": "None",
-          "languageStyle": "LTR",
-          "draggable": false
-        },
-        "p": {
-          "enabled": true,
-          "label": "Picture",
-          "type": "image",
-          "path": "",
-          "size": [
-            null,
-            null
-          ],
-          "pos": [
-            0,
-            0
-          ],
-          "opacity": 1,
-          "startTime": 0,
-          "duration": 3000,
-          "ori": 0,
-          "flip": "None",
-          "units": "from exp settings"
-        },
-        "k": {
-          "enabled": true,
-          "label": "Key",
+      "avtpComponents": [
+        {
+          "label": "Keyboard",
           "type": "keyboard",
-          "keys": "Space, F, J",
+          "keys": "",
           "startTime": 0,
-          "duration": 3000,
-          "forceEndRoutine": true
+          "duration": -1,
+          "forceEndRoutine": true,
+          "id": "1775808836064foks91jld",
+          "enabled": true
         }
-      }
-    },
-    {
-      "id": 3,
-      "x": 220,
-      "y": 340,
-      "width": 160,
-      "height": 100,
-      "borderRadius": 8,
-      "isDragging": false,
-      "offsetX": 0,
-      "offsetY": 0,
-      "keys": "Space, F, J",
-      "duration": 3000,
-      "avtp": {
-        "a": false,
-        "v": false,
-        "t": true,
-        "p": true,
-        "k": true
-      },
-      "avtpData": {
-        "a": {
-          "enabled": false,
-          "label": "Audio",
-          "type": "audio",
-          "path": "",
-          "volume": 1,
-          "startTime": 0,
-          "duration": -1,
-          "stopWithRoutine": true,
-          "forceEndRoutine": true
-        },
-        "v": {
-          "enabled": false,
-          "label": "Video",
-          "type": "video",
-          "path": "",
-          "volume": 1,
-          "size": [
-            null,
-            null
-          ],
-          "anchor": "center",
-          "loop": false,
-          "startTime": 0,
-          "duration": -1,
-          "units": "from exp settings",
-          "opacity": 1,
-          "stopWithRoutine": true,
-          "forceEndRoutine": true
-        },
-        "t": {
-          "enabled": true,
-          "label": "Text",
-          "type": "text",
-          "text": "Sample Text",
-          "font": "Arial",
-          "letterHeight": 0.05,
-          "color": "white",
-          "pos": [
-            0,
-            0
-          ],
-          "ori": 0,
-          "opacity": 1,
-          "units": "from exp settings",
-          "startTime": 0,
-          "duration": 3000,
-          "contrast": 1,
-          "flip": "None",
-          "languageStyle": "LTR",
-          "draggable": false
-        },
-        "p": {
-          "enabled": true,
-          "label": "Picture",
-          "type": "image",
-          "path": "",
-          "size": [
-            null,
-            null
-          ],
-          "pos": [
-            0,
-            0
-          ],
-          "opacity": 1,
-          "startTime": 0,
-          "duration": 3000,
-          "ori": 0,
-          "flip": "None",
-          "units": "from exp settings"
-        },
-        "k": {
-          "enabled": true,
-          "label": "Key",
-          "type": "keyboard",
-          "keys": "Space, F, J",
-          "startTime": 0,
-          "duration": 3000,
-          "forceEndRoutine": true
-        }
-      }
-    },
-    {
-      "id": 4,
-      "x": 220,
-      "y": 480,
-      "width": 160,
-      "height": 100,
-      "borderRadius": 8,
-      "isDragging": false,
-      "offsetX": 0,
-      "offsetY": 0,
-      "keys": "Space, F, J",
-      "duration": 3000,
-      "avtp": {
-        "a": false,
-        "v": false,
-        "t": true,
-        "p": true,
-        "k": true
-      },
-      "avtpData": {
-        "a": {
-          "enabled": false,
-          "label": "Audio",
-          "type": "audio",
-          "path": "",
-          "volume": 1,
-          "startTime": 0,
-          "duration": -1,
-          "stopWithRoutine": true,
-          "forceEndRoutine": true
-        },
-        "v": {
-          "enabled": false,
-          "label": "Video",
-          "type": "video",
-          "path": "",
-          "volume": 1,
-          "size": [
-            null,
-            null
-          ],
-          "anchor": "center",
-          "loop": false,
-          "startTime": 0,
-          "duration": -1,
-          "units": "from exp settings",
-          "opacity": 1,
-          "stopWithRoutine": true,
-          "forceEndRoutine": true
-        },
-        "t": {
-          "enabled": true,
-          "label": "Text",
-          "type": "text",
-          "text": "Sample Text",
-          "font": "Arial",
-          "letterHeight": 0.05,
-          "color": "white",
-          "pos": [
-            0,
-            0
-          ],
-          "ori": 0,
-          "opacity": 1,
-          "units": "from exp settings",
-          "startTime": 0,
-          "duration": 3000,
-          "contrast": 1,
-          "flip": "None",
-          "languageStyle": "LTR",
-          "draggable": false
-        },
-        "p": {
-          "enabled": true,
-          "label": "Picture",
-          "type": "image",
-          "path": "",
-          "size": [
-            null,
-            null
-          ],
-          "pos": [
-            0,
-            0
-          ],
-          "opacity": 1,
-          "startTime": 0,
-          "duration": 3000,
-          "ori": 0,
-          "flip": "None",
-          "units": "from exp settings"
-        },
-        "k": {
-          "enabled": true,
-          "label": "Key",
-          "type": "keyboard",
-          "keys": "Space, F, J",
-          "startTime": 0,
-          "duration": 3000,
-          "forceEndRoutine": true
-        }
-      }
+      ]
     }
   ],
-  "connections": [
+  "loops": [
     {
-      "start": {
-        "x": 300,
-        "y": 180,
-        "label": "3",
-        "isSnapTarget": false
-      },
-      "end": {
-        "x": 300,
-        "y": 320,
-        "label": "5",
-        "isSnapTarget": false
-      },
-      "depth": 0,
-      "loopName": "trials_1",
-      "loopReps": 1,
-      "loopType": "sequential",
-      "loopConditions": "",
-      "loopIsTrials": true
-    },
-    {
-      "start": {
-        "x": 300,
-        "y": 320,
-        "label": "5",
-        "isSnapTarget": false
-      },
-      "end": {
-        "x": 300,
-        "y": 40,
-        "label": "1",
-        "isSnapTarget": false
-      },
-      "depth": 1,
-      "loopName": "trials_2",
-      "loopReps": 100,
-      "loopType": "sequential",
-      "loopConditions": "",
-      "loopIsTrials": true
+      "id": 0,
+      "name": "trials_1",
+      "startRoutineId": -1,
+      "endRoutineId": 1,
+      "reps": 1,
+      "type": "sequential",
+      "conditions": "",
+      "conditionsFile": "",
+      "isTrials": true
     }
-  ],
-  "currentRoutineCount": 4,
-  "routineIdCounter": 4,
-  "loopIdCounter": 2
+  ]
 }
