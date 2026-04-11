@@ -1,108 +1,52 @@
 {
-  "version": "1.0",
-  "timestamp": "2026-04-10T04:03:40.068Z",
-  "routineRects": [
+  "version": "2.0",
+  "timestamp": "2026-04-11T10:45:07.287Z",
+  "routines": [
     {
       "id": 0,
-      "name": "fixation",
+      "name": "welcome_screen",
       "x": 85,
       "y": 240,
       "width": 200,
       "height": 140,
-      "avtp": {
-        "a": false,
-        "v": false,
-        "t": true,
-        "p": false,
-        "k": false
-      },
-      "avtpData": {
-        "t": {
-          "enabled": true,
-          "label": "fixation_text",
+      "duration": -1,
+      "avtpComponents": [
+        {
           "type": "text",
-          "text": "+",
-          "font": "Arial",
-          "letterHeight": 0.1,
+          "text": "$test",
           "color": "white",
           "pos": [
             0,
             0
           ],
-          "startTime": 0,
-          "duration": 1000
-        }
-      },
-      "componentHitAreas": []
-    },
-    {
-      "id": 1,
-      "name": "trial",
-      "x": 335,
-      "y": 240,
-      "width": 200,
-      "height": 140,
-      "keys": "space",
-      "avtp": {
-        "a": false,
-        "v": false,
-        "t": true,
-        "p": false,
-        "k": true
-      },
-      "avtpData": {
-        "t": {
+          "letterHeight": 0.05,
+          "units": "norm",
           "enabled": true,
-          "label": "color_text",
-          "type": "text",
-          "text": "$color",
+          "path": "",
+          "startTime": 0,
+          "duration": 3000,
           "font": "Arial",
-          "letterHeight": 0.15,
-          "color": "$color",
-          "pos": [
-            0,
-            0
-          ],
-          "startTime": 0,
-          "duration": 2000
-        },
-        "k": {
-          "enabled": true,
-          "label": "keyboard",
-          "type": "keyboard",
-          "keys": "space",
-          "startTime": 0,
-          "duration": 2000,
-          "forceEndRoutine": true,
-          "store": "last key"
+          "opacity": 1,
+          "ori": 0,
+          "contrast": 1,
+          "flip": "None",
+          "languageStyle": "LTR",
+          "draggable": false
         }
-      },
-      "componentHitAreas": []
+      ]
     }
   ],
-  "connections": [
+  "loops": [
     {
-      "start": {
-        "x": 60,
-        "y": 300,
-        "label": "1",
-        "isSnapTarget": false
-      },
-      "end": {
-        "x": 60,
-        "y": 300,
-        "label": "1",
-        "isSnapTarget": false
-      },
-      "depth": 0,
-      "loopName": "trials",
-      "loopReps": 3,
-      "loopType": "sequential",
-      "loopConditions": "[{\"color\":\"red\"},{\"color\":\"green\"},{\"color\":\"blue\"}]",
-      "loopIsTrials": true
+      "id": 0,
+      "name": "main_loop",
+      "startPoint": 1,
+      "endPoint": 3,
+      "reps": 1,
+      "type": "sequential",
+      "conditions": "[]",
+      "conditionsFile": "",
+      "isTrials": false
     }
-  ],
-  "currentRoutineCount": 2,
-  "routineIdCounter": 2,
-  "loopIdCounter": 1
+  ]
 }

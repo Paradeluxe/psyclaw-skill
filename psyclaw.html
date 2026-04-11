@@ -1011,245 +1011,230 @@
             font-family: var(--font-ui);
         }
 
-        .conditions-table-container {
-            border: 1px solid var(--border-light);
-            border-radius: 16px;
-            overflow: auto;
-            margin-top: 12px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 4px 12px rgba(44, 30, 116, 0.06);
-            max-width: 100%;
-            background: var(--bg-white);
+        /* Loop Conditions Table - Minimal Style */
+        .loop-conditions-panel {
+            background: transparent;
+            border-radius: 0;
+            overflow: visible;
         }
 
-        .conditions-table-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 16px;
-            background: var(--bg-light);
-            border-bottom: 1px solid var(--border-light);
-        }
-
-        .conditions-table-title {
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--text-secondary);
-            font-family: var(--font-ui);
-        }
-
-        .conditions-table-actions {
-            display: flex;
-            gap: 8px;
-        }
-
-        .conditions-btn {
-            padding: 8px 16px;
-            border: 1px solid var(--border-gray);
-            background: var(--bg-white);
-            border-radius: 9999px;
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--text-secondary);
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-family: var(--font-ui);
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
-        }
-
-        .conditions-btn:hover {
-            background: rgba(20, 86, 240, 0.08);
-            border-color: var(--brand-blue);
-            color: var(--brand-blue);
-            box-shadow: 0 2px 6px rgba(20, 86, 240, 0.1);
-        }
-
-        .conditions-btn.add-btn {
-            color: var(--brand-blue);
-            border-color: rgba(20, 86, 240, 0.2);
-            background: rgba(20, 86, 240, 0.08);
-            margin-top: 16px;
-        }
-
-        .conditions-btn.add-btn:hover {
-            background: var(--brand-blue);
-            color: var(--bg-white);
-            border-color: var(--brand-blue);
-            box-shadow: 0 4px 12px rgba(20, 86, 240, 0.25);
-        }
-
-        .conditions-btn.delete-btn {
-            color: #c62828;
-            border-color: #ffcdd2;
-        }
-
-        .conditions-btn.delete-btn:hover {
-            background: #ffebee;
-        }
-
-        .conditions-table {
-            width: auto;
-            min-width: 100%;
-            border-collapse: collapse;
-            background: var(--bg-white);
-            table-layout: auto;
-        }
-
-        .conditions-table th {
-            padding: 12px 16px;
-            text-align: left;
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--text-secondary);
-            background: #fafafa;
-            border-bottom: 1px solid var(--border-light);
-            white-space: nowrap;
-            font-family: var(--font-ui);
-            letter-spacing: 0.3px;
-        }
-
-        .conditions-table td {
-            padding: 10px 16px;
-            border-bottom: 1px solid var(--border-light);
-            white-space: nowrap;
-        }
-
-        .conditions-table input {
-            width: 100%;
-            padding: 8px 12px;
-            border: 1px solid var(--border-gray);
-            border-radius: 8px;
-            font-size: 13px;
-            font-family: var(--font-ui);
-            transition: all 0.2s ease;
-            color: var(--text-primary);
-            box-sizing: border-box;
-            background: var(--bg-white);
-        }
-
-        .conditions-table tr:hover {
-            background: rgba(20, 86, 240, 0.02);
-        }
-
-        .conditions-table tr:last-child td {
+        .loop-conditions-header {
+            padding: 0 0 12px 0;
+            background: transparent;
             border-bottom: none;
         }
 
-        .conditions-table input:focus {
-            outline: none;
-            border-color: var(--brand-blue);
-            box-shadow: 0 0 0 3px rgba(20, 86, 240, 0.08);
-        }
-
-        .conditions-table input:hover {
-            border-color: var(--primary-light);
-        }
-
-        .conditions-table .row-actions {
-            display: flex;
-            justify-content: center;
-            gap: 4px;
-        }
-
-        .conditions-table .remove-row-btn {
-            width: 28px;
-            height: 28px;
-            border: none;
-            background: transparent;
-            color: var(--text-muted);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 6px;
-            transition: all 0.2s;
-            padding: 0;
-        }
-
-        .conditions-table .remove-row-btn:hover {
-            background: #ffebee;
-            color: #c62828;
-        }
-
-        .remove-col-btn-header {
-            width: 24px;
-            height: 24px;
-            border: none;
-            background: transparent;
-            color: var(--text-muted);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 6px;
-            transition: all 0.2s ease;
-            padding: 0;
-            flex-shrink: 0;
-        }
-
-        .remove-col-btn-header:hover {
-            background: #ffebee;
-            color: #c62828;
-        }
-
-        .condition-col-name {
+        .loop-conditions-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #222222;
             font-family: var(--font-ui);
-            font-size: 12px;
+            letter-spacing: 0.2px;
+        }
+
+        .loop-conditions-content {
+            padding: 0;
+        }
+
+        .loop-conditions-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: transparent;
+            border: 1px solid #e5e7eb;
+        }
+
+        .loop-conditions-table thead {
+            background: #f8f9fa;
+        }
+
+        .loop-conditions-table th {
+            padding: 10px 12px;
+            text-align: left;
+            font-size: 13px;
             font-weight: 500;
+            color: #45515e;
+            font-family: var(--font-ui);
+            border-bottom: 1px solid #e5e7eb;
+            border-right: 1px solid #e5e7eb;
+        }
+
+        .loop-conditions-table th:last-child {
+            border-right: none;
+        }
+
+        .loop-conditions-table th.cond-col-name {
+            min-width: 140px;
+        }
+
+        .loop-conditions-table th.cond-col-var {
+            min-width: 80px;
+            text-align: center;
+        }
+
+        .loop-conditions-table th.cond-col-weight {
+            width: 60px;
+            text-align: center;
+        }
+
+        .loop-conditions-table th.cond-col-actions {
+            width: 40px;
+            text-align: center;
+        }
+
+        .loop-conditions-table td {
+            padding: 0;
+            border-bottom: 1px solid #e5e7eb;
+            border-right: 1px solid #e5e7eb;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .loop-conditions-table td:last-child {
+            border-right: none;
+        }
+
+        .loop-conditions-table tbody tr:hover {
+            background: #fafafa;
+        }
+
+        .loop-conditions-table tbody tr:last-child td {
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .loop-cond-name-input,
+        .loop-cond-weight-input,
+        .loop-cond-var-input {
+            width: 100%;
+            padding: 10px 8px;
+            border: none;
+            border-bottom: 1px solid transparent;
+            border-radius: 0;
+            font-size: 14px;
+            font-family: var(--font-ui);
+            font-weight: 400;
             color: var(--text-primary);
-            transition: all 0.2s ease;
+            background: transparent;
+            transition: all 0.15s ease;
+            box-sizing: border-box;
+            cursor: text;
         }
 
-        .condition-col-name:focus {
+        .loop-cond-name-input:hover,
+        .loop-cond-weight-input:hover,
+        .loop-cond-var-input:hover {
+            background: #fafafa;
+        }
+
+        .loop-cond-name-input:focus,
+        .loop-cond-weight-input:focus,
+        .loop-cond-var-input:focus {
             outline: none;
-            border-color: var(--brand-blue) !important;
-            box-shadow: 0 0 0 3px rgba(20, 86, 240, 0.08);
+            background: #f5f5f5;
+            border-bottom: 1px solid var(--brand-blue);
         }
 
-        .condition-var-name-header {
-            font-weight: 600;
-            color: var(--text-secondary);
-            min-width: 120px;
+        .loop-cond-name-input::placeholder,
+        .loop-cond-var-input::placeholder {
+            color: #c5c5c7;
+            font-style: italic;
         }
 
-        .condition-row-name {
-            font-weight: 600;
-            color: var(--text-dark);
-            background: transparent !important;
-            border: none !important;
-            padding: 8px 0 !important;
-            pointer-events: none;
+        .loop-cond-weight-input,
+        .loop-cond-var-input {
+            text-align: center;
         }
 
-        .conditions-table tr:nth-child(odd) {
-            background: rgba(250, 250, 250, 0.5);
+        .loop-cond-remove-btn {
+            width: 100%;
+            height: 100%;
+            min-height: 36px;
+            border: none;
+            background: transparent;
+            color: #c5c5c7;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0;
+            transition: all 0.15s ease;
+            margin: 0;
         }
 
-        .conditions-table tr:nth-child(even) {
-            background: var(--bg-white);
+        .loop-cond-remove-btn:hover {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .loop-conditions-empty {
+            padding: 24px;
+            text-align: center;
+            background: transparent;
+            border-bottom: 1px solid #e5e7eb;
+            border-left: 1px solid #e5e7eb;
+            border-right: 1px solid #e5e7eb;
+        }
+
+        .loop-conditions-empty.hidden {
+            display: none;
+        }
+
+        .loop-conditions-empty-text {
+            font-size: 14px;
+            font-weight: 400;
+            color: #8e8e93;
+            font-family: var(--font-ui);
+            margin-bottom: 4px;
+        }
+
+        .loop-conditions-empty-hint {
+            font-size: 13px;
+            color: #c5c5c7;
+            font-family: var(--font-ui);
+            line-height: 1.5;
+        }
+
+        .loop-conditions-add-btn {
+            padding: 8px 16px;
+            border: 1px solid #e5e7eb;
+            background: transparent;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #45515e;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-family: var(--font-ui);
+        }
+
+        .loop-conditions-add-btn:hover {
+            border-color: var(--brand-blue);
+            color: var(--brand-blue);
+            background: transparent;
         }
 
         .loop-contents-display {
-            background: #fafafa;
+            background: var(--bg-white);
             border: 1px solid var(--border-light);
-            border-radius: 12px;
-            padding: 16px;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: rgba(44, 30, 116, 0.08) 0px 4px 12px;
         }
 
         .loop-contents-header {
             display: flex;
             align-items: center;
-            margin-bottom: 12px;
+            margin-bottom: 16px;
         }
 
         .loop-contents-title {
-            font-size: 13px;
+            font-size: 14px;
             font-weight: 600;
-            color: var(--text-secondary);
+            color: #45515e;
             font-family: var(--font-ui);
-            letter-spacing: 0.3px;
+            letter-spacing: 0.2px;
         }
 
         .loop-contents-list {
@@ -1277,31 +1262,45 @@
         .loop-content-tag {
             display: inline-flex;
             align-items: center;
-            gap: 4px;
-            padding: 6px 12px;
+            gap: 6px;
+            padding: 8px 14px;
             border-radius: 9999px;
-            font-size: 12px;
+            font-size: 13px;
             font-weight: 500;
             font-family: var(--font-ui);
             box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
             transition: all 0.2s ease;
+            position: relative;
+            z-index: 1;
         }
 
         .loop-content-tag:hover {
-            transform: translateY(-1px);
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+            z-index: 2;
         }
 
         .loop-content-tag.routine {
-            background: var(--primary-100);
-            color: var(--primary-700);
-            border: 1px solid var(--primary-200);
+            background: rgba(20, 86, 240, 0.08);
+            color: #1456f0;
+            border: 1px solid rgba(20, 86, 240, 0.15);
+            cursor: pointer;
+        }
+
+        .loop-content-tag.routine:hover {
+            background: rgba(20, 86, 240, 0.15);
+            border-color: rgba(20, 86, 240, 0.25);
         }
 
         .loop-content-tag.loop {
             background: rgba(234, 94, 193, 0.1);
-            color: var(--brand-pink);
+            color: #ea5ec1;
             border: 1px solid rgba(234, 94, 193, 0.15);
+            cursor: pointer;
+        }
+
+        .loop-content-tag.loop:hover {
+            background: rgba(234, 94, 193, 0.2);
+            border-color: rgba(234, 94, 193, 0.3);
         }
 
         .loop-content-tag-icon {
@@ -1472,190 +1471,7 @@
             text-align: center;
         }
 
-        .conditions-table th:first-child {
-            width: 120px;
-        }
 
-        .conditions-table th:nth-child(n+2) {
-            min-width: 140px;
-        }
-
-        .conditions-table th:last-child {
-            width: 40px;
-        }
-
-        .condition-var-name-input {
-            flex: 1;
-            min-width: 80px;
-        }
-
-
-
-        .condition-row-name-header {
-            font-weight: 600;
-            color: var(--text-dark);
-        }
-
-        .condition-var-name-input {
-            font-weight: 500;
-            color: var(--brand-blue);
-        }
-
-        .condition-var-name-input.auto-detected {
-            background: var(--primary-200);
-            color: var(--brand-deep);
-            border-color: var(--brand-blue);
-        }
-
-        .condition-var-name-input.auto-detected::after {
-            content: 'Auto';
-            font-size: 9px;
-            margin-left: 6px;
-            padding: 2px 6px;
-            background: var(--brand-blue);
-            color: var(--bg-white);
-            border-radius: 3px;
-            font-weight: 500;
-        }
-
-        .conditions-empty-state.hidden {
-            display: none;
-        }
-
-        #conditionsTableView.hidden {
-            display: none;
-        }
-
-        /* Variable Selector Styles */
-        .variable-selector {
-            margin-bottom: 20px;
-            padding: 20px;
-            background: #fafafa;
-            border-radius: 16px;
-            border: 1px solid var(--border-light);
-        }
-
-        .variable-selector-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-        }
-
-        .variable-selector-title {
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--text-dark);
-            font-family: var(--font-ui);
-            letter-spacing: 0.3px;
-        }
-
-        .variable-selector-actions {
-            display: flex;
-            gap: 8px;
-        }
-
-        .variable-selector-btn {
-            font-size: 12px;
-            padding: 6px 14px;
-            border: 1px solid var(--border-gray);
-            background: var(--bg-white);
-            border-radius: 9999px;
-            cursor: pointer;
-            color: var(--text-secondary);
-            transition: all 0.2s ease;
-            font-family: var(--font-ui);
-            font-weight: 500;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
-        }
-
-        .variable-selector-btn:hover {
-            background: rgba(20, 86, 240, 0.08);
-            border-color: var(--brand-blue);
-            color: var(--brand-blue);
-            box-shadow: 0 2px 6px rgba(20, 86, 240, 0.1);
-        }
-
-        .variable-tags-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            min-height: 32px;
-        }
-
-        .variable-tag {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 8px 16px;
-            border-radius: 9999px;
-            font-size: 13px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            -webkit-user-select: none;
-            user-select: none;
-            border: 1.5px solid transparent;
-            font-family: var(--font-ui);
-            background: var(--bg-white);
-            color: var(--text-secondary);
-            border-color: var(--border-gray);
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
-        }
-
-        .variable-tag.selected {
-            background: rgba(20, 86, 240, 0.08);
-            color: var(--brand-blue);
-            border-color: var(--brand-blue);
-            box-shadow: 0 0 0 1px rgba(20, 86, 240, 0.1);
-        }
-
-        .variable-tag:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 2px 8px rgba(44, 30, 116, 0.08);
-        }
-
-        .variable-tag.selected:hover {
-            background: rgba(20, 86, 240, 0.12);
-            box-shadow: 0 2px 8px rgba(20, 86, 240, 0.15);
-        }
-
-        .variable-tag:not(.selected):hover {
-            background: var(--bg-white);
-            border-color: var(--brand-blue);
-            color: var(--brand-blue);
-        }
-
-        .variable-tag-checkbox {
-            width: 14px;
-            height: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .variable-tag.selected .variable-tag-checkbox::after {
-            content: '✓';
-            font-size: 10px;
-            font-weight: bold;
-        }
-
-        .variable-tag-source {
-            font-size: 10px;
-            opacity: 0.7;
-            margin-left: 4px;
-            padding: 2px 6px;
-            background: rgba(0,0,0,0.05);
-            border-radius: 9999px;
-        }
-
-        .variable-selector-empty {
-            font-size: 13px;
-            color: var(--text-muted);
-            font-style: italic;
-            padding: 8px 0;
-            font-family: var(--font-ui);
-        }
 
         @keyframes slideIn {
             from {
@@ -1730,6 +1546,18 @@
         </div>
 
         <div class="avtp-form-content">
+
+        <div class="avtp-form-group">
+            <label class="avtp-form-label">Start Time (ms)</label>
+            <input type="text" class="avtp-form-input" id="formStartTime" step="1" placeholder="0">
+        </div>
+
+        <div class="avtp-form-group">
+            <label class="avtp-form-label">Duration (ms)</label>
+            <input type="text" class="avtp-form-input" id="formDuration" step="1" placeholder="3000">
+            <div class="hint-text">Use -1 for infinite duration</div>
+        </div>
+
         <div class="avtp-form-group form-group-hidden" id="fileInputGroup">
             <label class="avtp-form-label">File Path / URL</label>
             <input type="text" class="avtp-form-input" id="formPath" placeholder="Enter file path or URL...">
@@ -2051,42 +1879,34 @@
                 </div>
             </div>
             <div class="avtp-form-group">
-                <div id="conditionsTableView">
-                    <!-- Variable Selector -->
-                    <div class="variable-selector" id="variableSelector">
-                        <div class="variable-selector-header">
-                            <span class="variable-selector-title">Select Variables</span>
-                            <div class="variable-selector-actions">
-                                <button type="button" class="variable-selector-btn" id="selectAllVarsBtn">Select All</button>
-                                <button type="button" class="variable-selector-btn" id="deselectAllVarsBtn">Deselect All</button>
-                            </div>
-                        </div>
-                        <div class="variable-tags-container" id="variableTagsContainer">
-                            <!-- Variable tags will be dynamically inserted here -->
-                        </div>
+                <div class="loop-conditions-panel">
+                    <div class="loop-conditions-header">
+                        <span class="loop-conditions-title">Loop Conditions</span>
                     </div>
-                    <div class="conditions-table-container">
-                        <table class="conditions-table" id="conditionsTable">
-                            <thead id="conditionsTableHead">
-                                <tr id="conditionsTableHeaderRow">
-                                    <th class="condition-var-name-header">Variable</th>
+                    <div class="loop-conditions-content">
+                        <table class="loop-conditions-table" id="loopConditionsTable">
+                            <thead id="loopConditionsTableHead">
+                                <tr id="loopConditionsHeaderRow">
+                                    <th class="cond-col-name">Condition Name</th>
+                                    <th class="cond-col-weight">Weight</th>
+                                    <th class="cond-col-actions"></th>
                                 </tr>
                             </thead>
-                            <tbody id="conditionsTableBody">
+                            <tbody id="loopConditionsBody">
                             </tbody>
                         </table>
-                        <div class="conditions-empty-state" id="conditionsEmptyState">
-                            No conditions defined. Click "Add Condition" to add a condition.
-                        </div>
-                        <div class="conditions-empty-state hidden" id="noVariablesState">
-                            No variables detected. Add variables starting with '$' in your routines/loops first.
+                        <div class="loop-conditions-empty" id="loopConditionsEmpty">
+                            <div class="loop-conditions-empty-text">No conditions defined</div>
+                            <div class="loop-conditions-empty-hint">Click "Add Condition" to create one, or add variables starting with '$' in your routines first.</div>
                         </div>
                     </div>
-                    <button type="button" class="conditions-btn add-btn" id="addConditionColBtn">
-                        + Add Condition
-                    </button>
                 </div>
-                <input type="hidden" class="avtp-form-input" id="formLoopConditions" placeholder="e.g., conditions.xlsx or [{...}]">
+                <input type="hidden" class="avtp-form-input" id="formLoopConditions">
+            </div>
+            <div class="avtp-form-group">
+                <button type="button" class="loop-conditions-add-btn" id="addLoopConditionBtn">
+                    + Add Condition
+                </button>
             </div>
 
         </div>
@@ -2108,17 +1928,6 @@
                     <button class="avtp-add-btn" data-type="k">K</button>
                 </div>
             </div>
-        </div>
-
-        <div class="avtp-form-group">
-            <label class="avtp-form-label">Start Time (ms)</label>
-            <input type="text" class="avtp-form-input" id="formStartTime" step="1" placeholder="0">
-        </div>
-
-        <div class="avtp-form-group">
-            <label class="avtp-form-label">Duration (ms)</label>
-            <input type="text" class="avtp-form-input" id="formDuration" step="1" placeholder="3000">
-            <div class="hint-text">Use -1 for infinite duration</div>
         </div>
         </div>
     </div>
@@ -2403,9 +2212,20 @@
         }
 
         function resetView() {
-            viewportX = 0;
-            viewportY = 0;
+            // 计算排除 chatbot 后的画布中心
+            const chatbotWidth = chatbotPanel.offsetWidth;
+            const canvasCenterX = (window.innerWidth - chatbotWidth) / 2;
+            const canvasCenterY = window.innerHeight / 2;
+            
             scale = 1;
+            
+            // 获取 flowchart 内容的中心点
+            const flowchartCenter = getFlowchartCenter();
+            
+            // 将 flowchart 中心点置于画布中心（排除 chatbot）
+            viewportX = canvasCenterX / scale - flowchartCenter.x;
+            viewportY = canvasCenterY / scale - flowchartCenter.y;
+            
             draw();
             updateZoomLevelDisplay();
         }
@@ -2451,8 +2271,13 @@
             selectedRoutineIndex = state.selectedRoutineIndex;
             currentRoutineCount = state.currentRoutineCount;
             
+            activeDragRect = routineRects[selectedRoutineIndex] || null;
+            activeAvtpComponent = null;
+            
             updatePoints();
             updateRoutineCount();
+            updateCanvasWidthForRoutines();
+            renderAvtpComponentsList(activeDragRect);
             draw();
             updateUndoButtons();
         }
@@ -2475,8 +2300,13 @@
             selectedRoutineIndex = state.selectedRoutineIndex;
             currentRoutineCount = state.currentRoutineCount;
             
+            activeDragRect = routineRects[selectedRoutineIndex] || null;
+            activeAvtpComponent = null;
+            
             updatePoints();
             updateRoutineCount();
+            updateCanvasWidthForRoutines();
+            renderAvtpComponentsList(activeDragRect);
             draw();
             updateUndoButtons();
         }
@@ -3159,9 +2989,9 @@
             let html = '';
             
             // Add routine tags
-            contents.routines.forEach(routine => {
+            contents.routines.forEach((routine, index) => {
                 html += `
-                    <span class="loop-content-tag routine">
+                    <span class="loop-content-tag routine" data-routine-index="${index}" data-routine-name="${routine.name}" style="cursor: pointer;">
                         <svg class="loop-content-tag-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <rect x="3" y="3" width="18" height="18" rx="2"/>
                             <path d="M9 9h6v6H9z"/>
@@ -3172,9 +3002,9 @@
             });
             
             // Add nested loop tags
-            contents.loops.forEach(loop => {
+            contents.loops.forEach((loop, index) => {
                 html += `
-                    <span class="loop-content-tag loop">
+                    <span class="loop-content-tag loop" data-loop-index="${index}" data-loop-name="${loop.name}" style="cursor: pointer;">
                         <svg class="loop-content-tag-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M17 2l4 4-4 4"/>
                             <path d="M3 11v-1a4 4 0 014-4h14"/>
@@ -3191,6 +3021,34 @@
             }
             
             loopContentsList.innerHTML = html;
+            
+            // Add click event listeners to routine tags
+            loopContentsList.querySelectorAll('.loop-content-tag.routine').forEach(tag => {
+                tag.addEventListener('click', () => {
+                    const routineName = tag.dataset.routineName;
+                    // Find the routine rect by name
+                    const routineRect = routineRects.find(r => r.name === routineName);
+                    if (routineRect) {
+                        // Close the loop form and show the routine form
+                        hideLoopForm();
+                        showRoutineForm(routineRect);
+                    }
+                });
+            });
+            
+            // Add click event listeners to loop tags
+            loopContentsList.querySelectorAll('.loop-content-tag.loop').forEach(tag => {
+                tag.addEventListener('click', () => {
+                    const loopName = tag.dataset.loopName;
+                    // Find the connection by loop name
+                    const connection = connections.find(c => c.loopName === loopName);
+                    if (connection) {
+                        // Close current form and show the loop form
+                        hideRoutineForm();
+                        showLoopForm(connection);
+                    }
+                });
+            });
         }
 
         function drawConnectionLines() {
@@ -4274,16 +4132,10 @@
 
         const routineOptions = document.getElementById('routineOptions');
 
-        // Conditions table elements
-        const conditionsTableView = document.getElementById('conditionsTableView');
-        const conditionsTableBody = document.getElementById('conditionsTableBody');
-        const conditionsTableHeaderRow = document.getElementById('conditionsTableHeaderRow');
-        const conditionsEmptyState = document.getElementById('conditionsEmptyState');
-        const noVariablesState = document.getElementById('noVariablesState');
-        const addConditionColBtn = document.getElementById('addConditionColBtn');
-        const variableTagsContainer = document.getElementById('variableTagsContainer');
-        const selectAllVarsBtn = document.getElementById('selectAllVarsBtn');
-        const deselectAllVarsBtn = document.getElementById('deselectAllVarsBtn');
+        // Loop Conditions elements
+        const loopConditionsBody = document.getElementById('loopConditionsBody');
+        const loopConditionsEmpty = document.getElementById('loopConditionsEmpty');
+        const addLoopConditionBtn = document.getElementById('addLoopConditionBtn');
 
         function isInsideAvtp(pos, avtpKey, rect) {
             const mainRectHeight = rect.height * 0.7;
@@ -4504,6 +4356,12 @@
             const countSpan = document.getElementById('avtpComponentsCount');
             listContainer.innerHTML = '';
             
+            if (!rect) {
+                countSpan.textContent = '(0)';
+                listContainer.innerHTML = '<div style="text-align: center; color: #999; padding: 12px;">No routine selected</div>';
+                return;
+            }
+            
             const enabledCount = rect.avtpComponents ? rect.avtpComponents.filter(c => c && c.enabled).length : 0;
             countSpan.textContent = `(${enabledCount})`;
             
@@ -4537,6 +4395,9 @@
                 removeBtn.appendChild(deleteImg);
                 removeBtn.onclick = (e) => {
                     e.stopPropagation();
+                    saveState();
+                    currentProjectFile = null;
+                    fileHandle = null;
                     component.enabled = false;
                     updateRoutineHeight(rect);
                     updateCanvasWidthForRoutines();
@@ -4610,8 +4471,7 @@
 
             updateLoopContentsDisplay(conn);
 
-
-            switchToTableView();
+            renderLoopConditions();
 
             avtpForm.classList.add('wide');
             avtpForm.classList.add('visible');
@@ -4754,14 +4614,7 @@
             activeConnection.loopName = formLoopName.value || 'trials';
             activeConnection.loopReps = parseInt(formLoopReps.value) || 1;
             activeConnection.loopType = formLoopType.value || 'sequential';
-            
-            const jsonValue = conditionsToJSON();
-            activeConnection.loopConditions = jsonValue;
-            
-
-
-            // 联动更新目标表单中的变量
-            updateTargetFormsWithVariables();
+            activeConnection.loopConditions = formLoopConditions.value || '';
 
             draw();
         }
@@ -4801,566 +4654,185 @@
         formLoopConditions.addEventListener('change', saveLoopFormChanges);
 
 
-        // Conditions table functionality
-        let currentVariableNames = []; // Store variable names (column headers)
-        let autoDetectedVariables = []; // Store auto-detected variables from routines/loops
-        let autoDetectedRandomPatterns = []; // Store auto-detected random number patterns from routines/loops
-        let selectedVariables = new Set(); // Store selected variable names for display in table
+        // Loop Conditions functionality
 
-        function collectAutoDetectedVariables() {
-            const variableSet = new Set();
-            const randomPatternSet = new Set();
+        function detectVariablesFromRoutines() {
+            const variables = new Set();
             
-            // Collect from routineRects (avtpComponents 数组方式)
+            // 从所有 routine 的 avtpComponents 中检测以 $ 开头的变量
             routineRects.forEach(rect => {
-                if (!rect) return;
-                if (rect.avtpComponents && Array.isArray(rect.avtpComponents)) {
-                    rect.avtpComponents.forEach(component => {
-                        if (component && typeof component === 'object') {
-                            Object.keys(component).forEach(dataKey => {
-                                const value = component[dataKey];
-                                if (typeof value === 'string' && value.startsWith('$')) {
-                                    variableSet.add(value);
-                                }
-                                if (typeof value === 'string' && value.startsWith('#[')) {
-                                    randomPatternSet.add(value);
-                                }
-                            });
-                        }
-                    });
-                }
-            });
-            
-            // Collect from connections (loops)
-            connections.forEach(conn => {
-                if (conn.loopConditions) {
-                    try {
-                        const parsed = JSON.parse(conn.loopConditions);
-                        if (Array.isArray(parsed)) {
-                            parsed.forEach(condition => {
-                                Object.keys(condition).forEach(key => {
-                                    if (key.startsWith('$')) {
-                                        variableSet.add(key);
-                                    }
-                                    // 检测 #[start,end,total_num] 格式的随机数表达式
-                                    if (typeof condition[key] === 'string' && condition[key].startsWith('#[')) {
-                                        randomPatternSet.add(condition[key]);
-                                    }
+                if (!rect || !rect.avtpComponents) return;
+                
+                rect.avtpComponents.forEach(component => {
+                    if (!component || typeof component !== 'object') return;
+                    
+                    Object.values(component).forEach(value => {
+                        if (typeof value === 'string') {
+                            // 匹配 $variableName 或 ${variableName} 格式
+                            const matches = value.match(/\$\{?([a-zA-Z_][a-zA-Z0-9_]*)\}?/g);
+                            if (matches) {
+                                matches.forEach(match => {
+                                    // 提取变量名（去掉 $ 和 {}）
+                                    const varName = match.replace(/^\$\{?/, '').replace(/\}?$/, '');
+                                    if (varName) variables.add(varName);
                                 });
-                            });
+                            }
                         }
-                    } catch (e) {
-                        // Ignore parse errors
-                    }
-                }
+                    });
+                });
             });
             
-            return {
-                variables: Array.from(variableSet).sort(),
-                randomPatterns: Array.from(randomPatternSet).sort()
-            };
+            return Array.from(variables).sort();
         }
 
-        function parseConditionsJSON(jsonStr) {
-            if (!jsonStr || !jsonStr.trim()) return { variables: [], conditions: [], selectedVars: [] };
-
-            try {
-                const parsed = JSON.parse(jsonStr);
-                if (Array.isArray(parsed) && parsed.length > 0) {
-                    // Extract all unique variable names from all conditions (excluding 'name' and 'weight')
-                    const variableSet = new Set();
-                    parsed.forEach(condition => {
-                        Object.keys(condition).forEach(key => {
-                            if (key !== 'name' && key !== 'weight') {
-                                variableSet.add(key);
-                            }
-                        });
-                    });
-                    const variables = Array.from(variableSet);
-
-                    // Extract selected variables from _meta if exists
-                    let selectedVars = [];
-                    if (parsed._meta && parsed._meta.selectedVars) {
-                        selectedVars = parsed._meta.selectedVars;
-                    }
-
-                    // Extract condition names (row names), weight, and their values
-                    const conditions = parsed
-                        .filter((item, index) => index !== '_meta')  // Filter out _meta entry
-                        .map((condition, index) => {
-                            const conditionName = condition.name || `Condition ${index + 1}`;
-                            const weight = condition.weight !== undefined ? condition.weight : 1;
-                            const values = {};
-                            Object.keys(condition).forEach(key => {
-                                if (key !== 'name' && key !== 'weight') {
-                                    values[key] = condition[key];
-                                }
-                            });
-                            return { name: conditionName, weight: weight, values };
-                        });
-
-                    return { variables, conditions, selectedVars };
-                }
-                return { variables: [], conditions: [], selectedVars: [] };
-            } catch (e) {
-                return { variables: [], conditions: [], selectedVars: [] };
-            }
-        }
-
-        // Variable Selector Functions
-        function renderVariableSelector() {
-            if (!variableTagsContainer) return;
-
-            variableTagsContainer.innerHTML = '';
-
-            if (currentVariableNames.length === 0) {
-                variableTagsContainer.innerHTML = '<span class="variable-selector-empty">No variables available. Add variables starting with \'$\' in your routines/loops first.</span>';
-                return;
-            }
-
-            currentVariableNames.forEach(varName => {
-                const tag = document.createElement('div');
-                tag.className = 'variable-tag';
-                if (selectedVariables.has(varName)) {
-                    tag.classList.add('selected');
-                }
-
-                const isAutoDetected = autoDetectedVariables.includes(varName);
-                const sourceLabel = isAutoDetected ? 'Auto' : 'Manual';
-
-                tag.innerHTML = `
-                    <span class="variable-tag-checkbox"></span>
-                    <span class="variable-tag-name">${varName}</span>
-                    <span class="variable-tag-source">${sourceLabel}</span>
-                `;
-
-                tag.addEventListener('click', () => {
-                    toggleVariableSelection(varName);
-                });
-
-                variableTagsContainer.appendChild(tag);
-            });
-        }
-
-        function toggleVariableSelection(varName) {
-            if (selectedVariables.has(varName)) {
-                selectedVariables.delete(varName);
-            } else {
-                selectedVariables.add(varName);
-            }
-            renderVariableSelector();
-            updateConditionsTableHeader();
-            saveLoopFormChanges();
-        }
-
-        function selectAllVariables() {
-            currentVariableNames.forEach(varName => {
-                selectedVariables.add(varName);
-            });
-            renderVariableSelector();
-            updateConditionsTableHeader();
-            saveLoopFormChanges();
-        }
-
-        function deselectAllVariables() {
-            selectedVariables.clear();
-            renderVariableSelector();
-            updateConditionsTableHeader();
-            saveLoopFormChanges();
-        }
-
-        function conditionsToJSON() {
-            const rows = conditionsTableBody.querySelectorAll('tr');
-            if (rows.length === 0) return '';
-
-            const conditions = [];
-            rows.forEach(row => {
-                const nameInput = row.querySelector('.condition-row-name');
-                if (nameInput && nameInput.value.trim()) {
-                    const condition = { name: nameInput.value.trim() };
-                    
-                    // 获取 weight 值，默认值为 1
-                    const weightInput = row.querySelector('.condition-row-weight');
-                    const weightValue = weightInput && weightInput.value ? parseInt(weightInput.value) || 1 : 1;
-                    condition.weight = weightValue;
-                    
-                    // 只保存已选择的变量
-                    const selectedVarsArray = Array.from(selectedVariables);
-                    const valueInputs = row.querySelectorAll('td input:not(.condition-row-name):not(.condition-row-weight)');
-
-                    // 遍历所有 value 输入框
-                    valueInputs.forEach((valueInput, index) => {
-                        if (index < selectedVarsArray.length) {
-                            const varName = selectedVarsArray[index];
-                            const val = valueInput.value;
-                            condition[varName] = val !== undefined && val !== null ? val : '';
-                        }
-                    });
-                    conditions.push(condition);
-                }
-            });
-
-            // 添加 _meta 信息来保存所有可用变量和选中的变量
-            if (conditions.length > 0) {
-                conditions._meta = {
-                    allVars: currentVariableNames,
-                    selectedVars: Array.from(selectedVariables)
-                };
-            }
-
-            return conditions.length > 0 ? JSON.stringify(conditions) : '';
-        }
-
-        function updateHeaderRow() {
-            // Clear existing header cells (except the first one for variable names)
-            while (conditionsTableHeaderRow.children.length > 1) {
-                conditionsTableHeaderRow.removeChild(conditionsTableHeaderRow.lastChild);
-            }
-
-            // 添加 Condition 列到表头（横向扩展）
-            const conditions = getConditionsFromTable();
-            conditions.forEach((cond, index) => {
-                const th = document.createElement('th');
-                th.style.minWidth = '100px';
-                th.innerHTML = `
-                    <div style="display: flex; align-items: center; gap: 6px; padding: 2px 0;">
-                        <input type="text" class="condition-col-name" data-index="${index}" value="${cond.name}" placeholder="Cond ${index + 1}" style="flex: 1; padding: 6px 8px; font-size: 12px; font-weight: 500; min-width: 60px; border: 1px solid var(--border-gray); border-radius: 6px; font-family: var(--font-ui); color: var(--text-primary);">
-                        <button type="button" class="remove-col-btn-header" data-index="${index}" title="Remove condition">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                                <line x1="18" y1="6" x2="6" y2="18"></line>
-                                <line x1="6" y1="6" x2="18" y2="18"></line>
-                            </svg>
-                        </button>
-                    </div>
-                `;
-                conditionsTableHeaderRow.appendChild(th);
-            });
-        }
-
-        // 辅助函数：从表格获取当前 conditions 数据
-        function getConditionsFromTable() {
+        function getLoopConditions() {
             const jsonValue = formLoopConditions.value.trim();
             if (!jsonValue) return [];
             try {
                 const parsed = JSON.parse(jsonValue);
-                if (Array.isArray(parsed) && parsed.length > 0) {
-                    return parsed.map((c, i) => ({
+                if (Array.isArray(parsed)) {
+                    return parsed.filter(c => c._meta !== true).map((c, i) => ({
                         name: c.name || `Condition ${i + 1}`,
-                        values: c.values || c,
-                        weight: c.weight || 1
+                        weight: c.weight !== undefined ? c.weight : 1,
+                        values: c.values || {}
                     }));
                 }
             } catch (e) {}
             return [];
         }
 
-        function updateConditionsTableHeader() {
-            // 重新生成表头
-            updateHeaderRow();
-
-            // 重新生成表格内容以匹配新的表头
-            const rows = conditionsTableBody.querySelectorAll('tr');
-            const selectedVarsArray = Array.from(selectedVariables);
-
-            rows.forEach(row => {
-                const nameInput = row.querySelector('.condition-row-name');
-                const rowName = nameInput ? nameInput.value : '';
-
-                // 保存现有的值
-                const existingValues = {};
-                const oldInputs = row.querySelectorAll('td input:not(.condition-row-name):not(.condition-row-weight)');
-                oldInputs.forEach((input, index) => {
-                    if (index < selectedVarsArray.length) {
-                        existingValues[selectedVarsArray[index]] = input.value;
-                    }
-                });
-
-                // 保存现有的 weight 值
-                const weightInput = row.querySelector('.condition-row-weight');
-                const existingWeight = weightInput ? weightInput.value : '1';
-
-                // 清除现有的变量单元格（保留 Condition 列、Weight 列和操作列）
-                const cells = row.querySelectorAll('td');
-                for (let i = cells.length - 2; i > 0; i--) {
-                    row.removeChild(cells[i]);
-                }
-
-                // 添加新的变量单元格
-                selectedVarsArray.forEach(varName => {
-                    const td = document.createElement('td');
-                    const value = existingValues[varName] !== undefined ? existingValues[varName] : '';
-                    td.innerHTML = `<input type="text" class="condition-cell-${CSS.escape(varName)}" value="${value}" placeholder="Value" style="width: 100%; padding: 6px 8px; border: 1px solid #e0e0e0; border-radius: 4px; font-size: 12px;">`;
-                    row.insertBefore(td, row.lastElementChild);
-                });
-
-                // 添加 weight 单元格
-                const weightTd = document.createElement('td');
-                weightTd.innerHTML = `<input type="number" class="condition-row-weight" value="${existingWeight}" min="0" step="1" placeholder="1" style="width: 100%; padding: 6px 8px; border: 1px solid #e0e0e0; border-radius: 4px; font-size: 12px; text-align: center;">`;
-                row.insertBefore(weightTd, row.lastElementChild);
-            });
-
-            updateConditionsTableState();
-        }
-
-        function updateConditionsTableBody() {
-            const jsonValue = formLoopConditions.value.trim();
-            const parsed = parseConditionsJSON(jsonValue);
-
-            conditionsTableBody.innerHTML = '';
-
-            if (currentVariableNames.length === 0) {
-                noVariablesState.style.display = 'block';
-                conditionsEmptyState.style.display = 'none';
-                updateHeaderRow();
-                return;
-            }
-
-            noVariablesState.style.display = 'none';
-
-            if (parsed.conditions.length === 0) {
-                conditionsEmptyState.classList.remove('hidden');
-                addConditionColBtn.disabled = false;
-                updateHeaderRow();
-                return;
-            }
-
-            conditionsEmptyState.classList.add('hidden');
-
-            // 【横竖交换】行 = 变量名，列 = Condition
-            const selectedVarsArray = Array.from(selectedVariables);
-            const conditions = parsed.conditions;
-
-            // 为每个变量创建一行
-            selectedVarsArray.forEach(varName => {
-                const row = document.createElement('tr');
-                let cellsHtml = `<td style="min-width: 120px; font-weight: 600; color: var(--text-secondary);">${varName}</td>`;
-
-                // 为每个 Condition 创建一个单元格
-                conditions.forEach((condition, condIndex) => {
-                    const value = condition.values[varName] !== undefined ? condition.values[varName] : '';
-                    cellsHtml += `<td style="min-width: 100px;"><input type="text" class="condition-cell-${CSS.escape(varName)}" data-cond="${condIndex}" value="${value}" placeholder="Value" style="width: 100%; padding: 6px 8px; border: 1px solid #e0e0e0; border-radius: 4px; font-size: 12px;"></td>`;
-                });
-
-                row.innerHTML = cellsHtml;
-                conditionsTableBody.appendChild(row);
-            });
-
-            // Weight 行
-            const weightRow = document.createElement('tr');
-            let weightCellsHtml = `<td style="min-width: 120px; font-weight: 600; color: var(--text-secondary);">Weight</td>`;
-            conditions.forEach((condition, condIndex) => {
-                const weightValue = condition.weight !== undefined ? condition.weight : 1;
-                weightCellsHtml += `<td style="min-width: 100px;"><input type="number" class="condition-col-weight" data-cond="${condIndex}" value="${weightValue}" min="0" step="1" placeholder="1" style="width: 100%; padding: 6px 8px; border: 1px solid #e0e0e0; border-radius: 4px; font-size: 12px; text-align: center;"></td>`;
-            });
-            weightRow.innerHTML = weightCellsHtml;
-            conditionsTableBody.appendChild(weightRow);
-
-            updateHeaderRow();
-            updateConditionsTableState();
-        }
-
-        function updateCellClasses() {
-            const rows = conditionsTableBody.querySelectorAll('tr');
-            rows.forEach(row => {
-                // Update cell classes to match new variable names
-                const cells = row.querySelectorAll('td input:not(.condition-row-name):not(.condition-row-weight)');
-                cells.forEach((cell, index) => {
-                    if (index < currentVariableNames.length) {
-                        cell.className = `condition-cell-${CSS.escape(currentVariableNames[index])}`;
-                    }
-                });
-            });
-        }
-
-        function updateTargetFormsWithVariables() {
-            if (!activeConnection) return;
+        function renderLoopConditions() {
+            const conditions = getLoopConditions();
+            const variables = detectVariablesFromRoutines();
             
-            try {
-                const jsonValue = formLoopConditions.value.trim();
-                if (!jsonValue) return;
-                
-                const conditions = JSON.parse(jsonValue);
-                if (!Array.isArray(conditions)) return;
-                
-                // 提取变量名
-                const variableNames = [];
-                if (conditions.length > 0) {
-                    variableNames.push(...Object.keys(conditions[0]).filter(key => key !== 'name'));
-                }
-                
-                // 遍历所有 routine 中的 AVTP 元素（avtpComponents 数组方式）
-                routineRects.forEach(rect => {
-                    if (!rect) return;
-                    if (rect.avtpComponents && Array.isArray(rect.avtpComponents)) {
-                        rect.avtpComponents.forEach(component => {
-                            if (component && typeof component === 'object') {
-                                Object.keys(component).forEach(key => {
-                                    const value = component[key];
-                                    if (typeof value === 'string' && value.includes('$')) {
-                                        let updatedValue = value;
-                                        variableNames.forEach(varName => {
-                                            if (updatedValue.includes(varName)) {
-                                                updatedValue = updatedValue.replace(new RegExp(varName, 'g'), varName);
-                                            }
-                                        });
-                                        component[key] = updatedValue;
-                                    }
-                                });
-                            }
-                        });
-                    }
-                });
-                
-                // 重新绘制
-                draw();
-            } catch (e) {
-                console.error('Error updating target forms:', e);
-            }
-        }
+            // 更新表头
+            const headerRow = document.getElementById('loopConditionsHeaderRow');
+            headerRow.innerHTML = `
+                <th class="cond-col-name">Condition Name</th>
+                ${variables.map(v => `<th class="cond-col-var">$${v}</th>`).join('')}
+                <th class="cond-col-weight">Weight</th>
+                <th class="cond-col-actions"></th>
+            `;
+            
+            loopConditionsBody.innerHTML = '';
 
-        function updateConditionsTableState() {
-            const rows = conditionsTableBody.querySelectorAll('tr');
-            const hasRows = rows.length > 0;
-
-            if (!hasRows) {
-                conditionsEmptyState.classList.remove('hidden');
-            } else {
-                conditionsEmptyState.classList.add('hidden');
+            if (conditions.length === 0) {
+                loopConditionsEmpty.classList.remove('hidden');
+                return;
             }
 
-            // 绑定表头删除按钮事件
-            const headerRemoveBtns = conditionsTableHeaderRow.querySelectorAll('.remove-col-btn-header');
-            headerRemoveBtns.forEach(btn => {
-                // 移除旧的事件监听器（通过克隆替换）
-                const newBtn = btn.cloneNode(true);
-                btn.parentNode.replaceChild(newBtn, btn);
-                newBtn.addEventListener('click', () => {
-                    const index = parseInt(newBtn.dataset.index);
-                    removeConditionColumn(index);
+            loopConditionsEmpty.classList.add('hidden');
+
+            conditions.forEach((condition, index) => {
+                const row = document.createElement('tr');
+                
+                // Condition Name
+                let rowHtml = `
+                    <td>
+                        <input type="text" class="loop-cond-name-input" data-index="${index}" value="${condition.name}" placeholder="Condition ${index + 1}">
+                    </td>
+                `;
+                
+                // Variable values
+                variables.forEach(varName => {
+                    const value = condition.values?.[varName] || '';
+                    rowHtml += `
+                        <td>
+                            <input type="text" class="loop-cond-var-input" data-index="${index}" data-var="${varName}" value="${value}" placeholder="$${varName}">
+                        </td>
+                    `;
                 });
+                
+                // Weight and Actions
+                rowHtml += `
+                    <td>
+                        <input type="number" class="loop-cond-weight-input" data-index="${index}" value="${condition.weight}" min="1" step="1" placeholder="1">
+                    </td>
+                    <td>
+                        <button type="button" class="loop-cond-remove-btn" data-index="${index}" title="Remove condition">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="18" y1="6" x2="6" y2="18"></line>
+                                <line x1="6" y1="6" x2="18" y2="18"></line>
+                            </svg>
+                        </button>
+                    </td>
+                `;
+                
+                row.innerHTML = rowHtml;
+                loopConditionsBody.appendChild(row);
             });
 
-            rows.forEach((row, index) => {
-                const nameInput = row.querySelector('.condition-row-name');
-                if (nameInput) {
-                    nameInput.addEventListener('input', saveLoopFormChanges);
-                }
+            // Bind events
+            loopConditionsBody.querySelectorAll('.loop-cond-name-input, .loop-cond-weight-input, .loop-cond-var-input').forEach(input => {
+                input.addEventListener('change', saveLoopConditions);
+            });
 
-                // 绑定所有非 condition-row-name、非 condition-row-weight 的输入框的 input 事件
-                const valueInputs = row.querySelectorAll('td input:not(.condition-row-name):not(.condition-row-weight)');
-                valueInputs.forEach(valueInput => {
-                    valueInput.addEventListener('input', saveLoopFormChanges);
+            loopConditionsBody.querySelectorAll('.loop-cond-remove-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const index = parseInt(e.currentTarget.dataset.index);
+                    removeLoopCondition(index);
                 });
-
-                // 绑定 weight 输入框的 input 事件
-                const weightInput = row.querySelector('.condition-row-weight');
-                if (weightInput) {
-                    weightInput.addEventListener('input', saveLoopFormChanges);
-                }
             });
         }
 
-        // 删除指定索引的 condition 列
-        function removeConditionColumn(index) {
-            const conditions = getConditionsFromTable();
+        function saveLoopConditions() {
+            const conditions = [];
+            const rows = loopConditionsBody.querySelectorAll('tr');
+            const variables = detectVariablesFromRoutines();
+            
+            rows.forEach(row => {
+                const nameInput = row.querySelector('.loop-cond-name-input');
+                const weightInput = row.querySelector('.loop-cond-weight-input');
+                
+                if (nameInput && nameInput.value.trim()) {
+                    const condition = {
+                        name: nameInput.value.trim(),
+                        weight: parseInt(weightInput?.value) || 1,
+                        values: {}
+                    };
+                    
+                    // 保存变量值
+                    const varInputs = row.querySelectorAll('.loop-cond-var-input');
+                    varInputs.forEach(input => {
+                        const varName = input.dataset.var;
+                        if (varName) {
+                            condition.values[varName] = input.value || '';
+                        }
+                    });
+                    
+                    conditions.push(condition);
+                }
+            });
+
+            formLoopConditions.value = conditions.length > 0 ? JSON.stringify(conditions) : '';
+            saveLoopFormChanges();
+        }
+
+        function addLoopCondition() {
+            const conditions = getLoopConditions();
+            const newIndex = conditions.length + 1;
+            
+            conditions.push({
+                name: `Condition ${newIndex}`,
+                weight: 1
+            });
+
+            formLoopConditions.value = JSON.stringify(conditions);
+            renderLoopConditions();
+            saveLoopFormChanges();
+        }
+
+        function removeLoopCondition(index) {
+            const conditions = getLoopConditions();
             if (index >= 0 && index < conditions.length) {
                 conditions.splice(index, 1);
-
-                // 更新隐藏的 input 值
-                if (conditions.length === 0) {
-                    formLoopConditions.value = '';
-                } else {
-                    // 保留 _meta 信息
-                    const meta = conditions._meta;
-                    const conditionsToSave = conditions.map(c => ({
-                        name: c.name,
-                        values: c.values,
-                        weight: c.weight
-                    }));
-                    conditionsToSave._meta = meta;
-                    formLoopConditions.value = JSON.stringify(conditionsToSave);
-                }
-
-                // 重新渲染表格
-                renderConditionsTable();
+                formLoopConditions.value = conditions.length > 0 ? JSON.stringify(conditions) : '';
+                renderLoopConditions();
                 saveLoopFormChanges();
             }
         }
 
-        function switchToTableView() {
-            // Collect auto-detected variables from routines/loops
-            const detected = collectAutoDetectedVariables();
-            autoDetectedVariables = detected.variables;
-            autoDetectedRandomPatterns = detected.randomPatterns;
-
-            // Merge with existing variables from current loop conditions
-            const jsonValue = formLoopConditions.value.trim();
-            const parsed = parseConditionsJSON(jsonValue);
-            const existingVars = parsed.variables || [];
-
-            // Combine auto-detected variables with existing ones, avoiding duplicates
-            const allVars = [...new Set([...autoDetectedVariables, ...existingVars])];
-            currentVariableNames = allVars;
-
-            // 恢复之前保存的变量选择状态
-            selectedVariables.clear();
-            if (parsed.selectedVars && parsed.selectedVars.length > 0) {
-                // 使用之前保存的选择状态
-                parsed.selectedVars.forEach(varName => {
-                    if (allVars.includes(varName)) {
-                        selectedVariables.add(varName);
-                    }
-                });
-            } else {
-                // 默认选择所有变量
-                allVars.forEach(varName => selectedVariables.add(varName));
-            }
-
-            // 渲染变量选择器
-            renderVariableSelector();
-
-            // Disable Add Condition button if no variables detected
-            addConditionColBtn.disabled = currentVariableNames.length === 0;
-
-            // Show/hide no variables message
-            if (currentVariableNames.length === 0) {
-                noVariablesState.style.display = 'block';
-                conditionsEmptyState.style.display = 'none';
-                document.getElementById('variableSelector').style.display = 'none';
-            } else {
-                noVariablesState.style.display = 'none';
-                document.getElementById('variableSelector').style.display = 'block';
-            }
-
-            updateConditionsTableBody();
-        }
-
-
-
-        addConditionColBtn.addEventListener('click', () => {
-            // 【横竖交换】添加一列（一个 Condition）
-            const conditions = getConditionsFromTable();
-            const newCondIndex = conditions.length;
-            const newCondName = `Condition ${newCondIndex + 1}`;
-
-            // 添加新的 condition 到数据
-            conditions.push({
-                name: newCondName,
-                values: {},
-                weight: 1
-            });
-
-            // 更新隐藏的 input
-            formLoopConditions.value = JSON.stringify(conditions);
-
-            // 重新渲染表格
-            updateConditionsTableBody();
-            saveLoopFormChanges();
-        });
-
-        // Variable selector button event listeners
-        selectAllVarsBtn.addEventListener('click', selectAllVariables);
-        deselectAllVarsBtn.addEventListener('click', deselectAllVariables);
+        addLoopConditionBtn.addEventListener('click', addLoopCondition);
 
         canvas.addEventListener('click', (e) => {
             // 如果是双击触发的，忽略 click 事件
