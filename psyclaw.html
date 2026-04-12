@@ -1030,11 +1030,11 @@
         }
 
         .loop-conditions-title {
-            font-size: 14px;
-            font-weight: 600;
-            color: #222222;
+            font-size: 13px;
+            font-weight: 500;
+            color: #8e8e93;
             font-family: var(--font-ui);
-            letter-spacing: 0.2px;
+            letter-spacing: 0.3px;
         }
 
         .loop-conditions-content {
@@ -2452,7 +2452,7 @@
                 t: {
                     label: 'Text',
                     type: 'text',
-                    text: 'Sample Text',
+                    text: '',
                     font: 'Arial',
                     letterHeight: 0.05,
                     color: 'white',
@@ -4456,7 +4456,7 @@
                 formStartTime.parentElement.style.display = 'block';
                 formDuration.parentElement.style.display = 'block';
                 
-                formText.value = data.text || 'Sample Text';
+                formText.value = data.text || '';
                 formFont.value = data.font || 'Arial';
                 formLetterHeight.value = data.letterHeight || 0.05;
                 formColor.value = data.color || 'white';
@@ -4801,7 +4801,7 @@
             let needsHeightUpdate = false;
             
             if (data.type === 'text') {
-                data.text = formText.value || 'Sample Text';
+                data.text = formText.value || '';
                 data.font = formFont.value || 'Arial';
                 data.letterHeight = parseFloat(formLetterHeight.value) || 0.05;
                 data.color = formColor.value || 'white';
@@ -5012,7 +5012,7 @@
             const headerRow = document.getElementById('loopConditionsHeaderRow');
             headerRow.innerHTML = `
                 <th class="cond-col-name">Condition Name</th>
-                ${variables.map(v => `<th class="cond-col-var">$${v}</th>`).join('')}
+                ${variables.map(v => `<th class="cond-col-var">${v}</th>`).join('')}
                 <th class="cond-col-weight">Weight</th>
                 <th class="cond-col-actions"></th>
             `;
@@ -5417,11 +5417,22 @@
         }
 
         // 辅助函数：将AI格式的conditions转换为内部格式
-        function convertConditionsToInternalFormat(conditionsJson) {
-            if (!conditionsJson) return '';
+        function convertConditionsToInternalFormat(conditions) {
+            if (!conditions) return '';
+            
+            let parsed;
             try {
-                const parsed = JSON.parse(conditionsJson);
-                if (!Array.isArray(parsed)) return conditionsJson;
+                // 如果 conditions 是字符串，先解析
+                if (typeof conditions === 'string') {
+                    parsed = JSON.parse(conditions);
+                } else if (Array.isArray(conditions)) {
+                    // 如果已经是数组，直接使用
+                    parsed = conditions;
+                } else {
+                    return '';
+                }
+                
+                if (!Array.isArray(parsed)) return '';
                 
                 const converted = parsed.map((c, i) => {
                     // 如果已经是内部格式，直接返回
@@ -5443,7 +5454,7 @@
                 });
                 return JSON.stringify(converted);
             } catch (e) {
-                return conditionsJson;
+                return '';
             }
         }
 
