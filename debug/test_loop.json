@@ -1,6 +1,6 @@
 {
   "version": "2.0",
-  "timestamp": "2026-04-11T10:45:07.287Z",
+  "timestamp": "2026-04-12T09:10:05.138Z",
   "routines": [
     {
       "id": 0,
@@ -24,7 +24,7 @@
           "enabled": true,
           "path": "",
           "startTime": 0,
-          "duration": 3000,
+          "duration": 1000,
           "font": "Arial",
           "opacity": 1,
           "ori": 0,
@@ -32,6 +32,27 @@
           "flip": "None",
           "languageStyle": "LTR",
           "draggable": false
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "routine_2",
+      "x": 335,
+      "y": 240,
+      "width": 200,
+      "height": 140,
+      "duration": 3000,
+      "avtpComponents": [
+        {
+          "label": "Keyboard",
+          "type": "keyboard",
+          "keys": "",
+          "startTime": 0,
+          "duration": -1,
+          "forceEndRoutine": true,
+          "id": "1775984700088c2w25ea2i",
+          "enabled": true
         }
       ]
     }
@@ -47,6 +68,17 @@
       "conditions": "[]",
       "conditionsFile": "",
       "isTrials": false
+    },
+    {
+      "id": 1,
+      "name": "trials",
+      "startPoint": 1,
+      "endPoint": 3,
+      "reps": 1,
+      "type": "random",
+      "conditions": "",
+      "conditionsFile": "",
+      "isTrials": true
     }
   ]
 }

@@ -899,10 +899,15 @@
         }
 
         .avtp-form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
+            display: flex;
+            flex-direction: row;
             gap: 16px;
             margin-bottom: 16px;
+        }
+
+        .avtp-form-row > div {
+            flex: 1;
+            min-width: 0;
         }
 
         .avtp-form-select {
@@ -1064,6 +1069,7 @@
 
         .loop-conditions-table th.cond-col-name {
             min-width: 140px;
+            text-align: center;
         }
 
         .loop-conditions-table th.cond-col-var {
@@ -1117,6 +1123,7 @@
             transition: all 0.15s ease;
             box-sizing: border-box;
             cursor: text;
+            text-align: center;
         }
 
         .loop-cond-name-input:hover,
@@ -1142,6 +1149,17 @@
         .loop-cond-weight-input,
         .loop-cond-var-input {
             text-align: center;
+        }
+
+        /* 隐藏 number 输入框的滚轮 */
+        .loop-cond-weight-input::-webkit-outer-spin-button,
+        .loop-cond-weight-input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .loop-cond-weight-input[type=number] {
+            -moz-appearance: textfield;
         }
 
         .loop-cond-remove-btn {
@@ -1216,31 +1234,31 @@
         }
 
         .loop-contents-display {
-            background: var(--bg-white);
-            border: 1px solid var(--border-light);
-            border-radius: 20px;
-            padding: 20px;
-            box-shadow: rgba(44, 30, 116, 0.08) 0px 4px 12px;
+            background: transparent;
+            border: none;
+            border-radius: 0;
+            padding: 0;
         }
 
         .loop-contents-header {
             display: flex;
             align-items: center;
-            margin-bottom: 16px;
+            margin-bottom: 12px;
         }
 
         .loop-contents-title {
-            font-size: 14px;
-            font-weight: 600;
-            color: #45515e;
+            font-size: 13px;
+            font-weight: 500;
+            color: #8e8e93;
             font-family: var(--font-ui);
-            letter-spacing: 0.2px;
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
         }
 
         .loop-contents-list {
             display: flex;
             flex-wrap: wrap;
-            gap: 8px;
+            gap: 6px;
             max-height: 120px;
             overflow-y: auto;
             padding-right: 4px;
@@ -1262,45 +1280,40 @@
         .loop-content-tag {
             display: inline-flex;
             align-items: center;
-            gap: 6px;
-            padding: 8px 14px;
-            border-radius: 9999px;
+            gap: 4px;
+            padding: 6px 10px;
+            border-radius: 4px;
             font-size: 13px;
-            font-weight: 500;
+            font-weight: 400;
             font-family: var(--font-ui);
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
-            transition: all 0.2s ease;
-            position: relative;
-            z-index: 1;
+            border: 1px solid #e5e7eb;
+            background: transparent;
+            transition: all 0.15s ease;
+            cursor: pointer;
         }
 
         .loop-content-tag:hover {
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-            z-index: 2;
+            background: #f5f5f5;
         }
 
         .loop-content-tag.routine {
-            background: rgba(20, 86, 240, 0.08);
             color: #1456f0;
-            border: 1px solid rgba(20, 86, 240, 0.15);
-            cursor: pointer;
+            border-color: #e5e7eb;
         }
 
         .loop-content-tag.routine:hover {
-            background: rgba(20, 86, 240, 0.15);
-            border-color: rgba(20, 86, 240, 0.25);
+            background: rgba(20, 86, 240, 0.05);
+            border-color: #1456f0;
         }
 
         .loop-content-tag.loop {
-            background: rgba(234, 94, 193, 0.1);
             color: #ea5ec1;
-            border: 1px solid rgba(234, 94, 193, 0.15);
-            cursor: pointer;
+            border-color: #e5e7eb;
         }
 
         .loop-content-tag.loop:hover {
-            background: rgba(234, 94, 193, 0.2);
-            border-color: rgba(234, 94, 193, 0.3);
+            background: rgba(234, 94, 193, 0.05);
+            border-color: #ea5ec1;
         }
 
         .loop-content-tag-icon {
@@ -1850,16 +1863,16 @@
         </div>
 
         <div class="form-group-hidden" id="loopOptions">
-            <div class="avtp-form-group">
-                <label class="avtp-form-label">Loop Name</label>
-                <input type="text" class="avtp-form-input" id="formLoopName" placeholder="e.g., trials">
-            </div>
             <div class="avtp-form-row">
-                <div>
+                <div style="flex: 2;">
+                    <label class="avtp-form-label">Loop Name</label>
+                    <input type="text" class="avtp-form-input" id="formLoopName" placeholder="e.g., trials">
+                </div>
+                <div style="flex: 1;">
                     <label class="avtp-form-label">nTrials</label>
                     <input type="text" class="avtp-form-input" id="formLoopReps" step="1" min="1" placeholder="1">
                 </div>
-                <div>
+                <div style="flex: 1;">
                     <label class="avtp-form-label">Loop Type</label>
                     <select class="avtp-form-select" id="formLoopType">
                         <option value="random">random</option>
@@ -1875,6 +1888,16 @@
                     </div>
                     <div class="loop-contents-list" id="loopContentsList">
                         <!-- Routines and loops will be listed here -->
+                    </div>
+                </div>
+            </div>
+            <div class="avtp-form-group">
+                <div class="loop-contents-display" id="loopContainedInDisplay">
+                    <div class="loop-contents-header">
+                        <span class="loop-contents-title">Contained In</span>
+                    </div>
+                    <div class="loop-contents-list" id="loopContainedInList">
+                        <!-- Parent loops will be listed here -->
                     </div>
                 </div>
             </div>
@@ -1896,8 +1919,8 @@
                             </tbody>
                         </table>
                         <div class="loop-conditions-empty" id="loopConditionsEmpty">
-                            <div class="loop-conditions-empty-text">No conditions defined</div>
-                            <div class="loop-conditions-empty-hint">Click "Add Condition" to create one, or add variables starting with '$' in your routines first.</div>
+                            <div class="loop-conditions-empty-text" id="loopConditionsEmptyText">No conditions defined</div>
+                            <div class="loop-conditions-empty-hint" id="loopConditionsEmptyHint">Click "Add Condition" to create one.</div>
                         </div>
                     </div>
                 </div>
@@ -1917,7 +1940,17 @@
                 <input type="text" class="avtp-form-input" id="routineNameInput" placeholder="Enter routine name...">
             </div>
             <div class="avtp-form-group">
-                <label class="avtp-form-label">AVTPK Components <span id="avtpComponentsCount"></span></label>
+                <div class="loop-contents-display" id="routineContainedInDisplay">
+                    <div class="loop-contents-header">
+                        <span class="loop-contents-title">Contained In</span>
+                    </div>
+                    <div class="loop-contents-list" id="routineContainedInList">
+                        <!-- Parent loops will be listed here -->
+                    </div>
+                </div>
+            </div>
+            <div class="avtp-form-group">
+                <label class="avtp-form-label">Components <span id="avtpComponentsCount"></span></label>
                 <div class="avtp-components-list" id="avtpComponentsList">
                 </div>
                 <div class="avtp-add-buttons">
@@ -2146,9 +2179,9 @@
 
         let viewportX = 0;
         let viewportY = 0;
-        let scale = 1;
-        const minScale = 0.25;
-        const maxScale = 3;
+        let scale = 1.2;
+        const minScale = 0.3;
+        const maxScale = 3.6;
         let isPanning = false;
         let panStartX = 0;
         let panStartY = 0;
@@ -2177,7 +2210,7 @@
             const canvasCenterX = (window.innerWidth - chatbotWidth) / 2;
             const canvasCenterY = window.innerHeight / 2;
             
-            const newScale = Math.min(maxScale, scale * 1.2);
+            const newScale = Math.min(maxScale, scale * 1.05);
             
             // 获取 flowchart 内容的中心点
             const flowchartCenter = getFlowchartCenter();
@@ -2197,7 +2230,7 @@
             const canvasCenterX = (window.innerWidth - chatbotWidth) / 2;
             const canvasCenterY = window.innerHeight / 2;
             
-            const newScale = Math.max(minScale, scale * 0.8);
+            const newScale = Math.max(minScale, scale * 0.95);
             
             // 获取 flowchart 内容的中心点
             const flowchartCenter = getFlowchartCenter();
@@ -2937,7 +2970,7 @@
             return routines;
         }
         
-        // 获取 loop 包含的所有 routines 和 nested loops
+        // 获取 loop 包含的直接 routines 和 nested loops
         function getLoopContents(conn, allConnections) {
             const startLabel = parseInt(conn.start.label);
             const endLabel = parseInt(conn.end.label);
@@ -2948,18 +2981,8 @@
             const routines = [];
             const loops = [];
             
-            // 获取包含的 routines
-            for (let i = 0; i < routineRects.length; i++) {
-                const rect = routineRects[i];
-                if (!rect) continue;
-                const routineLeftLabel = i * 2 + 1;
-                const routineRightLabel = i * 2 + 3;
-                if (routineLeftLabel >= minLabel && routineRightLabel <= maxLabel) {
-                    routines.push({ name: rect.name || `Routine ${i + 1}`, type: 'routine', index: i });
-                }
-            }
-            
-            // 获取直接嵌套的 loops（需要满足：1. 在范围内 2. depth = connDepth - 1）
+            // 首先获取所有直接嵌套的 loops（需要满足：1. 在范围内 2. depth = connDepth - 1）
+            const childLoops = [];
             for (let i = 0; i < allConnections.length; i++) {
                 const otherConn = allConnections[i];
                 if (otherConn === conn) continue;
@@ -2974,6 +2997,32 @@
                 // 注意：depth 越大表示越外层（包含更多内容），所以被包含的 loop 有更小的 depth
                 if (otherMinLabel >= minLabel && otherMaxLabel <= maxLabel && otherDepth === connDepth - 1) {
                     loops.push({ name: otherConn.loopName || `Loop ${i + 1}`, type: 'loop', index: i });
+                    childLoops.push({ minLabel: otherMinLabel, maxLabel: otherMaxLabel });
+                }
+            }
+            
+            // 获取直接包含的 routines（排除被子 loop 包含的）
+            for (let i = 0; i < routineRects.length; i++) {
+                const rect = routineRects[i];
+                if (!rect) continue;
+                const routineLeftLabel = i * 2 + 1;
+                const routineRightLabel = i * 2 + 3;
+                
+                // 检查 routine 是否在当前 loop 范围内
+                if (routineLeftLabel >= minLabel && routineRightLabel <= maxLabel) {
+                    // 检查 routine 是否被任何子 loop 包含
+                    let isInChildLoop = false;
+                    for (const childLoop of childLoops) {
+                        if (routineLeftLabel >= childLoop.minLabel && routineRightLabel <= childLoop.maxLabel) {
+                            isInChildLoop = true;
+                            break;
+                        }
+                    }
+                    
+                    // 只添加不被子 loop 包含的 routines
+                    if (!isInChildLoop) {
+                        routines.push({ name: rect.name || `Routine ${i + 1}`, type: 'routine', index: i });
+                    }
                 }
             }
             
@@ -3002,9 +3051,9 @@
             });
             
             // Add nested loop tags
-            contents.loops.forEach((loop, index) => {
+            contents.loops.forEach((loop) => {
                 html += `
-                    <span class="loop-content-tag loop" data-loop-index="${index}" data-loop-name="${loop.name}" style="cursor: pointer;">
+                    <span class="loop-content-tag loop" data-loop-index="${loop.index}" data-loop-name="${loop.name}" style="cursor: pointer;">
                         <svg class="loop-content-tag-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M17 2l4 4-4 4"/>
                             <path d="M3 11v-1a4 4 0 014-4h14"/>
@@ -3029,6 +3078,8 @@
                     // Find the routine rect by name
                     const routineRect = routineRects.find(r => r.name === routineName);
                     if (routineRect) {
+                        // Clear loop selection to ensure single selection
+                        activeConnection = null;
                         // Close the loop form and show the routine form
                         hideLoopForm();
                         showRoutineForm(routineRect);
@@ -3039,13 +3090,182 @@
             // Add click event listeners to loop tags
             loopContentsList.querySelectorAll('.loop-content-tag.loop').forEach(tag => {
                 tag.addEventListener('click', () => {
-                    const loopName = tag.dataset.loopName;
-                    // Find the connection by loop name
-                    const connection = connections.find(c => c.loopName === loopName);
+                    const loopIndex = parseInt(tag.dataset.loopIndex);
+                    // Use the index directly to get the correct connection
+                    const connection = connections[loopIndex];
                     if (connection) {
-                        // Close current form and show the loop form
+                        // Clear routine selection to ensure single selection
+                        selectedRoutineIndex = -1;
+                        // Directly show the new loop form without animation
+                        avtpForm.style.transition = 'none';
+                        if (loopOptions.classList.contains('form-group-visible')) {
+                            hideLoopForm();
+                        } else {
+                            hideRoutineForm();
+                        }
+                        showLoopForm(connection);
+                        avtpForm.offsetHeight;
+                        avtpForm.style.transition = '';
+                    }
+                });
+            });
+        }
+
+        function getParentLoops(conn, allConnections) {
+            const parents = [];
+            const connStartLabel = parseInt(conn.start.label);
+            const connEndLabel = parseInt(conn.end.label);
+            const connMinLabel = Math.min(connStartLabel, connEndLabel);
+            const connMaxLabel = Math.max(connStartLabel, connEndLabel);
+            const connDepth = conn.depth || 0;
+            
+            // 查找包含当前 loop 的父级 loops
+            for (let i = 0; i < allConnections.length; i++) {
+                const otherConn = allConnections[i];
+                if (otherConn === conn) continue;
+                
+                const otherStartLabel = parseInt(otherConn.start.label);
+                const otherEndLabel = parseInt(otherConn.end.label);
+                const otherMinLabel = Math.min(otherStartLabel, otherEndLabel);
+                const otherMaxLabel = Math.max(otherStartLabel, otherEndLabel);
+                const otherDepth = otherConn.depth || 0;
+                
+                // 父级 loop 必须完全包含当前 loop，且 depth 更大（更外层）
+                if (otherMinLabel <= connMinLabel && otherMaxLabel >= connMaxLabel && otherDepth === connDepth + 1) {
+                    parents.push({ name: otherConn.loopName || `Loop ${i + 1}`, type: 'loop', index: i });
+                }
+            }
+            
+            return parents;
+        }
+
+        function updateLoopContainedInDisplay(conn) {
+            const loopContainedInList = document.getElementById('loopContainedInList');
+            if (!loopContainedInList) return;
+            
+            const parents = getParentLoops(conn, connections);
+            
+            let html = '';
+            
+            // Add parent loop tags
+            parents.forEach((parent) => {
+                html += `
+                    <span class="loop-content-tag loop" data-loop-index="${parent.index}" data-loop-name="${parent.name}" style="cursor: pointer;">
+                        <svg class="loop-content-tag-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M17 2l4 4-4 4"/>
+                            <path d="M3 11v-1a4 4 0 014-4h14"/>
+                            <path d="M7 22l-4-4 4-4"/>
+                            <path d="M21 13v1a4 4 0 01-4 4H3"/>
+                        </svg>
+                        ${parent.name}
+                    </span>
+                `;
+            });
+            
+            if (html === '') {
+                html = '<span style="color: var(--text-muted); font-size: 11px;">Not contained in any loop</span>';
+            }
+            
+            loopContainedInList.innerHTML = html;
+            
+            // Add click event listeners to parent loop tags
+            loopContainedInList.querySelectorAll('.loop-content-tag.loop').forEach(tag => {
+                tag.addEventListener('click', () => {
+                    const loopIndex = parseInt(tag.dataset.loopIndex);
+                    // Use the index directly to get the correct connection
+                    const connection = connections[loopIndex];
+                    if (connection) {
+                        // Clear routine selection to ensure single selection
+                        selectedRoutineIndex = -1;
+                        // Directly show the new loop form without animation
+                        avtpForm.style.transition = 'none';
+                        if (loopOptions.classList.contains('form-group-visible')) {
+                            hideLoopForm();
+                        } else {
+                            hideRoutineForm();
+                        }
+                        showLoopForm(connection);
+                        avtpForm.offsetHeight;
+                        avtpForm.style.transition = '';
+                    }
+                });
+            });
+        }
+
+        function getLoopsContainingRoutine(routineIndex) {
+            const containingLoops = [];
+            const routineLeftLabel = routineIndex * 2 + 1;
+            const routineRightLabel = routineIndex * 2 + 3;
+            
+            for (let i = 0; i < connections.length; i++) {
+                const conn = connections[i];
+                const connStartLabel = parseInt(conn.start.label);
+                const connEndLabel = parseInt(conn.end.label);
+                const connMinLabel = Math.min(connStartLabel, connEndLabel);
+                const connMaxLabel = Math.max(connStartLabel, connEndLabel);
+                const connDepth = conn.depth || 0;
+                
+                // 检查 routine 是否在这个 loop 的范围内
+                if (routineLeftLabel >= connMinLabel && routineRightLabel <= connMaxLabel) {
+                    containingLoops.push({ name: conn.loopName || `Loop ${i + 1}`, type: 'loop', index: i, depth: connDepth });
+                }
+            }
+            
+            // 只返回直接包含该 routine 的 loop（depth 最小的，即最内层的 loop）
+            if (containingLoops.length === 0) {
+                return [];
+            }
+            
+            // 找到最小的 depth（最内层）
+            const minDepth = Math.min(...containingLoops.map(l => l.depth));
+            // 只返回 depth 等于最小 depth 的 loops（直接包含的 loop）
+            return containingLoops.filter(l => l.depth === minDepth);
+        }
+
+        function updateRoutineContainedInDisplay(routineIndex) {
+            const routineContainedInList = document.getElementById('routineContainedInList');
+            if (!routineContainedInList) return;
+            
+            const containingLoops = getLoopsContainingRoutine(routineIndex);
+            
+            let html = '';
+            
+            // Add containing loop tags
+            containingLoops.forEach((loop) => {
+                html += `
+                    <span class="loop-content-tag loop" data-loop-index="${loop.index}" data-loop-name="${loop.name}" style="cursor: pointer;">
+                        <svg class="loop-content-tag-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M17 2l4 4-4 4"/>
+                            <path d="M3 11v-1a4 4 0 014-4h14"/>
+                            <path d="M7 22l-4-4 4-4"/>
+                            <path d="M21 13v1a4 4 0 01-4 4H3"/>
+                        </svg>
+                        ${loop.name}
+                    </span>
+                `;
+            });
+            
+            if (html === '') {
+                html = '<span style="color: var(--text-muted); font-size: 11px;">Not contained in any loop</span>';
+            }
+            
+            routineContainedInList.innerHTML = html;
+            
+            // Add click event listeners to loop tags
+            routineContainedInList.querySelectorAll('.loop-content-tag.loop').forEach(tag => {
+                tag.addEventListener('click', () => {
+                    const loopIndex = parseInt(tag.dataset.loopIndex);
+                    // Use the index directly to get the correct connection
+                    const connection = connections[loopIndex];
+                    if (connection) {
+                        // Clear routine selection to ensure single selection
+                        selectedRoutineIndex = -1;
+                        // Directly show the new loop form without animation
+                        avtpForm.style.transition = 'none';
                         hideRoutineForm();
                         showLoopForm(connection);
+                        avtpForm.offsetHeight;
+                        avtpForm.style.transition = '';
                     }
                 });
             });
@@ -3086,10 +3306,10 @@
                 const isSelected = activeConnection === conn;
                 const isPreview = conn.loopName === 'preview';
 
-                // 选中状态的样式 - 只改变颜色，不加粗
+                // 选中状态的样式 - 使用深粉色
                 if (isSelected && !isPreview) {
-                    ctx.strokeStyle = '#0066cc';
-                    ctx.lineWidth = 1.5;
+                    ctx.strokeStyle = '#c94a9f';
+                    ctx.lineWidth = 2;
                 } else {
                     ctx.strokeStyle = '#808080';
                     ctx.lineWidth = 1.5;
@@ -3153,10 +3373,10 @@
                 const followRectHeight = 30;
                 const followRectRadius = 8;
 
-                // 选中状态的 block 样式
+                // 选中状态的 block 样式 - 使用深粉色
                 if (isSelected && !isPreview) {
-                    ctx.fillStyle = '#e6f2ff';
-                    ctx.strokeStyle = '#0066cc';
+                    ctx.fillStyle = '#fce8f5';
+                    ctx.strokeStyle = '#c94a9f';
                     ctx.lineWidth = 2;
                 } else {
                     ctx.fillStyle = '#ffffff';
@@ -3167,7 +3387,7 @@
                 ctx.fill();
                 ctx.stroke();
 
-                ctx.fillStyle = isSelected && !isPreview ? '#1456f0' : '#8e8e93';
+                ctx.fillStyle = isSelected && !isPreview ? '#c94a9f' : '#8e8e93';
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
                 // 在矩形中垂直居中
@@ -3181,7 +3401,7 @@
                         ...loopContents.loops.map(l => l.name)
                     ];
                     if (allItems.length > 0) {
-                        ctx.fillStyle = isSelected ? '#1456f0' : '#45515e';
+                        ctx.fillStyle = isSelected ? '#c94a9f' : '#45515e';
                         ctx.font = '12px DM Sans, sans-serif';
                         ctx.textAlign = 'center';
                         ctx.textBaseline = 'bottom';
@@ -3248,12 +3468,12 @@
                     // 被抓取的loop连线端点 - 空心显示（被编辑状态）
                     radius = 6;
                     fillColor = '#ffffff';
-                    strokeColor = '#0066cc';
+                    strokeColor = '#c94a9f';
                 } else if (isOtherEndpoint) {
-                    // loop的另一个端点 - 保持实心但用蓝色边框表示关联
+                    // loop的另一个端点 - 保持实心但用粉色边框表示关联
                     radius = 5;
                     fillColor = '#000000';
-                    strokeColor = '#0066cc';
+                    strokeColor = '#c94a9f';
                 } else if (isConnected) {
                     radius = 5;
                     fillColor = '#000000';
@@ -3356,20 +3576,20 @@
                 };
                 
                 const typeColors = {
-                    'keyboard': '#e74c3c',
-                    'audio': '#3498db',
-                    'video': '#9b59b6',
-                    'text': '#2ecc71',
-                    'image': '#f39c12'
+                    'keyboard': '#c0392b',
+                    'audio': '#2980b9',
+                    'video': '#8e44ad',
+                    'text': '#27ae60',
+                    'image': '#e67e22'
                 };
                 
                 // 浅色版本的颜色（用于无限 duration）
                 const typeColorsLight = {
-                    'keyboard': '#fadbd8',
-                    'audio': '#d6eaf8',
-                    'video': '#e8daef',
-                    'text': '#d5f5e3',
-                    'image': '#fdebd0'
+                    'keyboard': '#f5b7b1',
+                    'audio': '#aed6f1',
+                    'video': '#d7bde2',
+                    'text': '#abebc6',
+                    'image': '#f9d79c'
                 };
                 
                 allAvtpkComponents.forEach((comp, compIndex) => {
@@ -3403,7 +3623,7 @@
                     }
                     
                     // 绘制类型字母
-                    ctx.font = '600 16px DM Sans, Outfit, sans-serif';
+                    ctx.font = '700 18px DM Sans, Outfit, sans-serif';
                     ctx.fillStyle = typeColors[comp.type];
                     ctx.textAlign = 'left';
                     ctx.textBaseline = 'middle';
@@ -3943,6 +4163,14 @@
             nearestValidPoint = null;
             draw();
             startPoint = null;
+            
+            // 如果 routine form 是打开的，更新 Contained In 显示
+            if (activeDragRect && routineOptions.classList.contains('form-group-visible')) {
+                const routineIndex = routineRects.indexOf(activeDragRect);
+                if (routineIndex !== -1) {
+                    updateRoutineContainedInDisplay(routineIndex);
+                }
+            }
         });
 
         canvas.addEventListener('mouseleave', () => {
@@ -4029,6 +4257,13 @@
                     if (loopOptions.classList.contains('form-group-visible')) {
                         hideLoopForm();
                     }
+                    // 如果 routine form 是打开的，更新 Contained In 显示
+                    if (activeDragRect && routineOptions.classList.contains('form-group-visible')) {
+                        const routineIndex = routineRects.indexOf(activeDragRect);
+                        if (routineIndex !== -1) {
+                            updateRoutineContainedInDisplay(routineIndex);
+                        }
+                    }
                     return;
                 }
             }
@@ -4057,6 +4292,17 @@
 
             const clickedRect = getDragRectAtPos(pos.x, pos.y);
             if (clickedRect) {
+                // 双击routine时，打开routine表单
+                shouldIgnoreClick = true;
+                selectedRoutineIndex = routineRects.indexOf(clickedRect);
+                activeDragRect = clickedRect;
+                // 选中routine时，取消loop的选中状态（互斥）
+                if (activeConnection) {
+                    activeConnection = null;
+                }
+                updateRoutineCount();
+                draw();
+                showRoutineForm(clickedRect);
                 return;
             }
         });
@@ -4135,6 +4381,8 @@
         // Loop Conditions elements
         const loopConditionsBody = document.getElementById('loopConditionsBody');
         const loopConditionsEmpty = document.getElementById('loopConditionsEmpty');
+        const loopConditionsEmptyText = document.getElementById('loopConditionsEmptyText');
+        const loopConditionsEmptyHint = document.getElementById('loopConditionsEmptyHint');
         const addLoopConditionBtn = document.getElementById('addLoopConditionBtn');
 
         function isInsideAvtp(pos, avtpKey, rect) {
@@ -4346,9 +4594,17 @@
 
             routineNameInput.value = rect.name || 'Routine';
             activeDragRect = rect;
-            avtpForm.classList.add('visible');
             
+            // 获取 routine 的索引并更新选中状态
+            const routineIndex = routineRects.indexOf(rect);
+            if (routineIndex !== -1) {
+                selectedRoutineIndex = routineIndex;
+                updateRoutineContainedInDisplay(routineIndex);
+            }
+            
+            avtpForm.classList.add('visible');
             renderAvtpComponentsList(rect);
+            draw();
         }
 
         function renderAvtpComponentsList(rect) {
@@ -4470,11 +4726,13 @@
             formLoopConditions.value = conn.loopConditions || '';
 
             updateLoopContentsDisplay(conn);
+            updateLoopContainedInDisplay(conn);
 
             renderLoopConditions();
 
             avtpForm.classList.add('wide');
             avtpForm.classList.add('visible');
+            draw();
         }
 
         function hideLoopForm() {
@@ -4656,11 +4914,16 @@
 
         // Loop Conditions functionality
 
-        function detectVariablesFromRoutines() {
+        function detectVariablesFromRoutines(routineIndices = null) {
             const variables = new Set();
             
-            // 从所有 routine 的 avtpComponents 中检测以 $ 开头的变量
-            routineRects.forEach(rect => {
+            // 确定要检测的 routines
+            const routinesToCheck = routineIndices !== null 
+                ? routineIndices.map(i => routineRects[i]).filter(r => r)
+                : routineRects;
+            
+            // 从指定 routine 的 avtpComponents 中检测以 $ 开头的变量
+            routinesToCheck.forEach(rect => {
                 if (!rect || !rect.avtpComponents) return;
                 
                 rect.avtpComponents.forEach(component => {
@@ -4668,12 +4931,12 @@
                     
                     Object.values(component).forEach(value => {
                         if (typeof value === 'string') {
-                            // 匹配 $variableName 或 ${variableName} 格式
-                            const matches = value.match(/\$\{?([a-zA-Z_][a-zA-Z0-9_]*)\}?/g);
+                            // 匹配 $variableName$ 格式（变量被$包裹）
+                            const matches = value.match(/\$([a-zA-Z_][a-zA-Z0-9_]*)\$/g);
                             if (matches) {
                                 matches.forEach(match => {
-                                    // 提取变量名（去掉 $ 和 {}）
-                                    const varName = match.replace(/^\$\{?/, '').replace(/\}?$/, '');
+                                    // 提取变量名（去掉首尾$）
+                                    const varName = match.replace(/^\$/, '').replace(/\$$/, '');
                                     if (varName) variables.add(varName);
                                 });
                             }
@@ -4691,11 +4954,31 @@
             try {
                 const parsed = JSON.parse(jsonValue);
                 if (Array.isArray(parsed)) {
-                    return parsed.filter(c => c._meta !== true).map((c, i) => ({
-                        name: c.name || `Condition ${i + 1}`,
-                        weight: c.weight !== undefined ? c.weight : 1,
-                        values: c.values || {}
-                    }));
+                    return parsed.filter(c => c._meta !== true).map((c, i) => {
+                        // Check if this is the internal format (has values property)
+                        // Internal format: {name, weight, values: {var1: val1, var2: val2}}
+                        // AI format: {name, weight, var1: val1, var2: val2}
+                        if (c.values !== undefined && typeof c.values === 'object' && c.values !== null) {
+                            return {
+                                name: c.name || `Condition ${i + 1}`,
+                                weight: c.weight !== undefined ? c.weight : 1,
+                                values: c.values || {}
+                            };
+                        }
+                        // This is the AI-generated format (flat object with variable values)
+                        // Extract values that are not name/weight/_meta
+                        const values = {};
+                        for (const key in c) {
+                            if (key !== 'name' && key !== 'weight' && key !== '_meta') {
+                                values[key] = c[key];
+                            }
+                        }
+                        return {
+                            name: c.name || `Condition ${i + 1}`,
+                            weight: c.weight !== undefined ? c.weight : 1,
+                            values: values
+                        };
+                    });
                 }
             } catch (e) {}
             return [];
@@ -4703,7 +4986,27 @@
 
         function renderLoopConditions() {
             const conditions = getLoopConditions();
-            const variables = detectVariablesFromRoutines();
+            
+            // 获取当前 loop 包含的 routines，只检测这些 routines 中的变量
+            let variables = [];
+            if (activeConnection) {
+                const contents = getLoopContents(activeConnection, connections);
+                const routineIndices = contents.routines.map(r => r.index);
+                variables = detectVariablesFromRoutines(routineIndices);
+            }
+            
+            // 根据是否检测到变量来启用/禁用 Add Condition 按钮
+            if (addLoopConditionBtn) {
+                if (variables.length === 0) {
+                    addLoopConditionBtn.disabled = true;
+                    addLoopConditionBtn.style.opacity = '0.5';
+                    addLoopConditionBtn.style.cursor = 'not-allowed';
+                } else {
+                    addLoopConditionBtn.disabled = false;
+                    addLoopConditionBtn.style.opacity = '1';
+                    addLoopConditionBtn.style.cursor = 'pointer';
+                }
+            }
             
             // 更新表头
             const headerRow = document.getElementById('loopConditionsHeaderRow');
@@ -4718,6 +5021,14 @@
 
             if (conditions.length === 0) {
                 loopConditionsEmpty.classList.remove('hidden');
+                // Update message based on whether variables are detected
+                if (variables.length === 0) {
+                    loopConditionsEmptyText.textContent = 'No variables found';
+                    loopConditionsEmptyHint.textContent = 'Add variables starting with "$" in your routines first, then conditions can be created.';
+                } else {
+                    loopConditionsEmptyText.textContent = 'No conditions defined';
+                    loopConditionsEmptyHint.textContent = 'Click "Add Condition" to create one.';
+                }
                 return;
             }
 
@@ -4778,7 +5089,6 @@
         function saveLoopConditions() {
             const conditions = [];
             const rows = loopConditionsBody.querySelectorAll('tr');
-            const variables = detectVariablesFromRoutines();
             
             rows.forEach(row => {
                 const nameInput = row.querySelector('.loop-cond-name-input');
@@ -4872,6 +5182,16 @@
 
             const clickedRect = getDragRectAtPos(pos.x, pos.y);
             if (clickedRect) {
+                // 单击只选中routine，不打开表单
+                selectedRoutineIndex = routineRects.indexOf(clickedRect);
+                activeDragRect = clickedRect;
+                // 选中routine时，取消loop的选中状态（互斥）
+                if (activeConnection) {
+                    activeConnection = null;
+                }
+                updateRoutineCount();
+                draw();
+                
                 // 检查是否点击到了某个 AVTPK 组件
                 let clickedComponent = null;
                 if (clickedRect.componentHitAreas && clickedRect.componentHitAreas.length > 0) {
@@ -4884,7 +5204,7 @@
                     }
                 }
                 
-                // 如果点击了组件，跳过 routine 表单动画，直接显示组件表单
+                // 如果点击了组件，打开 routine 表单并直接显示组件表单
                 if (clickedComponent) {
                     activeAvtp = clickedComponent.type;
                     activeAvtpComponent = clickedComponent;
@@ -4895,9 +5215,6 @@
                     avtpForm.style.transition = '';
                     // 然后立即打开组件表单
                     showAvtpkForm(clickedComponent.type);
-                } else {
-                    // 正常打开 routine 表单（带动画）
-                    showRoutineForm(clickedRect);
                 }
                 return;
             }
@@ -5099,11 +5416,45 @@
             });
         }
 
+        // 辅助函数：将AI格式的conditions转换为内部格式
+        function convertConditionsToInternalFormat(conditionsJson) {
+            if (!conditionsJson) return '';
+            try {
+                const parsed = JSON.parse(conditionsJson);
+                if (!Array.isArray(parsed)) return conditionsJson;
+                
+                const converted = parsed.map((c, i) => {
+                    // 如果已经是内部格式，直接返回
+                    if (c.values !== undefined && typeof c.values === 'object' && c.values !== null) {
+                        return c;
+                    }
+                    // 转换为内部格式
+                    const values = {};
+                    for (const key in c) {
+                        if (key !== 'name' && key !== 'weight' && key !== '_meta') {
+                            values[key] = c[key];
+                        }
+                    }
+                    return {
+                        name: c.name || `Condition ${i + 1}`,
+                        weight: c.weight !== undefined ? c.weight : 1,
+                        values: values
+                    };
+                });
+                return JSON.stringify(converted);
+            } catch (e) {
+                return conditionsJson;
+            }
+        }
+
         // 辅助函数：将 loops 数组转换为 connections（用于内部渲染）
         function loopsToConnections(loops) {
             return loops.map((loop, index) => {
                 const startPoint = loop.startPoint;
                 const endPoint = loop.endPoint;
+                
+                // 转换conditions格式
+                const convertedConditions = convertConditionsToInternalFormat(loop.conditions || '');
                 
                 return {
                     start: { label: String(startPoint), position: 'right' },
@@ -5112,7 +5463,7 @@
                     loopName: loop.name || `loop_${index}`,
                     loopReps: loop.reps || 1,
                     loopType: loop.type || 'sequential',
-                    loopConditions: loop.conditions || '',
+                    loopConditions: convertedConditions,
                     loopConditionsFile: loop.conditionsFile || '',
                     loopIsTrials: loop.isTrials !== false
                 };
@@ -5691,6 +6042,14 @@
                         activeConnection = null;
                         hideLoopForm();
                         draw();
+                        
+                        // 如果 routine form 是打开的，更新 Contained In 显示
+                        if (activeDragRect && routineOptions.classList.contains('form-group-visible')) {
+                            const routineIndex = routineRects.indexOf(activeDragRect);
+                            if (routineIndex !== -1) {
+                                updateRoutineContainedInDisplay(routineIndex);
+                            }
+                        }
                     }
                 }
             }
@@ -5783,6 +6142,20 @@
             updatePoints();
             updateRoutineCount();
             draw();
+            
+            // 6. 如果 routine form 是打开的，更新 Contained In 显示
+            if (activeDragRect && routineOptions.classList.contains('form-group-visible')) {
+                const routineIndex = routineRects.indexOf(activeDragRect);
+                if (routineIndex !== -1) {
+                    updateRoutineContainedInDisplay(routineIndex);
+                }
+            }
+            
+            // 7. 如果 loop form 是打开的，更新 Contains 和 Contained In 显示
+            if (activeConnection && loopOptions.classList.contains('form-group-visible')) {
+                updateLoopContentsDisplay(activeConnection);
+                updateLoopContainedInDisplay(activeConnection);
+            }
         }
         
         // 核心重构函数：根据标记删除 routine 和 loop，然后重建 flowchart

@@ -1,25 +1,17 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://deeppsych.org/schemas/flowchart.schema.json",
-  "title": "DeepPsych Flowchart Schema",
-  "description": "JSON Schema for validating DeepPsych flowchart data structure generated from card.html and used by chatbot.html",
-  "version": "1.0.0",
+  "title": "PsyClaw Flowchart Schema",
+  "description": "JSON Schema for validating PsyClaw flowchart data structure (v2.0 format). Used for save/import operations between psyclaw.html and chatbot.html.",
+  "version": "2.0.0",
   "type": "object",
-  "required": [
-    "version",
-    "timestamp",
-    "routineRects",
-    "connections",
-    "currentRoutineCount",
-    "routineIdCounter",
-    "loopIdCounter"
-  ],
+  "required": ["version", "timestamp", "routines", "loops"],
   "additionalProperties": false,
   "properties": {
     "version": {
       "type": "string",
       "description": "Schema version identifier",
-      "examples": ["1.0.0"]
+      "examples": ["2.0.0"]
     },
     "timestamp": {
       "type": "string",
@@ -27,684 +19,583 @@
       "description": "ISO 8601 datetime string indicating when the flowchart was created or last modified",
       "examples": ["2024-01-15T10:30:00.000Z"]
     },
-    "routineRects": {
+    "routines": {
       "type": "array",
-      "description": "Array of routine objects representing nodes in the flowchart",
+      "description": "Array of routine objects representing experiment steps. Each routine contains stimuli and responses for a single trial phase.",
       "minItems": 1,
       "items": {
         "$ref": "#/definitions/Routine"
-      },
-      "uniqueItems": false
-    },
-    "connections": {
-      "type": "array",
-      "description": "Array of connection objects representing edges between routines",
-      "items": {
-        "$ref": "#/definitions/Connection"
       }
     },
-    "currentRoutineCount": {
-      "type": "integer",
-      "description": "Current number of routines in the flowchart",
-      "minimum": 1
-    },
-    "routineIdCounter": {
-      "type": "integer",
-      "description": "Counter for generating unique routine IDs",
-      "minimum": 0
-    },
-    "loopIdCounter": {
-      "type": "integer",
-      "description": "Counter for generating unique loop IDs",
-      "minimum": 0
+    "loops": {
+      "type": "array",
+      "description": "Array of loop objects defining experiment flow and repetition structure",
+      "items": {
+        "$ref": "#/definitions/Loop"
+      }
     }
   },
   "definitions": {
     "Routine": {
       "type": "object",
-      "description": "A routine object representing a node in the flowchart with AVTP (Audio, Video, Text, Picture, Keyboard) configurations",
-      "required": [
-        "id",
-        "x",
-        "y",
-        "width",
-        "height",
-        "keys",
-        "duration",
-        "avtp",
-        "avtpData"
-      ],
+      "description": "A routine representing a single trial/stimulus presentation. The frontend handles visual layout (position, size) - this schema only defines the experiment logic.",
+      "required": ["id", "name"],
       "additionalProperties": false,
       "properties": {
         "id": {
           "type": "integer",
-          "description": "Unique identifier for the routine",
-          "minimum": 0
+          "description": "Unique identifier for the routine. Must be an even number (0, 2, 4, 6, 8...). Odd numbers are reserved for loop boundary points.",
+          "minimum": 0,
+          "multipleOf": 2
         },
-        "x": {
-          "type": "number",
-          "description": "X coordinate position on the canvas"
-        },
-        "y": {
-          "type": "number",
-          "description": "Y coordinate position on the canvas"
-        },
-        "width": {
-          "type": "number",
-          "description": "Width of the routine rectangle",
-          "minimum": 0
-        },
-        "height": {
-          "type": "number",
-          "description": "Height of the routine rectangle",
-          "minimum": 0
-        },
-        "borderRadius": {
-          "type": "number",
-          "description": "Border radius for rounded corners",
-          "minimum": 0
-        },
-        "isDragging": {
-          "type": "boolean",
-          "description": "Whether the routine is currently being dragged"
-        },
-        "offsetX": {
-          "type": "number",
-          "description": "X offset for drag operation"
-        },
-        "offsetY": {
-          "type": "number",
-          "description": "Y offset for drag operation"
-        },
-        "keys": {
+        "name": {
           "type": "string",
-          "description": "Comma-separated key names for the routine",
-          "examples": ["Key1, Key2, Key3"]
+          "description": "Display name of the routine. Must be a valid Python identifier.",
+          "pattern": "^[a-zA-Z_][a-zA-Z0-9_]*$"
         },
         "duration": {
           "type": "integer",
-          "description": "Duration of the routine in milliseconds",
-          "minimum": -1
+          "description": "Default duration in milliseconds (-1 for indefinite)",
+          "minimum": -1,
+          "default": -1
         },
-        "avtp": {
-          "$ref": "#/definitions/AVTPFlags",
-          "description": "Flags indicating which AVTP components are enabled"
-        },
-        "avtpData": {
-          "$ref": "#/definitions/AVTPData",
-          "description": "Configuration data for enabled AVTP components"
-        }
-      }
-    },
-    "AVTPFlags": {
-      "type": "object",
-      "description": "Flags indicating which AVTP (Audio, Video, Text, Picture, Keyboard) components are enabled",
-      "required": ["a", "v", "t", "p", "k"],
-      "additionalProperties": false,
-      "properties": {
-        "a": {
-          "type": "boolean",
-          "description": "Audio enabled flag"
-        },
-        "v": {
-          "type": "boolean",
-          "description": "Video enabled flag"
-        },
-        "t": {
-          "type": "boolean",
-          "description": "Text enabled flag"
-        },
-        "p": {
-          "type": "boolean",
-          "description": "Picture enabled flag"
-        },
-        "k": {
-          "type": "boolean",
-          "description": "Keyboard enabled flag"
-        }
-      }
-    },
-    "AVTPData": {
-      "type": "object",
-      "description": "Configuration data for AVTP components. Each component is required only if its corresponding flag in avtp is true",
-      "additionalProperties": false,
-      "properties": {
-        "a": {
-          "$ref": "#/definitions/AudioConfig",
-          "description": "Audio configuration (required if avtp.a is true)"
-        },
-        "v": {
-          "$ref": "#/definitions/VideoConfig",
-          "description": "Video configuration (required if avtp.v is true)"
-        },
-        "t": {
-          "$ref": "#/definitions/TextConfig",
-          "description": "Text configuration (required if avtp.t is true)"
-        },
-        "p": {
-          "$ref": "#/definitions/PictureConfig",
-          "description": "Picture configuration (required if avtp.p is true)"
-        },
-        "k": {
-          "$ref": "#/definitions/KeyboardConfig",
-          "description": "Keyboard configuration (required if avtp.k is true)"
-        }
-      }
-    },
-    "TextConfig": {
-      "type": "object",
-      "description": "Configuration for text stimulus in PsychoPy/PsychoJS format",
-      "required": [
-        "enabled",
-        "label",
-        "type",
-        "text",
-        "font",
-        "letterHeight",
-        "color",
-        "pos",
-        "ori",
-        "opacity",
-        "units",
-        "startTime",
-        "duration",
-        "contrast",
-        "flip",
-        "languageStyle",
-        "draggable"
-      ],
-      "additionalProperties": false,
-      "properties": {
-        "enabled": {
-          "type": "boolean",
-          "description": "Whether this text component is enabled"
-        },
-        "label": {
-          "type": "string",
-          "description": "Label identifier for this component"
-        },
-        "type": {
-          "type": "string",
-          "const": "text",
-          "description": "Component type (constant: 'text')"
-        },
-        "text": {
-          "type": "string",
-          "description": "The actual text content to display"
-        },
-        "font": {
-          "type": "string",
-          "description": "Font family name",
-          "examples": ["Arial", "Courier New", "Times New Roman"]
-        },
-        "letterHeight": {
-          "type": "number",
-          "description": "Height of letters in degrees of visual angle"
-        },
-        "color": {
-          "type": "string",
-          "description": "Text color as color name or hex value",
-          "examples": ["white", "#FFFFFF", "black", "#000000"]
-        },
-        "pos": {
+        "components": {
           "type": "array",
-          "description": "Position coordinates [x, y]",
+          "description": "Array of stimulus/response components in this routine",
           "items": {
-            "type": "number"
-          },
-          "minItems": 2,
-          "maxItems": 2
-        },
-        "ori": {
-          "type": "integer",
-          "description": "Orientation in degrees"
-        },
-        "opacity": {
-          "type": "number",
-          "description": "Opacity value from 0.0 (transparent) to 1.0 (opaque)",
-          "minimum": 0,
-          "maximum": 1
-        },
-        "units": {
-          "type": "string",
-          "description": "Units for positioning (e.g., 'deg', 'cm', 'pix', 'norm', 'height')",
-          "examples": ["deg", "cm", "pix", "norm", "height"]
-        },
-        "startTime": {
-          "type": "integer",
-          "description": "Start time in milliseconds relative to routine start",
-          "minimum": 0
-        },
-        "duration": {
-          "type": "integer",
-          "description": "Duration in milliseconds",
-          "minimum": -1
-        },
-        "contrast": {
-          "type": "number",
-          "description": "Contrast value from 0.0 to 1.0",
-          "minimum": 0,
-          "maximum": 1
-        },
-        "wrapWidth": {
-          "type": "number",
-          "description": "Width for text wrapping (optional)"
-        },
-        "flip": {
-          "type": "string",
-          "description": "Flip direction",
-          "enum": ["None", "Horizontal", "Vertical", "Both"]
-        },
-        "languageStyle": {
-          "type": "string",
-          "description": "Text direction style",
-          "enum": ["LTR", "RTL"]
-        },
-        "draggable": {
-          "type": "boolean",
-          "description": "Whether the text can be dragged by the user"
+            "$ref": "#/definitions/Component"
+          }
         }
       }
     },
-    "PictureConfig": {
+    "Component": {
+      "oneOf": [
+        { "$ref": "#/definitions/AudioComponent" },
+        { "$ref": "#/definitions/VideoComponent" },
+        { "$ref": "#/definitions/TextComponent" },
+        { "$ref": "#/definitions/ImageComponent" },
+        { "$ref": "#/definitions/KeyboardComponent" }
+      ]
+    },
+    "AudioComponent": {
       "type": "object",
-      "description": "Configuration for image/picture stimulus in PsychoPy/PsychoJS format",
-      "required": [
-        "enabled",
-        "label",
-        "type",
-        "path",
-        "size",
-        "pos",
-        "opacity",
-        "startTime",
-        "duration",
-        "ori",
-        "flip",
-        "units"
-      ],
+      "description": "Audio stimulus component",
+      "required": ["type"],
       "additionalProperties": false,
       "properties": {
-        "enabled": {
-          "type": "boolean",
-          "description": "Whether this picture component is enabled"
-        },
-        "label": {
-          "type": "string",
-          "description": "Label identifier for this component"
-        },
         "type": {
           "type": "string",
-          "const": "image",
-          "description": "Component type (constant: 'image')"
+          "enum": ["audio"]
         },
         "path": {
           "type": "string",
-          "description": "File path or URL to the image"
+          "description": "File path for audio file"
         },
-        "size": {
-          "type": "array",
-          "description": "Size [width, height]. Use null for auto-sizing",
-          "items": {
-            "type": ["number", "null"]
-          },
-          "minItems": 2,
-          "maxItems": 2
+        "startTime": {
+          "type": "number",
+          "description": "Start time in milliseconds",
+          "minimum": 0,
+          "default": 0
+        },
+        "duration": {
+          "type": "number",
+          "description": "Duration in milliseconds (-1 for indefinite)",
+          "minimum": -1,
+          "default": -1
+        },
+        "stopWithRoutine": {
+          "type": "boolean",
+          "description": "Whether to stop when routine ends",
+          "default": true
+        },
+        "volume": {
+          "type": "number",
+          "description": "Volume for audio (0.0 to 1.0)",
+          "minimum": 0,
+          "maximum": 1,
+          "default": 1
+        },
+        "loop": {
+          "type": "boolean",
+          "description": "Whether to loop audio",
+          "default": false
+        },
+        "hamming": {
+          "type": "boolean",
+          "description": "Apply Hamming window to audio",
+          "default": true
+        },
+        "deviceLabel": {
+          "type": "string",
+          "description": "Audio device label"
+        }
+      }
+    },
+    "VideoComponent": {
+      "type": "object",
+      "description": "Video stimulus component",
+      "required": ["type"],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["video"]
+        },
+        "path": {
+          "type": "string",
+          "description": "File path for video file"
         },
         "pos": {
           "type": "array",
-          "description": "Position coordinates [x, y]",
-          "items": {
-            "type": "number"
-          },
+          "description": "Position [x, y]",
+          "items": { "type": "number" },
+          "minItems": 2,
+          "maxItems": 2,
+          "default": [0, 0]
+        },
+        "size": {
+          "type": "array",
+          "description": "Size [width, height] (null values auto-calculate)",
+          "items": { "type": ["number", "null"] },
           "minItems": 2,
           "maxItems": 2
+        },
+        "ori": {
+          "type": "number",
+          "description": "Orientation in degrees",
+          "default": 0
         },
         "opacity": {
           "type": "number",
           "description": "Opacity value from 0.0 (transparent) to 1.0 (opaque)",
           "minimum": 0,
-          "maximum": 1
+          "maximum": 1,
+          "default": 1
         },
         "startTime": {
-          "type": "integer",
-          "description": "Start time in milliseconds relative to routine start",
-          "minimum": 0
+          "type": "number",
+          "description": "Start time in milliseconds",
+          "minimum": 0,
+          "default": 0
         },
         "duration": {
-          "type": "integer",
-          "description": "Duration in milliseconds",
-          "minimum": -1
+          "type": "number",
+          "description": "Duration in milliseconds (-1 for indefinite)",
+          "minimum": -1,
+          "default": -1
         },
-        "ori": {
-          "type": "integer",
-          "description": "Orientation in degrees"
+        "stopWithRoutine": {
+          "type": "boolean",
+          "description": "Whether to stop when routine ends",
+          "default": true
+        },
+        "volume": {
+          "type": "number",
+          "description": "Volume for video (0.0 to 1.0)",
+          "minimum": 0,
+          "maximum": 1,
+          "default": 1
+        },
+        "loop": {
+          "type": "boolean",
+          "description": "Whether to loop video",
+          "default": false
         },
         "flip": {
           "type": "string",
-          "description": "Flip direction",
-          "enum": ["None", "Horizontal", "Vertical", "Both"]
+          "description": "Flip mode",
+          "enum": ["None", "Horizontal", "Vertical", "Both"],
+          "default": "None"
         },
         "units": {
           "type": "string",
           "description": "Units for positioning",
-          "examples": ["deg", "cm", "pix", "norm", "height"]
+          "enum": ["from exp settings", "height", "norm", "pix", "cm", "deg"],
+          "default": "from exp settings"
         }
       }
     },
-    "AudioConfig": {
+    "TextComponent": {
       "type": "object",
-      "description": "Configuration for audio stimulus in PsychoPy/PsychoJS format",
-      "required": [
-        "enabled",
-        "label",
-        "type",
-        "path",
-        "volume",
-        "startTime",
-        "duration",
-        "stopWithRoutine",
-        "forceEndRoutine"
-      ],
+      "description": "Text stimulus component",
+      "required": ["type"],
       "additionalProperties": false,
       "properties": {
-        "enabled": {
-          "type": "boolean",
-          "description": "Whether this audio component is enabled"
-        },
-        "label": {
-          "type": "string",
-          "description": "Label identifier for this component"
-        },
         "type": {
           "type": "string",
-          "const": "audio",
-          "description": "Component type (constant: 'audio')"
+          "enum": ["text"]
         },
-        "path": {
+        "text": {
           "type": "string",
-          "description": "File path or URL to the audio file"
+          "description": "Text content"
         },
-        "volume": {
+        "color": {
+          "type": "string",
+          "description": "Color value (e.g., 'white', 'red', '#ffffff')"
+        },
+        "font": {
+          "type": "string",
+          "description": "Font family name"
+        },
+        "letterHeight": {
           "type": "number",
-          "description": "Volume level from 0.0 (silent) to 1.0 (maximum)",
-          "minimum": 0,
-          "maximum": 1
+          "description": "Font size in height units",
+          "default": 0.05
         },
-        "startTime": {
-          "type": "integer",
-          "description": "Start time in milliseconds relative to routine start",
-          "minimum": 0
-        },
-        "duration": {
-          "type": "integer",
-          "description": "Duration in milliseconds. Use -1 for until completion",
-          "minimum": -1
-        },
-        "stopWithRoutine": {
-          "type": "boolean",
-          "description": "Whether to stop audio when routine ends"
-        },
-        "forceEndRoutine": {
-          "type": "boolean",
-          "description": "Whether audio completion should force end the routine"
-        }
-      }
-    },
-    "VideoConfig": {
-      "type": "object",
-      "description": "Configuration for video stimulus in PsychoPy/PsychoJS format",
-      "required": [
-        "enabled",
-        "label",
-        "type",
-        "path",
-        "volume",
-        "size",
-        "anchor",
-        "loop",
-        "startTime",
-        "duration",
-        "units",
-        "opacity",
-        "stopWithRoutine",
-        "forceEndRoutine"
-      ],
-      "additionalProperties": false,
-      "properties": {
-        "enabled": {
-          "type": "boolean",
-          "description": "Whether this video component is enabled"
-        },
-        "label": {
-          "type": "string",
-          "description": "Label identifier for this component"
-        },
-        "type": {
-          "type": "string",
-          "const": "video",
-          "description": "Component type (constant: 'video')"
-        },
-        "path": {
-          "type": "string",
-          "description": "File path or URL to the video file"
-        },
-        "volume": {
-          "type": "number",
-          "description": "Volume level from 0.0 (silent) to 1.0 (maximum)",
-          "minimum": 0,
-          "maximum": 1
+        "pos": {
+          "type": "array",
+          "description": "Position [x, y]",
+          "items": { "type": "number" },
+          "minItems": 2,
+          "maxItems": 2,
+          "default": [0, 0]
         },
         "size": {
           "type": "array",
-          "description": "Size [width, height]. Use null for auto-sizing",
-          "items": {
-            "type": ["number", "null"]
-          },
+          "description": "Size [width, height] (null values auto-calculate)",
+          "items": { "type": ["number", "null"] },
           "minItems": 2,
           "maxItems": 2
+        },
+        "ori": {
+          "type": "number",
+          "description": "Orientation in degrees",
+          "default": 0
+        },
+        "opacity": {
+          "type": "number",
+          "description": "Opacity value from 0.0 (transparent) to 1.0 (opaque)",
+          "minimum": 0,
+          "maximum": 1,
+          "default": 1
+        },
+        "startTime": {
+          "type": "number",
+          "description": "Start time in milliseconds",
+          "minimum": 0,
+          "default": 0
+        },
+        "duration": {
+          "type": "number",
+          "description": "Duration in milliseconds (-1 for indefinite)",
+          "minimum": -1,
+          "default": -1
+        },
+        "stopWithRoutine": {
+          "type": "boolean",
+          "description": "Whether to stop when routine ends",
+          "default": true
+        },
+        "units": {
+          "type": "string",
+          "description": "Units for positioning",
+          "enum": ["from exp settings", "height", "norm", "pix", "cm", "deg"],
+          "default": "from exp settings"
+        },
+        "languageStyle": {
+          "type": "string",
+          "description": "Language direction",
+          "enum": ["LTR", "RTL"],
+          "default": "LTR"
+        },
+        "wrapWidth": {
+          "type": "number",
+          "description": "Text wrap width"
         },
         "anchor": {
           "type": "string",
           "description": "Anchor point for positioning",
-          "examples": ["center", "top-left", "top-right", "bottom-left", "bottom-right"]
+          "enum": ["center", "top-center", "bottom-center", "left-center", "right-center", "top-left", "top-right", "bottom-left", "bottom-right"],
+          "default": "center"
         },
-        "loop": {
-          "type": "boolean",
-          "description": "Whether to loop the video"
-        },
-        "startTime": {
-          "type": "integer",
-          "description": "Start time in milliseconds relative to routine start",
-          "minimum": 0
-        },
-        "duration": {
-          "type": "integer",
-          "description": "Duration in milliseconds",
-          "minimum": -1
-        },
-        "units": {
+        "colorSpace": {
           "type": "string",
-          "description": "Units for positioning",
-          "examples": ["deg", "cm", "pix", "norm", "height"]
+          "description": "Color space",
+          "enum": ["rgb", "dkl", "hsv", "hex"],
+          "default": "rgb"
+        }
+      }
+    },
+    "ImageComponent": {
+      "type": "object",
+      "description": "Image stimulus component",
+      "required": ["type"],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["image"]
+        },
+        "path": {
+          "type": "string",
+          "description": "File path for image file"
+        },
+        "pos": {
+          "type": "array",
+          "description": "Position [x, y]",
+          "items": { "type": "number" },
+          "minItems": 2,
+          "maxItems": 2,
+          "default": [0, 0]
+        },
+        "size": {
+          "type": "array",
+          "description": "Size [width, height] (null values auto-calculate)",
+          "items": { "type": ["number", "null"] },
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "ori": {
+          "type": "number",
+          "description": "Orientation in degrees",
+          "default": 0
         },
         "opacity": {
           "type": "number",
           "description": "Opacity value from 0.0 (transparent) to 1.0 (opaque)",
           "minimum": 0,
-          "maximum": 1
+          "maximum": 1,
+          "default": 1
+        },
+        "startTime": {
+          "type": "number",
+          "description": "Start time in milliseconds",
+          "minimum": 0,
+          "default": 0
+        },
+        "duration": {
+          "type": "number",
+          "description": "Duration in milliseconds (-1 for indefinite)",
+          "minimum": -1,
+          "default": -1
         },
         "stopWithRoutine": {
           "type": "boolean",
-          "description": "Whether to stop video when routine ends"
+          "description": "Whether to stop when routine ends",
+          "default": true
         },
-        "forceEndRoutine": {
+        "contrast": {
+          "type": "number",
+          "description": "Contrast value (0.0 to 1.0)",
+          "minimum": 0,
+          "maximum": 1,
+          "default": 1
+        },
+        "flip": {
+          "type": "string",
+          "description": "Flip mode",
+          "enum": ["None", "Horizontal", "Vertical", "Both"],
+          "default": "None"
+        },
+        "units": {
+          "type": "string",
+          "description": "Units for positioning",
+          "enum": ["from exp settings", "height", "norm", "pix", "cm", "deg"],
+          "default": "from exp settings"
+        },
+        "interpolate": {
+          "type": "string",
+          "description": "Image interpolation method",
+          "enum": ["linear", "nearest"],
+          "default": "linear"
+        },
+        "textureRes": {
+          "type": "integer",
+          "description": "Texture resolution for images",
+          "enum": [32, 64, 128, 256, 512],
+          "default": 128
+        },
+        "colorSpace": {
+          "type": "string",
+          "description": "Color space",
+          "enum": ["rgb", "dkl", "hsv", "hex"],
+          "default": "rgb"
+        },
+        "draggable": {
           "type": "boolean",
-          "description": "Whether video completion should force end the routine"
+          "description": "Whether the stimulus is draggable",
+          "default": false
         }
       }
     },
-    "KeyboardConfig": {
+    "KeyboardComponent": {
       "type": "object",
-      "description": "Configuration for keyboard response component in PsychoPy/PsychoJS format",
-      "required": [
-        "enabled",
-        "label",
-        "type",
-        "keys",
-        "startTime",
-        "duration",
-        "forceEndRoutine"
-      ],
+      "description": "Keyboard response component",
+      "required": ["type"],
       "additionalProperties": false,
       "properties": {
-        "enabled": {
-          "type": "boolean",
-          "description": "Whether this keyboard component is enabled"
-        },
-        "label": {
-          "type": "string",
-          "description": "Label identifier for this component"
-        },
         "type": {
           "type": "string",
-          "const": "keyboard",
-          "description": "Component type (constant: 'keyboard')"
+          "enum": ["keyboard"]
+        },
+        "startTime": {
+          "type": "number",
+          "description": "Start time in milliseconds",
+          "minimum": 0,
+          "default": 0
+        },
+        "duration": {
+          "type": "number",
+          "description": "Duration in milliseconds (-1 for indefinite)",
+          "minimum": -1,
+          "default": -1
+        },
+        "stopWithRoutine": {
+          "type": "boolean",
+          "description": "Whether to stop when routine ends",
+          "default": true
+        },
+        "forceEndRoutine": {
+          "type": "boolean",
+          "description": "Whether to force end routine on response",
+          "default": false
         },
         "keys": {
           "type": "string",
-          "description": "Comma-separated key names to listen for",
-          "examples": ["space", "left, right", "escape"]
+          "description": "Comma-separated keyboard keys (e.g., 'space,return,escape')"
+        },
+        "discardPrevious": {
+          "type": "boolean",
+          "description": "Discard previous key presses",
+          "default": true
+        },
+        "registerOn": {
+          "type": "string",
+          "description": "When to register key press",
+          "enum": ["press", "release"],
+          "default": "press"
+        },
+        "store": {
+          "type": "string",
+          "description": "What to store",
+          "enum": ["last key", "all keys", "nothing"],
+          "default": "last key"
+        },
+        "storeCorrect": {
+          "type": "boolean",
+          "description": "Store whether response was correct",
+          "default": false
+        }
+      }
+    },
+    "CodeComponent": {
+      "type": "object",
+      "description": "Code component for executing Python/JS code",
+      "required": ["type"],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["code"]
         },
         "startTime": {
-          "type": "integer",
-          "description": "Start time in milliseconds relative to routine start",
-          "minimum": 0
+          "type": "number",
+          "description": "Start time in milliseconds",
+          "minimum": 0,
+          "default": 0
         },
         "duration": {
-          "type": "integer",
-          "description": "Duration in milliseconds to listen for keypresses",
-          "minimum": -1
+          "type": "number",
+          "description": "Duration in milliseconds (-1 for indefinite)",
+          "minimum": -1,
+          "default": -1
         },
-        "forceEndRoutine": {
-          "type": "boolean",
-          "description": "Whether a keypress should force end the routine"
+        "code": {
+          "type": "string",
+          "description": "Python/JS code to execute"
+        },
+        "codeType": {
+          "type": "string",
+          "description": "Code language type",
+          "enum": ["Py", "JS", "Both"],
+          "default": "Py"
         }
       }
     },
-    "Connection": {
+    "Condition": {
       "type": "object",
-      "description": "A connection object representing an edge between two routines in the flowchart, potentially with loop information",
-      "required": [
-        "start",
-        "end",
-        "depth",
-        "loopIsTrials"
-      ],
+      "description": "A condition object representing one trial with specific parameter values",
+      "required": ["name"],
       "additionalProperties": false,
       "properties": {
-        "start": {
-          "$ref": "#/definitions/ConnectionEndpoint",
-          "description": "Start point of the connection"
+        "name": {
+          "type": "string",
+          "description": "Display name of the condition (e.g., 'Condition 1')"
         },
-        "end": {
-          "$ref": "#/definitions/ConnectionEndpoint",
-          "description": "End point of the connection"
-        },
-        "depth": {
+        "weight": {
           "type": "integer",
-          "description": "Depth level for nested loops",
+          "description": "Weight of this condition for randomization",
+          "minimum": 1,
+          "default": 1
+        },
+        "values": {
+          "type": "object",
+          "description": "Variable values for this condition. Keys are variable names (without $ prefix), values are the assigned values.",
+          "additionalProperties": {
+            "type": ["string", "number", "boolean"]
+          },
+          "example": {
+            "flanker_array": ">>>>>",
+            "correct": "right"
+          }
+        }
+      }
+    },
+    "Loop": {
+      "type": "object",
+      "description": "A loop (trial handler) that repeats a set of routines multiple times with varying conditions. Loops are located at odd-numbered points (1, 3, 5, 7...) on the flowchart. Routines are at even-numbered points (2, 4, 6, 8...).",
+      "required": ["id", "name", "startPoint", "endPoint", "reps"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "integer",
+          "description": "Unique identifier for the loop",
           "minimum": 0
         },
-        "loopName": {
+        "name": {
           "type": "string",
-          "description": "Name of the loop block (optional, for loop blocks)"
+          "description": "Name of the loop. Must be a valid Python identifier.",
+          "pattern": "^[a-zA-Z_][a-zA-Z0-9_]*$"
         },
-        "loopReps": {
+        "startPoint": {
           "type": "integer",
-          "description": "Number of repetitions for the loop",
-          "minimum": 1
+          "description": "The point where the loop starts (left side). Must be an odd number (1, 3, 5, 7...). This is the loop entry point.",
+          "minimum": 1,
+          "enum": [1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31, 33, 35, 37, 39]
         },
-        "loopType": {
-          "type": "string",
-          "description": "Type of loop iteration",
-          "enum": ["sequential", "random"]
+        "endPoint": {
+          "type": "integer",
+          "description": "The point where the loop ends (right side). Must be an odd number (1, 3, 5, 7...). If endPoint < startPoint, the loop goes backward (repeats routines).",
+          "minimum": 1,
+          "enum": [1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31, 33, 35, 37, 39]
         },
-        "loopConditions": {
+        "reps": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Number of repetitions/trials",
+          "default": 1
+        },
+        "type": {
           "type": "string",
-          "description": "JSON string representing an array of loop condition objects",
-          "contentMediaType": "application/json",
-          "contentSchema": {
-            "type": "array",
-            "items": {
-              "$ref": "#/definitions/LoopCondition"
-            }
+          "enum": ["sequential", "random", "fullRandom"],
+          "description": "How to order trials: sequential (fixed order), random (shuffle), fullRandom (completely random)",
+          "default": "sequential"
+        },
+        "conditions": {
+          "type": "array",
+          "description": "Array of condition objects, one per trial. Each object contains parameter values for that trial.",
+          "items": {
+            "$ref": "#/definitions/Condition"
           }
         },
-        "loopIsTrials": {
-          "type": "boolean",
-          "description": "Whether this connection represents a trials loop"
-        }
-      },
-      "if": {
-        "required": ["loopName"]
-      },
-      "then": {
-        "required": ["loopReps", "loopType"],
-        "description": "When loopName is present, loopReps and loopType are required"
-      }
-    },
-    "ConnectionEndpoint": {
-      "type": "object",
-      "description": "An endpoint of a connection (start or end point)",
-      "required": [
-        "x",
-        "y",
-        "label",
-        "isSnapTarget"
-      ],
-      "additionalProperties": false,
-      "properties": {
-        "x": {
-          "type": "number",
-          "description": "X coordinate of the endpoint"
-        },
-        "y": {
-          "type": "number",
-          "description": "Y coordinate of the endpoint"
-        },
-        "label": {
-          "type": "integer",
-          "description": "Label of the routine (routine id number)"
-        },
-        "isSnapTarget": {
-          "type": "boolean",
-          "description": "Whether this endpoint is a snap target for connections"
-        }
-      }
-    },
-    "LoopCondition": {
-      "type": "object",
-      "description": "A condition object used in loop conditions to determine loop execution",
-      "required": [
-        "variable",
-        "operator",
-        "value"
-      ],
-      "additionalProperties": false,
-      "properties": {
-        "variable": {
+        "conditionsFile": {
           "type": "string",
-          "description": "Variable name to evaluate"
+          "description": "Path to external CSV/Excel file with conditions (alternative to 'conditions' array)"
         },
-        "operator": {
-          "type": "string",
-          "description": "Comparison operator",
-          "enum": ["==", "!=", ">", "<", ">=", "<="]
-        },
-        "value": {
-          "type": ["string", "number"],
-          "description": "Value to compare against"
+        "isTrials": {
+          "type": "boolean",
+          "description": "Whether this is a trial handler (true) or just a loop (false)",
+          "default": true
         }
       }
     }

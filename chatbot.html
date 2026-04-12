@@ -6,7 +6,7 @@
     <title>PsyClaw Chatbot</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&family=Poppins:wght@400;500;600&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&family=Poppins:wght@400;500;600&family=Roboto:wght@400;500&family=JetBrains+Mono:wght@400;500&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -498,6 +498,7 @@
             padding: 16px 24px;
             background: var(--bg-white);
             min-height: 0;
+            position: relative;
         }
 
         .chat-message {
@@ -524,6 +525,8 @@
             background: var(--bg-white);
             color: var(--text-primary);
             border: 1px solid var(--border-gray);
+            max-width: 95%;
+            width: 100%;
         }
 
         .chat-message.system {
@@ -542,6 +545,21 @@
             border: 1px solid #c8e6c9;
         }
 
+        .chat-message.welcome {
+            background: transparent;
+            color: var(--text-muted);
+            text-align: center;
+            margin: 0 auto;
+            border: none;
+            width: 100%;
+            max-width: 100%;
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            transform: translateY(-50%);
+        }
+
         /* Think Chain 可折叠区域样式 */
         .think-chain-container {
             margin-bottom: 8px;
@@ -549,6 +567,11 @@
             border-radius: 12px;
             overflow: hidden;
             background: var(--bg-light);
+            display: none;
+        }
+
+        .think-chain-container.has-content {
+            display: block;
         }
 
         .think-chain-header {
@@ -616,12 +639,12 @@
         }
 
         .chat-input-area {
-            padding: 16px 12px;
+            padding: 12px;
             background: var(--bg-light);
             border: 1px solid var(--border-light);
             border-radius: 20px;
             transition: all 0.3s ease;
-            margin: 16px;
+            margin: 12px;
         }
 
         .chat-input-row {
@@ -1158,7 +1181,6 @@
                         </div>
 
                         <button class="psyclaw-btn full-width-btn" id="saveSettingsBtn">Save Settings</button>
-                        <button class="psyclaw-btn full-width-btn" id="saveProtocolBtn" style="margin-top: 12px;">Save Protocol</button>
                     </div>
                 </div>
             </div>
@@ -1166,7 +1188,7 @@
 
         <div class="chat-interface">
             <div class="chat-messages" id="chatMessages">
-                <div class="chat-message system">Welcome to PsyClaw! Configure your API settings and start chatting.</div>
+                <div class="chat-message welcome">Upload a file or describe your experiment</div>
             </div>
 
             <div class="chat-input-area" id="chatInputArea">
@@ -1200,11 +1222,11 @@
                     <input type="file" class="file-upload-input" id="fileInput" accept=".txt,.md,.json,.py,.csv,.xlsx,.xls,.doc,.docx,.pdf">
                     <div class="input-bottom-row">
                         <div class="action-buttons">
-                            <button class="action-btn" id="deepThinkBtn" title="DeepThink">
+                            <button class="action-btn" id="deepThinkBtn" title="Flash">
                                 <svg class="action-btn-icon" viewBox="0 0 24 24">
-                                    <path d="M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7zm2.85 11.1l-.85.6V16h-4v-2.3l-.85-.6A4.997 4.997 0 017 9c0-2.76 2.24-5 5-5s5 2.24 5 5c0 1.63-.8 3.16-2.15 4.1z"/>
+                                    <path d="M7 2v11h3v9l7-12h-4l4-8z"/>
                                 </svg>
-                                DeepThink
+                                Flash
                             </button>
                         </div>
                         <button class="chat-send-btn" id="sendBtn" title="Send">
@@ -1570,7 +1592,25 @@
   }
 };
 
-        let flowchartSchema = defaultFlowchartSchema;
+        let flowchartSchema = null;
+
+        // 从 flowchart.schema.json 加载 schema
+        async function loadFlowchartSchema() {
+            try {
+                const response = await fetch('flowchart.schema.json');
+                if (!response.ok) {
+                    throw new Error(`Failed to load schema: ${response.status} ${response.statusText}`);
+                }
+                flowchartSchema = await response.json();
+                console.log('Flowchart schema loaded successfully');
+            } catch (error) {
+                console.warn('Failed to load flowchart.schema.json, using default schema:', error);
+                flowchartSchema = defaultFlowchartSchema;
+            }
+        }
+
+        // 页面加载时初始化 schema
+        loadFlowchartSchema();
 
         function updateModelNameDisplay() {
             const modelName = modelSelectInput.value || modelDropbtn.value || '';
@@ -1598,7 +1638,7 @@
         const removeFileBtn = document.getElementById('removeFileBtn');
 
         let currentFile = null;
-        let deepThinkEnabled = false;
+        let deepThinkEnabled = true;
 
         function formatFileSize(bytes) {
             if (bytes === 0) return '0 B';
@@ -2416,6 +2456,12 @@
         });
 
         function addMessage(content, role) {
+            // 隐藏欢迎语
+            const welcomeMsg = chatMessagesDiv.querySelector('.chat-message.welcome');
+            if (welcomeMsg) {
+                welcomeMsg.style.display = 'none';
+            }
+            
             const msgDiv = document.createElement('div');
             msgDiv.className = `chat-message ${role}`;
             msgDiv.textContent = content;
@@ -2477,13 +2523,17 @@
                 msgDiv,
                 updateThink: (content) => {
                     thinkContent.textContent = content;
+                    // Show think container only when there's actual content
+                    if (content && content.trim()) {
+                        thinkContainer.classList.add('has-content');
+                    }
                 },
                 updateMessage: (content, isStreaming = true) => {
                     // 有内容时才显示消息容器
                     if (content && content.trim()) {
                         msgDiv.style.display = 'block';
                         msgDiv.style.whiteSpace = 'pre-wrap';
-                        msgDiv.style.fontFamily = 'Roboto Mono, monospace';
+                        msgDiv.style.fontFamily = '"JetBrains Mono", "Fira Code", "Roboto Mono", Consolas, Monaco, monospace';
                         msgDiv.textContent = content;
                         // 只在用户已经在底部时才自动滚动
                         const isAtBottom = chatMessagesDiv.scrollHeight - chatMessagesDiv.scrollTop - chatMessagesDiv.clientHeight < 50;
@@ -2502,7 +2552,7 @@
                         // 不是有效的JSON，按原样显示
                     }
                     msgDiv.style.whiteSpace = 'pre-wrap';
-                    msgDiv.style.fontFamily = 'Roboto Mono, monospace';
+                    msgDiv.style.fontFamily = '"JetBrains Mono", "Fira Code", "Roboto Mono", Consolas, Monaco, monospace';
                     msgDiv.textContent = displayContent;
                     // 只在用户已经在底部时才自动滚动
                     const isAtBottom = chatMessagesDiv.scrollHeight - chatMessagesDiv.scrollTop - chatMessagesDiv.clientHeight < 50;
@@ -2567,36 +2617,15 @@
             
             // 构建 system prompt，使用内置的 schema
             const flowchartSystemPrompt =
-`You are a PsychoPy experiment designer. Generate a complete JSON data structure for a PsyClaw flowchart project based on the user's request.
+`You are a Psychology experiment designer. Generate a complete JSON data structure for a PsyClaw flowchart project based on the user's request.
 
 IMPORTANT RULES:
-1. Generate ONLY valid JSON that strictly follows the schema below
-2. Point numbering system:
-   - Points are numbered starting from 1
-   - ODD points (1, 3, 5, 7...) are LOOP connection points
-   - EVEN points (2, 4, 6, 8...) are ROUTINE locations
-   - Routine IDs are EVEN numbers (0, 2, 4, 6...) corresponding to even points (2, 4, 6, 8...)
-   - Example: Routine 0 is at point 2, Routine 2 is at point 4, Routine 4 is at point 6
-3. For loops:
-   - Each loop has startPoint and endPoint (both MUST be odd numbers: 1, 3, 5, 7...)
-   - Loop starts at startPoint (left side) and ends at endPoint (right side)
-   - If endPoint < startPoint, it creates a BACKWARD loop (repeats routines back)
-   - If endPoint > startPoint, it creates a FORWARD flow (sequential execution)
-   - Example: startPoint=1, endPoint=3 means loop connects from point 1 to point 3
-   - Example: startPoint=5, endPoint=1 means loop goes backward from point 5 to point 1
-   - Set loop.name to a valid Python identifier (e.g., "trials", "practice_loop")
-   - Set loop.reps to the number of repetitions
-   - Set loop.type to "sequential", "random", or "fullRandom"
-   - Set loop.isTrials to true for trial handlers
-   - Set loop.conditions as a JSON STRING (not array) representing condition objects
-4. Example structure for a Stroop task with 4 routines:
-   - Routines at points: Routine 0 (id=0) at point 2, Routine 1 (id=1) at point 4, Routine 2 (id=2) at point 6, Routine 3 (id=3) at point 8
-   - "routines": [{"id": 0, "name": "fixation"}, {"id": 1, "name": "stimulus"}, {"id": 2, "name": "response"}, {"id": 3, "name": "feedback"}]
-   - Loop connecting points 1 to 7 (enclosing routines 0-3): "loops": [{"id": 0, "name": "trials", "startPoint": 1, "endPoint": 7, "reps": 10, "type": "random", "isTrials": true, "conditions": "[{\"word\":\"RED\",\"color\":\"red\"},{\"word\":\"BLUE\",\"color\":\"blue\"}]"}]
-   - Sequential flow is implicit (routines execute in order by default)
-5. CRITICAL: Do NOT include any thinking process, explanations, markdown formatting, or code blocks
-6. CRITICAL: Return ONLY the raw JSON object, nothing else
-7. CRITICAL: Ensure the JSON is complete and properly closed
+1. Generate ONLY valid JSON following the schema below
+2. VARIABLE FORMAT: Use SINGLE $ at START only (e.g., "$word", "$color"). NEVER "$word$"
+3. Point system: ODD points (1,3,5...) = LOOP boundaries; EVEN points (2,4,6...) = ROUTINE locations; Routine IDs are EVEN (0,2,4...)
+4. Loops: startPoint and endPoint are ODD numbers; endPoint < startPoint = BACKWARD loop; loop.conditions is a JSON STRING
+5. NO thinking process, explanations, markdown, or code blocks - ONLY raw JSON
+
 
 [User Request]
 ${message || ''}
@@ -2653,7 +2682,8 @@ ${JSON.stringify(flowchartSchema, null, 2)}`;
                     temperature: settings.temperature,
                     top_p: settings.top_p,
                     max_tokens: 16000,  // 固定使用 16000 tokens 以确保完整 JSON 输出
-                    stream: true  // 启用流式传输
+                    stream: true,  // 启用流式传输
+                    enable_thinking: !deepThinkEnabled  // Flash模式选中时关闭思考，未选中时开启思考
                 };
 
                 // MiniMax 模型支持 reasoning_split 参数来分离思考内容
@@ -2882,45 +2912,6 @@ ${JSON.stringify(flowchartSchema, null, 2)}`;
         checkApiBtn.addEventListener('click', checkAvailableModels);
         saveSettingsBtn.addEventListener('click', saveSettings);
 
-        // Protocol 保存功能
-        const saveProtocolBtn = document.getElementById('saveProtocolBtn');
-
-        async function loadProtocol() {
-            try {
-                const response = await fetch('flowchart_protocol.json');
-                if (!response.ok) {
-                    throw new Error('Failed to load protocol file');
-                }
-                return await response.json();
-            } catch (error) {
-                console.error('Error loading protocol:', error);
-                addMessage('⚠️ Failed to load flowchart protocol file', 'warning');
-                return null;
-            }
-        }
-
-        async function saveProtocol() {
-            const protocol = await loadProtocol();
-            if (!protocol) {
-                return;
-            }
-
-            const jsonData = JSON.stringify(protocol, null, 2);
-            const blob = new Blob([jsonData], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'flowchart_protocol.json';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-
-            addMessage('✅ Protocol file saved successfully!', 'success');
-        }
-
-        saveProtocolBtn.addEventListener('click', saveProtocol);
-
         // 自动保存：输入框失去焦点时保存
         apiUrlInput.addEventListener('blur', saveSettings);
         apiKeyInput.addEventListener('blur', saveSettings);
@@ -3039,6 +3030,9 @@ ${JSON.stringify(flowchartSchema, null, 2)}`;
         
         // Initialize send button state
         updateModelNameDisplay();
+        
+        // Initialize Flash button state (default on)
+        deepThinkBtn.classList.add('active');
         
         // 初始化时，如果当前Provider有API Key，自动触发Check API
         const currentApiUrl = apiUrlInput.value.trim();
