@@ -115,7 +115,7 @@
       "endPoint": 7,
       "nRounds": 10,
       "type": "random",
-      "conditions": "[{\"word\":\"RED\",\"color\":\"red\"},{\"word\":\"BLUE\",\"color\":\"blue\"},{\"word\":\"GREEN\",\"color\":\"green\"},{\"word\":\"YELLOW\",\"color\":\"yellow\"}]",
+      "conditions": "[{\"name\":\"Condition 1\",\"weight\":1,\"values\":[\"RED\",\"red\"]},{\"name\":\"Condition 2\",\"weight\":1,\"values\":[\"BLUE\",\"blue\"]},{\"name\":\"Condition 3\",\"weight\":1,\"values\":[\"GREEN\",\"green\"]},{\"name\":\"Condition 4\",\"weight\":1,\"values\":[\"YELLOW\",\"yellow\"]}]",
       "conditionsFile": "",
       "isTrials": true
     }

@@ -4988,28 +4988,26 @@
                 const parsed = JSON.parse(jsonValue);
                 if (Array.isArray(parsed)) {
                     return parsed.filter(c => c._meta !== true).map((c, i) => {
-                        // Check if this is the internal format (has values property)
-                        // Internal format: {name, weight, values: {var1: val1, var2: val2}}
-                        // AI format: {name, weight, var1: val1, var2: val2}
+                        // New format: {name, weight, values: [val1, val2, ...]}
+                        if (c.values !== undefined && Array.isArray(c.values)) {
+                            return {
+                                name: c.name || `Condition ${i + 1}`,
+                                weight: c.weight !== undefined ? c.weight : 1,
+                                values: c.values || []
+                            };
+                        }
+                        // Legacy format: {name, weight, values: {var1: val1, var2: val2}}
                         if (c.values !== undefined && typeof c.values === 'object' && c.values !== null) {
                             return {
                                 name: c.name || `Condition ${i + 1}`,
                                 weight: c.weight !== undefined ? c.weight : 1,
-                                values: c.values || {}
+                                values: Object.values(c.values) || []
                             };
-                        }
-                        // This is the AI-generated format (flat object with variable values)
-                        // Extract values that are not name/weight/_meta
-                        const values = {};
-                        for (const key in c) {
-                            if (key !== 'name' && key !== 'weight' && key !== '_meta') {
-                                values[key] = c[key];
-                            }
                         }
                         return {
                             name: c.name || `Condition ${i + 1}`,
                             weight: c.weight !== undefined ? c.weight : 1,
-                            values: values
+                            values: []
                         };
                     });
                 }
@@ -5077,12 +5075,12 @@
                     </td>
                 `;
                 
-                // Variable values
-                variables.forEach(varName => {
-                    const value = condition.values?.[varName] || '';
+                // Variable values (array order matches columns)
+                variables.forEach((varName, varIndex) => {
+                    const value = condition.values?.[varIndex] || '';
                     rowHtml += `
                         <td>
-                            <input type="text" class="loop-cond-var-input" data-index="${index}" data-var="${varName}" value="${value}" placeholder="$${varName}">
+                            <input type="text" class="loop-cond-var-input" data-index="${index}" data-var="${varName}" data-varindex="${varIndex}" value="${value}" placeholder="$${varName}">
                         </td>
                     `;
                 });
@@ -5123,6 +5121,11 @@
             const conditions = [];
             const rows = loopConditionsBody.querySelectorAll('tr');
             
+            // Get variables in order from header
+            const headerRow = document.getElementById('loopConditionsHeaderRow');
+            const varHeaders = headerRow.querySelectorAll('th.cond-col-var');
+            const variables = Array.from(varHeaders).map(th => th.textContent);
+            
             rows.forEach(row => {
                 const nameInput = row.querySelector('.loop-cond-name-input');
                 const weightInput = row.querySelector('.loop-cond-weight-input');
@@ -5131,16 +5134,14 @@
                     const condition = {
                         name: nameInput.value.trim(),
                         weight: parseInt(weightInput?.value) || 1,
-                        values: {}
+                        values: []
                     };
                     
-                    // 保存变量值
+                    // Save variable values in array format (ordered by column index)
                     const varInputs = row.querySelectorAll('.loop-cond-var-input');
                     varInputs.forEach(input => {
-                        const varName = input.dataset.var;
-                        if (varName) {
-                            condition.values[varName] = input.value || '';
-                        }
+                        const varIndex = parseInt(input.dataset.varindex);
+                        condition.values[varIndex] = input.value || '';
                     });
                     
                     conditions.push(condition);
@@ -5157,7 +5158,8 @@
             
             conditions.push({
                 name: `Condition ${newIndex}`,
-                weight: 1
+                weight: 1,
+                values: []
             });
 
             formLoopConditions.value = JSON.stringify(conditions);
@@ -5425,37 +5427,36 @@
         // 辅助函数：将AI格式的conditions转换为内部格式
         function convertConditionsToInternalFormat(conditions) {
             if (!conditions) return '';
-            
+
             let parsed;
             try {
-                // 如果 conditions 是字符串，先解析
                 if (typeof conditions === 'string') {
                     parsed = JSON.parse(conditions);
                 } else if (Array.isArray(conditions)) {
-                    // 如果已经是数组，直接使用
                     parsed = conditions;
                 } else {
                     return '';
                 }
-                
+
                 if (!Array.isArray(parsed)) return '';
-                
+
                 const converted = parsed.map((c, i) => {
-                    // 如果已经是内部格式，直接返回
-                    if (c.values !== undefined && typeof c.values === 'object' && c.values !== null) {
+                    // New format: values is already an array
+                    if (c.values !== undefined && Array.isArray(c.values)) {
                         return c;
                     }
-                    // 转换为内部格式
-                    const values = {};
-                    for (const key in c) {
-                        if (key !== 'name' && key !== 'weight' && key !== '_meta') {
-                            values[key] = c[key];
-                        }
+                    // Legacy format: values is an object, convert to array
+                    if (c.values !== undefined && typeof c.values === 'object' && c.values !== null) {
+                        return {
+                            name: c.name || `Condition ${i + 1}`,
+                            weight: c.weight !== undefined ? c.weight : 1,
+                            values: Object.values(c.values) || []
+                        };
                     }
                     return {
                         name: c.name || `Condition ${i + 1}`,
                         weight: c.weight !== undefined ? c.weight : 1,
-                        values: values
+                        values: []
                     };
                 });
                 return JSON.stringify(converted);
@@ -5478,7 +5479,7 @@
                     end: { label: String(endPoint), position: 'left' },
                     depth: 0,
                     loopName: loop.name || `loop_${index}`,
-                    loopReps: loop.nRounds || loop.reps || 1,
+                    loopReps: loop.nRounds || 1,
                     loopType: loop.type || 'sequential',
                     loopConditions: convertedConditions,
                     loopConditionsFile: loop.conditionsFile || '',

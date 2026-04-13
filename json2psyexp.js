@@ -651,21 +651,46 @@ function generateKeyboardComponentFromSchema(component, routineName) {
 }
 
 /**
+ * 检测 routines 中的变量（以 $ 开头的值）
+ */
+function detectVariablesFromRoutines(routines, startIndex, endIndex) {
+    const variables = new Set();
+    const dollarPattern = /\$([^$]+)\$/g;
+
+    for (let i = startIndex; i <= endIndex && i < routines.length; i++) {
+        const routine = routines[i];
+        if (routine && routine.avtpComponents) {
+            routine.avtpComponents.forEach(component => {
+                if (component && typeof component === 'object') {
+                    Object.values(component).forEach(value => {
+                        if (typeof value === 'string') {
+                            let match;
+                            while ((match = dollarPattern.exec(value)) !== null) {
+                                variables.add(match[1]);
+                            }
+                            dollarPattern.lastIndex = 0;
+                        }
+                    });
+                }
+            });
+        }
+    }
+    return Array.from(variables);
+}
+
+/**
  * 生成 Flow 部分（支持新旧格式的 loops）
  */
-function generateFlow(routineRects, loops) {
+function generateFlow(routines, loops) {
     let xml = '';
-    
-    const routineNames = routineRects.map((rect, index) => rect.name || `Routine_${index + 1}`);
-    
-    // 将 loops 转换为包含 startRoutineIndex 和 endRoutineIndex 的格式
+
+    const routineNames = routines.map((rect, index) => rect.name || `Routine_${index + 1}`);
+
     const processedLoops = loops.map(loop => {
-        // startPoint 和 endPoint 是奇数（1, 3, 5...）
-        // startPoint 指向 loop 开始点，endPoint 指向 loop 结束点
-        // routine 索引 = (point - 1) / 2
         const startRoutineIndex = Math.floor((loop.startPoint - 1) / 2);
         const endRoutineIndex = Math.floor((loop.endPoint - 1) / 2);
-        
+        const variableNames = detectVariablesFromRoutines(routines, startRoutineIndex, endRoutineIndex);
+
         return {
             name: loop.name || 'trials',
             reps: loop.nRounds || 1,
@@ -673,7 +698,8 @@ function generateFlow(routineRects, loops) {
             conditions: loop.conditions || [],
             startRoutineIndex: startRoutineIndex,
             endRoutineIndex: endRoutineIndex,
-            depth: 0
+            depth: 0,
+            variableNames: variableNames
         };
     });
     
@@ -728,7 +754,7 @@ function generateFlow(routineRects, loops) {
     
     const activeLoops = new Set();
     
-    for (let i = 0; i < routineRects.length; i++) {
+    for (let i = 0; i < routines.length; i++) {
         // 找出在这个 routine 处开始的循环（深度小的先开始）
         const loopsStartingHere = processedLoops.filter(l => 
             l.startRoutineIndex === i && !activeLoops.has(l.name)
@@ -758,17 +784,22 @@ function generateFlow(routineRects, loops) {
  */
 function generateLoopInitiator(loop) {
     const conditions = loop.conditions || [];
+    const variableNames = loop.variableNames || [];
     let conditionsVal = '';
     let conditionsFileVal = '';
-    
+
     if (Array.isArray(conditions) && conditions.length > 0) {
         const conditionsArray = conditions.map(condition => {
-            const values = condition.values || {};
-            return { ...{ name: condition.name || '' }, ...values };
+            const values = condition.values || [];
+            const condObj = { name: condition.name || '' };
+            variableNames.forEach((varName, index) => {
+                condObj[varName] = values[index] !== undefined ? values[index] : '';
+            });
+            return condObj;
         });
         conditionsVal = JSON.stringify(conditionsArray).replace(/"/g, '&quot;');
     }
-    
+
     return `    <LoopInitiator loopType="TrialHandler" name="${loop.name}">
       <Param name="Selected rows" updates="None" val="" valType="str"/>
       <Param name="conditions" updates="None" val="${conditionsVal}" valType="str"/>
