@@ -879,6 +879,7 @@
             display: flex;
             gap: 8px;
             flex-shrink: 0;
+            margin-left: 2px;
         }
 
         .action-btn {
@@ -1180,6 +1181,17 @@
                             </div>
                         </div>
 
+                        <!-- Flash Mode Section -->
+                        <div class="settings-section">
+                            <h3 class="section-heading">Response Mode</h3>
+                            <button class="action-btn full-width-btn" id="deepThinkBtn" title="Flash">
+                                <svg class="action-btn-icon" viewBox="0 0 24 24">
+                                    <path d="M7 2v11h3v9l7-12h-4l4-8z"/>
+                                </svg>
+                                Flash
+                            </button>
+                        </div>
+
                         <button class="psyclaw-btn full-width-btn" id="saveSettingsBtn">Save Settings</button>
                     </div>
                 </div>
@@ -1216,18 +1228,12 @@
                         </div>
                     </div>
                     <div class="input-content-wrapper">
-                        <button class="file-upload-btn" id="fileUploadBtn" title="Upload file">+</button>
                         <textarea class="chat-input" id="chatInput" placeholder="Type your message..." rows="1"></textarea>
                     </div>
                     <input type="file" class="file-upload-input" id="fileInput" accept=".txt,.md,.json,.py,.csv,.xlsx,.xls,.doc,.docx,.pdf">
                     <div class="input-bottom-row">
                         <div class="action-buttons">
-                            <button class="action-btn" id="deepThinkBtn" title="Flash">
-                                <svg class="action-btn-icon" viewBox="0 0 24 24">
-                                    <path d="M7 2v11h3v9l7-12h-4l4-8z"/>
-                                </svg>
-                                Flash
-                            </button>
+                            <button class="file-upload-btn" id="fileUploadBtn" title="Upload file">+</button>
                         </div>
                         <button class="chat-send-btn" id="sendBtn" title="Send">
                             <svg class="send-icon" viewBox="0 0 24 24">
@@ -1862,9 +1868,8 @@
         });
 
         // Handle dropdown toggle on click
-        modelDropbtn.addEventListener('mousedown', (e) => {
+        modelDropbtn.addEventListener('click', (e) => {
             if (apiCheckSuccessful && modelList.length > 0) {
-                e.preventDefault();
                 if (isModelDropdownOpen) {
                     modelDropdownContent.classList.remove('show');
                     isModelDropdownOpen = false;
@@ -2331,7 +2336,6 @@ ${message || ''}
      * Crossing: Loop A(1,7) and Loop B(3,9) - ranges overlap but neither contains the other
        Definition: loop1.startPoint < loop2.startPoint < loop1.endPoint < loop2.endPoint
      * Shared boundary: Loop A(1,5) and Loop B(5,9) - loops cannot share startPoint or endPoint
-   - Golden Rule: For any two loops, either one is completely inside the other, or they are completely separate with no overlapping points
 6. CONDITION NAMES: Each condition MUST have a descriptive "name" field that reflects its purpose. Use meaningful names like "Congruent Right", "Incongruent Left", "High Reward", "Low Reward" instead of generic names like "Condition 1", "Condition 2". The name should describe what makes this condition unique based on its variable values.
 7. ROUTINE COMPONENTS: Each routine MUST have at least one component in its "components" array. Empty routines are not allowed. A routine must contain at least one stimulus (text, image, audio, video) or response (keyboard) component.
 8. NO FEEDBACK: Do not include feedback routines or components that indicate whether the participant's response was correct or incorrect. Do not provide correctness feedback after responses.
@@ -2483,6 +2487,9 @@ ${JSON.stringify(schema, null, 2)}`;
                                             }
                                             // 如果正在积累 think 标签（有 <think> 但没有 </think>），不更新消息
                                         }
+                                    } else if (thinkContent && !fullContent.trim()) {
+                                        // 只有思考内容，没有实际回复内容，显示等待提示
+                                        assistantMsg.updateMessage('🤔 AI 正在思考中，请稍候...');
                                     }
                                 }
                             } catch (e) {
@@ -2508,6 +2515,17 @@ ${JSON.stringify(schema, null, 2)}`;
 
                 // 清理响应内容，移除可能的 markdown 代码块标记
                 let cleanContent = messageContent.trim();
+                
+                // 如果 messageContent 为空但 thinkContent 有内容，可能是思考模式导致的问题
+                // 尝试从 thinkContent 中提取 JSON
+                if (!cleanContent && thinkContent) {
+                    console.log('No message content but has think content, attempting to extract JSON from think content');
+                    const extractedFromThink = extractJSON(thinkContent);
+                    if (extractedFromThink && extractedFromThink !== thinkContent) {
+                        cleanContent = extractedFromThink.trim();
+                        console.log('Extracted JSON from think content:', cleanContent.substring(0, 100));
+                    }
+                }
                 if (cleanContent.startsWith('```json')) {
                     cleanContent = cleanContent.slice(7);
                 }
@@ -2525,6 +2543,16 @@ ${JSON.stringify(schema, null, 2)}`;
                 // 验证 JSON 是否有效（宽松处理）
                 if (!cleanContent || cleanContent.trim() === '') {
                     console.error('Failed to extract JSON: empty content');
+                    console.log('Full content:', fullContent);
+                    console.log('Think content:', thinkContent);
+                    
+                    // 如果有思考内容但没有最终输出，显示提示
+                    if (thinkContent && thinkContent.trim()) {
+                        assistantMsg.updateMessage('⚠️ AI 只返回了思考过程，没有生成有效的 JSON 输出。请尝试开启 Flash 模式（点击 Flash 按钮）以获得直接回复。');
+                        assistantMsg.msgDiv.classList.add('error');
+                        return;
+                    }
+                    
                     throw new Error('Failed to extract JSON from AI response');
                 }
 

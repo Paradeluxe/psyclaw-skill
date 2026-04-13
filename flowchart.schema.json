@@ -28,13 +28,20 @@
     "Routine": {
       "type": "object",
       "description": "A routine representing a single trial/stimulus presentation. The frontend handles visual layout (position, size) - this schema only defines the experiment logic.",
-      "required": ["name", "components"],
+      "required": ["name", "Point", "components"],
       "additionalProperties": false,
       "properties": {
         "name": {
           "type": "string",
           "description": "Display name of the routine",
-          "pattern": "^[a-zA-Z_][a-zA-Z0-9_]*$"
+          "pattern": "^[a-zA-Z_][a-zA-Z0-9_]*$",
+          "maxLength": 20
+        },
+        "Point": {
+          "type": "number",
+          "description": "Point in the flowchart where this routine locates",
+          "minimum": 0,
+          "default": 0
         },
         "components": {
           "type": "array",
@@ -512,8 +519,8 @@
     },
     "Loop": {
       "type": "object",
-      "description": "A loop (trial handler) that repeats a set of routines multiple times with varying conditions. Loops are located at odd-numbered points (1, 3, 5, 7...) on the flowchart. Routines are at even-numbered points (2, 4, 6, 8...). IMPORTANT: Loops cannot overlap or cross. For any two loops, either one must be completely inside the other (nested), or they must be completely separate with no overlapping points.",
-      "required": ["name", "startPoint", "endPoint", "reps"],
+      "description": "A loop (trial handler) that repeats a set of routines multiple times with varying conditions. Loops are located at odd-numbered points (1, 3, 5, 7...) on the flowchart. Routines are at even-numbered points (2, 4, 6, 8...). IMPORTANT: 1) Loops cannot overlap or cross. For any two loops, either one must be completely inside the other (nested), or they must be completely separate with no overlapping points. 2) startPoint MUST be less than endPoint.",
+      "required": ["name", "startPoint", "endPoint", "nRounds"],
       "additionalProperties": false,
       "properties": {
         "name": {
@@ -523,21 +530,21 @@
         },
         "startPoint": {
           "type": "integer",
-          "description": "The point where the loop starts (left side). Must be an odd number (1, 3, 5, 7...). This is the loop entry point. Loops cannot share startPoint or endPoint with other loops.",
+          "description": "The point where the loop starts (left side). Must be an odd number (1, 3, 5, 7...). This is the loop entry point. Loops cannot share startPoint or endPoint with other loops. startPoint MUST be less than endPoint.",
           "minimum": 1,
           "enum": [1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31, 33, 35, 37, 39]
         },
         "endPoint": {
           "type": "integer",
-          "description": "The point where the loop ends (right side). Must be an odd number (1, 3, 5, 7...). If endPoint < startPoint, the loop goes backward (repeats routines). Loops cannot share startPoint or endPoint with other loops.",
+          "description": "The point where the loop ends (right side). Must be an odd number (1, 3, 5, 7...). Loops cannot share startPoint or endPoint with other loops. endPoint MUST be greater than startPoint.",
           "minimum": 1,
           "enum": [1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31, 33, 35, 37, 39]
         },
-        "reps": {
+        "nRounds": {
           "type": "integer",
-          "minimum": 2,
-          "description": "Number of repetitions/trials",
-          "default": 2
+          "minimum": 1,
+          "description": "Number of rounds for all weighted conditions",
+          "default": 1
         },
         "type": {
           "type": "string",
@@ -551,15 +558,6 @@
           "items": {
             "$ref": "#/definitions/Condition"
           }
-        },
-        "conditionsFile": {
-          "type": "string",
-          "description": "Path to external CSV/Excel file with conditions (alternative to 'conditions' array)"
-        },
-        "isTrials": {
-          "type": "boolean",
-          "description": "Whether this is a trial handler (true) or just a loop (false)",
-          "default": true
         }
       }
     }

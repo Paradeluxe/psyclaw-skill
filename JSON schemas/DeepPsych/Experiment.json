@@ -1,9 +1,0 @@
-{
-  "$schema": "https://json-schema.org/draft/2020-12/schema#",
-  "title": "Experiment",
-  "description": "Array of PsychoPy experiments",
-  "type": "array",
-  "items": {
-    "$ref": "Session.json"
-  }
-}

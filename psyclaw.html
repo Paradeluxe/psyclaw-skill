@@ -102,10 +102,10 @@
 
         .avtp-form {
             position: fixed;
-            left: -320px;
+            left: -400px;
             top: 50%;
             transform: translateY(-50%);
-            width: 280px;
+            width: 360px;
             max-height: 60vh;
             background: var(--bg-white);
             border-radius: 20px;
@@ -910,6 +910,16 @@
             min-width: 0;
         }
 
+        .avtp-form-col-1 {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .avtp-form-col-2 {
+            flex: 2;
+            min-width: 0;
+        }
+
         .avtp-form-select {
             width: 100%;
             padding: 10px 12px;
@@ -1160,6 +1170,7 @@
 
         .loop-cond-weight-input[type=number] {
             -moz-appearance: textfield;
+            appearance: textfield;
         }
 
         .loop-cond-remove-btn {
@@ -1560,15 +1571,16 @@
 
         <div class="avtp-form-content">
 
-        <div class="avtp-form-group">
-            <label class="avtp-form-label">Start Time (ms)</label>
-            <input type="text" class="avtp-form-input" id="formStartTime" step="1" placeholder="0">
-        </div>
-
-        <div class="avtp-form-group">
-            <label class="avtp-form-label">Duration (ms)</label>
-            <input type="text" class="avtp-form-input" id="formDuration" step="1" placeholder="3000">
-            <div class="hint-text">Use -1 for infinite duration</div>
+        <div class="avtp-form-row">
+            <div>
+                <label class="avtp-form-label">Start Time (ms)</label>
+                <input type="text" class="avtp-form-input" id="formStartTime" step="1" placeholder="0">
+            </div>
+            <div>
+                <label class="avtp-form-label">Duration (ms)</label>
+                <input type="text" class="avtp-form-input" id="formDuration" step="1" placeholder="3000">
+                <div class="hint-text">Use -1 for infinite duration</div>
+            </div>
         </div>
 
         <div class="avtp-form-group form-group-hidden" id="fileInputGroup">
@@ -1864,15 +1876,15 @@
 
         <div class="form-group-hidden" id="loopOptions">
             <div class="avtp-form-row">
-                <div style="flex: 2;">
+                <div class="avtp-form-col-2">
                     <label class="avtp-form-label">Loop Name</label>
                     <input type="text" class="avtp-form-input" id="formLoopName" placeholder="e.g., trials">
                 </div>
-                <div style="flex: 1;">
-                    <label class="avtp-form-label">nTrials</label>
+                <div class="avtp-form-col-1">
+                    <label class="avtp-form-label">nRounds</label>
                     <input type="text" class="avtp-form-input" id="formLoopReps" step="1" min="1" placeholder="1">
                 </div>
-                <div style="flex: 1;">
+                <div class="avtp-form-col-1">
                     <label class="avtp-form-label">Loop Type</label>
                     <select class="avtp-form-select" id="formLoopType">
                         <option value="random">random</option>

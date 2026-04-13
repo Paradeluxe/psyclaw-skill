@@ -174,16 +174,33 @@ function replaceRandomPatternsInValue(value) {
 
 /**
  * 将 JSON 项目数据转换为 PsychoPy XML
+ * 支持两种格式：
+ * 1. 新格式 (v2.0): {routines, loops} - 符合 flowchart.schema.json
+ * 2. 旧格式: {routineRects, connections} - 兼容旧版本
  * @param {Object} projectData - DeepPsych 项目数据
  * @returns {string} XML 字符串
  */
 function convertToPsyExpXML(projectData) {
-    const { routineRects, connections } = projectData;
+    // 检测是否为新格式 (v2.0)
+    const isNewFormat = projectData.routines && projectData.loops;
+    
+    let routines, loops;
+    
+    if (isNewFormat) {
+        // 新格式：直接使用 routines 和 loops
+        routines = projectData.routines;
+        loops = projectData.loops;
+    } else {
+        // 旧格式：转换为新格式
+        const { routineRects, connections } = projectData;
+        routines = routineRects;
+        loops = extractLoopsFromConnections(routineRects, connections);
+    }
     
     // 收集所有routine中的随机数表达式
     const allRandomPatterns = [];
-    routineRects.forEach(rect => {
-        const patterns = collectRandomPatterns(rect);
+    routines.forEach(routine => {
+        const patterns = collectRandomPatternsFromRoutine(routine);
         patterns.forEach(p => {
             if (!allRandomPatterns.includes(p)) {
                 allRandomPatterns.push(p);
@@ -209,8 +226,8 @@ function convertToPsyExpXML(projectData) {
     
     // 添加 Routines
     xml += '  <Routines>\n';
-    for (let i = 0; i < routineRects.length; i++) {
-        xml += generateRoutine(routineRects[i], i, allRandomPatterns);
+    for (let i = 0; i < routines.length; i++) {
+        xml += generateRoutine(routines[i], i, allRandomPatterns);
     }
     xml += '  </Routines>\n';
     
@@ -219,12 +236,107 @@ function convertToPsyExpXML(projectData) {
     if (allRandomPatterns.length > 0) {
         xml += '    <Routine name="__init__"/>\n';
     }
-    xml += generateFlow(routineRects, connections);
+    xml += generateFlow(routines, loops);
     xml += '  </Flow>\n';
     
     xml += '</PsychoPy2experiment>';
     
     return xml;
+}
+
+/**
+ * 从旧格式的 connections 中提取 loops 信息
+ * @param {Array} routineRects - routine 数组
+ * @param {Array} connections - 连接数组
+ * @returns {Array} loops 数组
+ */
+function extractLoopsFromConnections(routineRects, connections) {
+    const loops = [];
+    
+    const loopConnections = connections.filter(conn => conn.loopName);
+    
+    loopConnections.forEach(conn => {
+        const startLabel = parseInt(conn.start.label);
+        const endLabel = parseInt(conn.end.label);
+        
+        // startPoint 和 endPoint 是奇数
+        const startPoint = startLabel;
+        const endPoint = endLabel;
+        
+        loops.push({
+            name: conn.loopName || 'trials',
+            startPoint: startPoint,
+            endPoint: endPoint,
+            nRounds: conn.loopReps || 1,
+            type: conn.loopType || 'sequential',
+            conditions: conn.loopConditions || ''
+        });
+    });
+    
+    return loops;
+}
+
+/**
+ * 收集 routine 中的随机数表达式（支持新旧格式）
+ * @param {Object} routine - routine 数据
+ * @returns {Array} 随机数表达式数组
+ */
+function collectRandomPatternsFromRoutine(routine) {
+    const patterns = [];
+    
+    // 新格式：components 数组
+    if (routine.components && Array.isArray(routine.components)) {
+        routine.components.forEach(component => {
+            collectRandomPatternsFromComponent(component, patterns);
+        });
+    }
+    // 旧格式：avtpComponents 数组
+    else if (routine.avtpComponents && Array.isArray(routine.avtpComponents)) {
+        routine.avtpComponents.forEach(component => {
+            if (component && typeof component === 'object') {
+                Object.keys(component).forEach(dataKey => {
+                    checkValuePattern(component[dataKey], patterns);
+                });
+            }
+        });
+    }
+    // 旧格式：avtpData 对象
+    else if (routine.avtpData) {
+        Object.keys(routine.avtpData).forEach(key => {
+            const data = routine.avtpData[key];
+            if (data && typeof data === 'object') {
+                Object.keys(data).forEach(dataKey => {
+                    checkValuePattern(data[dataKey], patterns);
+                });
+            }
+        });
+    }
+    
+    return patterns;
+}
+
+/**
+ * 检查并收集随机数表达式
+ * @param {any} value - 值
+ * @param {Array} patterns - 模式数组
+ */
+function checkValuePattern(value, patterns) {
+    if (typeof value === 'string' && value.startsWith('#[') && !patterns.includes(value)) {
+        patterns.push(value);
+    }
+}
+
+/**
+ * 从组件中收集随机数表达式
+ * @param {Object} component - 组件数据
+ * @param {Array} patterns - 模式数组
+ */
+function collectRandomPatternsFromComponent(component, patterns) {
+    if (!component || typeof component !== 'object') return;
+    
+    Object.keys(component).forEach(key => {
+        checkValuePattern(component[key], patterns);
+    });
 }
 
 /**
@@ -312,7 +424,10 @@ function generateSettings() {
 }
 
 /**
- * 生成单个 Routine
+ * 生成单个 Routine（支持新旧格式）
+ * @param {Object} routineRect - routine 数据
+ * @param {number} index - routine 索引
+ * @param {Array} allRandomPatterns - 所有随机数表达式
  */
 function generateRoutine(routineRect, index, allRandomPatterns) {
     const routineName = routineRect.name || `Routine_${index + 1}`;
@@ -338,15 +453,33 @@ function generateRoutine(routineRect, index, allRandomPatterns) {
       </RoutineSettingsComponent>\n`;
     
     // 收集当前routine中的随机数表达式
-    const routinePatterns = collectRandomPatterns(routineRect);
+    const routinePatterns = collectRandomPatternsFromRoutine(routineRect);
     
     // 添加routine级别的随机数处理Code组件（如果存在）
     if (routinePatterns.length > 0) {
         xml += generateRoutineRandomCodeComponent(routinePatterns, index);
     }
     
-    // 处理 avtpComponents 数组中的组件
-    if (routineRect.avtpComponents && Array.isArray(routineRect.avtpComponents)) {
+    // 新格式：components 数组（符合 flowchart.schema.json）
+    if (routineRect.components && Array.isArray(routineRect.components)) {
+        for (const component of routineRect.components) {
+            if (component && component.enabled !== false) {
+                if (component.type === 'audio') {
+                    xml += generateAudioComponentFromSchema(component, routineName);
+                } else if (component.type === 'video') {
+                    xml += generateVideoComponentFromSchema(component, routineName);
+                } else if (component.type === 'text') {
+                    xml += generateTextComponentFromSchema(component, routineName);
+                } else if (component.type === 'image') {
+                    xml += generateImageComponentFromSchema(component, routineName);
+                } else if (component.type === 'keyboard') {
+                    xml += generateKeyboardComponentFromSchema(component, routineName);
+                }
+            }
+        }
+    }
+    // 处理 avtpComponents 数组中的组件（兼容旧格式）
+    else if (routineRect.avtpComponents && Array.isArray(routineRect.avtpComponents)) {
         for (const component of routineRect.avtpComponents) {
             if (component && component.enabled) {
                 if (component.type === 'audio') {
@@ -770,57 +903,268 @@ function generateKeyboardComponentFromAvtp(avtpData, routineName) {
 }
 
 /**
- * 生成 Flow 部分
+ * 从 schema 格式生成 Audio 组件
  */
-function generateFlow(routineRects, connections) {
+function generateAudioComponentFromSchema(component, routineName) {
+    const name = component.name || `${routineName}_audio`;
+    const soundPath = component.path || '';
+    const volume = component.volume !== undefined ? component.volume : 1.0;
+    const startTime = ((component.startTime || 0) / 1000).toFixed(1);
+    const duration = component.duration && component.duration !== -1 ? (component.duration / 1000).toFixed(1) : '';
+    const stopWithRoutine = component.stopWithRoutine !== false ? 'True' : 'False';
+    const forceEndRoutine = component.forceEndRoutine === true ? 'True' : 'False';
+    const loop = component.loop === true ? 'True' : 'False';
+    const hamming = component.hamming !== false ? 'True' : 'False';
+    const deviceLabel = component.deviceLabel || '';
+    
+    return `      <SoundComponent name="${name}" plugin="None">
+        <Param val="${deviceLabel}" valType="device" updates="None" name="deviceLabel"/>
+        <Param val="False" valType="bool" updates="None" name="disabled"/>
+        <Param val="" valType="code" updates="None" name="durationEstim"/>
+        <Param val="${forceEndRoutine}" valType="bool" updates="constant" name="forceEndRoutine"/>
+        <Param val="${hamming}" valType="bool" updates="constant" name="hamming"/>
+        <Param val="${loop}" valType="bool" updates="constant" name="loop"/>
+        <Param val="${name}" valType="code" updates="None" name="name"/>
+        <Param val="True" valType="bool" updates="None" name="saveStartStop"/>
+        <Param val="${soundPath}" valType="str" updates="set every repeat" name="sound"/>
+        <Param val="" valType="code" updates="None" name="startEstim"/>
+        <Param val="time (s)" valType="str" updates="None" name="startType"/>
+        <Param val="${startTime}" valType="code" updates="None" name="startVal"/>
+        <Param val="duration (s)" valType="str" updates="None" name="stopType"/>
+        <Param val="${duration}" valType="code" updates="constant" name="stopVal"/>
+        <Param val="${stopWithRoutine}" valType="bool" updates="constant" name="stopWithRoutine"/>
+        <Param val="True" valType="bool" updates="constant" name="syncScreenRefresh"/>
+        <Param val="" valType="code" updates="None" name="validator"/>
+        <Param val="${volume}" valType="num" updates="constant" name="volume"/>
+      </SoundComponent>\n`;
+}
+
+/**
+ * 从 schema 格式生成 Video 组件
+ */
+function generateVideoComponentFromSchema(component, routineName) {
+    const name = component.name || `${routineName}_video`;
+    const videoPath = component.path || '';
+    const volume = component.volume !== undefined ? component.volume : 1.0;
+    const loop = component.loop === true ? 'True' : 'False';
+    const startTime = ((component.startTime || 0) / 1000).toFixed(1);
+    const duration = component.duration && component.duration !== -1 ? (component.duration / 1000).toFixed(1) : '';
+    const stopWithRoutine = component.stopWithRoutine !== false ? 'True' : 'False';
+    const forceEndRoutine = component.forceEndRoutine === true ? 'True' : 'False';
+    const pos = component.pos || [0, 0];
+    const size = component.size || [null, null];
+    const opacity = component.opacity !== undefined ? component.opacity : 1.0;
+    const ori = component.ori !== undefined ? component.ori : 0;
+    const units = component.units || 'from exp settings';
+    const flip = component.flip || 'None';
+    const anchor = component.anchor || 'center';
+    
+    const sizeVal = size[0] !== null && size[1] !== null ? `(${size[0]}, ${size[1]})` : '';
+    
+    return `      <MovieComponent name="${name}" plugin="None">
+        <Param val="${anchor}" valType="str" updates="constant" name="anchor"/>
+        <Param val="False" valType="bool" updates="None" name="disabled"/>
+        <Param val="" valType="code" updates="None" name="durationEstim"/>
+        <Param val="${forceEndRoutine}" valType="bool" updates="constant" name="forceEndRoutine"/>
+        <Param val="${flip}" valType="str" updates="constant" name="flip"/>
+        <Param val="${videoPath}" valType="str" updates="set every repeat" name="movie"/>
+        <Param val="${name}" valType="code" updates="None" name="name"/>
+        <Param val="${opacity}" valType="num" updates="constant" name="opacity"/>
+        <Param val="(${pos[0]}, ${pos[1]})" valType="list" updates="constant" name="pos"/>
+        <Param val="True" valType="bool" updates="None" name="saveStartStop"/>
+        <Param val="" valType="code" updates="None" name="startEstim"/>
+        <Param val="time (s)" valType="str" updates="None" name="startType"/>
+        <Param val="${startTime}" valType="code" updates="None" name="startVal"/>
+        <Param val="duration (s)" valType="str" updates="None" name="stopType"/>
+        <Param val="${duration}" valType="code" updates="constant" name="stopVal"/>
+        <Param val="${stopWithRoutine}" valType="bool" updates="constant" name="stopWithRoutine"/>
+        <Param val="True" valType="bool" updates="constant" name="syncScreenRefresh"/>
+        <Param val="${units}" valType="str" updates="None" name="units"/>
+        <Param val="" valType="code" updates="None" name="validator"/>
+        <Param val="${volume}" valType="num" updates="constant" name="volume"/>
+        <Param val="${loop}" valType="bool" updates="constant" name="loop"/>
+      </MovieComponent>\n`;
+}
+
+/**
+ * 从 schema 格式生成 Text 组件
+ */
+function generateTextComponentFromSchema(component, routineName) {
+    const name = component.name || `${routineName}_text`;
+    const text = replaceRandomPatternsInValue(component.text) || '';
+    const color = replaceRandomPatternsInValue(component.color) || 'white';
+    const font = component.font || 'Arial';
+    const letterHeight = component.letterHeight !== undefined ? component.letterHeight : 0.05;
+    const pos = component.pos || [0, 0];
+    const ori = component.ori !== undefined ? component.ori : 0;
+    const opacity = component.opacity !== undefined ? component.opacity : '';
+    const startTime = ((component.startTime || 0) / 1000).toFixed(1);
+    const duration = component.duration && component.duration !== -1 ? (component.duration / 1000).toFixed(1) : '';
+    const units = component.units || 'from exp settings';
+    const wrapWidth = component.wrapWidth !== undefined ? component.wrapWidth : '';
+    const languageStyle = component.languageStyle || 'LTR';
+    const flip = component.flip || 'None';
+    const draggable = component.draggable === true ? 'True' : 'False';
+    const anchor = component.anchor || 'center';
+    const colorSpace = component.colorSpace || 'rgb';
+    
+    return `      <TextComponent name="${name}" plugin="None">
+        <Param val="${anchor}" valType="str" updates="constant" name="anchor"/>
+        <Param val="${color}" valType="color" updates="constant" name="color"/>
+        <Param val="${colorSpace}" valType="str" updates="constant" name="colorSpace"/>
+        <Param val="1" valType="num" updates="constant" name="contrast"/>
+        <Param val="False" valType="bool" updates="None" name="disabled"/>
+        <Param val="${draggable}" valType="code" updates="constant" name="draggable"/>
+        <Param val="" valType="code" updates="None" name="durationEstim"/>
+        <Param val="${flip}" valType="str" updates="constant" name="flip"/>
+        <Param val="${font}" valType="str" updates="constant" name="font"/>
+        <Param val="${languageStyle}" valType="str" updates="None" name="languageStyle"/>
+        <Param val="${letterHeight}" valType="num" updates="constant" name="letterHeight"/>
+        <Param val="${name}" valType="code" updates="None" name="name"/>
+        <Param val="${opacity}" valType="num" updates="constant" name="opacity"/>
+        <Param val="${ori}" valType="num" updates="constant" name="ori"/>
+        <Param val="(${pos[0]}, ${pos[1]})" valType="list" updates="constant" name="pos"/>
+        <Param val="True" valType="bool" updates="None" name="saveStartStop"/>
+        <Param val="" valType="code" updates="None" name="startEstim"/>
+        <Param val="time (s)" valType="str" updates="None" name="startType"/>
+        <Param val="${startTime}" valType="code" updates="None" name="startVal"/>
+        <Param val="duration (s)" valType="str" updates="None" name="stopType"/>
+        <Param val="${duration}" valType="code" updates="constant" name="stopVal"/>
+        <Param val="True" valType="bool" updates="None" name="syncScreenRefresh"/>
+        <Param val="${text}" valType="str" updates="constant" name="text"/>
+        <Param val="${units}" valType="str" updates="None" name="units"/>
+        <Param val="" valType="code" updates="None" name="validator"/>
+        <Param val="${wrapWidth}" valType="num" updates="constant" name="wrapWidth"/>
+      </TextComponent>\n`;
+}
+
+/**
+ * 从 schema 格式生成 Image 组件
+ */
+function generateImageComponentFromSchema(component, routineName) {
+    const name = component.name || `${routineName}_image`;
+    const imagePath = component.path || '';
+    const startTime = ((component.startTime || 0) / 1000).toFixed(1);
+    const duration = component.duration && component.duration !== -1 ? (component.duration / 1000).toFixed(1) : '';
+    const pos = component.pos || [0, 0];
+    const size = component.size || [null, null];
+    const opacity = component.opacity !== undefined ? component.opacity : 1.0;
+    const ori = component.ori !== undefined ? component.ori : 0;
+    const contrast = component.contrast !== undefined ? component.contrast : 1.0;
+    const color = replaceRandomPatternsInValue(component.color) || '$[1,1,1]';
+    const colorSpace = component.colorSpace || 'rgb';
+    const flip = component.flip || 'None';
+    const interpolate = component.interpolate || 'linear';
+    const textureRes = component.textureRes || 128;
+    const units = component.units || 'from exp settings';
+    const draggable = component.draggable === true ? 'True' : 'False';
+    const anchor = 'center';
+    
+    const flipHoriz = flip === 'Horizontal' || flip === 'Both' ? 'True' : 'False';
+    const flipVert = flip === 'Vertical' || flip === 'Both' ? 'True' : 'False';
+    
+    const sizeVal = size[0] !== null && size[1] !== null ? `(${size[0]}, ${size[1]})` : '';
+    
+    return `      <ImageComponent name="${name}" plugin="None">
+        <Param val="${anchor}" valType="str" updates="constant" name="anchor"/>
+        <Param val="${color}" valType="color" updates="constant" name="color"/>
+        <Param val="${colorSpace}" valType="str" updates="constant" name="colorSpace"/>
+        <Param val="${contrast}" valType="num" updates="constant" name="contrast"/>
+        <Param val="False" valType="bool" updates="None" name="disabled"/>
+        <Param val="${draggable}" valType="code" updates="constant" name="draggable"/>
+        <Param val="" valType="code" updates="None" name="durationEstim"/>
+        <Param val="${flipHoriz}" valType="bool" updates="constant" name="flipHoriz"/>
+        <Param val="${flipVert}" valType="bool" updates="constant" name="flipVert"/>
+        <Param val="${imagePath}" valType="str" updates="set every repeat" name="image"/>
+        <Param val="${interpolate}" valType="str" updates="None" name="interpolate"/>
+        <Param val="${name}" valType="code" updates="None" name="name"/>
+        <Param val="${opacity}" valType="num" updates="constant" name="opacity"/>
+        <Param val="${ori}" valType="num" updates="constant" name="ori"/>
+        <Param val="(${pos[0]}, ${pos[1]})" valType="list" updates="constant" name="pos"/>
+        <Param val="True" valType="bool" updates="None" name="saveStartStop"/>
+        <Param val="" valType="code" updates="None" name="startEstim"/>
+        <Param val="time (s)" valType="str" updates="None" name="startType"/>
+        <Param val="${startTime}" valType="code" updates="None" name="startVal"/>
+        <Param val="duration (s)" valType="str" updates="None" name="stopType"/>
+        <Param val="${duration}" valType="code" updates="constant" name="stopVal"/>
+        <Param val="True" valType="bool" updates="None" name="syncScreenRefresh"/>
+        <Param val="${textureRes}" valType="num" updates="constant" name="texture resolution"/>
+        <Param val="${sizeVal}" valType="list" updates="constant" name="size"/>
+        <Param val="${units}" valType="str" updates="None" name="units"/>
+        <Param val="" valType="code" updates="None" name="validator"/>
+      </ImageComponent>\n`;
+}
+
+/**
+ * 从 schema 格式生成 Keyboard 组件
+ */
+function generateKeyboardComponentFromSchema(component, routineName) {
+    const name = component.name || `${routineName}_key_resp`;
+    const startTime = ((component.startTime || 0) / 1000).toFixed(1);
+    const duration = component.duration && component.duration !== -1 ? (component.duration / 1000).toFixed(1) : '';
+    const stopWithRoutine = component.stopWithRoutine !== false ? 'True' : 'False';
+    const forceEndRoutine = component.forceEndRoutine === true ? 'True' : 'False';
+    const discardPrevious = component.discardPrevious !== false ? 'True' : 'False';
+    const registerOn = component.registerOn || 'press';
+    const store = component.store || 'last key';
+    const storeCorrect = component.storeCorrect === true ? 'True' : 'False';
+    
+    // 处理 keys 格式：将 "Space, F, J" 转换为 "'space','f','j'"
+    let keys = component.keys || 'f,j';
+    if (keys) {
+        const keyList = keys.split(',').map(k => k.trim().toLowerCase());
+        keys = keyList.map(k => `'${k}'`).join(',');
+    } else {
+        keys = "'f','j'";
+    }
+    
+    return `      <KeyboardComponent name="${name}" plugin="None">
+        <Param val="${keys}" valType="list" updates="constant" name="allowedKeys"/>
+        <Param val="" valType="str" updates="constant" name="correctAns"/>
+        <Param val="False" valType="bool" updates="None" name="disabled"/>
+        <Param val="${discardPrevious}" valType="bool" updates="constant" name="discard previous"/>
+        <Param val="" valType="code" updates="None" name="durationEstim"/>
+        <Param val="${forceEndRoutine}" valType="bool" updates="constant" name="forceEndRoutine"/>
+        <Param val="${name}" valType="code" updates="None" name="name"/>
+        <Param val="${registerOn}" valType="str" updates="constant" name="registerOn"/>
+        <Param val="True" valType="bool" updates="None" name="saveStartStop"/>
+        <Param val="" valType="code" updates="None" name="startEstim"/>
+        <Param val="time (s)" valType="str" updates="None" name="startType"/>
+        <Param val="${startTime}" valType="code" updates="None" name="startVal"/>
+        <Param val="duration (s)" valType="str" updates="None" name="stopType"/>
+        <Param val="${duration}" valType="code" updates="constant" name="stopVal"/>
+        <Param val="${stopWithRoutine}" valType="bool" updates="constant" name="stopWithRoutine"/>
+        <Param val="${store}" valType="str" updates="constant" name="store"/>
+        <Param val="${storeCorrect}" valType="bool" updates="constant" name="storeCorrect"/>
+        <Param val="True" valType="bool" updates="constant" name="syncScreenRefresh"/>
+      </KeyboardComponent>\n`;
+}
+
+/**
+ * 生成 Flow 部分（支持新旧格式的 loops）
+ */
+function generateFlow(routineRects, loops) {
     let xml = '';
     
     const routineNames = routineRects.map((rect, index) => rect.name || `Routine_${index + 1}`);
     
-    const loopConnections = connections.filter(conn => conn.loopName);
-    const loops = [];
-    
-    loopConnections.forEach(conn => {
-        const startLabel = parseInt(conn.start.label);
-        const endLabel = parseInt(conn.end.label);
+    // 将 loops 转换为包含 startRoutineIndex 和 endRoutineIndex 的格式
+    const processedLoops = loops.map(loop => {
+        // startPoint 和 endPoint 是奇数（1, 3, 5...）
+        // startPoint 指向 loop 开始点，endPoint 指向 loop 结束点
+        // routine 索引 = (point - 1) / 2
+        const startRoutineIndex = Math.floor((loop.startPoint - 1) / 2);
+        const endRoutineIndex = Math.floor((loop.endPoint - 1) / 2);
         
-        // 连接点 label 为奇数：label = 2*i + 1 表示 routine i 的左侧连接点
-        // 连接点 label 为奇数：label = 2*i + 3 表示 routine i 的右侧连接点
-        // 因此：routine i 的左侧 label = 2*i + 1，右侧 label = 2*i + 3
-        // 从 label 计算 routine 索引：i = (label - 1) / 2
-        const startRoutineIndex = Math.floor((startLabel - 1) / 2);
-        let endRoutineIndex;
-        
-        if (startLabel === endLabel) {
-            // 起点和终点相同，loop 只包含一个 routine
-            endRoutineIndex = startRoutineIndex;
-        } else {
-            // endLabel 是奇数，表示连接到某个 routine 的左侧或右侧
-            // 当 endLabel = 2*i + 1（routine i 的左侧），表示 loop 在 routine i-1 结束
-            // 当 endLabel = 2*i + 3（routine i 的右侧），表示 loop 在 routine i 结束
-            // 由于 label 都是奇数，可以通过判断 endLabel 与 startLabel 的关系来确定
-            const endConnIndex = Math.floor((endLabel - 1) / 2);
-            if (endLabel > startLabel) {
-                // 向右连接：endLabel 是某个 routine 的右侧，loop 在该 routine 结束
-                endRoutineIndex = endConnIndex - 1;
-            } else {
-                // 向左连接：endLabel 是某个 routine 的左侧，loop 在前一个 routine 结束
-                endRoutineIndex = endConnIndex - 1;
-            }
-        }
-        
-        console.log(`Loop ${conn.loopName}: startLabel=${startLabel}, endLabel=${endLabel}, startRoutineIndex=${startRoutineIndex}, endRoutineIndex=${endRoutineIndex}`);
-        
-        loops.push({
-            name: conn.loopName || 'trials',
-            reps: conn.loopReps || 1,
-            loopType: conn.loopType || 'sequential',
-            conditions: conn.loopConditions || '',
-            isTrials: conn.loopIsTrials !== false,
+        return {
+            name: loop.name || 'trials',
+            reps: loop.nRounds || 1,
+            loopType: loop.type || 'sequential',
+            conditions: loop.conditions || [],
             startRoutineIndex: startRoutineIndex,
             endRoutineIndex: endRoutineIndex,
-            depth: conn.depth || 0
-        });
+            depth: 0
+        };
     });
     
     // 根据 loop 的包含关系重新计算深度
@@ -828,10 +1172,10 @@ function generateFlow(routineRects, connections) {
     // 使用迭代方式直到 depths 稳定，解决循环依赖问题
     let depthsChanged = true;
     let iterationCount = 0;
-    const maxIterations = loops.length + 1;
+    const maxIterations = processedLoops.length + 1;
     
     // 初始化 depth 为 0
-    loops.forEach(loop => {
+    processedLoops.forEach(loop => {
         loop.depth = 0;
     });
     
@@ -839,48 +1183,44 @@ function generateFlow(routineRects, connections) {
         depthsChanged = false;
         iterationCount++;
         
-        for (let i = 0; i < loops.length; i++) {
+        for (let i = 0; i < processedLoops.length; i++) {
             let newDepth = 0;
-            for (let j = 0; j < loops.length; j++) {
+            for (let j = 0; j < processedLoops.length; j++) {
                 if (i === j) continue;
                 // 如果 loop j 包含 loop i（j 的范围更大，完全包含 i）
-                const jContainsI = loops[j].startRoutineIndex <= loops[i].startRoutineIndex && 
-                                   loops[j].endRoutineIndex >= loops[i].endRoutineIndex;
+                const jContainsI = processedLoops[j].startRoutineIndex <= processedLoops[i].startRoutineIndex && 
+                                   processedLoops[j].endRoutineIndex >= processedLoops[i].endRoutineIndex;
                 
                 if (jContainsI) {
                     // 检查是否真的是包含（start 更小 或 end 更大）
-                    // 或者起点终点都相同但 j 是后加入的（在 connections 数组中索引更大）
-                    const isStrictlyLarger = (loops[j].startRoutineIndex < loops[i].startRoutineIndex || 
-                                              loops[j].endRoutineIndex > loops[i].endRoutineIndex);
+                    // 或者起点终点都相同但 j 是后加入的（在数组中索引更大）
+                    const isStrictlyLarger = (processedLoops[j].startRoutineIndex < processedLoops[i].startRoutineIndex || 
+                                              processedLoops[j].endRoutineIndex > processedLoops[i].endRoutineIndex);
                     
                     // 相同起点和终点时，后加入的 loop 包含先加入的
-                    const isSameRange = (loops[j].startRoutineIndex === loops[i].startRoutineIndex && 
-                                         loops[j].endRoutineIndex === loops[i].endRoutineIndex);
+                    const isSameRange = (processedLoops[j].startRoutineIndex === processedLoops[i].startRoutineIndex && 
+                                         processedLoops[j].endRoutineIndex === processedLoops[i].endRoutineIndex);
                     
                     if (isStrictlyLarger || (isSameRange && j > i)) {
-                        newDepth = Math.max(newDepth, loops[j].depth + 1);
+                        newDepth = Math.max(newDepth, processedLoops[j].depth + 1);
                     }
                 }
             }
             
-            if (newDepth !== loops[i].depth) {
-                loops[i].depth = newDepth;
+            if (newDepth !== processedLoops[i].depth) {
+                processedLoops[i].depth = newDepth;
                 depthsChanged = true;
             }
         }
     }
     
-    loops.forEach(loop => {
-        console.log(`Loop ${loop.name} final depth: ${loop.depth}`);
-    });
-    
-    loops.sort((a, b) => a.depth - b.depth);
+    processedLoops.sort((a, b) => a.depth - b.depth);
     
     const activeLoops = new Set();
     
     for (let i = 0; i < routineRects.length; i++) {
         // 找出在这个 routine 处开始的循环（深度小的先开始）
-        const loopsStartingHere = loops.filter(l => 
+        const loopsStartingHere = processedLoops.filter(l => 
             l.startRoutineIndex === i && !activeLoops.has(l.name)
         ).sort((a, b) => a.depth - b.depth);
         loopsStartingHere.forEach(loop => {
@@ -891,7 +1231,7 @@ function generateFlow(routineRects, connections) {
         xml += `    <Routine name="${routineNames[i]}"/>\n`;
         
         // 找出在这个 routine 处结束的循环（深度大的先结束）
-        const loopsEndingHere = loops.filter(l => 
+        const loopsEndingHere = processedLoops.filter(l => 
             l.endRoutineIndex === i && activeLoops.has(l.name)
         ).sort((a, b) => b.depth - a.depth);
         loopsEndingHere.forEach(loop => {
@@ -904,19 +1244,30 @@ function generateFlow(routineRects, connections) {
 }
 
 /**
- * 生成 LoopInitiator
+ * 生成 LoopInitiator（支持新旧格式的 conditions）
  */
 function generateLoopInitiator(loop) {
-    const conditionsStr = loop.conditions || '';
+    const conditions = loop.conditions || [];
     let conditionsVal = '';
     let conditionsFileVal = '';
     
-    if (conditionsStr) {
-        if (conditionsStr.startsWith('[')) {
-            // XML 转义：将双引号转为 &quot;
-            conditionsVal = conditionsStr.replace(/"/g, '&quot;');
+    // 处理 conditions（新格式是对象数组，旧格式是字符串）
+    if (Array.isArray(conditions) && conditions.length > 0) {
+        // 新格式：conditions 是 Condition 对象数组
+        // 转换为 PsychoPy XML 格式
+        const conditionsArray = conditions.map(condition => {
+            const values = condition.values || {};
+            return { ...{ name: condition.name || '' }, ...values };
+        });
+        conditionsVal = JSON.stringify(conditionsArray).replace(/"/g, '&quot;');
+    } else if (typeof conditions === 'string' && conditions) {
+        // 旧格式：conditions 是字符串（文件名或 JSON 字符串）
+        if (conditions.startsWith('[')) {
+            // JSON 字符串：XML 转义
+            conditionsVal = conditions.replace(/"/g, '&quot;');
         } else {
-            conditionsFileVal = conditionsStr;
+            // 文件名
+            conditionsFileVal = conditions;
         }
     }
     
