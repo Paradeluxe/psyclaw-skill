@@ -4304,17 +4304,37 @@
 
             const clickedRect = getDragRectAtPos(pos.x, pos.y);
             if (clickedRect) {
-                // 双击routine时，打开routine表单
                 shouldIgnoreClick = true;
                 selectedRoutineIndex = routineRects.indexOf(clickedRect);
                 activeDragRect = clickedRect;
-                // 选中routine时，取消loop的选中状态（互斥）
                 if (activeConnection) {
                     activeConnection = null;
                 }
                 updateRoutineCount();
                 draw();
-                showRoutineForm(clickedRect);
+
+                let clickedComponent = null;
+                if (clickedRect.componentHitAreas && clickedRect.componentHitAreas.length > 0) {
+                    for (const hitArea of clickedRect.componentHitAreas) {
+                        if (hitArea && pos.x >= hitArea.x && pos.x <= hitArea.x + hitArea.width &&
+                            pos.y >= hitArea.y && pos.y <= hitArea.y + hitArea.height) {
+                            clickedComponent = hitArea.component;
+                            break;
+                        }
+                    }
+                }
+
+                if (clickedComponent) {
+                    activeAvtp = clickedComponent.type;
+                    activeAvtpComponent = clickedComponent;
+                    avtpForm.style.transition = 'none';
+                    showRoutineForm(clickedRect);
+                    avtpForm.offsetHeight;
+                    avtpForm.style.transition = '';
+                    showAvtpkForm(clickedComponent.type);
+                } else {
+                    showRoutineForm(clickedRect);
+                }
                 return;
             }
         });
@@ -4601,6 +4621,7 @@
             loopOptions.classList.add('form-group-hidden');
             routineOptions.classList.remove('form-group-hidden');
             routineOptions.classList.add('form-group-visible');
+            avtpForm.classList.add('visible', 'wide');
             formStartTime.parentElement.style.display = 'none';
             formDuration.parentElement.style.display = 'none';
 
@@ -4614,7 +4635,7 @@
                 updateRoutineContainedInDisplay(routineIndex);
             }
             
-            avtpForm.classList.add('visible');
+            avtpForm.classList.add('visible', 'wide');
             renderAvtpComponentsList(rect);
             draw();
         }
@@ -5194,40 +5215,13 @@
 
             const clickedRect = getDragRectAtPos(pos.x, pos.y);
             if (clickedRect) {
-                // 单击只选中routine，不打开表单
                 selectedRoutineIndex = routineRects.indexOf(clickedRect);
                 activeDragRect = clickedRect;
-                // 选中routine时，取消loop的选中状态（互斥）
                 if (activeConnection) {
                     activeConnection = null;
                 }
                 updateRoutineCount();
                 draw();
-                
-                // 检查是否点击到了某个 AVTPK 组件
-                let clickedComponent = null;
-                if (clickedRect.componentHitAreas && clickedRect.componentHitAreas.length > 0) {
-                    for (const hitArea of clickedRect.componentHitAreas) {
-                        if (hitArea && pos.x >= hitArea.x && pos.x <= hitArea.x + hitArea.width &&
-                            pos.y >= hitArea.y && pos.y <= hitArea.y + hitArea.height) {
-                            clickedComponent = hitArea.component;
-                            break;
-                        }
-                    }
-                }
-                
-                // 如果点击了组件，打开 routine 表单并直接显示组件表单
-                if (clickedComponent) {
-                    activeAvtp = clickedComponent.type;
-                    activeAvtpComponent = clickedComponent;
-                    // 先打开 routine 表单（无动画）
-                    avtpForm.style.transition = 'none';
-                    showRoutineForm(clickedRect);
-                    avtpForm.offsetHeight; // 强制重绘
-                    avtpForm.style.transition = '';
-                    // 然后立即打开组件表单
-                    showAvtpkForm(clickedComponent.type);
-                }
                 return;
             }
         });
@@ -5419,7 +5413,7 @@
                     name: conn.loopName || `loop_${index}`,
                     startPoint: startPoint,
                     endPoint: endPoint,
-                    reps: conn.loopReps || 1,
+                    nRounds: conn.loopReps || 1,
                     type: conn.loopType || 'sequential',
                     conditions: conn.loopConditions || '',
                     conditionsFile: conn.loopConditionsFile || '',
@@ -5484,7 +5478,7 @@
                     end: { label: String(endPoint), position: 'left' },
                     depth: 0,
                     loopName: loop.name || `loop_${index}`,
-                    loopReps: loop.reps || 1,
+                    loopReps: loop.nRounds || loop.reps || 1,
                     loopType: loop.type || 'sequential',
                     loopConditions: convertedConditions,
                     loopConditionsFile: loop.conditionsFile || '',
@@ -5527,7 +5521,7 @@
                             name: l.name,
                             startPoint: l.startPoint,
                             endPoint: l.endPoint,
-                            reps: l.reps || 1,
+                            nRounds: l.nRounds || 1,
                             type: l.type || 'sequential',
                             conditions: l.conditions || '',
                             conditionsFile: l.conditionsFile || '',
@@ -5551,7 +5545,7 @@
                                 name: conn.loopName || `loop_${index}`,
                                 startPoint: conn.from,
                                 endPoint: conn.to,
-                                reps: conn.loopReps || 1,
+                                nRounds: conn.loopReps || 1,
                                 type: conn.loopType || 'sequential',
                                 conditions: conn.loopConditions || '',
                                 conditionsFile: conn.loopConditionsFile || '',
@@ -5566,7 +5560,7 @@
                                 name: conn.loopName || `loop_${index}`,
                                 startPoint: startPoint,
                                 endPoint: endPoint,
-                                reps: conn.loopReps || 1,
+                                nRounds: conn.loopReps || 1,
                                 type: conn.loopType || 'sequential',
                                 conditions: conn.loopConditions || '',
                                 conditionsFile: conn.loopConditionsFile || '',
@@ -5974,7 +5968,7 @@
                                 name: conn.loopName || `loop_${index}`,
                                 startRoutineId: conn.from,
                                 endRoutineId: conn.to,
-                                reps: conn.loopReps || 1,
+                                nRounds: conn.loopReps || 1,
                                 type: conn.loopType || 'sequential',
                                 conditions: conn.loopConditions || '',
                                 conditionsFile: conn.loopConditionsFile || '',
@@ -5991,7 +5985,7 @@
                                 name: conn.loopName || `loop_${index}`,
                                 startRoutineId: startRoutineId,
                                 endRoutineId: endRoutineId,
-                                reps: conn.loopReps || 1,
+                                nRounds: conn.loopReps || 1,
                                 type: conn.loopType || 'sequential',
                                 conditions: conn.loopConditions || '',
                                 conditionsFile: conn.loopConditionsFile || '',

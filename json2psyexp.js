@@ -173,29 +173,12 @@ function replaceRandomPatternsInValue(value) {
 }
 
 /**
- * 将 JSON 项目数据转换为 PsychoPy XML
- * 支持两种格式：
- * 1. 新格式 (v2.0): {routines, loops} - 符合 flowchart.schema.json
- * 2. 旧格式: {routineRects, connections} - 兼容旧版本
- * @param {Object} projectData - DeepPsych 项目数据
+ * 将 JSON 项目数据转换为 PsychoPy XML（v2.0 格式）
+ * @param {Object} projectData - DeepPsych 项目数据（符合 flowchart.schema.json v2.0）
  * @returns {string} XML 字符串
  */
 function convertToPsyExpXML(projectData) {
-    // 检测是否为新格式 (v2.0)
-    const isNewFormat = projectData.routines && projectData.loops;
-    
-    let routines, loops;
-    
-    if (isNewFormat) {
-        // 新格式：直接使用 routines 和 loops
-        routines = projectData.routines;
-        loops = projectData.loops;
-    } else {
-        // 旧格式：转换为新格式
-        const { routineRects, connections } = projectData;
-        routines = routineRects;
-        loops = extractLoopsFromConnections(routineRects, connections);
-    }
+    const { routines, loops } = projectData;
     
     // 收集所有routine中的随机数表达式
     const allRandomPatterns = [];
@@ -245,70 +228,16 @@ function convertToPsyExpXML(projectData) {
 }
 
 /**
- * 从旧格式的 connections 中提取 loops 信息
- * @param {Array} routineRects - routine 数组
- * @param {Array} connections - 连接数组
- * @returns {Array} loops 数组
- */
-function extractLoopsFromConnections(routineRects, connections) {
-    const loops = [];
-    
-    const loopConnections = connections.filter(conn => conn.loopName);
-    
-    loopConnections.forEach(conn => {
-        const startLabel = parseInt(conn.start.label);
-        const endLabel = parseInt(conn.end.label);
-        
-        // startPoint 和 endPoint 是奇数
-        const startPoint = startLabel;
-        const endPoint = endLabel;
-        
-        loops.push({
-            name: conn.loopName || 'trials',
-            startPoint: startPoint,
-            endPoint: endPoint,
-            nRounds: conn.loopReps || 1,
-            type: conn.loopType || 'sequential',
-            conditions: conn.loopConditions || ''
-        });
-    });
-    
-    return loops;
-}
-
-/**
- * 收集 routine 中的随机数表达式（支持新旧格式）
+ * 收集 routine 中的随机数表达式
  * @param {Object} routine - routine 数据
  * @returns {Array} 随机数表达式数组
  */
 function collectRandomPatternsFromRoutine(routine) {
     const patterns = [];
     
-    // 新格式：components 数组
     if (routine.components && Array.isArray(routine.components)) {
         routine.components.forEach(component => {
             collectRandomPatternsFromComponent(component, patterns);
-        });
-    }
-    // 旧格式：avtpComponents 数组
-    else if (routine.avtpComponents && Array.isArray(routine.avtpComponents)) {
-        routine.avtpComponents.forEach(component => {
-            if (component && typeof component === 'object') {
-                Object.keys(component).forEach(dataKey => {
-                    checkValuePattern(component[dataKey], patterns);
-                });
-            }
-        });
-    }
-    // 旧格式：avtpData 对象
-    else if (routine.avtpData) {
-        Object.keys(routine.avtpData).forEach(key => {
-            const data = routine.avtpData[key];
-            if (data && typeof data === 'object') {
-                Object.keys(data).forEach(dataKey => {
-                    checkValuePattern(data[dataKey], patterns);
-                });
-            }
         });
     }
     
@@ -424,13 +353,13 @@ function generateSettings() {
 }
 
 /**
- * 生成单个 Routine（支持新旧格式）
- * @param {Object} routineRect - routine 数据
+ * 生成单个 Routine
+ * @param {Object} routine - routine 数据
  * @param {number} index - routine 索引
  * @param {Array} allRandomPatterns - 所有随机数表达式
  */
-function generateRoutine(routineRect, index, allRandomPatterns) {
-    const routineName = routineRect.name || `Routine_${index + 1}`;
+function generateRoutine(routine, index, allRandomPatterns) {
+    const routineName = routine.name || `Routine_${index + 1}`;
     
     let xml = `    <Routine name="${routineName}">\n`;
     
@@ -453,16 +382,16 @@ function generateRoutine(routineRect, index, allRandomPatterns) {
       </RoutineSettingsComponent>\n`;
     
     // 收集当前routine中的随机数表达式
-    const routinePatterns = collectRandomPatternsFromRoutine(routineRect);
+    const routinePatterns = collectRandomPatternsFromRoutine(routine);
     
     // 添加routine级别的随机数处理Code组件（如果存在）
     if (routinePatterns.length > 0) {
         xml += generateRoutineRandomCodeComponent(routinePatterns, index);
     }
     
-    // 新格式：components 数组（符合 flowchart.schema.json）
-    if (routineRect.components && Array.isArray(routineRect.components)) {
-        for (const component of routineRect.components) {
+    // 处理 components 数组
+    if (routine.components && Array.isArray(routine.components)) {
+        for (const component of routine.components) {
             if (component && component.enabled !== false) {
                 if (component.type === 'audio') {
                     xml += generateAudioComponentFromSchema(component, routineName);
@@ -478,428 +407,9 @@ function generateRoutine(routineRect, index, allRandomPatterns) {
             }
         }
     }
-    // 处理 avtpComponents 数组中的组件（兼容旧格式）
-    else if (routineRect.avtpComponents && Array.isArray(routineRect.avtpComponents)) {
-        for (const component of routineRect.avtpComponents) {
-            if (component && component.enabled) {
-                if (component.type === 'audio') {
-                    xml += generateAudioComponentFromAvtp(component, routineName);
-                } else if (component.type === 'video') {
-                    xml += generateVideoComponentFromAvtp(component, routineName);
-                } else if (component.type === 'text') {
-                    xml += generateTextComponentFromAvtp(component, routineName);
-                } else if (component.type === 'image') {
-                    xml += generateImageComponentFromAvtp(component, routineName);
-                } else if (component.type === 'keyboard') {
-                    xml += generateKeyboardComponentFromAvtp(component, routineName);
-                }
-            }
-        }
-    } 
-    // 兼容旧的 avtpData 对象方式
-    else if (routineRect.avtpData) {
-        const avtpData = routineRect.avtpData;
-        
-        if (avtpData.a && avtpData.a.enabled) {
-            xml += generateAudioComponentFromAvtp(avtpData.a, routineName);
-        }
-        if (avtpData.v && avtpData.v.enabled) {
-            xml += generateVideoComponentFromAvtp(avtpData.v, routineName);
-        }
-        if (avtpData.t && avtpData.t.enabled) {
-            xml += generateTextComponentFromAvtp(avtpData.t, routineName);
-        }
-        if (avtpData.p && avtpData.p.enabled) {
-            xml += generateImageComponentFromAvtp(avtpData.p, routineName);
-        }
-        if (avtpData.k && avtpData.k.enabled) {
-            xml += generateKeyboardComponentFromAvtp(avtpData.k, routineName);
-        }
-    } 
-    // 兼容更旧的 type 属性方式
-    else if (routineRect.type) {
-        if (routineRect.type === 'Audio') {
-            xml += generateAudioComponent(routineRect);
-        } else if (routineRect.type === 'Text') {
-            xml += generateTextComponent(routineRect);
-        } else if (routineRect.type === 'Image') {
-            xml += generateImageComponent(routineRect);
-        } else if (routineRect.type === 'Keyboard') {
-            xml += generateKeyboardComponent(routineRect);
-        } else if (routineRect.type === 'Code') {
-            xml += generateCodeComponent(routineRect);
-        }
-    }
     
     xml += `    </Routine>\n`;
     return xml;
-}
-
-/**
- * 生成 Audio 组件
- */
-function generateAudioComponent(routineRect) {
-    const name = routineRect.name || 'sound';
-    const soundPath = routineRect.path || '';
-    
-    return `      <SoundComponent name="${name}" plugin="None">
-        <Param val="" valType="device" updates="None" name="deviceLabel"/>
-        <Param val="False" valType="bool" updates="None" name="disabled"/>
-        <Param val="" valType="code" updates="None" name="durationEstim"/>
-        <Param val="False" valType="bool" updates="constant" name="forceEndRoutine"/>
-        <Param val="True" valType="bool" updates="constant" name="hamming"/>
-        <Param val="${name}" valType="code" updates="None" name="name"/>
-        <Param val="True" valType="bool" updates="None" name="saveStartStop"/>
-        <Param val="${soundPath}" valType="str" updates="set every repeat" name="sound"/>
-        <Param val="" valType="code" updates="None" name="startEstim"/>
-        <Param val="time (s)" valType="str" updates="None" name="startType"/>
-        <Param val="0.0" valType="code" updates="None" name="startVal"/>
-        <Param val="duration (s)" valType="str" updates="None" name="stopType"/>
-        <Param val="" valType="code" updates="constant" name="stopVal"/>
-        <Param val="True" valType="bool" updates="constant" name="stopWithRoutine"/>
-        <Param val="True" valType="bool" updates="constant" name="syncScreenRefresh"/>
-        <Param val="" valType="code" updates="None" name="validator"/>
-        <Param val="1" valType="num" updates="constant" name="volume"/>
-      </SoundComponent>\n`;
-}
-
-/**
- * 生成 Text 组件
- */
-function generateTextComponent(routineRect) {
-    const name = routineRect.name || 'text';
-    const text = replaceRandomPatternsInValue(routineRect.text) || '';
-    const color = replaceRandomPatternsInValue(routineRect.color) || 'white';
-    const pos = routineRect.pos || { x: 0, y: 0 };
-    const letterHeight = routineRect.letterHeight || 0.05;
-    
-    return `      <TextComponent name="${name}" plugin="None">
-        <Param val="${color}" valType="color" updates="constant" name="color"/>
-        <Param val="rgb" valType="str" updates="constant" name="colorSpace"/>
-        <Param val="1" valType="num" updates="constant" name="contrast"/>
-        <Param val="False" valType="bool" updates="None" name="disabled"/>
-        <Param val="False" valType="code" updates="constant" name="draggable"/>
-        <Param val="" valType="code" updates="None" name="durationEstim"/>
-        <Param val="None" valType="str" updates="constant" name="flip"/>
-        <Param val="Arial" valType="str" updates="constant" name="font"/>
-        <Param val="LTR" valType="str" updates="None" name="languageStyle"/>
-        <Param val="${letterHeight}" valType="num" updates="constant" name="letterHeight"/>
-        <Param val="${name}" valType="code" updates="None" name="name"/>
-        <Param val="" valType="num" updates="constant" name="opacity"/>
-        <Param val="0" valType="num" updates="constant" name="ori"/>
-        <Param val="(${pos.x}, ${pos.y})" valType="list" updates="constant" name="pos"/>
-        <Param val="True" valType="bool" updates="None" name="saveStartStop"/>
-        <Param val="" valType="code" updates="None" name="startEstim"/>
-        <Param val="time (s)" valType="str" updates="None" name="startType"/>
-        <Param val="0.0" valType="code" updates="None" name="startVal"/>
-        <Param val="duration (s)" valType="str" updates="None" name="stopType"/>
-        <Param val="" valType="code" updates="constant" name="stopVal"/>
-        <Param val="True" valType="bool" updates="None" name="syncScreenRefresh"/>
-        <Param val="${text}" valType="str" updates="constant" name="text"/>
-        <Param val="from exp settings" valType="str" updates="None" name="units"/>
-        <Param val="" valType="code" updates="None" name="validator"/>
-        <Param val="" valType="num" updates="constant" name="wrapWidth"/>
-      </TextComponent>\n`;
-}
-
-/**
- * 生成 Image 组件
- */
-function generateImageComponent(routineRect) {
-    const name = routineRect.name || 'image';
-    const imagePath = routineRect.path || '';
-    
-    return `      <ImageComponent name="${name}" plugin="None">
-        <Param val="" valType="device" updates="None" name="deviceLabel"/>
-        <Param val="False" valType="bool" updates="None" name="disabled"/>
-        <Param val="" valType="code" updates="None" name="durationEstim"/>
-        <Param val="False" valType="bool" updates="constant" name="forceEndRoutine"/>
-        <Param val="${name}" valType="code" updates="None" name="name"/>
-        <Param val="${imagePath}" valType="str" updates="set every repeat" name="image"/>
-        <Param val="True" valType="bool" updates="None" name="saveStartStop"/>
-        <Param val="" valType="code" updates="None" name="startEstim"/>
-        <Param val="time (s)" valType="str" updates="None" name="startType"/>
-        <Param val="0.0" valType="code" updates="None" name="startVal"/>
-        <Param val="duration (s)" valType="str" updates="None" name="stopType"/>
-        <Param val="" valType="code" updates="constant" name="stopVal"/>
-        <Param val="True" valType="bool" updates="constant" name="syncScreenRefresh"/>
-      </ImageComponent>\n`;
-}
-
-/**
- * 生成 Keyboard 组件
- */
-function generateKeyboardComponent(routineRect) {
-    const name = routineRect.name || 'key_resp';
-    const allowedKeys = routineRect.allowedKeys || "'f','j'";
-    
-    return `      <KeyboardComponent name="${name}" plugin="None">
-        <Param val="${allowedKeys}" valType="list" updates="constant" name="allowedKeys"/>
-        <Param val="" valType="str" updates="constant" name="correctAns"/>
-        <Param val="False" valType="bool" updates="None" name="disabled"/>
-        <Param val="True" valType="bool" updates="constant" name="discard previous"/>
-        <Param val="" valType="code" updates="None" name="durationEstim"/>
-        <Param val="True" valType="bool" updates="constant" name="forceEndRoutine"/>
-        <Param val="${name}" valType="code" updates="None" name="name"/>
-        <Param val="press" valType="str" updates="constant" name="registerOn"/>
-        <Param val="True" valType="bool" updates="None" name="saveStartStop"/>
-        <Param val="" valType="code" updates="None" name="startEstim"/>
-        <Param val="time (s)" valType="str" updates="None" name="startType"/>
-        <Param val="0.0" valType="code" updates="None" name="startVal"/>
-        <Param val="duration (s)" valType="str" updates="None" name="stopType"/>
-        <Param val="" valType="code" updates="constant" name="stopVal"/>
-        <Param val="last key" valType="str" updates="constant" name="store"/>
-        <Param val="False" valType="bool" updates="constant" name="storeCorrect"/>
-        <Param val="True" valType="bool" updates="constant" name="syncScreenRefresh"/>
-      </KeyboardComponent>\n`;
-}
-
-/**
- * 生成 Code 组件
- */
-function generateCodeComponent(routineRect) {
-    const name = routineRect.name || 'code';
-    const code = routineRect.code || '';
-    
-    return `      <CodeComponent name="${name}" plugin="None">
-        <Param val="" valType="extendedCode" updates="constant" name="Before Experiment"/>
-        <Param val="" valType="extendedCode" updates="constant" name="Before JS Experiment"/>
-        <Param val="" valType="extendedCode" updates="constant" name="Begin Experiment"/>
-        <Param val="" valType="extendedCode" updates="constant" name="Begin JS Experiment"/>
-        <Param val="" valType="extendedCode" updates="constant" name="Begin JS Routine"/>
-        <Param val="${code}" valType="extendedCode" updates="constant" name="Begin Routine"/>
-        <Param val="Py" valType="str" updates="None" name="Code Type"/>
-        <Param val="" valType="extendedCode" updates="constant" name="Each Frame"/>
-        <Param val="" valType="extendedCode" updates="constant" name="Each JS Frame"/>
-        <Param val="" valType="extendedCode" updates="constant" name="End Experiment"/>
-        <Param val="" valType="extendedCode" updates="constant" name="End JS Experiment"/>
-        <Param val="" valType="extendedCode" updates="constant" name="End JS Routine"/>
-        <Param val="" valType="extendedCode" updates="constant" name="End Routine"/>
-        <Param val="False" valType="bool" updates="None" name="disabled"/>
-        <Param val="${name}" valType="code" updates="None" name="name"/>
-      </CodeComponent>\n`;
-}
-
-/**
- * 从 avtpData 生成 Audio 组件
- */
-function generateAudioComponentFromAvtp(avtpData, routineName) {
-    const name = avtpData.name || `${routineName}_audio`;
-    const soundPath = avtpData.path || '';
-    const volume = avtpData.volume || 1.0;
-    const startTime = (avtpData.startTime || 0) / 1000;
-    const duration = avtpData.duration ? avtpData.duration / 1000 : '';
-    const stopWithRoutine = avtpData.stopWithRoutine !== false ? 'True' : 'False';
-    const forceEndRoutine = avtpData.forceEndRoutine === true ? 'True' : 'False';
-    
-    return `      <SoundComponent name="${name}" plugin="None">
-        <Param val="" valType="device" updates="None" name="deviceLabel"/>
-        <Param val="False" valType="bool" updates="None" name="disabled"/>
-        <Param val="" valType="code" updates="None" name="durationEstim"/>
-        <Param val="${forceEndRoutine}" valType="bool" updates="constant" name="forceEndRoutine"/>
-        <Param val="True" valType="bool" updates="constant" name="hamming"/>
-        <Param val="${name}" valType="code" updates="None" name="name"/>
-        <Param val="True" valType="bool" updates="None" name="saveStartStop"/>
-        <Param val="${soundPath}" valType="str" updates="set every repeat" name="sound"/>
-        <Param val="" valType="code" updates="None" name="startEstim"/>
-        <Param val="time (s)" valType="str" updates="None" name="startType"/>
-        <Param val="${startTime}" valType="code" updates="None" name="startVal"/>
-        <Param val="duration (s)" valType="str" updates="None" name="stopType"/>
-        <Param val="${duration}" valType="code" updates="constant" name="stopVal"/>
-        <Param val="${stopWithRoutine}" valType="bool" updates="constant" name="stopWithRoutine"/>
-        <Param val="True" valType="bool" updates="constant" name="syncScreenRefresh"/>
-        <Param val="" valType="code" updates="None" name="validator"/>
-        <Param val="${volume}" valType="num" updates="constant" name="volume"/>
-      </SoundComponent>\n`;
-}
-
-/**
- * 从 avtpData 生成 Video 组件
- */
-function generateVideoComponentFromAvtp(avtpData, routineName) {
-    const name = avtpData.name || `${routineName}_video`;
-    const videoPath = avtpData.path || '';
-    const volume = avtpData.volume || 1.0;
-    const loop = avtpData.loop ? 'True' : 'False';
-    const startTime = (avtpData.startTime || 0) / 1000;
-    const duration = avtpData.duration ? avtpData.duration / 1000 : '';
-    const stopWithRoutine = avtpData.stopWithRoutine !== false ? 'True' : 'False';
-    const forceEndRoutine = avtpData.forceEndRoutine === true ? 'True' : 'False';
-    const pos = avtpData.pos || [0, 0];
-    const size = avtpData.size || [null, null];
-    const opacity = avtpData.opacity || 1.0;
-    const anchor = avtpData.anchor || 'center';
-    
-    return `      <MovieComponent name="${name}" plugin="None">
-        <Param val="${anchor}" valType="str" updates="constant" name="anchor"/>
-        <Param val="False" valType="bool" updates="None" name="disabled"/>
-        <Param val="" valType="code" updates="None" name="durationEstim"/>
-        <Param val="${forceEndRoutine}" valType="bool" updates="constant" name="forceEndRoutine"/>
-        <Param val="${videoPath}" valType="str" updates="set every repeat" name="movie"/>
-        <Param val="${name}" valType="code" updates="None" name="name"/>
-        <Param val="${opacity}" valType="num" updates="constant" name="opacity"/>
-        <Param val="(${pos[0]}, ${pos[1]})" valType="list" updates="constant" name="pos"/>
-        <Param val="True" valType="bool" updates="None" name="saveStartStop"/>
-        <Param val="" valType="code" updates="None" name="startEstim"/>
-        <Param val="time (s)" valType="str" updates="None" name="startType"/>
-        <Param val="${startTime}" valType="code" updates="None" name="startVal"/>
-        <Param val="duration (s)" valType="str" updates="None" name="stopType"/>
-        <Param val="${duration}" valType="code" updates="constant" name="stopVal"/>
-        <Param val="${stopWithRoutine}" valType="bool" updates="constant" name="stopWithRoutine"/>
-        <Param val="True" valType="bool" updates="constant" name="syncScreenRefresh"/>
-        <Param val="from exp settings" valType="str" updates="None" name="units"/>
-        <Param val="" valType="code" updates="None" name="validator"/>
-        <Param val="${volume}" valType="num" updates="constant" name="volume"/>
-        <Param val="${loop}" valType="bool" updates="constant" name="loop"/>
-      </MovieComponent>\n`;
-}
-
-/**
- * 从 avtpData 生成 Text 组件
- */
-function generateTextComponentFromAvtp(avtpData, routineName) {
-    const name = avtpData.name || `${routineName}_text`;
-    const text = replaceRandomPatternsInValue(avtpData.text) || '';
-    const color = replaceRandomPatternsInValue(avtpData.color) || 'white';
-    const font = avtpData.font || 'Arial';
-    const letterHeight = avtpData.letterHeight || 0.05;
-    const pos = avtpData.pos || [0, 0];
-    const ori = avtpData.ori || 0;
-    // opacity: 如果未设置或为null，使用空字符串
-    const opacity = avtpData.opacity !== undefined && avtpData.opacity !== null ? avtpData.opacity : '';
-    const contrast = avtpData.contrast || 1.0;
-    // startTime: 使用 0.0 格式
-    const startTime = ((avtpData.startTime || 0) / 1000).toFixed(1);
-    // duration: 如果为 -1 或未设置，使用空字符串
-    const duration = avtpData.duration && avtpData.duration !== -1 ? (avtpData.duration / 1000).toFixed(1) : '';
-    const units = avtpData.units || 'from exp settings';
-    const wrapWidth = avtpData.wrapWidth || '';
-    const languageStyle = avtpData.languageStyle || 'LTR';
-    const flip = avtpData.flip || 'None';
-    const draggable = avtpData.draggable ? 'True' : 'False';
-    
-    return `      <TextComponent name="${name}" plugin="None">
-        <Param val="${color}" valType="color" updates="constant" name="color"/>
-        <Param val="rgb" valType="str" updates="constant" name="colorSpace"/>
-        <Param val="${contrast}" valType="num" updates="constant" name="contrast"/>
-        <Param val="False" valType="bool" updates="None" name="disabled"/>
-        <Param val="${draggable}" valType="code" updates="constant" name="draggable"/>
-        <Param val="" valType="code" updates="None" name="durationEstim"/>
-        <Param val="${flip}" valType="str" updates="constant" name="flip"/>
-        <Param val="${font}" valType="str" updates="constant" name="font"/>
-        <Param val="${languageStyle}" valType="str" updates="None" name="languageStyle"/>
-        <Param val="${letterHeight}" valType="num" updates="constant" name="letterHeight"/>
-        <Param val="${name}" valType="code" updates="None" name="name"/>
-        <Param val="${opacity}" valType="num" updates="constant" name="opacity"/>
-        <Param val="${ori}" valType="num" updates="constant" name="ori"/>
-        <Param val="(${pos[0]}, ${pos[1]})" valType="list" updates="constant" name="pos"/>
-        <Param val="True" valType="bool" updates="None" name="saveStartStop"/>
-        <Param val="" valType="code" updates="None" name="startEstim"/>
-        <Param val="time (s)" valType="str" updates="None" name="startType"/>
-        <Param val="${startTime}" valType="code" updates="None" name="startVal"/>
-        <Param val="duration (s)" valType="str" updates="None" name="stopType"/>
-        <Param val="${duration}" valType="code" updates="constant" name="stopVal"/>
-        <Param val="True" valType="bool" updates="None" name="syncScreenRefresh"/>
-        <Param val="${text}" valType="str" updates="constant" name="text"/>
-        <Param val="${units}" valType="str" updates="None" name="units"/>
-        <Param val="" valType="code" updates="None" name="validator"/>
-        <Param val="${wrapWidth}" valType="num" updates="constant" name="wrapWidth"/>
-      </TextComponent>\n`;
-}
-
-/**
- * 从 avtpData 生成 Image 组件
- */
-function generateImageComponentFromAvtp(avtpData, routineName) {
-    const name = avtpData.name || `${routineName}_image`;
-    const imagePath = avtpData.path || '';
-    const startTime = (avtpData.startTime || 0) / 1000;
-    const duration = avtpData.duration ? avtpData.duration / 1000 : '';
-    const pos = avtpData.pos || [0, 0];
-    const size = avtpData.size || [null, null];
-    const opacity = avtpData.opacity !== undefined && avtpData.opacity !== null ? avtpData.opacity : 1.0;
-    const ori = avtpData.ori || 0;
-    const contrast = avtpData.contrast !== undefined && avtpData.contrast !== null ? avtpData.contrast : 1.0;
-    const color = replaceRandomPatternsInValue(avtpData.color) || '$[1,1,1]';
-    const colorSpace = avtpData.colorSpace || 'rgb';
-    const flip = avtpData.flip || 'None';
-    const interpolate = avtpData.interpolate || 'linear';
-    const textureRes = avtpData.textureRes || 128;
-    const units = avtpData.units || 'from exp settings';
-    const draggable = avtpData.draggable ? 'True' : 'False';
-
-    const flipHoriz = flip === 'horiz' ? 'True' : 'False';
-    const flipVert = flip === 'vert' ? 'True' : 'False';
-
-    const sizeVal = size[0] !== null && size[1] !== null ? `(${size[0]}, ${size[1]})` : '';
-
-    return `      <ImageComponent name="${name}" plugin="None">
-        <Param val="center" valType="str" updates="constant" name="anchor"/>
-        <Param val="${color}" valType="color" updates="constant" name="color"/>
-        <Param val="${colorSpace}" valType="str" updates="constant" name="colorSpace"/>
-        <Param val="${contrast}" valType="num" updates="constant" name="contrast"/>
-        <Param val="False" valType="bool" updates="None" name="disabled"/>
-        <Param val="${draggable}" valType="code" updates="constant" name="draggable"/>
-        <Param val="" valType="code" updates="None" name="durationEstim"/>
-        <Param val="${flipHoriz}" valType="bool" updates="constant" name="flipHoriz"/>
-        <Param val="${flipVert}" valType="bool" updates="constant" name="flipVert"/>
-        <Param val="${imagePath}" valType="str" updates="set every repeat" name="image"/>
-        <Param val="${interpolate}" valType="str" updates="None" name="interpolate"/>
-        <Param val="${name}" valType="code" updates="None" name="name"/>
-        <Param val="${opacity}" valType="num" updates="constant" name="opacity"/>
-        <Param val="${ori}" valType="num" updates="constant" name="ori"/>
-        <Param val="(${pos[0]}, ${pos[1]})" valType="list" updates="constant" name="pos"/>
-        <Param val="True" valType="bool" updates="None" name="saveStartStop"/>
-        <Param val="" valType="code" updates="None" name="startEstim"/>
-        <Param val="time (s)" valType="str" updates="None" name="startType"/>
-        <Param val="${startTime}" valType="code" updates="None" name="startVal"/>
-        <Param val="duration (s)" valType="str" updates="None" name="stopType"/>
-        <Param val="${duration}" valType="code" updates="constant" name="stopVal"/>
-        <Param val="True" valType="bool" updates="None" name="syncScreenRefresh"/>
-        <Param val="${textureRes}" valType="num" updates="constant" name="texture resolution"/>
-        <Param val="${sizeVal}" valType="list" updates="constant" name="size"/>
-        <Param val="${units}" valType="str" updates="None" name="units"/>
-        <Param val="" valType="code" updates="None" name="validator"/>
-      </ImageComponent>\n`;
-}
-
-/**
- * 从 avtpData 生成 Keyboard 组件
- */
-function generateKeyboardComponentFromAvtp(avtpData, routineName) {
-    const name = avtpData.name || `${routineName}_key_resp`;
-    const startTime = (avtpData.startTime || 0) / 1000;
-    const duration = avtpData.duration ? avtpData.duration / 1000 : '';
-    const forceEndRoutine = avtpData.forceEndRoutine !== false ? 'True' : 'False';
-    
-    // 处理 keys 格式：将 "Space, F, J" 转换为 "'space','f','j'"
-    let keys = avtpData.keys || 'f,j';
-    if (keys) {
-        const keyList = keys.split(',').map(k => k.trim().toLowerCase());
-        keys = keyList.map(k => `'${k}'`).join(',');
-    } else {
-        keys = "'f','j'";
-    }
-    
-    return `      <KeyboardComponent name="${name}" plugin="None">
-        <Param val="${keys}" valType="list" updates="constant" name="allowedKeys"/>
-        <Param val="" valType="str" updates="constant" name="correctAns"/>
-        <Param val="False" valType="bool" updates="None" name="disabled"/>
-        <Param val="True" valType="bool" updates="constant" name="discard previous"/>
-        <Param val="" valType="code" updates="None" name="durationEstim"/>
-        <Param val="${forceEndRoutine}" valType="bool" updates="constant" name="forceEndRoutine"/>
-        <Param val="${name}" valType="code" updates="None" name="name"/>
-        <Param val="press" valType="str" updates="constant" name="registerOn"/>
-        <Param val="True" valType="bool" updates="None" name="saveStartStop"/>
-        <Param val="" valType="code" updates="None" name="startEstim"/>
-        <Param val="time (s)" valType="str" updates="None" name="startType"/>
-        <Param val="${startTime}" valType="code" updates="None" name="startVal"/>
-        <Param val="duration (s)" valType="str" updates="None" name="stopType"/>
-        <Param val="${duration}" valType="code" updates="constant" name="stopVal"/>
-        <Param val="last key" valType="str" updates="constant" name="store"/>
-        <Param val="False" valType="bool" updates="constant" name="storeCorrect"/>
-        <Param val="True" valType="bool" updates="constant" name="syncScreenRefresh"/>
-      </KeyboardComponent>\n`;
 }
 
 /**
@@ -1244,31 +754,19 @@ function generateFlow(routineRects, loops) {
 }
 
 /**
- * 生成 LoopInitiator（支持新旧格式的 conditions）
+ * 生成 LoopInitiator
  */
 function generateLoopInitiator(loop) {
     const conditions = loop.conditions || [];
     let conditionsVal = '';
     let conditionsFileVal = '';
     
-    // 处理 conditions（新格式是对象数组，旧格式是字符串）
     if (Array.isArray(conditions) && conditions.length > 0) {
-        // 新格式：conditions 是 Condition 对象数组
-        // 转换为 PsychoPy XML 格式
         const conditionsArray = conditions.map(condition => {
             const values = condition.values || {};
             return { ...{ name: condition.name || '' }, ...values };
         });
         conditionsVal = JSON.stringify(conditionsArray).replace(/"/g, '&quot;');
-    } else if (typeof conditions === 'string' && conditions) {
-        // 旧格式：conditions 是字符串（文件名或 JSON 字符串）
-        if (conditions.startsWith('[')) {
-            // JSON 字符串：XML 转义
-            conditionsVal = conditions.replace(/"/g, '&quot;');
-        } else {
-            // 文件名
-            conditionsFileVal = conditions;
-        }
     }
     
     return `    <LoopInitiator loopType="TrialHandler" name="${loop.name}">

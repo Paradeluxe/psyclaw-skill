@@ -315,7 +315,7 @@ function renderLoopConditions() {
 
 **文件位置**: `psyclaw.html`
 
-**nTrials 和 Loop Type 并排显示**:
+**nRounds 和 Loop Type 并排显示**:
 
 使用 `avtp-form-row` 类实现两列布局：
 ```css
@@ -336,7 +336,7 @@ function renderLoopConditions() {
 ```html
 <div class="avtp-form-row">
     <div>
-        <label class="avtp-form-label">nTrials</label>
+        <label class="avtp-form-label">nRounds</label>
         <input type="text" class="avtp-form-input" id="formLoopReps" step="1" min="1" placeholder="1">
     </div>
     <div>
@@ -352,7 +352,7 @@ function renderLoopConditions() {
 
 **更新历史**:
 - **2026-04-12**: 将 `avtp-form-row` 从 grid 改为 flexbox 布局
-  - 原因：确保 nTrials 和 Loop Type 在同一行显示
+  - 原因：确保 nRounds 和 Loop Type 在同一行显示
   - 使用 `flex: 1` 让两个子元素平均分配宽度
 
 ### 3. 获取包含 Routine 的 Loops (getLoopsContainingRoutine)

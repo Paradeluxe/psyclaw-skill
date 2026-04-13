@@ -113,7 +113,7 @@
       "name": "trials",
       "startPoint": 1,
       "endPoint": 7,
-      "reps": 10,
+      "nRounds": 10,
       "type": "random",
       "conditions": "[{\"word\":\"RED\",\"color\":\"red\"},{\"word\":\"BLUE\",\"color\":\"blue\"},{\"word\":\"GREEN\",\"color\":\"green\"},{\"word\":\"YELLOW\",\"color\":\"yellow\"}]",
       "conditionsFile": "",

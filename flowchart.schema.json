@@ -426,7 +426,7 @@
     "KeyboardComponent": {
       "type": "object",
       "description": "Keyboard response component",
-      "required": ["name", "type", "startTime", "duration"],
+      "required": ["name", "type", "startTime", "duration", "keys"],
       "additionalProperties": false,
       "properties": {
         "name": {
@@ -464,34 +464,18 @@
           "type": "string",
           "description": "Comma-separated keyboard keys (e.g., 'space,return,escape')"
         },
-        "discardPrevious": {
-          "type": "boolean",
-          "description": "Discard previous key presses",
-          "default": true
-        },
         "registerOn": {
           "type": "string",
           "description": "When to register key press",
           "enum": ["press", "release"],
           "default": "press"
-        },
-        "store": {
-          "type": "string",
-          "description": "What to store",
-          "enum": ["last key", "all keys", "nothing"],
-          "default": "last key"
-        },
-        "storeCorrect": {
-          "type": "boolean",
-          "description": "Store whether response was correct",
-          "default": false
         }
       }
     },
     "Condition": {
       "type": "object",
       "description": "A condition object representing one trial with specific parameter values",
-      "required": ["name"],
+      "required": ["name", "weight"],
       "additionalProperties": false,
       "properties": {
         "name": {
@@ -505,15 +489,8 @@
           "default": 1
         },
         "values": {
-          "type": "object",
-          "description": "Variable values for this condition. Keys are variable names (without $ prefix), values are the assigned values.",
-          "additionalProperties": {
-            "type": ["string", "number", "boolean"]
-          },
-          "example": {
-            "flanker_array": ">>>>>",
-            "correct": "right"
-          }
+          "type": "array",
+          "description": "Array of values for this condition. All elements must be the same type. Elements can be strings, numbers, booleans, or $var$ format referencing existing variables."
         }
       }
     },
