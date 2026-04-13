@@ -1851,12 +1851,14 @@
         // Dropdown toggle - show on focus when API check is successful
         let apiCheckSuccessful = false;
         let isModelDropdownOpen = false;
-        
+        let ignoreNextClick = false;
+
         modelDropbtn.addEventListener('focus', (e) => {
             if (apiCheckSuccessful && modelList.length > 0 && !isModelDropdownOpen) {
                 filterModelOptions(modelDropbtn.value);
                 modelDropdownContent.classList.add('show');
                 isModelDropdownOpen = true;
+                ignoreNextClick = true;
             }
         });
 
@@ -1869,6 +1871,10 @@
 
         // Handle dropdown toggle on click
         modelDropbtn.addEventListener('click', (e) => {
+            if (ignoreNextClick) {
+                ignoreNextClick = false;
+                return;
+            }
             if (apiCheckSuccessful && modelList.length > 0) {
                 if (isModelDropdownOpen) {
                     modelDropdownContent.classList.remove('show');

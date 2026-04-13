@@ -4988,26 +4988,10 @@
                 const parsed = JSON.parse(jsonValue);
                 if (Array.isArray(parsed)) {
                     return parsed.filter(c => c._meta !== true).map((c, i) => {
-                        // New format: {name, weight, values: [val1, val2, ...]}
-                        if (c.values !== undefined && Array.isArray(c.values)) {
-                            return {
-                                name: c.name || `Condition ${i + 1}`,
-                                weight: c.weight !== undefined ? c.weight : 1,
-                                values: c.values || []
-                            };
-                        }
-                        // Legacy format: {name, weight, values: {var1: val1, var2: val2}}
-                        if (c.values !== undefined && typeof c.values === 'object' && c.values !== null) {
-                            return {
-                                name: c.name || `Condition ${i + 1}`,
-                                weight: c.weight !== undefined ? c.weight : 1,
-                                values: Object.values(c.values) || []
-                            };
-                        }
                         return {
                             name: c.name || `Condition ${i + 1}`,
                             weight: c.weight !== undefined ? c.weight : 1,
-                            values: []
+                            values: Array.isArray(c.values) ? c.values : []
                         };
                     });
                 }
@@ -5441,22 +5425,10 @@
                 if (!Array.isArray(parsed)) return '';
 
                 const converted = parsed.map((c, i) => {
-                    // New format: values is already an array
-                    if (c.values !== undefined && Array.isArray(c.values)) {
-                        return c;
-                    }
-                    // Legacy format: values is an object, convert to array
-                    if (c.values !== undefined && typeof c.values === 'object' && c.values !== null) {
-                        return {
-                            name: c.name || `Condition ${i + 1}`,
-                            weight: c.weight !== undefined ? c.weight : 1,
-                            values: Object.values(c.values) || []
-                        };
-                    }
                     return {
                         name: c.name || `Condition ${i + 1}`,
                         weight: c.weight !== undefined ? c.weight : 1,
-                        values: []
+                        values: Array.isArray(c.values) ? c.values : []
                     };
                 });
                 return JSON.stringify(converted);
