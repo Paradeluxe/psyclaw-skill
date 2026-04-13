@@ -40,8 +40,8 @@
         "Point": {
           "type": "number",
           "description": "Point in the flowchart where this routine locates",
-          "minimum": 0,
-          "default": 0
+          "minimum": 2,
+          "default": 2
         },
         "components": {
           "type": "array",

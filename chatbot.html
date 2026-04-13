@@ -560,13 +560,50 @@
             transform: translateY(-50%);
         }
 
+        .message-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .message-wrapper:hover .message-actions {
+            opacity: 1;
+        }
+
+        .message-action-btn {
+            width: 28px;
+            height: 28px;
+            border: none;
+            background: transparent;
+            color: #8e8e93;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            transition: all 0.2s;
+            padding: 0;
+        }
+
+        .message-action-btn:hover {
+            background: rgba(0, 0, 0, 0.05);
+            color: #45515e;
+        }
+
+        .message-action-btn svg {
+            width: 16px;
+            height: 16px;
+            fill: currentColor;
+        }
+
         /* Think Chain 可折叠区域样式 */
         .think-chain-container {
-            margin-bottom: 8px;
-            border: 1px solid var(--border-gray);
+            margin-bottom: 16px;
             border-radius: 12px;
             overflow: hidden;
-            background: var(--bg-light);
+            background: #f7f7f8;
             display: none;
         }
 
@@ -578,54 +615,78 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 8px 12px;
-            background: var(--primary-200);
+            padding: 12px 16px;
+            background: transparent;
             cursor: pointer;
             -webkit-user-select: none;
             user-select: none;
-            transition: background 0.2s;
+            transition: all 0.2s ease;
         }
 
         .think-chain-header:hover {
-            background: var(--primary-light);
+            background: rgba(0, 0, 0, 0.02);
         }
 
         .think-chain-title {
             font-family: 'DM Sans', sans-serif;
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--brand-deep);
+            font-size: 14px;
+            font-weight: 500;
+            color: #10a37f;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
         }
 
         .think-chain-icon {
-            width: 14px;
-            height: 14px;
-            fill: var(--brand-deep);
+            width: 16px;
+            height: 16px;
+            fill: #10a37f;
+        }
+
+        .think-chain-status {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 13px;
+            font-weight: 400;
+            color: #8e8e93;
+            margin-left: 4px;
+        }
+
+        .think-chain-toggle-wrapper {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.04);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+        }
+
+        .think-chain-toggle-wrapper:hover {
+            background: rgba(0, 0, 0, 0.08);
         }
 
         .think-chain-toggle {
-            width: 16px;
-            height: 16px;
-            fill: var(--brand-deep);
-            transition: transform 0.2s;
+            width: 14px;
+            height: 14px;
+            fill: #6b7280;
+            transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         }
 
-        .think-chain-toggle.collapsed {
+        .think-chain-toggle-wrapper.collapsed .think-chain-toggle {
             transform: rotate(-90deg);
         }
 
         .think-chain-content {
             max-height: 300px;
             overflow-y: auto;
-            padding: 12px;
+            padding: 0 16px 16px 16px;
             font-family: 'Roboto Mono', monospace;
-            font-size: 12px;
+            font-size: 13px;
             line-height: 1.6;
-            color: var(--text-secondary);
-            background: var(--bg-white);
+            color: #374151;
+            background: transparent;
             white-space: pre-wrap;
             word-wrap: break-word;
         }
@@ -634,30 +695,46 @@
             display: none;
         }
 
+        .think-chain-content::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .think-chain-content::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .think-chain-content::-webkit-scrollbar-thumb {
+            background: #d1d5db;
+            border-radius: 3px;
+        }
+
+
+
         .message-wrapper {
             margin-bottom: 16px;
         }
 
         .chat-input-area {
-            padding: 12px;
-            background: var(--bg-light);
-            border: 1px solid var(--border-light);
-            border-radius: 20px;
+            padding: 16px;
+            background: #ffffff;
+            border: 1px solid #f2f3f5;
+            border-radius: 24px;
             transition: all 0.3s ease;
             margin: 12px;
+            box-shadow: rgba(44, 30, 116, 0.06) 0px 4px 16px;
         }
 
         .chat-input-row {
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 12px;
             background: transparent;
             padding: 0;
         }
 
         .chat-input-area:focus-within {
-            border-color: var(--primary-light);
-            box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.2);
+            border-color: #1456f0;
+            box-shadow: rgba(44, 30, 116, 0.12) 0px 8px 24px, 0 0 0 3px rgba(20, 86, 240, 0.1);
         }
 
         .input-content-wrapper {
@@ -665,6 +742,8 @@
             align-items: center;
             gap: 8px;
             width: 100%;
+            padding: 0 4px;
+            box-sizing: border-box;
         }
 
         .file-card-container {
@@ -807,6 +886,8 @@
             align-items: center;
             justify-content: space-between;
             width: 100%;
+            padding: 0 4px;
+            box-sizing: border-box;
         }
 
         .action-buttons {
@@ -817,20 +898,22 @@
 
         .chat-input {
             width: 100%;
-            padding: 8px 0;
+            padding: 8px 4px;
             border: none;
             background: transparent;
-            font-size: 14px;
+            font-size: 16px;
             font-family: 'DM Sans', sans-serif;
+            font-weight: 400;
             resize: none;
             min-height: 24px;
             max-height: 120px;
             line-height: 1.50;
-            color: var(--text-primary);
+            color: #222222;
         }
 
         .chat-input::placeholder {
-            color: var(--text-muted);
+            color: #8e8e93;
+            font-weight: 400;
         }
 
         .chat-input:focus {
@@ -838,26 +921,81 @@
         }
 
         .file-upload-btn {
-            width: 28px;
-            height: 28px;
-            border: 1px solid var(--border-gray);
-            background: var(--bg-white);
-            color: var(--text-secondary);
-            font-size: 16px;
+            height: 32px;
+            border: 1px solid #f2f3f5;
+            background: #f9f9f9;
+            color: #45515e;
+            font-size: 13px;
+            font-weight: 500;
+            font-family: 'DM Sans', sans-serif;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 8px;
-            transition: all 0.2s;
-            padding: 0;
+            border-radius: 9999px;
+            transition: all 0.2s ease;
+            padding: 0 14px;
             flex-shrink: 0;
+            gap: 6px;
         }
 
         .file-upload-btn:hover {
-            background: var(--bg-light);
-            border-color: var(--primary-light);
-            color: var(--text-dark);
+            background: #f2f3f5;
+            border-color: #e5e7eb;
+            color: #222222;
+        }
+
+        .thinking-mode-btn {
+            height: 32px;
+            border: 1px solid #f2f3f5;
+            background: #f9f9f9;
+            color: #45515e;
+            font-size: 13px;
+            font-weight: 500;
+            font-family: 'DM Sans', sans-serif;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 9999px;
+            transition: all 0.2s ease;
+            padding: 0 14px;
+            flex-shrink: 0;
+            gap: 6px;
+        }
+
+        .thinking-mode-btn:hover {
+            background: #f2f3f5;
+            border-color: #e5e7eb;
+            color: #222222;
+        }
+
+        .thinking-mode-btn.active {
+            background: #1456f0;
+            border-color: #1456f0;
+            color: #ffffff;
+        }
+
+        .thinking-icon {
+            width: 16px;
+            height: 16px;
+            flex-shrink: 0;
+        }
+
+        .thinking-text {
+            font-size: 12px;
+            white-space: nowrap;
+        }
+
+        .file-upload-icon {
+            width: 16px;
+            height: 16px;
+            flex-shrink: 0;
+        }
+
+        .file-upload-text {
+            font-size: 12px;
+            white-space: nowrap;
         }
 
         .file-upload-input {
@@ -917,12 +1055,116 @@
             fill: currentColor;
         }
 
+        /* Checkbox Styles - MiniMax Design System */
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 11px 16px;
+            background: var(--bg-white);
+            border: 1.5px solid var(--border-gray);
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 500;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            width: 100%;
+        }
+
+        .checkbox-label:hover {
+            border-color: var(--primary-light);
+            color: var(--text-dark);
+            box-shadow: var(--shadow-standard);
+        }
+
+        .checkbox-label input[type="checkbox"] {
+            display: none;
+        }
+
+        .checkbox-custom {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border-gray);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+            background: var(--bg-white);
+        }
+
+        .checkbox-icon {
+            width: 14px;
+            height: 14px;
+            fill: var(--bg-white);
+            opacity: 0;
+            transform: scale(0.8);
+            transition: all 0.2s ease;
+        }
+
+        .checkbox-label input[type="checkbox"]:checked + .checkbox-custom {
+            background: var(--primary-500);
+            border-color: var(--primary-500);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+        }
+
+        .checkbox-label input[type="checkbox"]:checked + .checkbox-custom .checkbox-icon {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .checkbox-text {
+            user-select: none;
+            line-height: 1.5;
+        }
+
         .chat-send-btn {
-            width: 36px;
-            height: 36px;
-            background: var(--primary-200);
-            color: var(--brand-blue);
+            width: 40px;
+            height: 40px;
+            background: #1456f0;
+            color: #ffffff;
             border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all 0.2s;
+            padding: 0;
+            box-shadow: rgba(20, 86, 240, 0.3) 0px 4px 12px;
+        }
+
+        .chat-send-btn:hover {
+            background: #2563eb;
+            transform: scale(1.05);
+            box-shadow: rgba(20, 86, 240, 0.4) 0px 6px 16px;
+        }
+
+        .chat-send-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            background: #e5e7eb;
+            color: #8e8e93;
+            box-shadow: none;
+        }
+
+        .send-icon {
+            width: 18px;
+            height: 18px;
+            fill: currentColor;
+        }
+
+        .chat-stop-btn {
+            width: 40px;
+            height: 40px;
+            background: #ffffff;
+            color: #ef4444;
+            border: 2px solid #ef4444;
             border-radius: 50%;
             cursor: pointer;
             display: flex;
@@ -933,22 +1175,18 @@
             padding: 0;
         }
 
-        .chat-send-btn:hover {
-            background: var(--primary-light);
+        .chat-stop-btn:hover {
+            background: #fef2f2;
             transform: scale(1.05);
         }
 
-        .chat-send-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-            background: var(--bg-light);
-            color: var(--text-muted);
+        .chat-stop-btn:active {
+            transform: scale(0.95);
         }
 
-        .send-icon {
-            width: 18px;
-            height: 18px;
+        .stop-icon {
+            width: 16px;
+            height: 16px;
             fill: currentColor;
         }
 
@@ -1089,9 +1327,103 @@
             box-shadow: var(--shadow-standard);
             font-family: 'DM Sans', sans-serif;
         }
+
+        /* Toast Notification System */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            pointer-events: none;
+        }
+
+        .toast {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 16px 20px;
+            box-shadow: rgba(44, 30, 116, 0.15) 0px 8px 24px, rgba(0, 0, 0, 0.08) 0px 4px 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 280px;
+            max-width: 400px;
+            transform: translateX(120%);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            pointer-events: auto;
+            border-left: 4px solid #1456f0;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .toast.hide {
+            transform: translateX(120%);
+            opacity: 0;
+        }
+
+        .toast-icon {
+            width: 24px;
+            height: 24px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        .toast-icon.warning {
+            background: #fef3c7;
+            color: #f59e0b;
+        }
+
+        .toast-icon.error {
+            background: #fee2e2;
+            color: #ef4444;
+        }
+
+        .toast-icon.success {
+            background: #d1fae5;
+            color: #10b981;
+        }
+
+        .toast-content {
+            flex: 1;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            color: #222222;
+            line-height: 1.5;
+        }
+
+        .toast-close {
+            width: 20px;
+            height: 20px;
+            border: none;
+            background: transparent;
+            color: #8e8e93;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .toast-close:hover {
+            background: #f2f3f5;
+            color: #45515e;
+        }
     </style>
 </head>
 <body>
+    <div class="toast-container" id="toastContainer"></div>
     <div class="chatbot-container">
         <div class="psyclaw-form">
             <div class="psyclaw-accordion">
@@ -1178,21 +1510,27 @@
                                     </div>
                                     <input type="range" class="psyclaw-slider" id="maxLength" min="128" max="4096" step="128" value="1024" aria-label="Max Generation Length">
                                 </div>
+                                <div class="slider-container" id="thinkingBudgetContainer">
+                                    <div class="slider-label">
+                                        <span>Thinking Budget</span>
+                                        <span class="slider-value" id="thinkingBudgetValue">4096</span>
+                                    </div>
+                                    <input type="range" class="psyclaw-slider" id="thinkingBudget" min="256" max="32768" step="256" value="4096" aria-label="Thinking Budget">
+                                </div>
                             </div>
                         </div>
 
-                        <!-- Flash Mode Section -->
+                        <!-- Tips Section -->
                         <div class="settings-section">
-                            <h3 class="section-heading">Response Mode</h3>
-                            <button class="action-btn full-width-btn" id="deepThinkBtn" title="Flash">
-                                <svg class="action-btn-icon" viewBox="0 0 24 24">
-                                    <path d="M7 2v11h3v9l7-12h-4l4-8z"/>
-                                </svg>
-                                Flash
-                            </button>
+                            <h3 class="section-heading">Tips</h3>
+                            <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px; line-height: 1.8;">
+                                💡 Click the bulb button to toggle thinking mode<br>
+                                📎 Drag & drop files or click File button to upload<br>
+                                ⚙️ Click "Check API" to load models after setting API<br>
+                                🎯 Describe your experiment to generate flowchart JSON<br>
+                                💾 All settings auto-save to browser storage
+                            </p>
                         </div>
-
-                        <button class="psyclaw-btn full-width-btn" id="saveSettingsBtn">Save Settings</button>
                     </div>
                 </div>
             </div>
@@ -1233,11 +1571,28 @@
                     <input type="file" class="file-upload-input" id="fileInput" accept=".txt,.md,.json,.py,.csv,.xlsx,.xls,.doc,.docx,.pdf">
                     <div class="input-bottom-row">
                         <div class="action-buttons">
-                            <button class="file-upload-btn" id="fileUploadBtn" title="Upload file">+</button>
+                            <button class="file-upload-btn" id="fileUploadBtn" title="Upload file">
+                                <svg class="file-upload-icon" viewBox="0 0 1024 1024" fill="currentColor">
+                                    <path d="M426.666667 254.613333c23.5648 0 42.666667 14.327467 42.666666 32 0 17.672533-19.101867 32-42.666666 32H341.3376c-23.560533 0-42.666667-14.327467-42.666667-32 0-17.672533 19.106133-32 42.666667-32h85.333333z m0 170.257067c23.5648 0 42.666667 14.327467 42.666666 32 0 17.672533-19.101867 32-42.666666 32H341.333333c-23.560533 0-42.6624-14.327467-42.6624-32 0-17.672533 19.101867-32 42.666667-32H426.666667z m435.170133 131.886933c-23.560533 0-29.866667-19.101867-29.866667-42.666666V166.4a17.066667 17.066667 0 0 0-17.066666-17.066667H209.066667a17.066667 17.066667 0 0 0-17.066667 17.066667v691.2a17.066667 17.066667 0 0 0 17.066667 17.066667h260.258133c23.560533 0 42.666667 6.301867 42.666667 29.866666s-19.106133 34.133333-42.666667 34.133334H213.329067C166.203733 938.666667 128 900.462933 128 853.333333V170.666667c0-47.1296 38.203733-85.333333 85.333333-85.333334h597.307734c47.125333 0 85.329067 38.203733 85.329066 85.333334v343.424c0 23.5648-10.568533 42.666667-34.133333 42.666666z"/>
+                                    <path d="M716.8 755.2v-83.2a32 32 0 1 1 64 0V755.2h83.2a32 32 0 1 1 0 64H780.8v87.466667a32 32 0 1 1-64 0V819.2h-87.466667a32 32 0 1 1 0-64H716.8z"/>
+                                </svg>
+                                <span class="file-upload-text">File</span>
+                            </button>
+                            <button class="thinking-mode-btn" id="thinkingModeBtn" title="Thinking mode">
+                                <svg class="thinking-icon" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7zm2.85 11.1l-.85.6V16h-4v-2.3l-.85-.6A4.997 4.997 0 0 1 7 9c0-2.76 2.24-5 5-5s5 2.24 5 5c0 1.63-.8 3.16-2.15 4.1z"/>
+                                </svg>
+                                <span class="thinking-text">Think</span>
+                            </button>
                         </div>
                         <button class="chat-send-btn" id="sendBtn" title="Send">
                             <svg class="send-icon" viewBox="0 0 24 24">
                                 <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                            </svg>
+                        </button>
+                        <button class="chat-stop-btn" id="stopBtn" title="Stop generating" style="display: none;">
+                            <svg class="stop-icon" viewBox="0 0 24 24">
+                                <rect x="6" y="6" width="12" height="12" rx="2"/>
                             </svg>
                         </button>
                     </div>
@@ -1248,6 +1603,30 @@
 
     <script>
         console.log('PsyClaw Chatbot starting');
+
+        // 全局错误处理：过滤掉中止相关的错误
+        window.addEventListener('error', function(event) {
+            // 过滤 net::ERR_ABORTED 错误
+            if (event.message && event.message.includes('ERR_ABORTED')) {
+                event.preventDefault();
+                console.log('Request aborted by user');
+                return false;
+            }
+        }, true);
+
+        // 处理未处理的 Promise 拒绝
+        window.addEventListener('unhandledrejection', function(event) {
+            if (event.reason && (
+                event.reason.name === 'AbortError' ||
+                event.reason.message?.includes('aborted') ||
+                event.reason.message?.includes('ERR_ABORTED')
+            )) {
+                event.preventDefault();
+                console.log('Request aborted by user');
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
 
         const SETTINGS_KEY = 'psyclaw_settings';
 
@@ -1266,8 +1645,9 @@
         const temperatureSlider = document.getElementById('temperature');
         const topPSlider = document.getElementById('topP');
         const maxLengthSlider = document.getElementById('maxLength');
+        const thinkingBudgetSlider = document.getElementById('thinkingBudget');
+        const thinkingBudgetContainer = document.getElementById('thinkingBudgetContainer');
         const checkApiBtn = document.getElementById('checkApiBtn');
-        const saveSettingsBtn = document.getElementById('saveSettingsBtn');
         const advancedSettingsHeader = document.getElementById('advancedSettingsHeader');
         const advancedSettingsContent = document.getElementById('advancedSettingsContent');
         const modelNameDisplay = document.getElementById('modelNameDisplay');
@@ -1320,8 +1700,10 @@
         const chatMessagesDiv = document.getElementById('chatMessages');
         const chatInput = document.getElementById('chatInput');
         const sendBtn = document.getElementById('sendBtn');
+        const stopBtn = document.getElementById('stopBtn');
         const fileInput = document.getElementById('fileInput');
         const fileUploadBtn = document.getElementById('fileUploadBtn');
+        const thinkingModeBtn = document.getElementById('thinkingModeBtn');
         const deepThinkBtn = document.getElementById('deepThinkBtn');
         const fileCardContainer = document.getElementById('fileCardContainer');
         const fileNameCard = document.getElementById('fileNameCard');
@@ -1408,10 +1790,14 @@
 
         // 辅助函数：从AI响应中提取JSON内容
         function extractJSON(text) {
+            if (!text || typeof text !== 'string') {
+                console.warn('extractJSON received empty or invalid text');
+                return '';
+            }
+
             console.log('Extracting JSON from text, length:', text.length);
 
             // 首先尝试找到 <think> 标签外的 JSON
-            const thinkMatch = text.match(/<think>[\s\S]*?<\/think>/gi);
             let textWithoutThink = text.replace(/<think>[\s\S]*?<\/think>/gi, '');
 
             // 尝试在剩余文本中找到 JSON
@@ -1426,7 +1812,7 @@
 
             if (firstChar === -1) {
                 console.warn('No JSON start character found');
-                return text;
+                return text.trim();
             }
 
             // 计数括号/方括号，找到正确的结束位置
@@ -1482,27 +1868,11 @@
 
             // 如果没找到匹配，说明 JSON 不完整，返回找到的部分
             console.warn('Incomplete JSON detected, returning trimmed text');
-            return textWithoutThink.substring(firstChar).replace(/`/g, '');
+            const result = textWithoutThink.substring(firstChar).replace(/`/g, '');
+            return result || text.trim(); // 确保不返回空字符串
         }
 
         // 辅助函数：分离 think 内容和消息内容
-        function separateThinkContent(text) {
-            // 匹配 <think> 标签内容
-            const thinkRegex = /<think>([\s\S]*?)<\/think>/gi;
-            const thinkMatches = [];
-            let match;
-
-            while ((match = thinkRegex.exec(text)) !== null) {
-                thinkMatches.push(match[1]);
-            }
-
-            // 移除所有 think 标签内容得到消息内容
-            const message = text.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
-            const think = thinkMatches.join('\n\n').trim();
-
-            return { think, message };
-        }
-
         // 辅助函数：修复常见的JSON格式问题
         function fixJSONContent(content) {
             let fixed = content.trim();
@@ -1566,6 +1936,22 @@
                     document.getElementById('tempValue').textContent = settings.temperature || 0.0;
                     document.getElementById('topPValue').textContent = settings.top_p || 0.0;
                     document.getElementById('maxLengthValue').textContent = settings.max_length || 1024;
+
+                    // 加载 thinking budget 设置
+                    if (settings.thinking_budget !== undefined) {
+                        thinkingBudgetSlider.value = settings.thinking_budget;
+                        document.getElementById('thinkingBudgetValue').textContent = settings.thinking_budget;
+                    }
+
+                    // 加载 thinking 设置（默认启用）
+                    if (settings.enable_thinking !== undefined) {
+                        deepThinkEnabled = settings.enable_thinking;
+                    } else {
+                        // 兼容旧数据：默认启用 thinking
+                        deepThinkEnabled = true;
+                    }
+                    // 同步按钮状态
+                    updateThinkingModeBtn();
 
                     // 加载Provider：优先使用保存的provider值
                     const savedProvider = settings.provider;
@@ -1636,7 +2022,9 @@
                 provider: currentProvider,
                 temperature: parseFloat(temperatureSlider.value),
                 top_p: parseFloat(topPSlider.value),
-                max_length: parseInt(maxLengthSlider.value)
+                max_length: parseInt(maxLengthSlider.value),
+                enable_thinking: deepThinkEnabled,
+                thinking_budget: parseInt(thinkingBudgetSlider.value)
             };
 
             // 尝试加载现有的URL映射
@@ -1972,9 +2360,12 @@
                 // Update visual selection
                 modelDropdownContent.querySelectorAll('a').forEach(a => a.classList.remove('selected'));
                 e.target.classList.add('selected');
-                
+
                 // Update model name display
                 updateModelNameDisplay();
+
+                // 自动保存设置
+                saveSettings();
             }
         });
 
@@ -2096,6 +2487,9 @@
                         checkAvailableModels();
                     }, 100);
                 }
+
+                // 自动保存设置
+                saveSettings();
             }
         });
 
@@ -2152,6 +2546,45 @@
             }
         });
 
+        // Toast notification function
+        function showToast(message, type = 'warning', duration = 3000) {
+            const container = document.getElementById('toastContainer');
+            
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            
+            const iconSvg = {
+                warning: '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>',
+                error: '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>',
+                success: '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>'
+            };
+            
+            toast.innerHTML = `
+                <div class="toast-icon ${type}">${iconSvg[type] || iconSvg.warning}</div>
+                <div class="toast-content">${message}</div>
+                <button class="toast-close" onclick="this.parentElement.remove()">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                </button>
+            `;
+            
+            container.appendChild(toast);
+            
+            // Trigger animation
+            requestAnimationFrame(() => {
+                toast.classList.add('show');
+            });
+            
+            // Auto remove
+            if (duration > 0) {
+                setTimeout(() => {
+                    toast.classList.add('hide');
+                    setTimeout(() => toast.remove(), 400);
+                }, duration);
+            }
+            
+            return toast;
+        }
+
         function addMessage(content, role) {
             // 隐藏欢迎语
             const welcomeMsg = chatMessagesDiv.querySelector('.chat-message.welcome');
@@ -2162,7 +2595,35 @@
             const msgDiv = document.createElement('div');
             msgDiv.className = `chat-message ${role}`;
             msgDiv.textContent = content;
-            chatMessagesDiv.appendChild(msgDiv);
+            
+            // 用户消息也使用 wrapper 并添加操作按钮
+            if (role === 'user') {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'message-wrapper user-wrapper';
+                wrapper.appendChild(msgDiv);
+
+                // 创建消息操作按钮栏（用户消息有复制和编辑按钮）
+                const messageActions = document.createElement('div');
+                messageActions.className = 'message-actions';
+                messageActions.style.justifyContent = 'flex-end'; // 右对齐
+                messageActions.innerHTML = `
+                    <button class="message-action-btn" title="Copy" onclick="copyMessage(this)">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                        </svg>
+                    </button>
+                    <button class="message-action-btn" title="Edit" onclick="editUserMessage(this)">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                        </svg>
+                    </button>
+                `;
+                wrapper.appendChild(messageActions);
+                chatMessagesDiv.appendChild(wrapper);
+            } else {
+                chatMessagesDiv.appendChild(msgDiv);
+            }
+            
             chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
             return msgDiv;
         }
@@ -2176,28 +2637,47 @@
             thinkContainer.className = 'think-chain-container';
             // 不设置 display: none，让容器始终可见
 
+            let thinkStartTime = null;
+            let thinkStatusSpan = null;
+
             const thinkHeader = document.createElement('div');
             thinkHeader.className = 'think-chain-header';
             thinkHeader.innerHTML = `
                 <span class="think-chain-title">
                     <svg class="think-chain-icon" viewBox="0 0 24 24">
-                        <path d="M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7zm2.85 11.1l-.85.6V16h-4v-2.3l-.85-.6A4.997 4.997 0 017 9c0-2.76 2.24-5 5-5s5 2.24 5 5c0 1.63-.8 3.16-2.15 4.1z"/>
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
                     </svg>
-                    Thinking Process
+                    <span class="think-chain-text">Thought for</span>
+                    <span class="think-chain-status">0s</span>
                 </span>
-                <svg class="think-chain-toggle collapsed" viewBox="0 0 24 24">
-                    <path d="M7 10l5 5 5-5z"/>
-                </svg>
+                <div class="think-chain-toggle-wrapper collapsed">
+                    <svg class="think-chain-toggle" viewBox="0 0 24 24">
+                        <path d="M7 10l5 5 5-5z"/>
+                    </svg>
+                </div>
             `;
 
+            thinkStatusSpan = thinkHeader.querySelector('.think-chain-status');
+
+            // 更新思考时间
+            const updateThinkTime = () => {
+                if (thinkStatusSpan && thinkContainer.classList.contains('has-content') && thinkStartTime) {
+                    const elapsed = Math.floor((Date.now() - thinkStartTime) / 1000);
+                    thinkStatusSpan.textContent = elapsed + 's';
+                }
+            };
+            const thinkTimeInterval = setInterval(updateThinkTime, 1000);
+
             const thinkContent = document.createElement('div');
-            thinkContent.className = 'think-chain-content collapsed'; // 默认折叠内容
+            thinkContent.className = 'think-chain-content collapsed'; // 默认折叠
 
-            const toggleIcon = thinkHeader.querySelector('.think-chain-toggle');
+            const toggleWrapper = thinkHeader.querySelector('.think-chain-toggle-wrapper');
 
+            // 点击标题折叠/展开
             thinkHeader.addEventListener('click', () => {
                 const isCollapsed = thinkContent.classList.toggle('collapsed');
-                toggleIcon.classList.toggle('collapsed', isCollapsed);
+                toggleWrapper.classList.toggle('collapsed', isCollapsed);
+                thinkContainer.classList.toggle('collapsed', isCollapsed);
             });
 
             thinkContainer.appendChild(thinkHeader);
@@ -2208,8 +2688,25 @@
             msgDiv.className = 'chat-message assistant';
             msgDiv.style.display = 'none'; // 初始隐藏
 
+            // 创建消息操作按钮栏
+            const messageActions = document.createElement('div');
+            messageActions.className = 'message-actions';
+            messageActions.innerHTML = `
+                <button class="message-action-btn" title="Copy" onclick="copyMessage(this)">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                    </svg>
+                </button>
+                <button class="message-action-btn" title="Regenerate" onclick="regenerateMessage(this)">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+                    </svg>
+                </button>
+            `;
+
             wrapper.appendChild(thinkContainer);
             wrapper.appendChild(msgDiv);
+            wrapper.appendChild(messageActions);
             chatMessagesDiv.appendChild(wrapper);
             chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
 
@@ -2217,13 +2714,21 @@
                 wrapper,
                 thinkContainer,
                 thinkContent,
+                thinkTimeInterval,
+                thinkStatusSpan,
                 msgDiv,
                 updateThink: (content) => {
                     thinkContent.textContent = content;
                     // Show think container only when there's actual content
                     if (content && content.trim()) {
+                        // 第一次有内容时记录开始时间
+                        if (!thinkStartTime) {
+                            thinkStartTime = Date.now();
+                        }
                         thinkContainer.classList.add('has-content');
                     }
+                    // 自动滚动到最下方显示最新内容
+                    thinkContent.scrollTop = thinkContent.scrollHeight;
                 },
                 updateMessage: (content, isStreaming = true) => {
                     // 有内容时才显示消息容器
@@ -2240,6 +2745,15 @@
                     }
                 },
                 finalizeMessage: (content) => {
+                    // 停止思考时间计时
+                    if (thinkTimeInterval) {
+                        clearInterval(thinkTimeInterval);
+                    }
+                    // 更新最终时间显示
+                    if (thinkStatusSpan) {
+                        const finalText = thinkStatusSpan.textContent;
+                        thinkStatusSpan.textContent = finalText;
+                    }
                     // 最终显示时尝试格式化JSON
                     let displayContent = content;
                     try {
@@ -2274,12 +2788,12 @@
             });
         }
 
-        async function sendMessage() {
+        async function sendMessage(skipUserMessage = false) {
             // 等待 schema 加载完成
             const schema = await ensureFlowchartSchema();
 
             if (!schema) {
-                addMessage('⚠️ Failed to load flowchart schema. Please check if flowchart.schema.json exists.', 'error');
+                showToast('Failed to load flowchart schema. Please check if flowchart.schema.json exists.', 'error', 4000);
                 return;
             }
 
@@ -2290,7 +2804,8 @@
                 model: modelSelectInput.value.trim(),
                 temperature: parseFloat(temperatureSlider.value),
                 top_p: parseFloat(topPSlider.value),
-                max_length: parseInt(maxLengthSlider.value)
+                max_length: parseInt(maxLengthSlider.value),
+                thinking_budget: parseInt(thinkingBudgetSlider.value)
             };
 
             if (!message && !currentFile) {
@@ -2298,12 +2813,12 @@
             }
 
             if (!settings.model) {
-                addMessage('⚠️ Please select a model in Advanced Settings first.', 'error');
+                showToast('Please select a model in Advanced Settings first.', 'warning', 4000);
                 return;
             }
 
             if (!settings.api_url || !settings.api_key) {
-                addMessage('⚠️ API URL and Key are required. Please configure them in Advanced Settings.', 'error');
+                showToast('API URL and Key are required. Please configure them in Advanced Settings.', 'warning', 4000);
                 return;
             }
 
@@ -2370,28 +2885,34 @@ ${JSON.stringify(schema, null, 2)}`;
 
             messages.push({ role: 'user', content: userContent });
 
-            addMessage(message, 'user');
+            if (!skipUserMessage) {
+                addMessage(message, 'user');
+            }
             chatInput.value = '';
             clearFile();
-            sendBtn.disabled = true;
+            sendBtn.style.display = 'none';
+            stopBtn.style.display = 'flex';
+
+            // 创建 AbortController 用于终止请求
+            const abortController = new AbortController();
 
             // 使用新的带 think chain 的消息组件
             const assistantMsg = addAssistantMessageWithThink();
+
+            // 设置停止按钮事件
+            let isAborted = false;
+            const stopHandler = () => {
+                isAborted = true;
+                abortController.abort();
+                stopBtn.removeEventListener('click', stopHandler);
+            };
+            stopBtn.addEventListener('click', stopHandler);
             let fullContent = '';
             let thinkContent = '';
             let inThinkBlock = false;
             let thinkBuffer = '';
 
             try {
-                // 检测是否是 MiniMax 模型
-                const isMiniMax = settings.model.toLowerCase().includes('minimax');
-
-                // 如果启用了 DeepThink，修改 system prompt 添加更详细的思考指导
-                if (deepThinkEnabled) {
-                    const deepThinkPrompt = `\n\nDEEP THINK MODE ENABLED:\n- Take extra time to think through the experiment design step by step\n- Consider edge cases and potential issues\n- Provide detailed reasoning for each design decision\n- Ensure the generated flowchart is robust and follows best practices`;
-                    messages[0].content += deepThinkPrompt;
-                }
-
                 // 构建请求体 - 使用固定的较大 max_tokens 值以确保完整响应
                 const requestBody = {
                     model: settings.model,
@@ -2399,23 +2920,47 @@ ${JSON.stringify(schema, null, 2)}`;
                     temperature: settings.temperature,
                     top_p: settings.top_p,
                     max_tokens: 16000,  // 固定使用 16000 tokens 以确保完整 JSON 输出
-                    stream: true,  // 启用流式传输
-                    enable_thinking: !deepThinkEnabled  // Flash模式选中时关闭思考，未选中时开启思考
+                    stream: true  // 启用流式传输
                 };
 
-                // MiniMax 模型支持 reasoning_split 参数来分离思考内容
-                if (isMiniMax) {
-                    requestBody.reasoning_split = true;
+                // 只有在启用思考模式时才添加思考相关参数
+                if (deepThinkEnabled) {
+                    requestBody.enable_thinking = true;
+                    // thinking_budget 控制思考长度，使用用户设置的值
+                    requestBody.thinking_budget = parseInt(thinkingBudgetSlider.value);
+                } else {
+                    requestBody.enable_thinking = false;
+                    // 禁用 thinking 时不使用 thinking_budget
                 }
 
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${settings.api_key}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(requestBody)
-                });
+                let response;
+                try {
+                    response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${settings.api_key}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(requestBody),
+                        signal: abortController.signal
+                    });
+                } catch (fetchError) {
+                    // 处理 fetch 错误，包括 ERR_ABORTED
+                    // 注意：Chrome 中中止请求可能抛出 TypeError: Failed to fetch
+                    // 需要通过 isAborted 标志来判断是否为用户主动中止
+                    if (isAborted || 
+                        fetchError.name === 'AbortError' || 
+                        fetchError.message?.includes('aborted') || 
+                        fetchError.message?.includes('ERR_ABORTED') ||
+                        fetchError.message?.includes('Failed to fetch')) {
+                        console.log('Request was aborted (detected in fetch catch)');
+                        // 创建一个 AbortError 以便外层统一处理
+                        const abortError = new Error('Request was aborted');
+                        abortError.name = 'AbortError';
+                        throw abortError;
+                    }
+                    throw new Error(`Network error: ${fetchError.message}`);
+                }
 
                 if (!response.ok) {
                     const errorData = await response.json().catch(() => ({}));
@@ -2426,110 +2971,141 @@ ${JSON.stringify(schema, null, 2)}`;
                 const reader = response.body.getReader();
                 const decoder = new TextDecoder();
 
-                while (true) {
-                    const { done, value } = await reader.read();
-                    if (done) break;
+                try {
+                    while (true) {
+                        const { done, value } = await reader.read();
+                        if (done) break;
 
-                    const chunk = decoder.decode(value, { stream: true });
-                    const lines = chunk.split('\n');
+                        const chunk = decoder.decode(value, { stream: true });
+                        const lines = chunk.split('\n');
 
-                    for (const line of lines) {
-                        if (line.startsWith('data: ')) {
-                            const data = line.slice(6);
-                            if (data === '[DONE]') continue;
+                        for (const line of lines) {
+                            if (line.startsWith('data: ')) {
+                                const data = line.slice(6);
+                                if (data === '[DONE]') continue;
 
-                            try {
-                                const parsed = JSON.parse(data);
-                                const choice = parsed.choices?.[0];
-                                const delta = choice?.delta;
+                                try {
+                                    const parsed = JSON.parse(data);
+                                    const choice = parsed.choices?.[0];
+                                    const delta = choice?.delta;
 
-                                if (delta) {
-                                    // 优先使用 API 返回的 reasoning_details（MiniMax reasoning_split）
-                                    let reasoning = delta.reasoning_details;
-                                    let content = delta.content;
-
-                                    // 处理 reasoning_details 可能是对象的情况
-                                    if (reasoning) {
-                                        if (typeof reasoning === 'object') {
-                                            // 如果是数组，提取所有文本
-                                            if (Array.isArray(reasoning)) {
-                                                reasoning = reasoning.map(r => typeof r === 'object' ? (r.content || r.text || JSON.stringify(r)) : r).join('');
-                                            } else {
-                                                // 如果是对象，尝试提取 content 或 text 字段
-                                                reasoning = reasoning.content || reasoning.text || JSON.stringify(reasoning);
-                                            }
-                                        }
-                                        if (typeof reasoning === 'string') {
-                                            thinkContent += reasoning;
+                                    if (delta) {
+                                        // 处理 reasoning_content（思考内容）- 阿里云百炼格式
+                                        if (delta.reasoning_content) {
+                                            thinkContent += delta.reasoning_content;
                                             assistantMsg.updateThink(thinkContent);
+                                            // 流式输出时自动滚动到底部
+                                            chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
                                         }
-                                    }
 
-                                    // 处理 content（可能是字符串或对象）
-                                    if (content) {
-                                        // 处理 content 可能是对象的情况
-                                        if (typeof content === 'object') {
-                                            content = content.content || content.text || JSON.stringify(content);
-                                        }
-                                        if (typeof content === 'string') {
-                                            fullContent += content;
-
-                                            // 尝试从累积内容中分离 think
-                                            const thinkMatch = fullContent.match(/<think>([\s\S]*?)<\/think>/);
-                                            if (thinkMatch) {
-                                                // 提取 think 内容（只取第一个匹配的）
-                                                const extractedThink = thinkMatch[1];
-                                                if (extractedThink && extractedThink !== thinkContent) {
-                                                    thinkContent = extractedThink;
-                                                    assistantMsg.updateThink(thinkContent);
-                                                }
-
-                                                // 从 fullContent 中移除 think 标签得到消息内容
-                                                const messageWithoutThink = fullContent.replace(/<think>[\s\S]*?<\/think>/, '').trim();
-                                                assistantMsg.updateMessage(messageWithoutThink);
-                                            } else if (!fullContent.includes('<think>')) {
-                                                // 没有 think 标签，直接显示
-                                                assistantMsg.updateMessage(fullContent);
+                                        // 处理 content（正式回复内容）
+                                        let content = delta.content;
+                                        if (content) {
+                                            // 处理 content 可能是对象的情况
+                                            if (typeof content === 'object') {
+                                                content = content.content || content.text || JSON.stringify(content);
                                             }
-                                            // 如果正在积累 think 标签（有 <think> 但没有 </think>），不更新消息
+                                            if (typeof content === 'string') {
+                                                fullContent += content;
+
+                                                // 处理 <think> 标签格式（其他模型如 DeepSeek、Qwen3 等）
+                                                const hasOpenThink = fullContent.includes('<think>');
+                                                const hasCloseThink = fullContent.includes('</think>');
+
+                                                if (hasOpenThink && hasCloseThink) {
+                                                    // think 标签已闭合，提取完整 think 内容
+                                                    const thinkMatch = fullContent.match(/<think>([\s\S]*?)<\/think>/);
+                                                    if (thinkMatch) {
+                                                        const extractedThink = thinkMatch[1];
+                                                        if (extractedThink && extractedThink !== thinkContent) {
+                                                            thinkContent = extractedThink;
+                                                            assistantMsg.updateThink(thinkContent);
+                                                        }
+
+                                                        // 从 fullContent 中移除 think 标签得到消息内容
+                                                        const messageWithoutThink = fullContent.replace(/<think>[\s\S]*?<\/think>/, '').trim();
+                                                        assistantMsg.updateMessage(messageWithoutThink);
+                                                        // 流式输出时自动滚动到底部
+                                                        chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
+                                                    }
+                                                } else if (hasOpenThink && !hasCloseThink) {
+                                                    // think 标签未闭合，流式显示思考内容
+                                                    const thinkParts = fullContent.split('<think>');
+                                                    if (thinkParts.length > 1) {
+                                                        const currentThinkContent = thinkParts[1];
+                                                        if (currentThinkContent && currentThinkContent !== thinkContent) {
+                                                            thinkContent = currentThinkContent;
+                                                            assistantMsg.updateThink(thinkContent);
+                                                            // 流式输出时自动滚动到底部
+                                                            chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
+                                                        }
+                                                    }
+                                                    // think 标签未闭合时，不显示消息内容
+                                                } else if (!hasOpenThink) {
+                                                    // 没有 think 标签，直接显示
+                                                    assistantMsg.updateMessage(fullContent);
+                                                    // 流式输出时自动滚动到底部
+                                                    chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
+                                                }
+                                            }
+                                        } else if (thinkContent && !fullContent.trim()) {
+                                            // 只有思考内容，没有实际回复内容
                                         }
-                                    } else if (thinkContent && !fullContent.trim()) {
-                                        // 只有思考内容，没有实际回复内容，显示等待提示
-                                        assistantMsg.updateMessage('🤔 AI 正在思考中，请稍候...');
                                     }
+                                } catch (e) {
+                                    // 忽略解析错误
                                 }
-                            } catch (e) {
-                                // 忽略解析错误
                             }
                         }
                     }
+                } catch (readError) {
+                    // 如果是因为中止导致的错误，忽略它
+                    if (isAborted || 
+                        readError.name === 'AbortError' || 
+                        readError.message?.includes('aborted') ||
+                        readError.message?.includes('ERR_ABORTED')) {
+                        // 正常中止，不处理
+                        console.log('Stream reading aborted');
+                    } else {
+                        throw readError;
+                    }
+                } finally {
+                    // 确保计时器被停止
+                    if (assistantMsg.thinkTimeInterval) {
+                        clearInterval(assistantMsg.thinkTimeInterval);
+                    }
+                }
+
+                // 如果用户主动终止，直接返回，不抛出错误
+                if (isAborted) {
+                    assistantMsg.finalizeMessage(fullContent || 'Stopped');
+                    return;
                 }
 
                 console.log('Raw AI response:', fullContent);
                 console.log('Think content:', thinkContent);
 
-                // 如果 API 没有分离思考内容，使用正则分离作为 fallback
-                let messageContent = fullContent;
-                if (!thinkContent && fullContent.includes('<think>')) {
-                    const result = separateThinkContent(fullContent);
-                    thinkContent = result.think;
-                    messageContent = result.message;
-                    if (thinkContent) {
-                        assistantMsg.updateThink(thinkContent);
-                    }
-                }
-
                 // 清理响应内容，移除可能的 markdown 代码块标记
-                let cleanContent = messageContent.trim();
+                let cleanContent = fullContent.trim();
                 
-                // 如果 messageContent 为空但 thinkContent 有内容，可能是思考模式导致的问题
+                // 如果 content 为空但 thinkContent 有内容，可能是思考模式导致的问题
                 // 尝试从 thinkContent 中提取 JSON
                 if (!cleanContent && thinkContent) {
                     console.log('No message content but has think content, attempting to extract JSON from think content');
                     const extractedFromThink = extractJSON(thinkContent);
-                    if (extractedFromThink && extractedFromThink !== thinkContent) {
+                    if (extractedFromThink && extractedFromThink.trim() && extractedFromThink !== thinkContent) {
                         cleanContent = extractedFromThink.trim();
                         console.log('Extracted JSON from think content:', cleanContent.substring(0, 100));
+                    }
+                }
+                
+                // 如果仍然没有内容，尝试直接从 fullContent 提取（包括 think 标签内的内容）
+                if (!cleanContent && fullContent) {
+                    console.log('Attempting to extract JSON from full content including think tags');
+                    const extractedFromFull = extractJSON(fullContent);
+                    if (extractedFromFull && extractedFromFull.trim()) {
+                        cleanContent = extractedFromFull.trim();
+                        console.log('Extracted JSON from full content:', cleanContent.substring(0, 100));
                     }
                 }
                 if (cleanContent.startsWith('```json')) {
@@ -2551,13 +3127,6 @@ ${JSON.stringify(schema, null, 2)}`;
                     console.error('Failed to extract JSON: empty content');
                     console.log('Full content:', fullContent);
                     console.log('Think content:', thinkContent);
-                    
-                    // 如果有思考内容但没有最终输出，显示提示
-                    if (thinkContent && thinkContent.trim()) {
-                        assistantMsg.updateMessage('⚠️ AI 只返回了思考过程，没有生成有效的 JSON 输出。请尝试开启 Flash 模式（点击 Flash 按钮）以获得直接回复。');
-                        assistantMsg.msgDiv.classList.add('error');
-                        return;
-                    }
                     
                     throw new Error('Failed to extract JSON from AI response');
                 }
@@ -2596,10 +3165,22 @@ ${JSON.stringify(schema, null, 2)}`;
                 // 显示生成的JSON内容（最终格式化）
                 assistantMsg.finalizeMessage(cleanContent);
             } catch (e) {
-                assistantMsg.updateMessage(`❌ ${e.message}`);
-                assistantMsg.msgDiv.classList.add('error');
+                // 如果是用户主动终止，不显示错误
+                // 注意：需要通过 isAborted 标志来判断，因为 Chrome 中的中止错误可能不是标准的 AbortError
+                if (isAborted ||
+                    e.name === 'AbortError' || 
+                    e.message?.includes('aborted') || 
+                    e.message?.includes('ERR_ABORTED')) {
+                    console.log('Request aborted by user, showing stopped message');
+                    assistantMsg.finalizeMessage(fullContent || 'Stopped');
+                } else {
+                    assistantMsg.updateMessage(`❌ ${e.message}`);
+                    assistantMsg.msgDiv.classList.add('error');
+                }
             } finally {
-                sendBtn.disabled = false;
+                sendBtn.style.display = 'flex';
+                stopBtn.style.display = 'none';
+                stopBtn.removeEventListener('click', stopHandler);
                 chatInput.focus();
             }
         }
@@ -2609,6 +3190,85 @@ ${JSON.stringify(schema, null, 2)}`;
             fileInput.value = '';
             fileCardContainer.classList.remove('visible');
         }
+
+        // 复制消息内容
+        window.copyMessage = function(btn) {
+            const wrapper = btn.closest('.message-wrapper');
+            if (!wrapper) return;
+
+            const msgDiv = wrapper.querySelector('.chat-message');
+            if (msgDiv && msgDiv.textContent) {
+                navigator.clipboard.writeText(msgDiv.textContent).then(() => {
+                    // 临时改变图标表示已复制
+                    const originalSvg = btn.innerHTML;
+                    btn.innerHTML = `<svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>`;
+                    btn.style.color = '#10a37f';
+                    setTimeout(() => {
+                        btn.innerHTML = originalSvg;
+                        btn.style.color = '';
+                    }, 1500);
+                });
+            }
+        };
+
+        // 重新生成消息功能
+        window.regenerateMessage = function(btn) {
+            // 找到对应的消息 wrapper
+            const wrapper = btn.closest('.message-wrapper');
+            if (!wrapper) return;
+
+            // 找到上一条用户消息
+            let userMessage = '';
+            const allWrappers = Array.from(chatMessagesDiv.querySelectorAll('.message-wrapper'));
+            const currentIndex = allWrappers.indexOf(wrapper);
+
+            // 从当前消息往前找用户消息
+            for (let i = currentIndex - 1; i >= 0; i--) {
+                const userMsgDiv = allWrappers[i].querySelector('.chat-message.user');
+                if (userMsgDiv) {
+                    userMessage = userMsgDiv.textContent;
+                    break;
+                }
+            }
+
+            if (userMessage) {
+                // 删除当前 AI 回复及之后的所有消息
+                for (let i = allWrappers.length - 1; i >= currentIndex; i--) {
+                    allWrappers[i].remove();
+                }
+
+                // 重新发送用户消息，跳过添加用户消息到聊天记录（因为已经存在）
+                chatInput.value = userMessage;
+                sendMessage(true);
+            }
+        };
+
+        // 编辑用户消息功能
+        window.editUserMessage = function(btn) {
+            const wrapper = btn.closest('.message-wrapper');
+            if (!wrapper) return;
+
+            const userMsgDiv = wrapper.querySelector('.chat-message.user');
+            if (!userMsgDiv) return;
+
+            const userMessage = userMsgDiv.textContent;
+            const allWrappers = Array.from(chatMessagesDiv.querySelectorAll('.message-wrapper'));
+            const currentIndex = allWrappers.indexOf(wrapper);
+
+            // 删除当前用户消息及之后的所有消息
+            for (let i = allWrappers.length - 1; i >= currentIndex; i--) {
+                allWrappers[i].remove();
+            }
+
+            // 将用户消息放入输入框，让用户可以编辑
+            chatInput.value = userMessage;
+            chatInput.focus();
+            autoResizeTextarea();
+
+            // 重置发送按钮和停止按钮状态
+            sendBtn.style.display = 'flex';
+            stopBtn.style.display = 'none';
+        };
 
         function autoResizeTextarea() {
             chatInput.style.height = 'auto';
@@ -2651,7 +3311,6 @@ ${JSON.stringify(schema, null, 2)}`;
         });
 
         checkApiBtn.addEventListener('click', checkAvailableModels);
-        saveSettingsBtn.addEventListener('click', saveSettings);
 
         // 自动保存：输入框失去焦点时保存
         apiUrlInput.addEventListener('blur', saveSettings);
@@ -2670,6 +3329,7 @@ ${JSON.stringify(schema, null, 2)}`;
         temperatureSlider.addEventListener('input', debouncedSave);
         topPSlider.addEventListener('input', debouncedSave);
         maxLengthSlider.addEventListener('input', debouncedSave);
+        thinkingBudgetSlider.addEventListener('input', debouncedSave);
 
         // 页面关闭前自动保存
         window.addEventListener('beforeunload', saveSettings);
@@ -2685,6 +3345,32 @@ ${JSON.stringify(schema, null, 2)}`;
         maxLengthSlider.addEventListener('input', (e) => {
             document.getElementById('maxLengthValue').textContent = e.target.value;
         });
+
+        thinkingBudgetSlider.addEventListener('input', (e) => {
+            document.getElementById('thinkingBudgetValue').textContent = e.target.value;
+        });
+
+        // 思考模式按钮点击事件
+        thinkingModeBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            deepThinkEnabled = !deepThinkEnabled;
+            updateThinkingModeBtn();
+            saveSettings();
+        });
+
+        // 更新思考模式按钮状态
+        function updateThinkingModeBtn() {
+            if (deepThinkEnabled) {
+                thinkingModeBtn.classList.add('active');
+                thinkingModeBtn.title = 'Thinking mode: ON';
+            } else {
+                thinkingModeBtn.classList.remove('active');
+                thinkingModeBtn.title = 'Thinking mode: OFF';
+            }
+        }
+
+        // 初始化思考模式按钮状态
+        updateThinkingModeBtn();
 
         fileInput.addEventListener('change', (e) => {
             if (e.target.files && e.target.files[0]) {
@@ -2708,18 +3394,13 @@ ${JSON.stringify(schema, null, 2)}`;
             clearFile();
         });
 
-        sendBtn.addEventListener('click', sendMessage);
+        sendBtn.addEventListener('click', () => sendMessage());
 
         chatInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
                 sendMessage();
             }
-        });
-
-        deepThinkBtn.addEventListener('click', () => {
-            deepThinkEnabled = !deepThinkEnabled;
-            deepThinkBtn.classList.toggle('active', deepThinkEnabled);
         });
 
         const chatInputArea = document.getElementById('chatInputArea');
@@ -2768,13 +3449,10 @@ ${JSON.stringify(schema, null, 2)}`;
         });
 
         loadSettings();
-        
+
         // Initialize send button state
         updateModelNameDisplay();
-        
-        // Initialize Flash button state (default on)
-        deepThinkBtn.classList.add('active');
-        
+
         // 初始化时，如果当前Provider有API Key，自动触发Check API
         const currentApiUrl = apiUrlInput.value.trim();
         const currentApiKey = apiKeyInput.value.trim();
@@ -2785,6 +3463,7 @@ ${JSON.stringify(schema, null, 2)}`;
         }
         
         console.log('PsyClaw Chatbot ready');
+        });
     </script>
 </body>
 </html>
