@@ -499,16 +499,17 @@
             background: var(--bg-white);
             min-height: 0;
             position: relative;
+            scrollbar-gutter: stable;
         }
 
         .chat-message {
             margin-bottom: 16px;
             padding: 12px 16px;
-            border-radius: 16px;
+            border-radius: 12px;
             max-width: 80%;
             word-wrap: break-word;
             font-family: 'DM Sans', sans-serif;
-            font-size: 14px;
+            font-size: 12px;
             line-height: 1.50;
         }
 
@@ -527,6 +528,7 @@
             border: 1px solid var(--border-gray);
             max-width: 95%;
             width: 100%;
+            margin-bottom: 0;
         }
 
         .chat-message.system {
@@ -562,7 +564,7 @@
 
         .message-actions {
             display: flex;
-            gap: 8px;
+            gap: 4px;
             margin-top: 8px;
             opacity: 0;
             transition: opacity 0.2s ease;
@@ -573,8 +575,8 @@
         }
 
         .message-action-btn {
-            width: 28px;
-            height: 28px;
+            width: 24px;
+            height: 24px;
             border: none;
             background: transparent;
             color: #8e8e93;
@@ -593,125 +595,262 @@
         }
 
         .message-action-btn svg {
-            width: 16px;
-            height: 16px;
+            width: 14px;
+            height: 14px;
             fill: currentColor;
         }
 
-        /* Think Chain 可折叠区域样式 */
+
+
+        .btn-primary, .btn-secondary, .btn-text {
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-family: 'DM Sans', sans-serif;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .btn-primary {
+            background: var(--brand-blue);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-700);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-brand);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--text-primary);
+            border: 1px solid var(--border-gray) !important;
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-light);
+            border-color: var(--text-muted) !important;
+        }
+
+        .btn-text {
+            background: transparent;
+            color: var(--brand-blue);
+            text-decoration: underline;
+        }
+
+        .btn-text:hover {
+            color: var(--primary-700);
+            background: rgba(20, 86, 240, 0.05);
+        }
+
+        .stage-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            background: rgba(20, 86, 240, 0.1);
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--brand-blue);
+            margin-bottom: 12px;
+        }
+
+        .stage-indicator::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: var(--brand-blue);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* 三个点加载动画 */
+        .loading-dots {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            margin-left: 6px;
+        }
+
+        .loading-dots span {
+            width: 4px;
+            height: 4px;
+            background: #9ca3af;
+            border-radius: 50%;
+            animation: loadingDots 1.4s infinite ease-in-out both;
+        }
+
+        .loading-dots span:nth-child(1) {
+            animation-delay: -0.32s;
+        }
+
+        .loading-dots span:nth-child(2) {
+            animation-delay: -0.16s;
+        }
+
+        @keyframes loadingDots {
+            0%, 80%, 100% {
+                transform: scale(0);
+                opacity: 0.3;
+            }
+            40% {
+                transform: scale(1);
+                opacity: 0.7;
+            }
+        }
+
+        /* Think Chain 可折叠区域样式 - Qwen Design System */
         .think-chain-container {
-            margin-bottom: 16px;
+            margin-bottom: 8px;
             border-radius: 12px;
             overflow: hidden;
-            background: #f7f7f8;
+            background: #ffffff;
             display: none;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            transition: box-shadow 0.3s ease, transform 0.3s ease;
         }
 
         .think-chain-container.has-content {
             display: block;
         }
 
+        .think-chain-container:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
         .think-chain-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 12px 16px;
-            background: transparent;
+            padding: 14px 16px;
+            background: #ffffff;
             cursor: pointer;
             -webkit-user-select: none;
             user-select: none;
-            transition: all 0.2s ease;
+            transition: background 0.25s ease, border-radius 0.3s ease;
+            border-radius: 12px;
+        }
+
+        .think-chain-container:not(.collapsed) .think-chain-header {
+            border-radius: 12px 12px 0 0;
+            border-bottom: 1px solid #f3f4f6;
         }
 
         .think-chain-header:hover {
-            background: rgba(0, 0, 0, 0.02);
+            background: #f9fafb;
         }
 
         .think-chain-title {
-            font-family: 'DM Sans', sans-serif;
+            font-family: 'Outfit', sans-serif;
             font-size: 14px;
             font-weight: 500;
-            color: #10a37f;
+            color: #374151;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
         }
 
         .think-chain-icon {
-            width: 16px;
-            height: 16px;
-            fill: #10a37f;
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+            object-fit: contain;
         }
 
-        .think-chain-status {
+        .think-chain-toggle-text {
             font-family: 'DM Sans', sans-serif;
             font-size: 13px;
-            font-weight: 400;
-            color: #8e8e93;
-            margin-left: 4px;
-        }
-
-        .think-chain-toggle-wrapper {
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            background: rgba(0, 0, 0, 0.04);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            color: #6b7280;
             cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            white-space: nowrap;
         }
 
-        .think-chain-toggle-wrapper:hover {
-            background: rgba(0, 0, 0, 0.08);
+        .think-chain-toggle-text:hover {
+            background: rgba(0, 0, 0, 0.05);
+            color: #374151;
         }
 
-        .think-chain-toggle {
-            width: 14px;
-            height: 14px;
-            fill: #6b7280;
-            transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        .think-chain-toggle-icon {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            vertical-align: middle;
         }
 
-        .think-chain-toggle-wrapper.collapsed .think-chain-toggle {
+        .think-chain-toggle-icon.collapsed {
             transform: rotate(-90deg);
         }
 
         .think-chain-content {
-            max-height: 300px;
-            overflow-y: auto;
-            padding: 0 16px 16px 16px;
-            font-family: 'Roboto Mono', monospace;
-            font-size: 13px;
+            max-height: 0;
+            overflow: hidden;
+            padding: 0 20px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
             line-height: 1.6;
             color: #374151;
             background: transparent;
             white-space: pre-wrap;
             word-wrap: break-word;
+            transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), 
+                        padding 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                        opacity 0.3s ease;
+            opacity: 0;
         }
 
-        .think-chain-content.collapsed {
-            display: none;
-        }
-
-        .think-chain-content::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .think-chain-content::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        .think-chain-content::-webkit-scrollbar-thumb {
-            background: #d1d5db;
-            border-radius: 3px;
+        .think-chain-content:not(.collapsed) {
+            padding: 20px;
+            opacity: 1;
+            overflow: hidden;
+            max-height: 400px;
+            overflow-y: auto;
         }
 
 
 
         .message-wrapper {
-            margin-bottom: 16px;
+            margin-bottom: 8px;
+        }
+
+        .message-wrapper.user-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+        .assistant-message-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            width: 100%;
+            margin-bottom: 24px;
+        }
+
+        .assistant-message-wrapper > .message-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            width: 100%;
+        }
+
+        .assistant-message-wrapper > .message-wrapper > .message-actions {
+            margin-top: 4px;
+            margin-left: 0;
         }
 
         .chat-input-area {
@@ -722,6 +861,54 @@
             transition: all 0.3s ease;
             margin: 12px;
             box-shadow: rgba(44, 30, 116, 0.06) 0px 4px 16px;
+        }
+
+        .description-actions-bar {
+            padding: 6px 12px;
+            background: #ffffff;
+            border: 1px solid #e9ecef;
+            border-radius: 12px;
+            margin: -4px 12px 8px 12px;
+            animation: slideDown 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            display: none;
+            justify-content: center;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .description-actions-buttons {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        
+        .inline-description-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .inline-description-actions .btn-primary,
+        .inline-description-actions .btn-secondary {
+            padding: 6px 14px;
+            font-size: 12px;
+        }
+        
+        .inline-description-actions .btn-text {
+            padding: 6px 4px;
+            font-size: 12px;
+            background: transparent;
         }
 
         .chat-input-row {
@@ -1117,6 +1304,7 @@
         }
 
         .checkbox-text {
+            -webkit-user-select: none;
             user-select: none;
             line-height: 1.5;
         }
@@ -1184,9 +1372,13 @@
             transform: scale(0.95);
         }
 
+        .chat-stop-btn.hidden {
+            display: none;
+        }
+
         .stop-icon {
-            width: 16px;
-            height: 16px;
+            width: 18px;
+            height: 18px;
             fill: currentColor;
         }
 
@@ -1246,6 +1438,13 @@
 
         .settings-section:first-of-type {
             margin-top: 4px;
+        }
+
+        .tips-text {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            line-height: 1.8;
         }
 
         .slider-grid {
@@ -1485,50 +1684,14 @@
                             </div>
                         </div>
 
-                        <!-- Generation Parameters Section -->
-                        <div class="settings-section">
-                            <h3 class="section-heading">Generation Parameters</h3>
-                            <div class="slider-grid">
-                                <div class="slider-container">
-                                    <div class="slider-label">
-                                        <span>Temperature</span>
-                                        <span class="slider-value" id="tempValue">0.0</span>
-                                    </div>
-                                    <input type="range" class="psyclaw-slider" id="temperature" min="0.0" max="1.0" step="0.1" value="0.0" aria-label="Temperature">
-                                </div>
-                                <div class="slider-container">
-                                    <div class="slider-label">
-                                        <span>Top-p</span>
-                                        <span class="slider-value" id="topPValue">0.0</span>
-                                    </div>
-                                    <input type="range" class="psyclaw-slider" id="topP" min="0.0" max="1.0" step="0.05" value="0.0" aria-label="Top-p">
-                                </div>
-                                <div class="slider-container">
-                                    <div class="slider-label">
-                                        <span>Max Length</span>
-                                        <span class="slider-value" id="maxLengthValue">1024</span>
-                                    </div>
-                                    <input type="range" class="psyclaw-slider" id="maxLength" min="128" max="4096" step="128" value="1024" aria-label="Max Generation Length">
-                                </div>
-                                <div class="slider-container" id="thinkingBudgetContainer">
-                                    <div class="slider-label">
-                                        <span>Thinking Budget</span>
-                                        <span class="slider-value" id="thinkingBudgetValue">4096</span>
-                                    </div>
-                                    <input type="range" class="psyclaw-slider" id="thinkingBudget" min="256" max="32768" step="256" value="4096" aria-label="Thinking Budget">
-                                </div>
-                            </div>
-                        </div>
-
                         <!-- Tips Section -->
                         <div class="settings-section">
                             <h3 class="section-heading">Tips</h3>
-                            <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px; line-height: 1.8;">
-                                💡 Click the bulb button to toggle thinking mode<br>
-                                📎 Drag & drop files or click File button to upload<br>
-                                ⚙️ Click "Check API" to load models after setting API<br>
-                                🎯 Describe your experiment to generate flowchart JSON<br>
-                                💾 All settings auto-save to browser storage
+                            <p class="tips-text">
+                                Click the 💡 button to toggle thinking mode<br>
+                                Drag & drop files or click File button to upload<br>
+                                Two-step process: 1) Generate description 2) Create flowchart JSON<br>
+                                Review and edit the description before JSON generation
                             </p>
                         </div>
                     </div>
@@ -1538,7 +1701,16 @@
 
         <div class="chat-interface">
             <div class="chat-messages" id="chatMessages">
-                <div class="chat-message welcome">Upload a file or describe your experiment</div>
+                <div class="chat-message welcome">Describe your experiment requirements. The AI will first generate a detailed description, then create the flowchart JSON.</div>
+            </div>
+
+            <!-- Description Action Buttons (shown after description generation) -->
+            <div class="description-actions-bar" id="descriptionActionsBar">
+                <div class="description-actions-buttons">
+                    <button class="btn-secondary" id="descRegenerateBtn">Regenerate</button>
+                    <button class="btn-primary" id="descProceedBtn">Proceed</button>
+                    <button class="btn-text" id="descEditBtn">Edit</button>
+                </div>
             </div>
 
             <div class="chat-input-area" id="chatInputArea">
@@ -1590,9 +1762,9 @@
                                 <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
                             </svg>
                         </button>
-                        <button class="chat-stop-btn" id="stopBtn" title="Stop generating" style="display: none;">
-                            <svg class="stop-icon" viewBox="0 0 24 24">
-                                <rect x="6" y="6" width="12" height="12" rx="2"/>
+                        <button class="chat-stop-btn hidden" id="stopBtn" title="Stop generating">
+                            <svg class="stop-icon" viewBox="0 0 1024 1024">
+                                <path d="M128 128l768 0 0 768-768 0z" fill="currentColor"/>
                             </svg>
                         </button>
                     </div>
@@ -1626,7 +1798,63 @@
             }
         });
 
-        document.addEventListener('DOMContentLoaded', function() {
+        // 请求体配置（从外部文件加载）
+        let requestBodyTurn1 = null;
+        let requestBodyTurn2 = null;
+
+        async function loadRequestBodyConfigs() {
+            try {
+                const [text1, text2] = await Promise.all([
+                    fetch('request-body/turn1.js').then(r => r.text()),
+                    fetch('request-body/turn2.js').then(r => r.text())
+                ]);
+                requestBodyTurn1 = eval(`(function() { ${text1}; return turn1; })()`);
+                requestBodyTurn2 = eval(`(function() { ${text2}; return turn2; })()`);
+                console.log('Request body configs loaded successfully');
+            } catch (error) {
+                console.error('Failed to load request body configs:', error);
+                throw error;
+            }
+        }
+
+        function buildRequestBody(turn, settings, deepThinkEnabled, extraParams = {}) {
+            const template = turn === 1 ? requestBodyTurn1 : requestBodyTurn2;
+            if (!template) {
+                throw new Error(`Request body config for turn ${turn} not loaded`);
+            }
+
+            const messages = template.messages.map(msg => {
+                let content = msg.content;
+                if (turn === 1 && extraParams.userRequirement) {
+                    content = content.replace('{userRequirement}', extraParams.userRequirement);
+                }
+                if (turn === 2 && extraParams.experimentDescription) {
+                    content = content.replace('{experimentDescription}', extraParams.experimentDescription);
+                }
+                if (extraParams.schema) {
+                    content = content.replace('{schema}', JSON.stringify(extraParams.schema, null, 2));
+                }
+                return { role: msg.role, content: content };
+            });
+
+            const requestBody = {
+                model: settings.model,
+                messages: messages,
+                temperature: template.temperature,
+                top_p: template.top_p,
+                max_tokens: template.max_tokens,
+                stream: template.stream,
+                enable_thinking: deepThinkEnabled
+            };
+            if (deepThinkEnabled) {
+                requestBody.thinking_budget = 512;
+            }
+            return requestBody;
+        }
+
+        document.addEventListener('DOMContentLoaded', async function() {
+
+        await loadRequestBodyConfigs();
 
         const SETTINGS_KEY = 'psyclaw_settings';
 
@@ -1642,10 +1870,6 @@
         const providerLabel = document.getElementById('providerLabel');
         const providerDropdownContent = document.getElementById('providerDropdownContent');
         const providerSelectInput = document.getElementById('providerSelect');
-        const temperatureSlider = document.getElementById('temperature');
-        const topPSlider = document.getElementById('topP');
-        const maxLengthSlider = document.getElementById('maxLength');
-        const thinkingBudgetSlider = document.getElementById('thinkingBudget');
         const thinkingBudgetContainer = document.getElementById('thinkingBudgetContainer');
         const checkApiBtn = document.getElementById('checkApiBtn');
         const advancedSettingsHeader = document.getElementById('advancedSettingsHeader');
@@ -1656,6 +1880,20 @@
 
         let flowchartSchema = null;
         let flowchartSchemaLoaded = false;
+
+        // Conversation state management for multi-turn AI interaction
+        const CONVERSATION_STAGES = {
+            IDLE: 'idle',
+            DESCRIBING: 'describing',
+            GENERATING: 'generating'
+        };
+
+        let conversationState = {
+            stage: CONVERSATION_STAGES.IDLE,
+            userRequirement: '',
+            experimentDescription: '',
+            messages: []
+        };
 
         // 从 flowchart.schema.json 加载 schema
         async function loadFlowchartSchema() {
@@ -1701,6 +1939,10 @@
         const chatInput = document.getElementById('chatInput');
         const sendBtn = document.getElementById('sendBtn');
         const stopBtn = document.getElementById('stopBtn');
+        const descriptionActionsBar = document.getElementById('descriptionActionsBar');
+        const descRegenerateBtn = document.getElementById('descRegenerateBtn');
+        const descProceedBtn = document.getElementById('descProceedBtn');
+        const descEditBtn = document.getElementById('descEditBtn');
         const fileInput = document.getElementById('fileInput');
         const fileUploadBtn = document.getElementById('fileUploadBtn');
         const thinkingModeBtn = document.getElementById('thinkingModeBtn');
@@ -1713,6 +1955,7 @@
 
         let currentFile = null;
         let deepThinkEnabled = true;
+        let assistantMessageCount = 0; // 追踪AI回复数量
 
         function formatFileSize(bytes) {
             if (bytes === 0) return '0 B';
@@ -1929,19 +2172,6 @@
                     modelSelectInput.value = '';
                     modelDropbtn.value = '';
                     document.querySelector('.input-with-clear')?.classList.remove('has-value');
-                    temperatureSlider.value = settings.temperature || 0.0;
-                    topPSlider.value = settings.top_p || 0.0;
-                    maxLengthSlider.value = settings.max_length || 1024;
-
-                    document.getElementById('tempValue').textContent = settings.temperature || 0.0;
-                    document.getElementById('topPValue').textContent = settings.top_p || 0.0;
-                    document.getElementById('maxLengthValue').textContent = settings.max_length || 1024;
-
-                    // 加载 thinking budget 设置
-                    if (settings.thinking_budget !== undefined) {
-                        thinkingBudgetSlider.value = settings.thinking_budget;
-                        document.getElementById('thinkingBudgetValue').textContent = settings.thinking_budget;
-                    }
 
                     // 加载 thinking 设置（默认启用）
                     if (settings.enable_thinking !== undefined) {
@@ -2008,6 +2238,10 @@
             }
         }
 
+        function hideDescriptionActionsBar() {
+            descriptionActionsBar.style.display = 'none';
+        }
+
         function saveSettings() {
             const currentUrl = apiUrlInput.value.trim();
             const currentApiKey = apiKeyInput.value.trim();
@@ -2020,11 +2254,7 @@
                 api_key: currentApiKey,
                 model: currentModel,
                 provider: currentProvider,
-                temperature: parseFloat(temperatureSlider.value),
-                top_p: parseFloat(topPSlider.value),
-                max_length: parseInt(maxLengthSlider.value),
-                enable_thinking: deepThinkEnabled,
-                thinking_budget: parseInt(thinkingBudgetSlider.value)
+                enable_thinking: deepThinkEnabled
             };
 
             // 尝试加载现有的URL映射
@@ -2628,56 +2858,55 @@
             return msgDiv;
         }
 
-        function addAssistantMessageWithThink() {
+        function addAssistantMessageWithThink(initialThinkContent = '', title = 'Outlining') {
             const wrapper = document.createElement('div');
             wrapper.className = 'message-wrapper';
 
+            // 增加AI回复计数
+            assistantMessageCount++;
+            const isFirstAssistantMessage = assistantMessageCount === 1;
+
             // 创建 Think Chain 容器 - 初始就显示，但内容折叠
             const thinkContainer = document.createElement('div');
-            thinkContainer.className = 'think-chain-container';
-            // 不设置 display: none，让容器始终可见
-
-            let thinkStartTime = null;
-            let thinkStatusSpan = null;
+            thinkContainer.className = 'think-chain-container has-content'; // 默认显示容器
 
             const thinkHeader = document.createElement('div');
             thinkHeader.className = 'think-chain-header';
             thinkHeader.innerHTML = `
                 <span class="think-chain-title">
-                    <svg class="think-chain-icon" viewBox="0 0 24 24">
-                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-                    </svg>
-                    <span class="think-chain-text">Thought for</span>
-                    <span class="think-chain-status">0s</span>
+                    <img src="icon/thinking.svg" class="think-chain-icon" alt="Thinking">
+                    <span class="think-chain-text" id="thinkChainText">${title}</span>
+                    <span class="loading-dots" id="loadingDots"><span></span><span></span><span></span></span>
                 </span>
-                <div class="think-chain-toggle-wrapper collapsed">
-                    <svg class="think-chain-toggle" viewBox="0 0 24 24">
-                        <path d="M7 10l5 5 5-5z"/>
-                    </svg>
-                </div>
+                <img src="icon/open.svg" class="think-chain-toggle-icon" id="toggleIcon" alt="Expand">
             `;
 
-            thinkStatusSpan = thinkHeader.querySelector('.think-chain-status');
-
-            // 更新思考时间
-            const updateThinkTime = () => {
-                if (thinkStatusSpan && thinkContainer.classList.contains('has-content') && thinkStartTime) {
-                    const elapsed = Math.floor((Date.now() - thinkStartTime) / 1000);
-                    thinkStatusSpan.textContent = elapsed + 's';
-                }
-            };
-            const thinkTimeInterval = setInterval(updateThinkTime, 1000);
-
             const thinkContent = document.createElement('div');
-            thinkContent.className = 'think-chain-content collapsed'; // 默认折叠
+            thinkContent.className = 'think-chain-content'; // 默认展开
+            thinkContent.textContent = initialThinkContent; // 设置初始内容
 
-            const toggleWrapper = thinkHeader.querySelector('.think-chain-toggle-wrapper');
+            const toggleIcon = thinkHeader.querySelector('#toggleIcon');
+            const loadingDots = thinkHeader.querySelector('#loadingDots');
+            const thinkChainText = thinkHeader.querySelector('#thinkChainText');
 
             // 点击标题折叠/展开
             thinkHeader.addEventListener('click', () => {
                 const isCollapsed = thinkContent.classList.toggle('collapsed');
-                toggleWrapper.classList.toggle('collapsed', isCollapsed);
+                toggleIcon.classList.toggle('collapsed', isCollapsed);
                 thinkContainer.classList.toggle('collapsed', isCollapsed);
+                
+                // 动态设置 max-height 以实现平滑动画
+                if (!isCollapsed) {
+                    // 展开时，设置具体的高度值（最大 400px 以支持滚动）
+                    const targetHeight = Math.min(thinkContent.scrollHeight, 400);
+                    thinkContent.style.maxHeight = targetHeight + 'px';
+                } else {
+                    // 收起时，先设置到实际高度，然后触发动画
+                    thinkContent.style.maxHeight = thinkContent.scrollHeight + 'px';
+                    requestAnimationFrame(() => {
+                        thinkContent.style.maxHeight = '0';
+                    });
+                }
             });
 
             thinkContainer.appendChild(thinkHeader);
@@ -2688,9 +2917,12 @@
             msgDiv.className = 'chat-message assistant';
             msgDiv.style.display = 'none'; // 初始隐藏
 
-            // 创建消息操作按钮栏
+            // 创建消息操作按钮栏（第一个AI回复不显示）
             const messageActions = document.createElement('div');
             messageActions.className = 'message-actions';
+            if (isFirstAssistantMessage) {
+                messageActions.style.display = 'none'; // 第一个AI回复隐藏按钮
+            }
             messageActions.innerHTML = `
                 <button class="message-action-btn" title="Copy" onclick="copyMessage(this)">
                     <svg viewBox="0 0 24 24">
@@ -2707,52 +2939,56 @@
             wrapper.appendChild(thinkContainer);
             wrapper.appendChild(msgDiv);
             wrapper.appendChild(messageActions);
-            chatMessagesDiv.appendChild(wrapper);
+            
+            const assistantWrapper = document.createElement('div');
+            assistantWrapper.className = 'assistant-message-wrapper';
+            assistantWrapper.appendChild(wrapper);
+            chatMessagesDiv.appendChild(assistantWrapper);
             chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
 
             return {
                 wrapper,
                 thinkContainer,
                 thinkContent,
-                thinkTimeInterval,
-                thinkStatusSpan,
                 msgDiv,
                 updateThink: (content) => {
+                    // 只在用户没有主动滚动时才自动滚动到底部
+                    const isAtBottom = thinkContent.scrollHeight - thinkContent.scrollTop - thinkContent.clientHeight < 30;
                     thinkContent.textContent = content;
-                    // Show think container only when there's actual content
-                    if (content && content.trim()) {
-                        // 第一次有内容时记录开始时间
-                        if (!thinkStartTime) {
-                            thinkStartTime = Date.now();
-                        }
-                        thinkContainer.classList.add('has-content');
+                    // 如果当前是展开状态，更新 max-height（最大 400px）
+                    if (!thinkContent.classList.contains('collapsed')) {
+                        const targetHeight = Math.min(thinkContent.scrollHeight, 400);
+                        thinkContent.style.maxHeight = targetHeight + 'px';
                     }
-                    // 自动滚动到最下方显示最新内容
-                    thinkContent.scrollTop = thinkContent.scrollHeight;
+                    if (isAtBottom) {
+                        thinkContent.scrollTop = thinkContent.scrollHeight;
+                    }
                 },
                 updateMessage: (content, isStreaming = true) => {
-                    // 有内容时才显示消息容器
+                    // 有内容时才显示
                     if (content && content.trim()) {
-                        msgDiv.style.display = 'block';
-                        msgDiv.style.whiteSpace = 'pre-wrap';
-                        msgDiv.style.fontFamily = '"JetBrains Mono", "Fira Code", "Roboto Mono", Consolas, Monaco, monospace';
-                        msgDiv.textContent = content;
-                        // 只在用户已经在底部时才自动滚动
-                        const isAtBottom = chatMessagesDiv.scrollHeight - chatMessagesDiv.scrollTop - chatMessagesDiv.clientHeight < 50;
+                        // 只在用户没有主动滚动时才自动滚动到底部
+                        const isAtBottom = thinkContent.scrollHeight - thinkContent.scrollTop - thinkContent.clientHeight < 30;
+                        // 将内容放入think容器中，而不是直接显示在消息中
+                        thinkContent.textContent = content;
                         if (isAtBottom) {
+                            thinkContent.scrollTop = thinkContent.scrollHeight;
+                        }
+                        // 只在用户已经在底部时才自动滚动外层容器
+                        const isChatAtBottom = chatMessagesDiv.scrollHeight - chatMessagesDiv.scrollTop - chatMessagesDiv.clientHeight < 50;
+                        if (isChatAtBottom) {
                             chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
                         }
                     }
                 },
                 finalizeMessage: (content) => {
-                    // 停止思考时间计时
-                    if (thinkTimeInterval) {
-                        clearInterval(thinkTimeInterval);
+                    // 更新文字为已完成
+                    if (thinkChainText) {
+                        thinkChainText.textContent = `${title} completed`;
                     }
-                    // 更新最终时间显示
-                    if (thinkStatusSpan) {
-                        const finalText = thinkStatusSpan.textContent;
-                        thinkStatusSpan.textContent = finalText;
+                    // 隐藏 loading dots
+                    if (loadingDots) {
+                        loadingDots.style.display = 'none';
                     }
                     // 最终显示时尝试格式化JSON
                     let displayContent = content;
@@ -2762,9 +2998,133 @@
                     } catch (e) {
                         // 不是有效的JSON，按原样显示
                     }
-                    msgDiv.style.whiteSpace = 'pre-wrap';
-                    msgDiv.style.fontFamily = '"JetBrains Mono", "Fira Code", "Roboto Mono", Consolas, Monaco, monospace';
-                    msgDiv.textContent = displayContent;
+                    // 将最终内容放入think容器
+                    thinkContent.textContent = displayContent;
+                    // 更新 max-height（如果当前是展开状态，最大 400px）
+                    if (!thinkContent.classList.contains('collapsed')) {
+                        const targetHeight = Math.min(thinkContent.scrollHeight, 400);
+                        thinkContent.style.maxHeight = targetHeight + 'px';
+                    }
+                    // 只在用户已经在底部时才自动滚动
+                    const isAtBottom = chatMessagesDiv.scrollHeight - chatMessagesDiv.scrollTop - chatMessagesDiv.clientHeight < 50;
+                    if (isAtBottom) {
+                        chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
+                    }
+                },
+                showDescriptionWithActions: (description, settings, schema) => {
+                    // 更新文字为已完成
+                    if (thinkChainText) {
+                        thinkChainText.textContent = `${title} completed`;
+                    }
+                    // 隐藏 loading dots
+                    if (loadingDots) {
+                        loadingDots.style.display = 'none';
+                    }
+                    // 清空现有内容，只显示描述文本
+                    thinkContent.innerHTML = '';
+                    
+                    // 创建描述内容区域
+                    const descContentDiv = document.createElement('div');
+                    descContentDiv.className = 'description-content-text';
+                    descContentDiv.style.cssText = 'white-space: pre-wrap; line-height: 1.6; font-weight: 400;';
+                    descContentDiv.textContent = description;
+                    thinkContent.appendChild(descContentDiv);
+                    
+                    // 自动展开显示内容
+                    thinkContent.classList.remove('collapsed');
+                    wrapper.classList.remove('collapsed');
+                    thinkContainer.classList.remove('collapsed');
+                    
+                    // 设置 max-height 以实现平滑动画（最大 400px）
+                    requestAnimationFrame(() => {
+                        const targetHeight = Math.min(thinkContent.scrollHeight, 400);
+                        thinkContent.style.maxHeight = targetHeight + 'px';
+                    });
+                    
+                    // 创建内联操作按钮栏（在消息内部）
+                    const inlineActionsDiv = document.createElement('div');
+                    inlineActionsDiv.className = 'inline-description-actions';
+                    inlineActionsDiv.style.cssText = 'display: flex; align-items: center; margin-top: 2px; width: 100%;';
+                    
+                    const regenerateBtn = document.createElement('button');
+                    regenerateBtn.className = 'message-action-btn';
+                    regenerateBtn.title = 'Regenerate';
+                    regenerateBtn.innerHTML = `<svg viewBox="0 0 24 24"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>`;
+                    regenerateBtn.onclick = () => {
+                        conversationState.stage = CONVERSATION_STAGES.IDLE;
+                        chatInput.value = conversationState.userRequirement;
+                        sendMessage();
+                    };
+                    
+                    const editBtn = document.createElement('button');
+                    editBtn.className = 'message-action-btn';
+                    editBtn.title = 'Edit';
+                    editBtn.innerHTML = `<svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>`;
+                    editBtn.onclick = () => {
+                        // 创建 textarea 进行内联编辑
+                        const textarea = document.createElement('textarea');
+                        textarea.className = 'description-edit-textarea';
+                        textarea.value = description;
+                        textarea.style.cssText = 'width: 100%; min-height: 120px; padding: 12px; border: 1px solid var(--border-gray); border-radius: 8px; font-family: inherit; font-size: 12px; line-height: 1.6; resize: vertical; box-sizing: border-box;';
+                        
+                        // 替换描述内容为 textarea
+                        descContentDiv.innerHTML = '';
+                        descContentDiv.appendChild(textarea);
+                        textarea.focus();
+                        
+                        // 隐藏内联按钮栏，显示 Save/Cancel 按钮
+                        inlineActionsDiv.style.display = 'none';
+                        
+                        // 创建临时的 Save/Cancel 按钮容器
+                        const editActionsDiv = document.createElement('div');
+                        editActionsDiv.className = 'description-actions-inline';
+                        editActionsDiv.style.cssText = 'display: flex; gap: 12px; margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(0,0,0,0.1);';
+                        
+                        const saveBtn = document.createElement('button');
+                        saveBtn.className = 'btn-primary';
+                        saveBtn.textContent = 'Save';
+                        saveBtn.onclick = () => {
+                            const newDescription = textarea.value.trim();
+                            if (newDescription) {
+                                description = newDescription;
+                                descContentDiv.textContent = description;
+                                conversationState.experimentDescription = description;
+                            }
+                            editActionsDiv.remove();
+                            inlineActionsDiv.style.display = 'flex';
+                        };
+                        
+                        const cancelBtn = document.createElement('button');
+                        cancelBtn.className = 'btn-secondary';
+                        cancelBtn.textContent = 'Cancel';
+                        cancelBtn.onclick = () => {
+                            descContentDiv.textContent = description;
+                            editActionsDiv.remove();
+                            inlineActionsDiv.style.display = 'flex';
+                        };
+                        
+                        editActionsDiv.appendChild(saveBtn);
+                        editActionsDiv.appendChild(cancelBtn);
+                        thinkContent.appendChild(editActionsDiv);
+                    };
+                    
+                    const leftActionsDiv = document.createElement('div');
+                    leftActionsDiv.style.cssText = 'display: flex; gap: 0px;';
+                    leftActionsDiv.appendChild(regenerateBtn);
+                    leftActionsDiv.appendChild(editBtn);
+                    
+                    const proceedBtn = document.createElement('button');
+                    proceedBtn.className = 'btn-primary';
+                    proceedBtn.style.cssText = 'margin-left: auto;';
+                    proceedBtn.textContent = 'Proceed';
+                    proceedBtn.onclick = () => {
+                        generateFlowchartJSON(settings, schema);
+                    };
+                    
+                    inlineActionsDiv.appendChild(leftActionsDiv);
+                    inlineActionsDiv.appendChild(proceedBtn);
+                    wrapper.appendChild(inlineActionsDiv);
+                    
                     // 只在用户已经在底部时才自动滚动
                     const isAtBottom = chatMessagesDiv.scrollHeight - chatMessagesDiv.scrollTop - chatMessagesDiv.clientHeight < 50;
                     if (isAtBottom) {
@@ -2788,7 +3148,16 @@
             });
         }
 
+        // Helper function to check if model supports web search
+        function supportsWebSearch(model) {
+            const webSearchModels = ['gpt-4', 'gpt-4o', 'claude-3', 'kimi', 'qwen', 'gemini'];
+            return webSearchModels.some(m => model.toLowerCase().includes(m));
+        }
+
         async function sendMessage(skipUserMessage = false) {
+            // 隐藏描述操作按钮栏
+            hideDescriptionActionsBar();
+            
             // 等待 schema 加载完成
             const schema = await ensureFlowchartSchema();
 
@@ -2801,11 +3170,7 @@
             const settings = {
                 api_url: apiUrlInput.value.trim(),
                 api_key: apiKeyInput.value.trim(),
-                model: modelSelectInput.value.trim(),
-                temperature: parseFloat(temperatureSlider.value),
-                top_p: parseFloat(topPSlider.value),
-                max_length: parseInt(maxLengthSlider.value),
-                thinking_budget: parseInt(thinkingBudgetSlider.value)
+                model: modelSelectInput.value.trim()
             };
 
             if (!message && !currentFile) {
@@ -2828,78 +3193,53 @@
                 return;
             }
 
+            // Determine which stage we're in and route accordingly
+            if (conversationState.stage === CONVERSATION_STAGES.IDLE) {
+                // Turn 1: Generate experiment description
+                await generateExperimentDescription(message, settings, schema, skipUserMessage);
+            } else if (conversationState.stage === CONVERSATION_STAGES.DESCRIBING) {
+                // Turn 2: Generate flowchart JSON using the description
+                await generateFlowchartJSON(settings, schema, skipUserMessage);
+            }
+        }
+
+        async function generateExperimentDescription(userRequirement, settings, schema, skipUserMessage = false) {
+            // Store user requirement and update state
+            conversationState.userRequirement = userRequirement;
+            conversationState.stage = CONVERSATION_STAGES.DESCRIBING;
+
             let apiUrl = settings.api_url.rstrip('/');
             if (!apiUrl.endsWith('/chat/completions')) {
                 apiUrl = apiUrl + '/chat/completions';
             }
 
-            const messages = [];
-            
-            // 构建 system prompt，使用加载的 schema
-            const flowchartSystemPrompt =
-`You are a Psychology experiment designer. Generate a complete JSON data structure for a PsyClaw flowchart project based on the user's request.
+            // Build Turn 1 messages from template
+            let extraParams = { userRequirement: userRequirement };
 
-
-[User Request]
-${message || ''}
-
-
-[IMPORTANT RULES]
-1. Generate ONLY valid JSON following the schema below
-2. VARIABLE FORMAT: Use $ at both START and END (e.g., "$word$", "$color$"). Variables can be embedded in text like "This is an $adjective$ instruction"
-3. Point system: ODD points (1,3,5...) = LOOP boundaries; EVEN points (2,4,6...) = ROUTINE locations; Routine IDs are EVEN (2,4,6...)
-4. Loops: startPoint and endPoint are ODD numbers; endPoint < startPoint = BACKWARD loop; loop.conditions is an ARRAY of condition objects
-5. Loops CANNOT OVERLAP OR CROSS:
-   - VALID PATTERNS:
-     * Nested: Loop A(1,9) contains Loop B(3,7) - B is completely inside A
-     * Sequential: Loop A(1,3) and Loop B(5,7) - they don't touch
-   - INVALID PATTERNS (MUST AVOID):
-     * Crossing: Loop A(1,7) and Loop B(3,9) - ranges overlap but neither contains the other
-       Definition: loop1.startPoint < loop2.startPoint < loop1.endPoint < loop2.endPoint
-     * Shared boundary: Loop A(1,5) and Loop B(5,9) - loops cannot share startPoint or endPoint
-6. CONDITION NAMES: Each condition MUST have a descriptive "name" field that reflects its purpose. Use meaningful names like "Congruent Right", "Incongruent Left", "High Reward", "Low Reward" instead of generic names like "Condition 1", "Condition 2". The name should describe what makes this condition unique based on its variable values.
-7. ROUTINE COMPONENTS: Each routine MUST have at least one component in its "components" array. Empty routines are not allowed. A routine must contain at least one stimulus (text, image, audio, video) or response (keyboard) component.
-8. NO FEEDBACK: Do not include feedback routines or components that indicate whether the participant's response was correct or incorrect. Do not provide correctness feedback after responses.
-9. NO thinking process, explanations, markdown - ONLY raw JSON
-
-
-[JSON Schema]
-${JSON.stringify(schema, null, 2)}`;
-
-            messages.push({ role: 'system', content: flowchartSystemPrompt });
-
-            let userContent = message || '';
-            
+            // Add file content if present
             if (currentFile) {
                 try {
                     const fileContent = await readFile(currentFile);
-                    if (userContent) {
-                        userContent += `\n\n[File: ${currentFile.name}]\n${fileContent}`;
-                    } else {
-                        userContent = `[File: ${currentFile.name}]\n${fileContent}`;
-                    }
+                    extraParams.userRequirement += `\n\n[Attached File: ${currentFile.name}]\n${fileContent}`;
                 } catch (e) {
-                    userContent += `\n\n[File: ${currentFile.name}](read error: ${e.message})`;
+                    console.warn('Failed to read file:', e);
                 }
             }
 
-            messages.push({ role: 'user', content: userContent });
-
             if (!skipUserMessage) {
-                addMessage(message, 'user');
+                addMessage(userRequirement, 'user');
             }
             chatInput.value = '';
             clearFile();
             sendBtn.style.display = 'none';
             stopBtn.style.display = 'flex';
 
-            // 创建 AbortController 用于终止请求
+            // Create AbortController for this request
             const abortController = new AbortController();
 
-            // 使用新的带 think chain 的消息组件
+            // Use assistant message component for streaming
             const assistantMsg = addAssistantMessageWithThink();
 
-            // 设置停止按钮事件
             let isAborted = false;
             const stopHandler = () => {
                 isAborted = true;
@@ -2907,31 +3247,13 @@ ${JSON.stringify(schema, null, 2)}`;
                 stopBtn.removeEventListener('click', stopHandler);
             };
             stopBtn.addEventListener('click', stopHandler);
+
             let fullContent = '';
             let thinkContent = '';
-            let inThinkBlock = false;
-            let thinkBuffer = '';
 
             try {
-                // 构建请求体 - 使用固定的较大 max_tokens 值以确保完整响应
-                const requestBody = {
-                    model: settings.model,
-                    messages: messages,
-                    temperature: settings.temperature,
-                    top_p: settings.top_p,
-                    max_tokens: 16000,  // 固定使用 16000 tokens 以确保完整 JSON 输出
-                    stream: true  // 启用流式传输
-                };
-
-                // 只有在启用思考模式时才添加思考相关参数
-                if (deepThinkEnabled) {
-                    requestBody.enable_thinking = true;
-                    // thinking_budget 控制思考长度，使用用户设置的值
-                    requestBody.thinking_budget = parseInt(thinkingBudgetSlider.value);
-                } else {
-                    requestBody.enable_thinking = false;
-                    // 禁用 thinking 时不使用 thinking_budget
-                }
+                // Build request body for Turn 1 (Generate Plan)
+                const requestBody = buildRequestBody(1, settings, deepThinkEnabled, extraParams);
 
                 let response;
                 try {
@@ -2945,16 +3267,12 @@ ${JSON.stringify(schema, null, 2)}`;
                         signal: abortController.signal
                     });
                 } catch (fetchError) {
-                    // 处理 fetch 错误，包括 ERR_ABORTED
-                    // 注意：Chrome 中中止请求可能抛出 TypeError: Failed to fetch
-                    // 需要通过 isAborted 标志来判断是否为用户主动中止
-                    if (isAborted || 
-                        fetchError.name === 'AbortError' || 
-                        fetchError.message?.includes('aborted') || 
+                    if (isAborted ||
+                        fetchError.name === 'AbortError' ||
+                        fetchError.message?.includes('aborted') ||
                         fetchError.message?.includes('ERR_ABORTED') ||
                         fetchError.message?.includes('Failed to fetch')) {
-                        console.log('Request was aborted (detected in fetch catch)');
-                        // 创建一个 AbortError 以便外层统一处理
+                        console.log('Request was aborted');
                         const abortError = new Error('Request was aborted');
                         abortError.name = 'AbortError';
                         throw abortError;
@@ -2967,7 +3285,7 @@ ${JSON.stringify(schema, null, 2)}`;
                     throw new Error(`API Error: ${response.status} ${errorData.error?.message || response.statusText}`);
                 }
 
-                // 处理流式响应
+                // Process streaming response
                 const reader = response.body.getReader();
                 const decoder = new TextDecoder();
 
@@ -2990,30 +3308,31 @@ ${JSON.stringify(schema, null, 2)}`;
                                     const delta = choice?.delta;
 
                                     if (delta) {
-                                        // 处理 reasoning_content（思考内容）- 阿里云百炼格式
+                                        // Handle reasoning content
                                         if (delta.reasoning_content) {
                                             thinkContent += delta.reasoning_content;
                                             assistantMsg.updateThink(thinkContent);
-                                            // 流式输出时自动滚动到底部
-                                            chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
+                                            // Only auto-scroll if user is near bottom
+                                            const isAtBottom = chatMessagesDiv.scrollHeight - chatMessagesDiv.scrollTop - chatMessagesDiv.clientHeight < 100;
+                                            if (isAtBottom) {
+                                                chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
+                                            }
                                         }
 
-                                        // 处理 content（正式回复内容）
+                                        // Handle content
                                         let content = delta.content;
                                         if (content) {
-                                            // 处理 content 可能是对象的情况
                                             if (typeof content === 'object') {
                                                 content = content.content || content.text || JSON.stringify(content);
                                             }
                                             if (typeof content === 'string') {
                                                 fullContent += content;
 
-                                                // 处理 <think> 标签格式（其他模型如 DeepSeek、Qwen3 等）
+                                                // Process think tags
                                                 const hasOpenThink = fullContent.includes('<think>');
                                                 const hasCloseThink = fullContent.includes('</think>');
 
                                                 if (hasOpenThink && hasCloseThink) {
-                                                    // think 标签已闭合，提取完整 think 内容
                                                     const thinkMatch = fullContent.match(/<think>([\s\S]*?)<\/think>/);
                                                     if (thinkMatch) {
                                                         const extractedThink = thinkMatch[1];
@@ -3021,93 +3340,291 @@ ${JSON.stringify(schema, null, 2)}`;
                                                             thinkContent = extractedThink;
                                                             assistantMsg.updateThink(thinkContent);
                                                         }
-
-                                                        // 从 fullContent 中移除 think 标签得到消息内容
                                                         const messageWithoutThink = fullContent.replace(/<think>[\s\S]*?<\/think>/, '').trim();
                                                         assistantMsg.updateMessage(messageWithoutThink);
-                                                        // 流式输出时自动滚动到底部
-                                                        chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
+                                                        // Only auto-scroll if user is near bottom
+                                                        const isAtBottom = chatMessagesDiv.scrollHeight - chatMessagesDiv.scrollTop - chatMessagesDiv.clientHeight < 100;
+                                                        if (isAtBottom) {
+                                                            chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
+                                                        }
                                                     }
                                                 } else if (hasOpenThink && !hasCloseThink) {
-                                                    // think 标签未闭合，流式显示思考内容
                                                     const thinkParts = fullContent.split('<think>');
                                                     if (thinkParts.length > 1) {
                                                         const currentThinkContent = thinkParts[1];
                                                         if (currentThinkContent && currentThinkContent !== thinkContent) {
                                                             thinkContent = currentThinkContent;
                                                             assistantMsg.updateThink(thinkContent);
-                                                            // 流式输出时自动滚动到底部
-                                                            chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
+                                                            // Only auto-scroll if user is near bottom
+                                                            const isAtBottom = chatMessagesDiv.scrollHeight - chatMessagesDiv.scrollTop - chatMessagesDiv.clientHeight < 100;
+                                                            if (isAtBottom) {
+                                                                chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
+                                                            }
                                                         }
                                                     }
-                                                    // think 标签未闭合时，不显示消息内容
                                                 } else if (!hasOpenThink) {
-                                                    // 没有 think 标签，直接显示
                                                     assistantMsg.updateMessage(fullContent);
-                                                    // 流式输出时自动滚动到底部
-                                                    chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
+                                                    // Only auto-scroll if user is near bottom
+                                                    const isAtBottom = chatMessagesDiv.scrollHeight - chatMessagesDiv.scrollTop - chatMessagesDiv.clientHeight < 100;
+                                                    if (isAtBottom) {
+                                                        chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
+                                                    }
                                                 }
                                             }
-                                        } else if (thinkContent && !fullContent.trim()) {
-                                            // 只有思考内容，没有实际回复内容
                                         }
                                     }
                                 } catch (e) {
-                                    // 忽略解析错误
+                                    // Ignore parsing errors
                                 }
                             }
                         }
                     }
                 } catch (readError) {
-                    // 如果是因为中止导致的错误，忽略它
-                    if (isAborted || 
-                        readError.name === 'AbortError' || 
+                    if (isAborted ||
+                        readError.name === 'AbortError' ||
                         readError.message?.includes('aborted') ||
                         readError.message?.includes('ERR_ABORTED')) {
-                        // 正常中止，不处理
                         console.log('Stream reading aborted');
                     } else {
                         throw readError;
                     }
                 } finally {
-                    // 确保计时器被停止
-                    if (assistantMsg.thinkTimeInterval) {
-                        clearInterval(assistantMsg.thinkTimeInterval);
-                    }
+                    // Stream ended
                 }
 
-                // 如果用户主动终止，直接返回，不抛出错误
                 if (isAborted) {
                     assistantMsg.finalizeMessage(fullContent || 'Stopped');
                     return;
                 }
 
-                console.log('Raw AI response:', fullContent);
-                console.log('Think content:', thinkContent);
+                // Store the generated description
+                conversationState.experimentDescription = fullContent.trim();
 
-                // 清理响应内容，移除可能的 markdown 代码块标记
+                // Show description with action buttons in the think chain content
+                assistantMsg.showDescriptionWithActions(conversationState.experimentDescription, settings, schema);
+
+            } catch (e) {
+                if (isAborted ||
+                    e.name === 'AbortError' ||
+                    e.message?.includes('aborted') ||
+                    e.message?.includes('ERR_ABORTED')) {
+                    console.log('Request aborted by user');
+                    assistantMsg.finalizeMessage(fullContent || 'Stopped');
+                } else {
+                    assistantMsg.updateMessage(`❌ ${e.message}`);
+                    assistantMsg.msgDiv.classList.add('error');
+                }
+            } finally {
+                sendBtn.style.display = 'flex';
+                stopBtn.style.display = 'none';
+                stopBtn.removeEventListener('click', stopHandler);
+                chatInput.focus();
+            }
+        }
+
+        async function generateFlowchartJSON(settings, schema, skipUserMessage = false) {
+            // 隐藏描述操作按钮栏
+            hideDescriptionActionsBar();
+            
+            conversationState.stage = CONVERSATION_STAGES.GENERATING;
+
+            let apiUrl = settings.api_url.rstrip('/');
+            if (!apiUrl.endsWith('/chat/completions')) {
+                apiUrl = apiUrl + '/chat/completions';
+            }
+
+            // Build Turn 2 messages from template
+            const extraParams = {
+                experimentDescription: conversationState.experimentDescription,
+                schema: schema
+            };
+
+            sendBtn.style.display = 'none';
+            stopBtn.style.display = 'flex';
+
+            // Create AbortController for this request
+            const abortController = new AbortController();
+
+            // Use assistant message component for streaming, with initial think content
+            const assistantMsg = addAssistantMessageWithThink('Generating flowchart JSON based on the experiment description...', 'Flowchart');
+
+            let isAborted = false;
+            const stopHandler = () => {
+                isAborted = true;
+                abortController.abort();
+                stopBtn.removeEventListener('click', stopHandler);
+            };
+            stopBtn.addEventListener('click', stopHandler);
+
+            let fullContent = '';
+            let thinkContent = '';
+
+            try {
+                // Build request body for Turn 2
+                const requestBody = buildRequestBody(2, settings, deepThinkEnabled, extraParams);
+
+                let response;
+                try {
+                    response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${settings.api_key}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(requestBody),
+                        signal: abortController.signal
+                    });
+                } catch (fetchError) {
+                    if (isAborted ||
+                        fetchError.name === 'AbortError' ||
+                        fetchError.message?.includes('aborted') ||
+                        fetchError.message?.includes('ERR_ABORTED') ||
+                        fetchError.message?.includes('Failed to fetch')) {
+                        console.log('Request was aborted');
+                        const abortError = new Error('Request was aborted');
+                        abortError.name = 'AbortError';
+                        throw abortError;
+                    }
+                    throw new Error(`Network error: ${fetchError.message}`);
+                }
+
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(`API Error: ${response.status} ${errorData.error?.message || response.statusText}`);
+                }
+
+                // Process streaming response
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+
+                try {
+                    while (true) {
+                        const { done, value } = await reader.read();
+                        if (done) break;
+
+                        const chunk = decoder.decode(value, { stream: true });
+                        const lines = chunk.split('\n');
+
+                        for (const line of lines) {
+                            if (line.startsWith('data: ')) {
+                                const data = line.slice(6);
+                                if (data === '[DONE]') continue;
+
+                                try {
+                                    const parsed = JSON.parse(data);
+                                    const choice = parsed.choices?.[0];
+                                    const delta = choice?.delta;
+
+                                    if (delta) {
+                                        // Handle reasoning content
+                                        if (delta.reasoning_content) {
+                                            thinkContent += delta.reasoning_content;
+                                            assistantMsg.updateThink(thinkContent);
+                                            // Only auto-scroll if user is near bottom
+                                            const isAtBottom = chatMessagesDiv.scrollHeight - chatMessagesDiv.scrollTop - chatMessagesDiv.clientHeight < 100;
+                                            if (isAtBottom) {
+                                                chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
+                                            }
+                                        }
+
+                                        // Handle content
+                                        let content = delta.content;
+                                        if (content) {
+                                            if (typeof content === 'object') {
+                                                content = content.content || content.text || JSON.stringify(content);
+                                            }
+                                            if (typeof content === 'string') {
+                                                fullContent += content;
+
+                                                // Process think tags
+                                                const hasOpenThink = fullContent.includes('<think>');
+                                                const hasCloseThink = fullContent.includes('</think>');
+
+                                                if (hasOpenThink && hasCloseThink) {
+                                                    const thinkMatch = fullContent.match(/<think>([\s\S]*?)<\/think>/);
+                                                    if (thinkMatch) {
+                                                        const extractedThink = thinkMatch[1];
+                                                        if (extractedThink && extractedThink !== thinkContent) {
+                                                            thinkContent = extractedThink;
+                                                            assistantMsg.updateThink(thinkContent);
+                                                        }
+                                                        const messageWithoutThink = fullContent.replace(/<think>[\s\S]*?<\/think>/, '').trim();
+                                                        assistantMsg.updateMessage(messageWithoutThink);
+                                                        // Only auto-scroll if user is near bottom
+                                                        const isAtBottom = chatMessagesDiv.scrollHeight - chatMessagesDiv.scrollTop - chatMessagesDiv.clientHeight < 100;
+                                                        if (isAtBottom) {
+                                                            chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
+                                                        }
+                                                    }
+                                                } else if (hasOpenThink && !hasCloseThink) {
+                                                    const thinkParts = fullContent.split('<think>');
+                                                    if (thinkParts.length > 1) {
+                                                        const currentThinkContent = thinkParts[1];
+                                                        if (currentThinkContent && currentThinkContent !== thinkContent) {
+                                                            thinkContent = currentThinkContent;
+                                                            assistantMsg.updateThink(thinkContent);
+                                                            // Only auto-scroll if user is near bottom
+                                                            const isAtBottom = chatMessagesDiv.scrollHeight - chatMessagesDiv.scrollTop - chatMessagesDiv.clientHeight < 100;
+                                                            if (isAtBottom) {
+                                                                chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
+                                                            }
+                                                        }
+                                                    }
+                                                } else if (!hasOpenThink) {
+                                                    assistantMsg.updateMessage(fullContent);
+                                                    // Only auto-scroll if user is near bottom
+                                                    const isAtBottom = chatMessagesDiv.scrollHeight - chatMessagesDiv.scrollTop - chatMessagesDiv.clientHeight < 100;
+                                                    if (isAtBottom) {
+                                                        chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                } catch (e) {
+                                    // Ignore parsing errors
+                                }
+                            }
+                        }
+                    }
+                } catch (readError) {
+                    if (isAborted ||
+                        readError.name === 'AbortError' ||
+                        readError.message?.includes('aborted') ||
+                        readError.message?.includes('ERR_ABORTED')) {
+                        console.log('Stream reading aborted');
+                    } else {
+                        throw readError;
+                    }
+                } finally {
+                    // Stream ended
+                }
+
+                if (isAborted) {
+                    assistantMsg.finalizeMessage(fullContent || 'Stopped');
+                    return;
+                }
+
+                // Process and validate the JSON response
                 let cleanContent = fullContent.trim();
-                
-                // 如果 content 为空但 thinkContent 有内容，可能是思考模式导致的问题
-                // 尝试从 thinkContent 中提取 JSON
+
+                // Try to extract JSON from think content if main content is empty
                 if (!cleanContent && thinkContent) {
-                    console.log('No message content but has think content, attempting to extract JSON from think content');
                     const extractedFromThink = extractJSON(thinkContent);
-                    if (extractedFromThink && extractedFromThink.trim() && extractedFromThink !== thinkContent) {
+                    if (extractedFromThink && extractedFromThink.trim()) {
                         cleanContent = extractedFromThink.trim();
-                        console.log('Extracted JSON from think content:', cleanContent.substring(0, 100));
                     }
                 }
-                
-                // 如果仍然没有内容，尝试直接从 fullContent 提取（包括 think 标签内的内容）
+
+                // Try to extract JSON from full content
                 if (!cleanContent && fullContent) {
-                    console.log('Attempting to extract JSON from full content including think tags');
                     const extractedFromFull = extractJSON(fullContent);
                     if (extractedFromFull && extractedFromFull.trim()) {
                         cleanContent = extractedFromFull.trim();
-                        console.log('Extracted JSON from full content:', cleanContent.substring(0, 100));
                     }
                 }
+
+                // Clean markdown code blocks
                 if (cleanContent.startsWith('```json')) {
                     cleanContent = cleanContent.slice(7);
                 }
@@ -3119,41 +3636,28 @@ ${JSON.stringify(schema, null, 2)}`;
                 }
                 cleanContent = cleanContent.trim();
 
-                // 提取真正的JSON内容
+                // Extract JSON
                 cleanContent = extractJSON(cleanContent);
 
-                // 验证 JSON 是否有效（宽松处理）
+                // Validate JSON
                 if (!cleanContent || cleanContent.trim() === '') {
-                    console.error('Failed to extract JSON: empty content');
-                    console.log('Full content:', fullContent);
-                    console.log('Think content:', thinkContent);
-                    
                     throw new Error('Failed to extract JSON from AI response');
                 }
 
-                // 测试解析，失败时尝试修复
-                let isValidJSON = true;
+                // Test parse
                 try {
                     JSON.parse(cleanContent);
                 } catch (e) {
-                    console.warn('JSON validation warning:', e.message);
-                    console.log('Attempting to fix JSON...');
-
                     const fixedContent = fixJSONContent(cleanContent);
                     try {
                         JSON.parse(fixedContent);
-                        console.log('JSON fixed successfully');
                         cleanContent = fixedContent;
                     } catch (fixError) {
                         console.warn('Failed to fix JSON:', fixError.message);
-                        console.log('Will save as TXT format instead');
-                        isValidJSON = false;
                     }
                 }
 
-                console.log('Cleaned content:', cleanContent);
-
-                // 通过 postMessage 发送到父窗口（card.html），使用 protocol 格式
+                // Send to parent window
                 const tempFileName = 'temp_generated_flowchart.json';
                 window.parent.postMessage({
                     type: 'flowchart-generated',
@@ -3162,16 +3666,21 @@ ${JSON.stringify(schema, null, 2)}`;
                     timestamp: new Date().toISOString()
                 }, '*');
 
-                // 显示生成的JSON内容（最终格式化）
+                // Finalize message
                 assistantMsg.finalizeMessage(cleanContent);
+
+                // Reset conversation state
+                conversationState.stage = CONVERSATION_STAGES.IDLE;
+                conversationState.userRequirement = '';
+                conversationState.experimentDescription = '';
+                assistantMessageCount = 0; // 重置AI回复计数
+
             } catch (e) {
-                // 如果是用户主动终止，不显示错误
-                // 注意：需要通过 isAborted 标志来判断，因为 Chrome 中的中止错误可能不是标准的 AbortError
                 if (isAborted ||
-                    e.name === 'AbortError' || 
-                    e.message?.includes('aborted') || 
+                    e.name === 'AbortError' ||
+                    e.message?.includes('aborted') ||
                     e.message?.includes('ERR_ABORTED')) {
-                    console.log('Request aborted by user, showing stopped message');
+                    console.log('Request aborted by user');
                     assistantMsg.finalizeMessage(fullContent || 'Stopped');
                 } else {
                     assistantMsg.updateMessage(`❌ ${e.message}`);
@@ -3213,18 +3722,25 @@ ${JSON.stringify(schema, null, 2)}`;
 
         // 重新生成消息功能
         window.regenerateMessage = function(btn) {
-            // 找到对应的消息 wrapper
-            const wrapper = btn.closest('.message-wrapper');
-            if (!wrapper) return;
+            // 找到对应的 assistant-message-wrapper（AI消息的外层容器）
+            const assistantWrapper = btn.closest('.assistant-message-wrapper');
+            if (!assistantWrapper) return;
+
+            // 获取所有直接子元素来找到正确的顺序
+            const allChildren = Array.from(chatMessagesDiv.children);
+            const assistantIndex = allChildren.indexOf(assistantWrapper);
+
+            // 判断当前消息类型：通过检查 think-chain-text 的内容
+            const thinkChainText = assistantWrapper.querySelector('.think-chain-text');
+            const isFlowchartMessage = thinkChainText && thinkChainText.textContent === 'Flowchart';
 
             // 找到上一条用户消息
             let userMessage = '';
-            const allWrappers = Array.from(chatMessagesDiv.querySelectorAll('.message-wrapper'));
-            const currentIndex = allWrappers.indexOf(wrapper);
 
             // 从当前消息往前找用户消息
-            for (let i = currentIndex - 1; i >= 0; i--) {
-                const userMsgDiv = allWrappers[i].querySelector('.chat-message.user');
+            for (let i = assistantIndex - 1; i >= 0; i--) {
+                const child = allChildren[i];
+                const userMsgDiv = child.querySelector('.chat-message.user');
                 if (userMsgDiv) {
                     userMessage = userMsgDiv.textContent;
                     break;
@@ -3233,17 +3749,27 @@ ${JSON.stringify(schema, null, 2)}`;
 
             if (userMessage) {
                 // 删除当前 AI 回复及之后的所有消息
-                for (let i = allWrappers.length - 1; i >= currentIndex; i--) {
-                    allWrappers[i].remove();
+                for (let i = allChildren.length - 1; i >= assistantIndex; i--) {
+                    allChildren[i].remove();
                 }
 
-                // 重新发送用户消息，跳过添加用户消息到聊天记录（因为已经存在）
-                chatInput.value = userMessage;
-                sendMessage(true);
+                // 根据消息类型设置正确的 stage
+                if (isFlowchartMessage) {
+                    // 如果是 Flowchart 消息，设置 stage 为 DESCRIBING 以重新生成 flowchart
+                    conversationState.stage = CONVERSATION_STAGES.DESCRIBING;
+                    // 使用空字符串作为输入，因为 generateFlowchartJSON 不需要用户输入
+                    chatInput.value = '';
+                    sendMessage(true);
+                } else {
+                    // 如果是 Outlining/Description 消息，设置 stage 为 IDLE 以重新生成 description
+                    conversationState.stage = CONVERSATION_STAGES.IDLE;
+                    chatInput.value = userMessage;
+                    sendMessage(true);
+                }
             }
         };
 
-        // 编辑用户消息功能
+        // 编辑用户消息功能 - 在原位置直接编辑，保持相同样式
         window.editUserMessage = function(btn) {
             const wrapper = btn.closest('.message-wrapper');
             if (!wrapper) return;
@@ -3251,23 +3777,139 @@ ${JSON.stringify(schema, null, 2)}`;
             const userMsgDiv = wrapper.querySelector('.chat-message.user');
             if (!userMsgDiv) return;
 
-            const userMessage = userMsgDiv.textContent;
-            const allWrappers = Array.from(chatMessagesDiv.querySelectorAll('.message-wrapper'));
-            const currentIndex = allWrappers.indexOf(wrapper);
+            // 如果已经在编辑模式，则不处理
+            if (userMsgDiv.isContentEditable) return;
 
-            // 删除当前用户消息及之后的所有消息
-            for (let i = allWrappers.length - 1; i >= currentIndex; i--) {
-                allWrappers[i].remove();
+            const userMessage = userMsgDiv.textContent;
+
+            // 保存原始消息内容
+            userMsgDiv.dataset.originalContent = userMessage;
+
+            // 将消息 div 变为可编辑
+            userMsgDiv.contentEditable = 'true';
+            userMsgDiv.dataset.editing = 'true';
+
+            // 添加编辑状态下的样式
+            userMsgDiv.style.cssText = `
+                background: var(--text-charcoal);
+                color: var(--bg-white);
+                margin-left: auto;
+                text-align: left;
+                width: fit-content;
+                max-width: 85%;
+                min-height: 40px;
+                padding: 12px 16px;
+                border: 2px solid var(--brand-deep);
+                border-radius: 12px;
+                font-family: 'DM Sans', sans-serif;
+                font-size: 12px;
+                line-height: 1.5;
+                outline: none;
+                box-sizing: border-box;
+                cursor: text;
+                white-space: pre-wrap;
+                word-wrap: break-word;
+            `;
+
+            // 聚焦并选中所有文本
+            userMsgDiv.focus();
+            const range = document.createRange();
+            range.selectNodeContents(userMsgDiv);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+
+            // 创建保存/取消按钮容器
+            const editActions = document.createElement('div');
+            editActions.className = 'message-edit-actions';
+            editActions.style.cssText = `
+                display: flex;
+                gap: 8px;
+                margin-top: 8px;
+                justify-content: flex-end;
+            `;
+
+            // 保存按钮
+            const saveBtn = document.createElement('button');
+            saveBtn.textContent = 'Save';
+            saveBtn.className = 'btn-primary';
+            saveBtn.style.cssText = `
+                padding: 6px 16px;
+                font-size: 12px;
+                border-radius: 6px;
+                border: none;
+                background: var(--brand-deep);
+                color: white;
+                cursor: pointer;
+            `;
+            saveBtn.onclick = () => {
+                const newContent = userMsgDiv.textContent.trim();
+                if (newContent) {
+                    userMsgDiv.textContent = newContent;
+                } else {
+                    userMsgDiv.textContent = userMsgDiv.dataset.originalContent;
+                }
+                exitEditMode();
+            };
+
+            // 取消按钮
+            const cancelBtn = document.createElement('button');
+            cancelBtn.textContent = 'Cancel';
+            cancelBtn.className = 'btn-secondary';
+            cancelBtn.style.cssText = `
+                padding: 6px 16px;
+                font-size: 12px;
+                border-radius: 6px;
+                border: 1px solid var(--border-gray);
+                background: white;
+                color: var(--text-primary);
+                cursor: pointer;
+            `;
+            cancelBtn.onclick = () => {
+                userMsgDiv.textContent = userMsgDiv.dataset.originalContent;
+                exitEditMode();
+            };
+
+            // 退出编辑模式的函数
+            function exitEditMode() {
+                userMsgDiv.contentEditable = 'false';
+                delete userMsgDiv.dataset.editing;
+                // 恢复原始样式
+                userMsgDiv.style.cssText = '';
+                editActions.remove();
+                if (messageActions) {
+                    messageActions.style.display = '';
+                }
+                delete wrapper.dataset.editing;
             }
 
-            // 将用户消息放入输入框，让用户可以编辑
-            chatInput.value = userMessage;
-            chatInput.focus();
-            autoResizeTextarea();
+            // 键盘事件处理
+            userMsgDiv.addEventListener('keydown', function handleKeydown(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    saveBtn.click();
+                    userMsgDiv.removeEventListener('keydown', handleKeydown);
+                } else if (e.key === 'Escape') {
+                    e.preventDefault();
+                    cancelBtn.click();
+                    userMsgDiv.removeEventListener('keydown', handleKeydown);
+                }
+            });
 
-            // 重置发送按钮和停止按钮状态
-            sendBtn.style.display = 'flex';
-            stopBtn.style.display = 'none';
+            editActions.appendChild(cancelBtn);
+            editActions.appendChild(saveBtn);
+
+            // 隐藏消息操作按钮
+            const messageActions = wrapper.querySelector('.message-actions');
+            if (messageActions) {
+                messageActions.style.display = 'none';
+            }
+
+            // 插入按钮容器
+            wrapper.appendChild(editActions);
+
+            // 保存编辑元素引用以便取消时恢复操作按钮
+            wrapper.dataset.editing = 'true';
         };
 
         function autoResizeTextarea() {
@@ -3326,29 +3968,8 @@ ${JSON.stringify(schema, null, 2)}`;
             clearTimeout(saveTimeout);
             saveTimeout = setTimeout(saveSettings, 500);
         }
-        temperatureSlider.addEventListener('input', debouncedSave);
-        topPSlider.addEventListener('input', debouncedSave);
-        maxLengthSlider.addEventListener('input', debouncedSave);
-        thinkingBudgetSlider.addEventListener('input', debouncedSave);
-
         // 页面关闭前自动保存
         window.addEventListener('beforeunload', saveSettings);
-
-        temperatureSlider.addEventListener('input', (e) => {
-            document.getElementById('tempValue').textContent = e.target.value;
-        });
-
-        topPSlider.addEventListener('input', (e) => {
-            document.getElementById('topPValue').textContent = e.target.value;
-        });
-
-        maxLengthSlider.addEventListener('input', (e) => {
-            document.getElementById('maxLengthValue').textContent = e.target.value;
-        });
-
-        thinkingBudgetSlider.addEventListener('input', (e) => {
-            document.getElementById('thinkingBudgetValue').textContent = e.target.value;
-        });
 
         // 思考模式按钮点击事件
         thinkingModeBtn.addEventListener('click', (e) => {

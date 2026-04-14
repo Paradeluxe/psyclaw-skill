@@ -489,8 +489,21 @@
           "default": 1
         },
         "values": {
-          "type": "array",
-          "description": "Array of values for this condition. All elements must be the same type. Elements can be strings, numbers, booleans, or $var$ format referencing existing variables."
+          "type": "object",
+          "description": "Dictionary mapping a single variable name to its possible values. Only ONE variable is allowed per condition. Key is the variable name (e.g., '$color$'), value is an array of all possible values for that variable.",
+          "minProperties": 1,
+          "maxProperties": 1,
+          "additionalProperties": {
+            "type": "array",
+            "description": "All possible values for this variable",
+            "items": {
+              "oneOf": [
+                { "type": "string", "description": "String value or $var$ reference" },
+                { "type": "number", "description": "Numeric value" },
+                { "type": "boolean", "description": "Boolean value" }
+              ]
+            }
+          }
         }
       }
     },
@@ -513,9 +526,9 @@
         },
         "endPoint": {
           "type": "integer",
-          "description": "The point where the loop ends (right side). Must be an odd number (1, 3, 5, 7...). Loops cannot share startPoint or endPoint with other loops. endPoint MUST be greater than startPoint.",
+          "description": "The point where the loop ends (right side). Must be an odd number (3, 5, 7...). Loops cannot share startPoint or endPoint with other loops. endPoint MUST be greater than startPoint.",
           "minimum": 1,
-          "enum": [1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31, 33, 35, 37, 39]
+          "enum": [3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31, 33, 35, 37, 39]
         },
         "nRounds": {
           "type": "integer",
