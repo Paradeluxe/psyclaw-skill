@@ -504,13 +504,13 @@
 
         .chat-message {
             margin-bottom: 16px;
-            padding: 12px 16px;
-            border-radius: 12px;
-            max-width: 80%;
+            padding: 14px 18px;
+            border-radius: 16px;
+            max-width: 100%;
             word-wrap: break-word;
             font-family: 'DM Sans', sans-serif;
-            font-size: 12px;
-            line-height: 1.50;
+            font-size: 14px;
+            line-height: 1.6;
         }
 
         .chat-message.user {
@@ -526,9 +526,9 @@
             background: var(--bg-white);
             color: var(--text-primary);
             border: 1px solid var(--border-gray);
-            max-width: 95%;
-            width: 100%;
-            margin-bottom: 0;
+            max-width: 85%;
+            width: fit-content;
+            margin-bottom: 16px;
         }
 
         .chat-message.system {
@@ -564,19 +564,29 @@
 
         .message-actions {
             display: flex;
-            gap: 4px;
-            margin-top: 8px;
+            gap: 2px;
+            margin-top: 4px;
             opacity: 0;
-            transition: opacity 0.2s ease;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+            transform: translateY(-4px);
+            will-change: transform, opacity;
         }
 
         .message-wrapper:hover .message-actions {
             opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* 流式输出过程中保持按钮稳定 */
+        .message-wrapper.streaming .message-actions {
+            opacity: 1;
+            transform: translateY(0);
+            transition: none;
         }
 
         .message-action-btn {
-            width: 24px;
-            height: 24px;
+            width: 28px;
+            height: 28px;
             border: none;
             background: transparent;
             color: #8e8e93;
@@ -585,19 +595,92 @@
             align-items: center;
             justify-content: center;
             border-radius: 6px;
-            transition: all 0.2s;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             padding: 0;
+            position: relative;
         }
 
         .message-action-btn:hover {
-            background: rgba(0, 0, 0, 0.05);
-            color: #45515e;
+            background: rgba(0, 0, 0, 0.06);
+            color: #1a1a1a;
+            transform: scale(1.05);
+        }
+
+        .message-action-btn:active {
+            transform: scale(0.95);
         }
 
         .message-action-btn svg {
-            width: 14px;
-            height: 14px;
+            width: 15px;
+            height: 15px;
             fill: currentColor;
+            transition: transform 0.3s ease;
+        }
+
+        /* 按钮加载动画 */
+        .message-action-btn.loading svg {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* 按钮成功状态 */
+        .message-action-btn.success {
+            color: #10b981;
+        }
+
+        /* 按钮危险操作状态 */
+        .message-action-btn.danger:hover {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+        }
+
+        /* Tooltip 样式 */
+        .message-action-btn::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%) translateY(-6px);
+            padding: 4px 8px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            font-size: 11px;
+            border-radius: 4px;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s ease;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .message-action-btn:hover::after {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(-4px);
+        }
+
+        /* 用户消息操作栏靠右 */
+        .user-wrapper .message-actions {
+            justify-content: flex-end;
+        }
+
+        /* 内联操作按钮栏样式 */
+        .inline-description-actions {
+            display: flex;
+            align-items: center;
+            margin-top: 12px;
+            width: 100%;
+            padding: 8px 0;
+        }
+
+        /* 仅在 think-chain-content 内部显示上边框 */
+        .think-chain-content .inline-description-actions {
+            border-top: 1px solid var(--border-light);
         }
 
 
@@ -711,14 +794,15 @@
 
         /* Think Chain 可折叠区域样式 - Qwen Design System */
         .think-chain-container {
-            margin-bottom: 8px;
+            margin-bottom: 0;
             border-radius: 12px;
-            overflow: hidden;
+            overflow: visible;
             background: #ffffff;
             display: none;
             border: 1px solid #e5e7eb;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
             transition: box-shadow 0.3s ease, transform 0.3s ease;
+            width: 100%;
         }
 
         .think-chain-container.has-content {
@@ -816,15 +900,26 @@
         .think-chain-content:not(.collapsed) {
             padding: 20px;
             opacity: 1;
-            overflow: hidden;
-            max-height: 400px;
-            overflow-y: auto;
+            overflow: visible;
+            max-height: none;
+        }
+
+        .think-chain-content.editing {
+            position: relative;
+        }
+
+        .think-chain-content.editing .description-actions-inline {
+            display: flex;
+            gap: 12px;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(0,0,0,0.1);
         }
 
 
 
         .message-wrapper {
-            margin-bottom: 8px;
+            margin-bottom: 16px;
         }
 
         .message-wrapper.user-wrapper {
@@ -838,7 +933,7 @@
             flex-direction: column;
             align-items: flex-start;
             width: 100%;
-            margin-bottom: 24px;
+            margin-bottom: 16px;
         }
 
         .assistant-message-wrapper > .message-wrapper {
@@ -1708,7 +1803,6 @@
             <div class="description-actions-bar" id="descriptionActionsBar">
                 <div class="description-actions-buttons">
                     <button class="btn-secondary" id="descRegenerateBtn">Regenerate</button>
-                    <button class="btn-primary" id="descProceedBtn">Proceed</button>
                     <button class="btn-text" id="descEditBtn">Edit</button>
                 </div>
             </div>
@@ -1941,7 +2035,6 @@
         const stopBtn = document.getElementById('stopBtn');
         const descriptionActionsBar = document.getElementById('descriptionActionsBar');
         const descRegenerateBtn = document.getElementById('descRegenerateBtn');
-        const descProceedBtn = document.getElementById('descProceedBtn');
         const descEditBtn = document.getElementById('descEditBtn');
         const fileInput = document.getElementById('fileInput');
         const fileUploadBtn = document.getElementById('fileUploadBtn');
@@ -1956,6 +2049,7 @@
         let currentFile = null;
         let deepThinkEnabled = true;
         let assistantMessageCount = 0; // 追踪AI回复数量
+        let currentAbortController = null; // 用于终止当前请求的 AbortController
 
         function formatFileSize(bytes) {
             if (bytes === 0) return '0 B';
@@ -2830,21 +2924,26 @@
             if (role === 'user') {
                 const wrapper = document.createElement('div');
                 wrapper.className = 'message-wrapper user-wrapper';
+                wrapper.dataset.originalPrompt = content; // 存储原始 prompt 用于重做
                 wrapper.appendChild(msgDiv);
 
-                // 创建消息操作按钮栏（用户消息有复制和编辑按钮）
+                // 创建消息操作按钮栏（用户消息有复制、重做和删除按钮）
                 const messageActions = document.createElement('div');
                 messageActions.className = 'message-actions';
-                messageActions.style.justifyContent = 'flex-end'; // 右对齐
                 messageActions.innerHTML = `
-                    <button class="message-action-btn" title="Copy" onclick="copyMessage(this)">
+                    <button class="message-action-btn" data-tooltip="Copy" onclick="copyMessage(this)">
                         <svg viewBox="0 0 24 24">
                             <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
                         </svg>
                     </button>
-                    <button class="message-action-btn" title="Edit" onclick="editUserMessage(this)">
+                    <button class="message-action-btn" data-tooltip="Redo" onclick="redoMessage(this)">
                         <svg viewBox="0 0 24 24">
-                            <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                            <path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/>
+                        </svg>
+                    </button>
+                    <button class="message-action-btn danger" data-tooltip="Delete" onclick="deleteMessage(this)">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
                         </svg>
                     </button>
                 `;
@@ -2897,9 +2996,8 @@
                 
                 // 动态设置 max-height 以实现平滑动画
                 if (!isCollapsed) {
-                    // 展开时，设置具体的高度值（最大 400px 以支持滚动）
-                    const targetHeight = Math.min(thinkContent.scrollHeight, 400);
-                    thinkContent.style.maxHeight = targetHeight + 'px';
+                    // 展开时，不限制高度，让内容完全显示
+                    thinkContent.style.maxHeight = 'none';
                 } else {
                     // 收起时，先设置到实际高度，然后触发动画
                     thinkContent.style.maxHeight = thinkContent.scrollHeight + 'px';
@@ -2924,14 +3022,14 @@
                 messageActions.style.display = 'none'; // 第一个AI回复隐藏按钮
             }
             messageActions.innerHTML = `
-                <button class="message-action-btn" title="Copy" onclick="copyMessage(this)">
+                <button class="message-action-btn" data-tooltip="Copy" onclick="copyMessage(this)">
                     <svg viewBox="0 0 24 24">
                         <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
                     </svg>
                 </button>
-                <button class="message-action-btn" title="Regenerate" onclick="regenerateMessage(this)">
+                <button class="message-action-btn" data-tooltip="Redo" onclick="redoAssistantMessage(this)">
                     <svg viewBox="0 0 24 24">
-                        <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+                        <path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/>
                     </svg>
                 </button>
             `;
@@ -2955,10 +3053,9 @@
                     // 只在用户没有主动滚动时才自动滚动到底部
                     const isAtBottom = thinkContent.scrollHeight - thinkContent.scrollTop - thinkContent.clientHeight < 30;
                     thinkContent.textContent = content;
-                    // 如果当前是展开状态，更新 max-height（最大 400px）
+                    // 如果当前是展开状态，更新 max-height（无限制）
                     if (!thinkContent.classList.contains('collapsed')) {
-                        const targetHeight = Math.min(thinkContent.scrollHeight, 400);
-                        thinkContent.style.maxHeight = targetHeight + 'px';
+                        thinkContent.style.maxHeight = 'none';
                     }
                     if (isAtBottom) {
                         thinkContent.scrollTop = thinkContent.scrollHeight;
@@ -2967,6 +3064,10 @@
                 updateMessage: (content, isStreaming = true) => {
                     // 有内容时才显示
                     if (content && content.trim()) {
+                        // 流式输出开始时添加streaming类
+                        if (isStreaming) {
+                            wrapper.classList.add('streaming');
+                        }
                         // 只在用户没有主动滚动时才自动滚动到底部
                         const isAtBottom = thinkContent.scrollHeight - thinkContent.scrollTop - thinkContent.clientHeight < 30;
                         // 将内容放入think容器中，而不是直接显示在消息中
@@ -2982,6 +3083,8 @@
                     }
                 },
                 finalizeMessage: (content, showActions = false) => {
+                    // 流式输出结束，移除streaming类
+                    wrapper.classList.remove('streaming');
                     // 更新文字为已完成
                     if (thinkChainText) {
                         thinkChainText.textContent = `${title} completed`;
@@ -3000,23 +3103,64 @@
                     }
                     // 将最终内容放入think容器
                     thinkContent.textContent = displayContent;
-                    // 更新 max-height（如果当前是展开状态，最大 400px）
+                    // 更新 max-height（如果当前是展开状态，无限制）
                     if (!thinkContent.classList.contains('collapsed')) {
-                        const targetHeight = Math.min(thinkContent.scrollHeight, 400);
-                        thinkContent.style.maxHeight = targetHeight + 'px';
+                        thinkContent.style.maxHeight = 'none';
                     }
 
-                    // 如果需要显示操作按钮（flowchart消息），使用统一函数创建按钮栏
+                    // 如果需要显示操作按钮（flowchart消息），创建按钮栏
                     if (showActions) {
-                        createMessageActionsBar({
-                            wrapper,
-                            showRegenerate: true,
-                            onRegenerate: () => {
-                                conversationState.stage = CONVERSATION_STAGES.DESCRIBING;
-                                chatInput.value = '';
-                                sendMessage(true);
+                        // 隐藏原有的 message-actions 按钮栏，避免重复显示
+                        const existingMessageActions = wrapper.querySelector('.message-actions');
+                        if (existingMessageActions) {
+                            existingMessageActions.style.display = 'none';
+                        }
+
+                        // 创建 flowchart 操作按钮栏（Copy、Redo）
+                        const actionsDiv = document.createElement('div');
+                        actionsDiv.className = 'inline-description-actions';
+                        actionsDiv.style.cssText = 'display: flex; align-items: center; margin-top: 8px; width: 100%;';
+
+                        const leftActionsDiv = document.createElement('div');
+                        leftActionsDiv.style.cssText = 'display: flex; gap: 0px;';
+
+                        // Copy 按钮
+                        const copyBtn = document.createElement('button');
+                        copyBtn.className = 'message-action-btn';
+                        copyBtn.setAttribute('data-tooltip', 'Copy');
+                        copyBtn.innerHTML = `<svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>`;
+                        copyBtn.onclick = () => {
+                            navigator.clipboard.writeText(displayContent).then(() => {
+                                copyBtn.classList.add('success');
+                                const originalSvg = copyBtn.innerHTML;
+                                copyBtn.innerHTML = `<svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>`;
+                                showToast('Copied to clipboard', 'success', 1500);
+                                setTimeout(() => {
+                                    copyBtn.innerHTML = originalSvg;
+                                    copyBtn.classList.remove('success');
+                                }, 1500);
+                            }).catch(() => {
+                                showToast('Failed to copy', 'error', 2000);
+                            });
+                        };
+                        leftActionsDiv.appendChild(copyBtn);
+
+                        // Redo 按钮
+                        const redoBtn = document.createElement('button');
+                        redoBtn.className = 'message-action-btn';
+                        redoBtn.setAttribute('data-tooltip', 'Redo');
+                        redoBtn.innerHTML = `<svg viewBox="0 0 24 24"><path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/></svg>`;
+                        redoBtn.onclick = () => {
+                            // 找到对应的 assistant-wrapper 并触发重做
+                            const assistantWrapper = wrapper.closest('.assistant-message-wrapper');
+                            if (assistantWrapper) {
+                                redoAssistantMessage(redoBtn);
                             }
-                        });
+                        };
+                        leftActionsDiv.appendChild(redoBtn);
+
+                        actionsDiv.appendChild(leftActionsDiv);
+                        wrapper.appendChild(actionsDiv);
                     }
 
                     // 只在用户已经在底部时才自动滚动
@@ -3036,44 +3180,52 @@
                     }
                     // 清空现有内容，只显示描述文本
                     thinkContent.innerHTML = '';
-                    
+
                     // 创建描述内容区域
                     const descContentDiv = document.createElement('div');
                     descContentDiv.className = 'description-content-text';
-                    descContentDiv.style.cssText = 'white-space: pre-wrap; line-height: 1.6; font-weight: 400;';
+                    descContentDiv.style.cssText = 'width: 100%; white-space: pre-wrap; line-height: 1.6; font-weight: 400;';
                     descContentDiv.textContent = description;
                     thinkContent.appendChild(descContentDiv);
-                    
+
                     // 自动展开显示内容
                     thinkContent.classList.remove('collapsed');
                     wrapper.classList.remove('collapsed');
                     thinkContainer.classList.remove('collapsed');
-                    
-                    // 设置 max-height 以实现平滑动画（最大 400px）
+
+                    // 设置 max-height 以实现平滑动画（无限制）
                     requestAnimationFrame(() => {
-                        const targetHeight = Math.min(thinkContent.scrollHeight, 400);
-                        thinkContent.style.maxHeight = targetHeight + 'px';
+                        thinkContent.style.maxHeight = 'none';
                     });
-                    
-                    // 使用统一函数创建操作按钮栏
-                    createMessageActionsBar({
-                        wrapper,
-                        showRegenerate: true,
-                        showEdit: true,
-                        showProceed: true,
-                        onRegenerate: () => {
-                            conversationState.stage = CONVERSATION_STAGES.IDLE;
-                            chatInput.value = conversationState.userRequirement;
-                            sendMessage();
-                        },
-                        onEdit: () => {},
-                        onProceed: () => {
+
+                    // 等待一小段时间让用户看到生成的 outline，然后收起并生成 flowchart
+                    setTimeout(() => {
+                        // 先设置 max-height 为当前实际高度，以便触发动画
+                        thinkContent.style.maxHeight = thinkContent.scrollHeight + 'px';
+                        
+                        // 强制重绘以确保过渡生效
+                        thinkContent.offsetHeight;
+                        
+                        // 添加收起动画
+                        thinkContent.classList.add('collapsed');
+                        wrapper.classList.add('collapsed');
+                        thinkContainer.classList.add('collapsed');
+                        
+                        // 设置 max-height 为 0 来触发动画
+                        thinkContent.style.maxHeight = '0';
+
+                        // 更新 toggle 图标 - 从 thinkHeader 获取
+                        const toggleIcon = thinkHeader ? thinkHeader.querySelector('#toggleIcon') : null;
+                        if (toggleIcon) {
+                            toggleIcon.classList.add('collapsed');
+                        }
+
+                        // 等待收起动画完成后，再生成 flowchart
+                        setTimeout(() => {
                             generateFlowchartJSON(settings, schema);
-                        },
-                        descContentDiv,
-                        description
-                    });
-                    
+                        }, 400); // 等待 CSS 动画完成 (0.4s)
+                    }, 1500); // 给用户 1.5 秒时间查看生成的 outline
+
                     // 只在用户已经在底部时才自动滚动
                     const isAtBottom = chatMessagesDiv.scrollHeight - chatMessagesDiv.scrollTop - chatMessagesDiv.clientHeight < 50;
                     if (isAtBottom) {
@@ -3083,113 +3235,7 @@
             };
         }
 
-        // 统一创建消息操作按钮栏的函数（以outline样式为准）
-        function createMessageActionsBar(options) {
-            const {
-                wrapper,
-                showRegenerate = false,
-                showEdit = false,
-                showProceed = false,
-                onRegenerate,
-                onEdit,
-                onProceed,
-                descContentDiv = null,
-                description = null,
-                inlineActionsDiv = null
-            } = options;
 
-            // 如果传入了已有的 inlineActionsDiv，则使用它；否则创建新的
-            const actionsDiv = inlineActionsDiv || document.createElement('div');
-            if (!inlineActionsDiv) {
-                actionsDiv.className = 'inline-description-actions';
-                actionsDiv.style.cssText = 'display: flex; align-items: center; margin-top: 2px; width: 100%;';
-            }
-
-            const leftActionsDiv = document.createElement('div');
-            leftActionsDiv.style.cssText = 'display: flex; gap: 0px;';
-
-            // Regenerate 按钮
-            if (showRegenerate && onRegenerate) {
-                const regenerateBtn = document.createElement('button');
-                regenerateBtn.className = 'message-action-btn';
-                regenerateBtn.title = 'Regenerate';
-                regenerateBtn.innerHTML = `<svg viewBox="0 0 24 24"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>`;
-                regenerateBtn.onclick = onRegenerate;
-                leftActionsDiv.appendChild(regenerateBtn);
-            }
-
-            // Edit 按钮
-            if (showEdit && onEdit && descContentDiv && description) {
-                const editBtn = document.createElement('button');
-                editBtn.className = 'message-action-btn';
-                editBtn.title = 'Edit';
-                editBtn.innerHTML = `<svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>`;
-                editBtn.onclick = () => {
-                    // 创建 textarea 进行内联编辑
-                    const textarea = document.createElement('textarea');
-                    textarea.className = 'description-edit-textarea';
-                    textarea.value = description;
-                    textarea.style.cssText = 'width: 100%; min-height: 120px; padding: 12px; border: 1px solid var(--border-gray); border-radius: 8px; font-family: inherit; font-size: 12px; line-height: 1.6; resize: vertical; box-sizing: border-box;';
-
-                    // 替换描述内容为 textarea
-                    descContentDiv.innerHTML = '';
-                    descContentDiv.appendChild(textarea);
-                    textarea.focus();
-
-                    // 隐藏内联按钮栏，显示 Save/Cancel 按钮
-                    actionsDiv.style.display = 'none';
-
-                    // 创建临时的 Save/Cancel 按钮容器
-                    const editActionsDiv = document.createElement('div');
-                    editActionsDiv.className = 'description-actions-inline';
-                    editActionsDiv.style.cssText = 'display: flex; gap: 12px; margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(0,0,0,0.1);';
-
-                    const saveBtn = document.createElement('button');
-                    saveBtn.className = 'btn-primary';
-                    saveBtn.textContent = 'Save';
-                    saveBtn.onclick = () => {
-                        const newDescription = textarea.value.trim();
-                        if (newDescription) {
-                            description = newDescription;
-                            descContentDiv.textContent = description;
-                            conversationState.experimentDescription = description;
-                        }
-                        editActionsDiv.remove();
-                        actionsDiv.style.display = 'flex';
-                    };
-
-                    const cancelBtn = document.createElement('button');
-                    cancelBtn.className = 'btn-secondary';
-                    cancelBtn.textContent = 'Cancel';
-                    cancelBtn.onclick = () => {
-                        descContentDiv.textContent = description;
-                        editActionsDiv.remove();
-                        actionsDiv.style.display = 'flex';
-                    };
-
-                    editActionsDiv.appendChild(saveBtn);
-                    editActionsDiv.appendChild(cancelBtn);
-                    wrapper.querySelector('.think-chain-content').appendChild(editActionsDiv);
-                };
-                leftActionsDiv.appendChild(editBtn);
-            }
-
-            actionsDiv.appendChild(leftActionsDiv);
-
-            // Proceed 按钮
-            if (showProceed && onProceed) {
-                const proceedBtn = document.createElement('button');
-                proceedBtn.className = 'btn-primary';
-                proceedBtn.style.cssText = 'margin-left: auto;';
-                proceedBtn.textContent = 'Proceed';
-                proceedBtn.onclick = onProceed;
-                actionsDiv.appendChild(proceedBtn);
-            }
-
-            wrapper.appendChild(actionsDiv);
-
-            return actionsDiv;
-        }
 
         function updateMessage(msgDiv, content) {
             msgDiv.textContent = content;
@@ -3220,6 +3266,9 @@
 
             if (!schema) {
                 showToast('Failed to load flowchart schema. Please check if flowchart.schema.json exists.', 'error', 4000);
+                // 恢复 UI 状态
+                sendBtn.style.display = 'flex';
+                stopBtn.style.display = 'none';
                 return;
             }
 
@@ -3230,23 +3279,40 @@
                 model: modelSelectInput.value.trim()
             };
 
-            if (!message && !currentFile) {
+            // 对于 flowchart regenerate，message 可能为空，但 stage 是 DESCRIBING，这是正常的
+            const isFlowchartRegenerate = conversationState.stage === CONVERSATION_STAGES.DESCRIBING && 
+                                          !message && 
+                                          conversationState.experimentDescription;
+            
+            if (!message && !currentFile && !isFlowchartRegenerate) {
+                // 恢复 UI 状态
+                sendBtn.style.display = 'flex';
+                stopBtn.style.display = 'none';
                 return;
             }
 
             if (!settings.model) {
                 showToast('Please select a model in Advanced Settings first.', 'warning', 4000);
+                // 恢复 UI 状态
+                sendBtn.style.display = 'flex';
+                stopBtn.style.display = 'none';
                 return;
             }
 
             if (!settings.api_url || !settings.api_key) {
                 showToast('API URL and Key are required. Please configure them in Advanced Settings.', 'warning', 4000);
+                // 恢复 UI 状态
+                sendBtn.style.display = 'flex';
+                stopBtn.style.display = 'none';
                 return;
             }
 
             const validation = validateApi(settings.api_url, settings.api_key);
             if (validation.includes('❌')) {
                 addMessage(validation, 'error');
+                // 恢复 UI 状态
+                sendBtn.style.display = 'flex';
+                stopBtn.style.display = 'none';
                 return;
             }
 
@@ -3292,7 +3358,7 @@
             stopBtn.style.display = 'flex';
 
             // Create AbortController for this request
-            const abortController = new AbortController();
+            currentAbortController = new AbortController();
 
             // Use assistant message component for streaming
             const assistantMsg = addAssistantMessageWithThink();
@@ -3300,7 +3366,8 @@
             let isAborted = false;
             const stopHandler = () => {
                 isAborted = true;
-                abortController.abort();
+                currentAbortController.abort();
+                currentAbortController = null;
                 stopBtn.removeEventListener('click', stopHandler);
             };
             stopBtn.addEventListener('click', stopHandler);
@@ -3321,7 +3388,7 @@
                             'Content-Type': 'application/json'
                         },
                         body: JSON.stringify(requestBody),
-                        signal: abortController.signal
+                        signal: currentAbortController.signal
                     });
                 } catch (fetchError) {
                     if (isAborted ||
@@ -3475,6 +3542,7 @@
                 sendBtn.style.display = 'flex';
                 stopBtn.style.display = 'none';
                 stopBtn.removeEventListener('click', stopHandler);
+                currentAbortController = null;
                 chatInput.focus();
             }
         }
@@ -3500,7 +3568,7 @@
             stopBtn.style.display = 'flex';
 
             // Create AbortController for this request
-            const abortController = new AbortController();
+            currentAbortController = new AbortController();
 
             // Use assistant message component for streaming, with initial think content
             const assistantMsg = addAssistantMessageWithThink('Generating flowchart JSON based on the experiment description...', 'Flowchart');
@@ -3508,7 +3576,8 @@
             let isAborted = false;
             const stopHandler = () => {
                 isAborted = true;
-                abortController.abort();
+                currentAbortController.abort();
+                currentAbortController = null;
                 stopBtn.removeEventListener('click', stopHandler);
             };
             stopBtn.addEventListener('click', stopHandler);
@@ -3529,7 +3598,7 @@
                             'Content-Type': 'application/json'
                         },
                         body: JSON.stringify(requestBody),
-                        signal: abortController.signal
+                        signal: currentAbortController.signal
                     });
                 } catch (fetchError) {
                     if (isAborted ||
@@ -3747,6 +3816,7 @@
                 sendBtn.style.display = 'flex';
                 stopBtn.style.display = 'none';
                 stopBtn.removeEventListener('click', stopHandler);
+                currentAbortController = null;
                 chatInput.focus();
             }
         }
@@ -3765,65 +3835,45 @@
             const msgDiv = wrapper.querySelector('.chat-message');
             if (msgDiv && msgDiv.textContent) {
                 navigator.clipboard.writeText(msgDiv.textContent).then(() => {
+                    // 添加成功状态类
+                    btn.classList.add('success');
                     // 临时改变图标表示已复制
                     const originalSvg = btn.innerHTML;
                     btn.innerHTML = `<svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>`;
-                    btn.style.color = '#10a37f';
+
+                    showToast('Copied to clipboard', 'success', 1500);
+
                     setTimeout(() => {
                         btn.innerHTML = originalSvg;
-                        btn.style.color = '';
+                        btn.classList.remove('success');
                     }, 1500);
+                }).catch(() => {
+                    showToast('Failed to copy', 'error', 2000);
                 });
             }
         };
 
-        // 重新生成消息功能
-        window.regenerateMessage = function(btn) {
-            // 找到对应的 assistant-message-wrapper（AI消息的外层容器）
-            const assistantWrapper = btn.closest('.assistant-message-wrapper');
-            if (!assistantWrapper) return;
 
-            // 获取所有直接子元素来找到正确的顺序
-            const allChildren = Array.from(chatMessagesDiv.children);
-            const assistantIndex = allChildren.indexOf(assistantWrapper);
 
-            // 判断当前消息类型：通过检查 think-chain-text 的内容
-            const thinkChainText = assistantWrapper.querySelector('.think-chain-text');
-            const isFlowchartMessage = thinkChainText && thinkChainText.textContent === 'Flowchart';
+        // 修改 AI 消息功能 - 将当前消息内容填入输入框，让用户提出修改要求
+        window.modifyMessage = function(btn) {
+            const wrapper = btn.closest('.message-wrapper');
+            if (!wrapper) return;
 
-            // 找到上一条用户消息
-            let userMessage = '';
+            const msgDiv = wrapper.querySelector('.chat-message.assistant');
+            if (!msgDiv) return;
 
-            // 从当前消息往前找用户消息
-            for (let i = assistantIndex - 1; i >= 0; i--) {
-                const child = allChildren[i];
-                const userMsgDiv = child.querySelector('.chat-message.user');
-                if (userMsgDiv) {
-                    userMessage = userMsgDiv.textContent;
-                    break;
-                }
-            }
+            const currentContent = msgDiv.textContent || '';
 
-            if (userMessage) {
-                // 删除当前 AI 回复及之后的所有消息
-                for (let i = allChildren.length - 1; i >= assistantIndex; i--) {
-                    allChildren[i].remove();
-                }
+            // 将当前内容填入输入框，并添加提示文本
+            chatInput.value = `Please modify the following content according to my requirements:\n\n${currentContent}\n\nMy requirements: `;
 
-                // 根据消息类型设置正确的 stage
-                if (isFlowchartMessage) {
-                    // 如果是 Flowchart 消息，设置 stage 为 DESCRIBING 以重新生成 flowchart
-                    conversationState.stage = CONVERSATION_STAGES.DESCRIBING;
-                    // 使用空字符串作为输入，因为 generateFlowchartJSON 不需要用户输入
-                    chatInput.value = '';
-                    sendMessage(true);
-                } else {
-                    // 如果是 Outlining/Description 消息，设置 stage 为 IDLE 以重新生成 description
-                    conversationState.stage = CONVERSATION_STAGES.IDLE;
-                    chatInput.value = userMessage;
-                    sendMessage(true);
-                }
-            }
+            // 聚焦输入框并将光标移到末尾
+            chatInput.focus();
+            chatInput.setSelectionRange(chatInput.value.length, chatInput.value.length);
+
+            // 滚动到输入框位置
+            chatInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
         };
 
         // 编辑用户消息功能 - 在原位置直接编辑，保持相同样式
@@ -3846,26 +3896,28 @@
             userMsgDiv.contentEditable = 'true';
             userMsgDiv.dataset.editing = 'true';
 
-            // 添加编辑状态下的样式
+            // 添加编辑状态下的样式 - 使用更现代的视觉设计
             userMsgDiv.style.cssText = `
-                background: var(--text-charcoal);
+                background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
                 color: var(--bg-white);
                 margin-left: auto;
                 text-align: left;
                 width: fit-content;
                 max-width: 85%;
                 min-height: 40px;
-                padding: 12px 16px;
-                border: 2px solid var(--brand-deep);
-                border-radius: 12px;
+                padding: 14px 18px;
+                border: 2px solid var(--brand-blue);
+                border-radius: 16px;
                 font-family: 'DM Sans', sans-serif;
-                font-size: 12px;
-                line-height: 1.5;
+                font-size: 13px;
+                line-height: 1.6;
                 outline: none;
                 box-sizing: border-box;
                 cursor: text;
                 white-space: pre-wrap;
                 word-wrap: break-word;
+                box-shadow: 0 4px 20px rgba(20, 86, 240, 0.2), inset 0 1px 0 rgba(255,255,255,0.1);
+                transition: all 0.2s ease;
             `;
 
             // 聚焦并选中所有文本
@@ -3876,52 +3928,83 @@
             selection.removeAllRanges();
             selection.addRange(range);
 
-            // 创建保存/取消按钮容器
+            // 创建保存/取消按钮容器 - 使用更现代的设计
             const editActions = document.createElement('div');
             editActions.className = 'message-edit-actions';
             editActions.style.cssText = `
                 display: flex;
-                gap: 8px;
-                margin-top: 8px;
+                gap: 10px;
+                margin-top: 12px;
                 justify-content: flex-end;
+                padding: 0 4px;
             `;
 
-            // 保存按钮
+            // 保存按钮 - 使用渐变和阴影
             const saveBtn = document.createElement('button');
-            saveBtn.textContent = 'Save';
+            saveBtn.innerHTML = `
+                <svg viewBox="0 0 24 24" width="14" height="14" style="margin-right: 6px; fill: currentColor;">
+                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                </svg>
+                Save
+            `;
             saveBtn.className = 'btn-primary';
             saveBtn.style.cssText = `
-                padding: 6px 16px;
-                font-size: 12px;
-                border-radius: 6px;
+                padding: 8px 18px;
+                font-size: 13px;
+                font-weight: 500;
+                border-radius: 8px;
                 border: none;
-                background: var(--brand-deep);
+                background: linear-gradient(135deg, var(--brand-blue) 0%, var(--primary-600) 100%);
                 color: white;
                 cursor: pointer;
+                display: flex;
+                align-items: center;
+                transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+                box-shadow: 0 2px 8px rgba(20, 86, 240, 0.3);
             `;
+            saveBtn.onmouseenter = () => {
+                saveBtn.style.transform = 'translateY(-1px)';
+                saveBtn.style.boxShadow = '0 4px 12px rgba(20, 86, 240, 0.4)';
+            };
+            saveBtn.onmouseleave = () => {
+                saveBtn.style.transform = '';
+                saveBtn.style.boxShadow = '0 2px 8px rgba(20, 86, 240, 0.3)';
+            };
             saveBtn.onclick = () => {
                 const newContent = userMsgDiv.textContent.trim();
                 if (newContent) {
                     userMsgDiv.textContent = newContent;
+                    showToast('Message updated', 'success', 1500);
                 } else {
                     userMsgDiv.textContent = userMsgDiv.dataset.originalContent;
+                    showToast('Empty message, restored original', 'warning', 1500);
                 }
                 exitEditMode();
             };
 
-            // 取消按钮
+            // 取消按钮 - 更精致的样式
             const cancelBtn = document.createElement('button');
             cancelBtn.textContent = 'Cancel';
             cancelBtn.className = 'btn-secondary';
             cancelBtn.style.cssText = `
-                padding: 6px 16px;
-                font-size: 12px;
-                border-radius: 6px;
+                padding: 8px 18px;
+                font-size: 13px;
+                font-weight: 500;
+                border-radius: 8px;
                 border: 1px solid var(--border-gray);
                 background: white;
-                color: var(--text-primary);
+                color: var(--text-secondary);
                 cursor: pointer;
+                transition: all 0.2s ease;
             `;
+            cancelBtn.onmouseenter = () => {
+                cancelBtn.style.background = '#f8f9fa';
+                cancelBtn.style.borderColor = '#d1d5db';
+            };
+            cancelBtn.onmouseleave = () => {
+                cancelBtn.style.background = 'white';
+                cancelBtn.style.borderColor = 'var(--border-gray)';
+            };
             cancelBtn.onclick = () => {
                 userMsgDiv.textContent = userMsgDiv.dataset.originalContent;
                 exitEditMode();
@@ -3967,6 +4050,272 @@
 
             // 保存编辑元素引用以便取消时恢复操作按钮
             wrapper.dataset.editing = 'true';
+        };
+
+        // 删除消息功能
+        window.deleteMessage = function(btn) {
+            const wrapper = btn.closest('.message-wrapper');
+            if (!wrapper) return;
+
+            // 找到消息容器（可能是 assistant-message-wrapper 或直接的 wrapper）
+            const assistantWrapper = wrapper.closest('.assistant-message-wrapper');
+            const messageContainer = assistantWrapper || wrapper;
+
+            // 添加淡出动画
+            messageContainer.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+            messageContainer.style.opacity = '0';
+            messageContainer.style.transform = 'translateX(20px)';
+
+            setTimeout(() => {
+                messageContainer.remove();
+
+                // 检查是否还有消息，如果没有则显示欢迎语
+                const remainingMessages = chatMessagesDiv.querySelectorAll('.message-wrapper, .assistant-message-wrapper');
+                if (remainingMessages.length === 0) {
+                    const welcomeMsg = chatMessagesDiv.querySelector('.chat-message.welcome');
+                    if (welcomeMsg) {
+                        welcomeMsg.style.display = 'flex';
+                    }
+                }
+
+                showToast('Message deleted', 'success', 1500);
+            }, 300);
+        };
+
+        // 重做消息功能：终止当前请求，删除当前消息及之后的所有消息，带着上下文重跑
+        window.redoMessage = async function(btn) {
+            const wrapper = btn.closest('.message-wrapper');
+            if (!wrapper) return;
+
+            const originalPrompt = wrapper.dataset.originalPrompt;
+            if (!originalPrompt) {
+                showToast('No original prompt found', 'error', 2000);
+                return;
+            }
+
+            // 1. 终止当前正在进行的请求
+            if (currentAbortController) {
+                currentAbortController.abort();
+                currentAbortController = null;
+                showToast('Request aborted', 'info', 1500);
+            }
+
+            // 2. 找到当前用户消息及其之后的所有消息并删除
+            const allWrappers = Array.from(chatMessagesDiv.querySelectorAll('.message-wrapper, .assistant-message-wrapper'));
+            const currentIndex = allWrappers.findIndex(w => w === wrapper || w.contains(wrapper));
+            
+            if (currentIndex === -1) return;
+
+            // 删除当前消息及之后的所有消息（包括AI回复）
+            const wrappersToRemove = allWrappers.slice(currentIndex);
+            wrappersToRemove.forEach(w => {
+                w.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+                w.style.opacity = '0';
+                w.style.transform = 'translateX(20px)';
+            });
+
+            await new Promise(resolve => setTimeout(resolve, 300));
+            wrappersToRemove.forEach(w => w.remove());
+
+            // 3. 重置对话状态到适当阶段
+            // 检查是否还有之前的消息
+            const remainingWrappers = chatMessagesDiv.querySelectorAll('.message-wrapper, .assistant-message-wrapper');
+            if (remainingWrappers.length === 0) {
+                // 没有之前的消息，重置到 IDLE 阶段
+                conversationState.stage = CONVERSATION_STAGES.IDLE;
+                conversationState.userRequirement = '';
+                conversationState.experimentDescription = '';
+                conversationState.messages = [];
+                
+                // 显示欢迎语
+                const welcomeMsg = chatMessagesDiv.querySelector('.chat-message.welcome');
+                if (welcomeMsg) {
+                    welcomeMsg.style.display = 'flex';
+                }
+            } else {
+                // 有之前的消息，需要恢复到之前的状态
+                // 找到最后一个用户消息，恢复 conversationState
+                const lastUserWrapper = Array.from(remainingWrappers)
+                    .reverse()
+                    .find(w => w.classList.contains('user-wrapper'));
+                
+                if (lastUserWrapper) {
+                    // 如果之前有用户消息，我们认为是在 DESCRIBING 阶段
+                    conversationState.stage = CONVERSATION_STAGES.DESCRIBING;
+                    conversationState.userRequirement = lastUserWrapper.dataset.originalPrompt || '';
+                    // experimentDescription 保持不变，因为我们删除了当前消息及之后的内容
+                }
+            }
+
+            // 4. 将原始 prompt 填入输入框并发送
+            chatInput.value = originalPrompt;
+            
+            // 重置 UI 状态
+            sendBtn.style.display = 'flex';
+            stopBtn.style.display = 'none';
+            
+            showToast('Redoing message...', 'info', 1500);
+            
+            // 触发发送，skipUserMessage=true 因为消息已经在 DOM 中（我们会重新添加）
+            // 实际上我们需要重新添加用户消息，所以不传 skipUserMessage
+            await sendMessage(false);
+        };
+
+        // AI消息的重做功能：找到对应的用户消息并重做
+        window.redoAssistantMessage = async function(btn) {
+            const assistantWrapper = btn.closest('.assistant-message-wrapper');
+            if (!assistantWrapper) return;
+
+            // 找到当前AI消息在聊天历史中的位置
+            const allWrappers = Array.from(chatMessagesDiv.querySelectorAll('.message-wrapper, .assistant-message-wrapper'));
+            const currentIndex = allWrappers.findIndex(w => w === assistantWrapper);
+            
+            if (currentIndex === -1) return;
+
+            // 向前查找对应的用户消息（用户消息应该在AI消息之前）
+            let userWrapper = null;
+            for (let i = currentIndex - 1; i >= 0; i--) {
+                const wrapper = allWrappers[i];
+                if (wrapper.classList.contains('user-wrapper') || 
+                    (wrapper.querySelector('.user-wrapper'))) {
+                    userWrapper = wrapper.classList.contains('user-wrapper') ? wrapper : wrapper.querySelector('.user-wrapper');
+                    break;
+                }
+            }
+
+            if (!userWrapper) {
+                showToast('No corresponding user message found', 'error', 2000);
+                return;
+            }
+
+            const originalPrompt = userWrapper.dataset.originalPrompt;
+            if (!originalPrompt) {
+                showToast('No original prompt found', 'error', 2000);
+                return;
+            }
+
+            // 1. 终止当前正在进行的请求
+            if (currentAbortController) {
+                currentAbortController.abort();
+                currentAbortController = null;
+                showToast('Request aborted', 'info', 1500);
+            }
+
+            // 2. 删除该用户消息及其之后的所有消息
+            const userWrapperIndex = allWrappers.findIndex(w => w === userWrapper || w.contains(userWrapper));
+            const wrappersToRemove = allWrappers.slice(userWrapperIndex);
+            
+            wrappersToRemove.forEach(w => {
+                w.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+                w.style.opacity = '0';
+                w.style.transform = 'translateX(20px)';
+            });
+
+            await new Promise(resolve => setTimeout(resolve, 300));
+            wrappersToRemove.forEach(w => w.remove());
+
+            // 3. 重置对话状态到适当阶段
+            const remainingWrappers = chatMessagesDiv.querySelectorAll('.message-wrapper, .assistant-message-wrapper');
+            if (remainingWrappers.length === 0) {
+                conversationState.stage = CONVERSATION_STAGES.IDLE;
+                conversationState.userRequirement = '';
+                conversationState.experimentDescription = '';
+                conversationState.messages = [];
+                
+                const welcomeMsg = chatMessagesDiv.querySelector('.chat-message.welcome');
+                if (welcomeMsg) {
+                    welcomeMsg.style.display = 'flex';
+                }
+            } else {
+                const lastUserWrapper = Array.from(remainingWrappers)
+                    .reverse()
+                    .find(w => w.classList.contains('user-wrapper'));
+                
+                if (lastUserWrapper) {
+                    conversationState.stage = CONVERSATION_STAGES.DESCRIBING;
+                    conversationState.userRequirement = lastUserWrapper.dataset.originalPrompt || '';
+                }
+            }
+
+            // 4. 将原始 prompt 填入输入框并发送
+            chatInput.value = originalPrompt;
+            sendBtn.style.display = 'flex';
+            stopBtn.style.display = 'none';
+            
+            showToast('Redoing message...', 'info', 1500);
+            await sendMessage(false);
+        };
+
+        // 反馈功能（替代原来的 modify）
+        window.giveFeedback = function(btn) {
+            const wrapper = btn.closest('.message-wrapper');
+            if (!wrapper) return;
+
+            // 创建反馈输入框
+            const feedbackDiv = document.createElement('div');
+            feedbackDiv.className = 'feedback-input-container';
+            feedbackDiv.style.cssText = `
+                margin-top: 12px;
+                padding: 12px;
+                background: #f8f9fa;
+                border-radius: 12px;
+                border: 1px solid var(--border-gray);
+            `;
+
+            const feedbackTextarea = document.createElement('textarea');
+            feedbackTextarea.placeholder = 'Please describe what you\'d like to improve...';
+            feedbackTextarea.style.cssText = `
+                width: 100%;
+                min-height: 80px;
+                padding: 10px;
+                border: 1px solid var(--border-gray);
+                border-radius: 8px;
+                font-family: inherit;
+                font-size: 13px;
+                resize: vertical;
+                box-sizing: border-box;
+                margin-bottom: 10px;
+            `;
+
+            const feedbackActions = document.createElement('div');
+            feedbackActions.style.cssText = 'display: flex; gap: 8px; justify-content: flex-end;';
+
+            const submitBtn = document.createElement('button');
+            submitBtn.className = 'btn-primary';
+            submitBtn.textContent = 'Submit';
+            submitBtn.style.cssText = 'padding: 6px 16px; font-size: 12px;';
+            submitBtn.onclick = () => {
+                const feedback = feedbackTextarea.value.trim();
+                if (feedback) {
+                    // 将反馈填入输入框
+                    chatInput.value = feedback;
+                    chatInput.focus();
+                    showToast('Feedback captured. Press Enter to send.', 'success', 2000);
+                }
+                feedbackDiv.remove();
+            };
+
+            const cancelBtn = document.createElement('button');
+            cancelBtn.className = 'btn-secondary';
+            cancelBtn.textContent = 'Cancel';
+            cancelBtn.style.cssText = 'padding: 6px 16px; font-size: 12px;';
+            cancelBtn.onclick = () => {
+                feedbackDiv.remove();
+            };
+
+            feedbackActions.appendChild(cancelBtn);
+            feedbackActions.appendChild(submitBtn);
+            feedbackDiv.appendChild(feedbackTextarea);
+            feedbackDiv.appendChild(feedbackActions);
+
+            // 隐藏操作按钮
+            const messageActions = wrapper.querySelector('.message-actions');
+            if (messageActions) {
+                messageActions.style.display = 'none';
+            }
+
+            wrapper.appendChild(feedbackDiv);
+            feedbackTextarea.focus();
         };
 
         function autoResizeTextarea() {

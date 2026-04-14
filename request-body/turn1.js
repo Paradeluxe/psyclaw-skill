@@ -19,6 +19,7 @@ const turn1 = {
    - Response collection methods
    - Any loops, conditions, or branching logic
    - Timing parameters
+3. Be sure your reponse is no more than 300 words
 
 [Output Format]
 Provide a clear, structured description that can be used to generate a PsyClaw flowchart. Be specific about:
@@ -37,7 +38,7 @@ Do NOT generate JSON. Only provide the natural language description.`
     ],
     temperature: 0,
     top_p: 0,
-    max_tokens: 128,
+    // max_tokens: 128,
     stream: true,
     extra_body: {"enable_search": true}
 };

@@ -5843,6 +5843,21 @@
                 console.log('Received flowchart data, content length:', content ? content.length : 0);
                 console.log('File name:', fileName);
                 
+                // 详细日志：打印原始数据的关键信息
+                let rawProjectData;
+                try {
+                    rawProjectData = JSON.parse(content);
+                    console.log('=== Flowchart Data Analysis ===');
+                    console.log('routines count:', rawProjectData.routines?.length || rawProjectData.routineRects?.length || 0);
+                    console.log('loops count:', rawProjectData.loops?.length || 0);
+                    console.log('connections count:', rawProjectData.connections?.length || 0);
+                    console.log('loops data:', JSON.stringify(rawProjectData.loops, null, 2));
+                    console.log('connections data:', JSON.stringify(rawProjectData.connections, null, 2));
+                    console.log('===============================');
+                } catch (e) {
+                    console.log('Failed to parse for debug logging:', e);
+                }
+
                 // 直接解析 content，尝试修复常见的 JSON 格式问题
                 let projectData;
                 try {
@@ -5969,6 +5984,14 @@
                     // 统一使用 loopsToConnections 转换
                     connections.push(...loopsToConnections(tempLoops));
                 }
+                
+                // 调试日志：检查最终 connections 数组
+                console.log('=== Connections Debug ===');
+                console.log('Total connections created:', connections.length);
+                connections.forEach((conn, idx) => {
+                    console.log(`Connection ${idx}:`, conn.loopName, 'start:', conn.start.label, 'end:', conn.end.label);
+                });
+                console.log('=========================');
 
                 currentRoutineCount = routineRects.length;
                 routineIdCounter = routineRects.length;
