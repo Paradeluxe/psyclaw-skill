@@ -5009,7 +5009,8 @@
                             return {
                                 name: c.name || `Condition ${i + 1}`,
                                 weight: c.weight !== undefined ? c.weight : 1,
-                                values: []
+                                values: Array.isArray(c.values) ? c.values : [],
+                                _valueKeys: c._valueKeys || []
                             };
                         }
                     });
@@ -5886,27 +5887,10 @@
                 console.log('Received flowchart data, content length:', content ? content.length : 0);
                 console.log('File name:', fileName);
                 
-                // 详细日志：打印原始数据的关键信息
-                let rawProjectData;
-                try {
-                    rawProjectData = JSON.parse(content);
-                    console.log('=== Flowchart Data Analysis ===');
-                    console.log('routines count:', rawProjectData.routines?.length || rawProjectData.routineRects?.length || 0);
-                    console.log('loops count:', rawProjectData.loops?.length || 0);
-                    console.log('connections count:', rawProjectData.connections?.length || 0);
-                    console.log('loops data:', JSON.stringify(rawProjectData.loops, null, 2));
-                    console.log('connections data:', JSON.stringify(rawProjectData.connections, null, 2));
-                    console.log('===============================');
-                } catch (e) {
-                    console.log('Failed to parse for debug logging:', e);
-                }
-
-                // 直接解析 content，尝试修复常见的 JSON 格式问题
+                // 解析 JSON 内容
                 let projectData;
                 try {
-                    // 尝试直接解析
                     projectData = JSON.parse(content);
-                    console.log('Parsed project data:', projectData);
                 } catch (parseError) {
                     console.log('Direct parse failed, trying to fix JSON...');
                     
@@ -5942,10 +5926,45 @@
                     }
                 }
                 
-                // 验证数据格式 - 支持新的 'routines' 字段和旧的 'routineRects' 字段
-                const routinesData = projectData.routines || projectData.routineRects;
-                if (!routinesData || !Array.isArray(routinesData) || routinesData.length === 0) {
-                    console.error('Invalid flowchart data: missing or empty routines/routineRects');
+                // 解析 flowchart 数组格式 (v2.0 schema)
+                // Routine: 有 Point 字段
+                // Loop: 有 startPoint/endPoint 字段，内部包含 list 数组
+                const flowchartData = projectData.flowchart;
+
+                if (!flowchartData || !Array.isArray(flowchartData) || flowchartData.length === 0) {
+                    console.error('Invalid flowchart data: missing or empty flowchart array');
+                    showNotification('❌ Invalid flowchart: no flowchart found');
+                    return;
+                }
+
+                // 展平 flowchart：提取所有 routines（包括 loop 内部的）
+                const allRoutines = [];
+                const loopsData = [];
+
+                flowchartData.forEach(item => {
+                    if (item.Point !== undefined) {
+                        // 顶层 routine
+                        allRoutines.push(item);
+                    } else if (item.startPoint !== undefined) {
+                        // Loop：保存 loop 信息，并提取内部的 routines
+                        loopsData.push(item);
+                        if (item.list && Array.isArray(item.list)) {
+                            item.list.forEach(subItem => {
+                                if (subItem.Point !== undefined) {
+                                    allRoutines.push(subItem);
+                                }
+                            });
+                        }
+                    }
+                });
+
+                // 按 Point 排序 routines
+                allRoutines.sort((a, b) => (a.Point || 0) - (b.Point || 0));
+
+                const routinesData = allRoutines;
+
+                if (!routinesData || routinesData.length === 0) {
+                    console.error('Invalid flowchart data: no routines found');
                     showNotification('❌ Invalid flowchart: no routines found');
                     return;
                 }
@@ -5962,79 +5981,79 @@
                     const x = 50 + index * 250;
                     const y = 200;
 
-                    // 转换新的 'components' 字段到内部的 'avtpComponents'
-                    const avtpComponents = routine.components ? routine.components.map(comp => ({
-                        ...comp,
-                        enabled: true // 新格式中没有 enabled 字段，默认启用
-                    })) : (routine.avtpComponents || []);
-
                     routineRects.push({
                         id: routine.id ?? index,
                         name: routine.name ?? `routine_${index}`,
                         duration: routine.duration ?? -1,
-                        avtpComponents: avtpComponents,
+                        avtpComponents: (routine.components || []).map(comp => ({
+                            ...comp,
+                            enabled: true
+                        })),
                         x: x,
                         y: y,
                         width: 200,
-                        height: 150, // 初始高度，会被 updateAllRoutineHeights 更新
+                        height: 150,
                         borderRadius: 8,
                         isDragging: false
                     });
                 });
 
-                // 导入 loops 数据 - 支持新旧两种格式
-                const loopsData = projectData.loops || projectData.connections || [];
-                
-                if (projectData.loops) {
-                    // 新格式：使用 loops 数组
-                    connections.push(...loopsToConnections(projectData.loops));
-                } else {
-                    // 旧格式：使用 connections 数组，转换为标准 loops 格式后再转换
-                    const tempLoops = [];
-                    loopsData.forEach((conn, index) => {
-                        if (typeof conn.from === 'number' && typeof conn.to === 'number') {
-                            // 旧的简单格式：from/to 是 routine ID
-                            tempLoops.push({
-                                id: index,
-                                name: conn.loopName || `loop_${index}`,
-                                startRoutineId: conn.from,
-                                endRoutineId: conn.to,
-                                nRounds: conn.loopReps || 1,
-                                type: conn.loopType || 'sequential',
-                                conditions: conn.loopConditions || '',
-                                conditionsFile: conn.loopConditionsFile || '',
-                                isTrials: conn.loopIsTrials !== false
-                            });
-                        } else if (conn.start && conn.end) {
-                            // 旧的详细格式：计算 routine ID
-                            const startLabel = parseInt(conn.start.label);
-                            const endLabel = parseInt(conn.end.label);
-                            const startRoutineId = (startLabel - 3) / 2;
-                            const endRoutineId = (endLabel - 1) / 2;
-                            tempLoops.push({
-                                id: index,
-                                name: conn.loopName || `loop_${index}`,
-                                startRoutineId: startRoutineId,
-                                endRoutineId: endRoutineId,
-                                nRounds: conn.loopReps || 1,
-                                type: conn.loopType || 'sequential',
-                                conditions: conn.loopConditions || '',
-                                conditionsFile: conn.loopConditionsFile || '',
-                                isTrials: conn.loopIsTrials !== false
-                            });
-                        }
-                    });
-                    // 统一使用 loopsToConnections 转换
-                    connections.push(...loopsToConnections(tempLoops));
-                }
-                
-                // 调试日志：检查最终 connections 数组
-                console.log('=== Connections Debug ===');
-                console.log('Total connections created:', connections.length);
-                connections.forEach((conn, idx) => {
-                    console.log(`Connection ${idx}:`, conn.loopName, 'start:', conn.start.label, 'end:', conn.end.label);
+                // 导入 loops 数据
+                // 根据展平后的 routines 重新计算 startPoint 和 endPoint
+                const pointToIndex = {};
+                routinesData.forEach((routine, index) => {
+                    pointToIndex[routine.Point] = index;
                 });
-                console.log('=========================');
+
+                const formattedLoops = loopsData.map((loop, index) => {
+                    let startPoint = loop.startPoint;
+                    let endPoint = loop.endPoint;
+
+                    // 如果 loop 有 list，根据内部 routines 的 Point 重新计算 startPoint 和 endPoint
+                    if (loop.list && Array.isArray(loop.list) && loop.list.length > 0) {
+                        const loopRoutinePoints = loop.list
+                            .filter(item => item.Point !== undefined)
+                            .map(item => item.Point)
+                            .sort((a, b) => a - b);
+
+                        if (loopRoutinePoints.length > 0) {
+                            const firstPoint = loopRoutinePoints[0];
+                            const lastPoint = loopRoutinePoints[loopRoutinePoints.length - 1];
+
+                            // 转换为 routine 索引（0-based），然后转换为 point 格式（1, 3, 5...）
+                            const firstIndex = pointToIndex[firstPoint];
+                            const lastIndex = pointToIndex[lastPoint];
+
+                            if (firstIndex !== undefined && lastIndex !== undefined) {
+                                startPoint = firstIndex * 2 + 1;
+                                endPoint = lastIndex * 2 + 1;
+                            }
+                        }
+                    }
+
+                    // 确保 startPoint 和 endPoint 有效
+                    const actualRoutines = routineRects.length;
+                    if (startPoint < 1) startPoint = 1;
+                    if (startPoint % 2 === 0) startPoint = startPoint - 1;
+
+                    const maxEndPoint = actualRoutines * 2 + 1;
+                    if (endPoint > maxEndPoint) endPoint = maxEndPoint;
+                    if (endPoint % 2 === 0) endPoint = endPoint - 1;
+
+                    if (endPoint <= startPoint) endPoint = startPoint + 2;
+
+                    return {
+                        id: index,
+                        name: loop.name || `loop_${index}`,
+                        startPoint: startPoint,
+                        endPoint: endPoint,
+                        nRounds: loop.nRounds || 1,
+                        type: loop.type || 'sequential',
+                        conditions: loop.conditions || [],
+                        isTrials: true
+                    };
+                });
+                connections.push(...loopsToConnections(formattedLoops));
 
                 currentRoutineCount = routineRects.length;
                 routineIdCounter = routineRects.length;
@@ -6058,6 +6077,7 @@
                 // 更新界面
                 updatePoints();
                 updateRoutineCount();
+                
                 draw();
                 
                 // 保存初始状态并启用按钮

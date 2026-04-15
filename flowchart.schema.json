@@ -5,22 +5,22 @@
   "description": "JSON Schema for validating PsyClaw flowchart data structure (v2.0 format). Used for save/import operations between psyclaw.html and chatbot.html.",
   "version": "2.0.0",
   "type": "object",
-  "required": ["routines", "loops"],
+  "required": ["flowchart"],
   "additionalProperties": false,
   "properties": {
-    "routines": {
+    "flowchart": {
       "type": "array",
-      "description": "Array of routine objects representing experiment steps. Each routine contains stimuli and responses for a single trial phase.",
+      "description": "Unified array of routines and loops defining the experiment flow. Contains both routine objects (experiment steps with stimuli/responses) and loop objects (repetition structures). LOOP VALIDATION RULES: 1) Nested loops are allowed (one loop completely inside another). 2) Sequential loops are allowed (no overlapping ranges). 3) Crossing/overlapping loops are FORBIDDEN - loop ranges must not partially overlap. 4) Loops cannot share startPoint or endPoint values. Examples: Loop A(1,9) containing Loop B(3,7) is VALID (nested). Loop A(1,3) and Loop B(5,7) is VALID (sequential). Loop A(1,7) and Loop B(3,9) is INVALID (crossing). Loop A(1,5) and Loop B(5,9) is INVALID (shared boundary).",
       "minItems": 1,
       "items": {
-        "$ref": "#/definitions/Routine"
-      }
-    },
-    "loops": {
-      "type": "array",
-      "description": "Array of loop objects defining experiment flow and repetition structure. LOOP VALIDATION RULES: 1) Nested loops are allowed (one loop completely inside another). 2) Sequential loops are allowed (no overlapping ranges). 3) Crossing/overlapping loops are FORBIDDEN - loop ranges must not partially overlap. 4) Loops cannot share startPoint or endPoint values. Examples: Loop A(1,9) containing Loop B(3,7) is VALID (nested). Loop A(1,3) and Loop B(5,7) is VALID (sequential). Loop A(1,7) and Loop B(3,9) is INVALID (crossing). Loop A(1,5) and Loop B(5,9) is INVALID (shared boundary).",
-      "items": {
-        "$ref": "#/definitions/Loop"
+        "oneOf": [
+          {
+            "$ref": "#/definitions/Routine"
+          },
+          {
+            "$ref": "#/definitions/Loop"
+          }
+        ]
       }
     }
   },
@@ -547,6 +547,20 @@
           "description": "Array of condition objects, one per trial. Each object contains parameter values for that trial.",
           "items": {
             "$ref": "#/definitions/Condition"
+          }
+        },
+        "list": {
+          "type": "array",
+          "description": "Array of nested loops and/or routines to be executed within this loop. Allows nested loop structures and routine references.",
+          "items": {
+            "oneOf": [
+              {
+                "$ref": "#/definitions/Loop"
+              },
+              {
+                "$ref": "#/definitions/Routine"
+              }
+            ]
           }
         }
       }
