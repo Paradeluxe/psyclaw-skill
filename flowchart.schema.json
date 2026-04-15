@@ -39,7 +39,7 @@
         },
         "Point": {
           "type": "number",
-          "description": "Point in the flowchart where this routine locates",
+          "description": "Point in the flowchart where this routine locates. Must be an even number (2, 4, 6, 8...). A routine belongs to a loop if and only if: loop.startPoint <= Point <= loop.endPoint. This means the routine is within the loop's inclusive range.",
           "minimum": 2,
           "default": 2
         },
@@ -509,8 +509,8 @@
     },
     "Loop": {
       "type": "object",
-      "description": "A loop (trial handler) that repeats a set of routines multiple times with varying conditions. Loops are located at odd-numbered points (1, 3, 5, 7...) on the flowchart. Routines are at even-numbered points (2, 4, 6, 8...). IMPORTANT: 1) Loops cannot overlap or cross. For any two loops, either one must be completely inside the other (nested), or they must be completely separate with no overlapping points. 2) startPoint MUST be less than endPoint.",
-      "required": ["name", "startPoint", "endPoint", "nRounds"],
+      "description": "A loop (trial handler) that repeats a set of routines multiple times with varying conditions. Loops are located at odd-numbered points (1, 3, 5, 7...) on the flowchart. Routines are at even-numbered points (2, 4, 6, 8...). IMPORTANT: 1) Loops cannot overlap or cross. For any two loops, either one must be completely inside the other (nested), or they must be completely separate with no overlapping points. 2) startPoint MUST be less than endPoint. 3) ROUTINE-LOOP MEMBERSHIP: A routine belongs to a loop if and only if its Point satisfies: startPoint <= Point <= endPoint. This means any routine whose Point falls within the loop's range (inclusive) is considered part of that loop.",
+      "required": ["name", "startPoint", "endPoint", "nRounds", "type"],
       "additionalProperties": false,
       "properties": {
         "name": {
@@ -520,13 +520,13 @@
         },
         "startPoint": {
           "type": "integer",
-          "description": "The point where the loop starts (left side). Must be an odd number (1, 3, 5, 7...). This is the loop entry point. Loops cannot share startPoint or endPoint with other loops. startPoint MUST be less than endPoint.",
+          "description": "The point where the loop starts (left side). Must be an odd number (1, 3, 5, 7...). This is the loop entry point. startPoint MUST be smaller than endPoint. A routine belongs to this loop if its Point >= startPoint.",
           "minimum": 1,
           "enum": [1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31, 33, 35, 37, 39]
         },
         "endPoint": {
           "type": "integer",
-          "description": "The point where the loop ends (right side). Must be an odd number (3, 5, 7...). Loops cannot share startPoint or endPoint with other loops. endPoint MUST be greater than startPoint.",
+          "description": "The point where the loop ends (right side). Must be an odd number (3, 5, 7...). endPoint MUST be larger than startPoint. A routine belongs to this loop if its Point <= endPoint. Combined with startPoint: a routine belongs to this loop when startPoint <= Point <= endPoint.",
           "minimum": 1,
           "enum": [3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31, 33, 35, 37, 39]
         },

@@ -678,8 +678,9 @@
             padding: 8px 0;
         }
 
-        /* 仅在 think-chain-content 内部显示上边框 */
-        .think-chain-content .inline-description-actions {
+        /* 仅在 chain-content 内部显示上边框 */
+        .think-chain-content .inline-description-actions,
+        .message-chain-content .inline-description-actions {
             border-top: 1px solid var(--border-light);
         }
 
@@ -792,15 +793,123 @@
             }
         }
 
-        /* Think Chain 可折叠区域样式 - Qwen Design System */
-        .think-chain-container {
-            margin-bottom: 0;
-            border-radius: 12px;
+        /* 普通消息折叠区域样式 - MiniMax Design System */
+        .message-chain-container {
+            margin-bottom: 12px;
+            border-radius: 20px;
             overflow: visible;
             background: #ffffff;
             display: none;
             border: 1px solid #e5e7eb;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            box-shadow: rgba(0, 0, 0, 0.08) 0px 4px 6px;
+            transition: box-shadow 0.3s ease, transform 0.3s ease;
+            width: 100%;
+        }
+
+        .message-chain-container.has-content {
+            display: block;
+        }
+
+        .message-chain-container:hover {
+            box-shadow: rgba(36, 36, 36, 0.08) 0px 12px 16px -4px;
+        }
+
+        .message-chain-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 18px;
+            background: #ffffff;
+            cursor: pointer;
+            -webkit-user-select: none;
+            user-select: none;
+            transition: background 0.25s ease, border-radius 0.3s ease;
+            border-radius: 20px;
+        }
+
+        .message-chain-container:not(.collapsed) .message-chain-header {
+            border-radius: 20px 20px 0 0;
+            border-bottom: 1px solid #f2f3f5;
+        }
+
+        .message-chain-header:hover {
+            background: #f9fafb;
+        }
+
+        .message-chain-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            color: #222222;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .message-chain-icon {
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+            object-fit: contain;
+        }
+
+        .message-chain-toggle-icon {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            vertical-align: middle;
+        }
+
+        .message-chain-toggle-icon.collapsed {
+            transform: rotate(-90deg);
+        }
+
+        .message-chain-content {
+            max-height: 0;
+            overflow: hidden;
+            padding: 0 20px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            line-height: 1.5;
+            color: #45515e;
+            background: transparent;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                        padding 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                        opacity 0.3s ease;
+            opacity: 0;
+        }
+
+        .message-chain-content:not(.collapsed) {
+            padding: 20px;
+            opacity: 1;
+            overflow: visible;
+            max-height: none;
+        }
+
+        .message-chain-content.editing {
+            position: relative;
+        }
+
+        .message-chain-content.editing .description-actions-inline {
+            display: flex;
+            gap: 12px;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(0,0,0,0.1);
+        }
+
+        /* Thinking 消息折叠区域样式 - MiniMax Design System */
+        .think-chain-container {
+            margin-bottom: 12px;
+            border-radius: 20px;
+            overflow: visible;
+            background: #ffffff;
+            display: none;
+            border: 1px solid #e5e7eb;
+            box-shadow: rgba(0, 0, 0, 0.08) 0px 4px 6px;
             transition: box-shadow 0.3s ease, transform 0.3s ease;
             width: 100%;
         }
@@ -810,25 +919,25 @@
         }
 
         .think-chain-container:hover {
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            box-shadow: rgba(36, 36, 36, 0.08) 0px 12px 16px -4px;
         }
 
         .think-chain-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 14px 16px;
+            padding: 14px 18px;
             background: #ffffff;
             cursor: pointer;
             -webkit-user-select: none;
             user-select: none;
             transition: background 0.25s ease, border-radius 0.3s ease;
-            border-radius: 12px;
+            border-radius: 20px;
         }
 
         .think-chain-container:not(.collapsed) .think-chain-header {
-            border-radius: 12px 12px 0 0;
-            border-bottom: 1px solid #f3f4f6;
+            border-radius: 20px 20px 0 0;
+            border-bottom: 1px solid #f2f3f5;
         }
 
         .think-chain-header:hover {
@@ -839,7 +948,7 @@
             font-family: 'Outfit', sans-serif;
             font-size: 14px;
             font-weight: 500;
-            color: #374151;
+            color: #222222;
             display: flex;
             align-items: center;
             gap: 10px;
@@ -850,22 +959,6 @@
             height: 18px;
             flex-shrink: 0;
             object-fit: contain;
-        }
-
-        .think-chain-toggle-text {
-            font-family: 'DM Sans', sans-serif;
-            font-size: 13px;
-            color: #6b7280;
-            cursor: pointer;
-            padding: 4px 8px;
-            border-radius: 6px;
-            transition: all 0.2s ease;
-            white-space: nowrap;
-        }
-
-        .think-chain-toggle-text:hover {
-            background: rgba(0, 0, 0, 0.05);
-            color: #374151;
         }
 
         .think-chain-toggle-icon {
@@ -886,12 +979,12 @@
             padding: 0 20px;
             font-family: 'DM Sans', sans-serif;
             font-size: 14px;
-            line-height: 1.6;
-            color: #374151;
+            line-height: 1.5;
+            color: #45515e;
             background: transparent;
             white-space: pre-wrap;
             word-wrap: break-word;
-            transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), 
+            transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
                         padding 0.35s cubic-bezier(0.4, 0, 0.2, 1),
                         opacity 0.3s ease;
             opacity: 0;

@@ -123,7 +123,9 @@
         }
 
         .avtp-form.wide {
-            width: 450px;
+            width: max-content;
+            min-width: 450px;
+            max-width: 95vw;
             max-height: 70vh;
         }
 
@@ -141,6 +143,7 @@
         .avtp-form-content {
             flex: 1;
             overflow-y: auto;
+            overflow-x: visible;
             padding: 20px;
         }
 
@@ -1031,6 +1034,8 @@
             background: transparent;
             border-radius: 0;
             overflow: visible;
+            width: max-content;
+            min-width: 100%;
         }
 
         .loop-conditions-header {
@@ -1049,10 +1054,12 @@
 
         .loop-conditions-content {
             padding: 0;
+            overflow-x: auto;
+            overflow-y: auto;
+            max-height: 50vh;
         }
 
         .loop-conditions-table {
-            width: 100%;
             border-collapse: collapse;
             background: transparent;
             border: 1px solid #e5e7eb;
@@ -4988,11 +4995,23 @@
                 const parsed = JSON.parse(jsonValue);
                 if (Array.isArray(parsed)) {
                     return parsed.filter(c => c._meta !== true).map((c, i) => {
-                        return {
-                            name: c.name || `Condition ${i + 1}`,
-                            weight: c.weight !== undefined ? c.weight : 1,
-                            values: Array.isArray(c.values) ? c.values : []
-                        };
+                        if (typeof c.values === 'object' && c.values !== null && !Array.isArray(c.values)) {
+                            const origKeys = Object.keys(c.values);
+                            const valueKeys = origKeys.map(k => k.replace(/^\$/, '').replace(/\$$/, ''));
+                            const values = origKeys.flatMap(k => Array.isArray(c.values[k]) ? c.values[k] : [c.values[k]]);
+                            return {
+                                name: c.name || `Condition ${i + 1}`,
+                                weight: c.weight !== undefined ? c.weight : 1,
+                                values: values,
+                                _valueKeys: valueKeys
+                            };
+                        } else {
+                            return {
+                                name: c.name || `Condition ${i + 1}`,
+                                weight: c.weight !== undefined ? c.weight : 1,
+                                values: []
+                            };
+                        }
                     });
                 }
             } catch (e) {}
@@ -5061,7 +5080,19 @@
                 
                 // Variable values (array order matches columns)
                 variables.forEach((varName, varIndex) => {
-                    const value = condition.values?.[varIndex] || '';
+                    let value = '';
+                    if (condition.values && condition.values.length > 0) {
+                        if (condition._valueKeys && condition._valueKeys.length > 0) {
+                            const keyIndex = condition._valueKeys.indexOf(varName);
+                            if (keyIndex !== -1 && condition.values[keyIndex] !== undefined) {
+                                const rawValue = condition.values[keyIndex];
+                                value = Array.isArray(rawValue) ? rawValue.join(', ') : rawValue;
+                            }
+                        } else {
+                            const rawValue = condition.values[varIndex];
+                            value = Array.isArray(rawValue) ? rawValue.join(', ') : (rawValue || '');
+                        }
+                    }
                     rowHtml += `
                         <td>
                             <input type="text" class="loop-cond-var-input" data-index="${index}" data-var="${varName}" data-varindex="${varIndex}" value="${value}" placeholder="$${varName}">
@@ -5425,11 +5456,23 @@
                 if (!Array.isArray(parsed)) return '';
 
                 const converted = parsed.map((c, i) => {
-                    return {
-                        name: c.name || `Condition ${i + 1}`,
-                        weight: c.weight !== undefined ? c.weight : 1,
-                        values: Array.isArray(c.values) ? c.values : []
-                    };
+                    if (typeof c.values === 'object' && c.values !== null && !Array.isArray(c.values)) {
+                        const origKeys = Object.keys(c.values);
+                        const valueKeys = origKeys.map(k => k.replace(/^\$/, '').replace(/\$$/, ''));
+                        const values = origKeys.flatMap(k => Array.isArray(c.values[k]) ? c.values[k] : [c.values[k]]);
+                        return {
+                            name: c.name || `Condition ${i + 1}`,
+                            weight: c.weight !== undefined ? c.weight : 1,
+                            values: values,
+                            _valueKeys: valueKeys
+                        };
+                    } else {
+                        return {
+                            name: c.name || `Condition ${i + 1}`,
+                            weight: c.weight !== undefined ? c.weight : 1,
+                            values: []
+                        };
+                    }
                 });
                 return JSON.stringify(converted);
             } catch (e) {
