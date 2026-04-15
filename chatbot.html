@@ -4308,16 +4308,16 @@
             // 2. 终止当前正在进行的请求
             if (currentAbortController) {
                 currentAbortController.abort();
-                // 取消 showDescriptionWithActions 中的 setTimeout
-                if (currentCancelShowDescription) {
-                    currentCancelShowDescription();
-                    currentCancelShowDescription = null;
-                }
                 // 立即清理全局 abort controller，防止竞态条件
                 currentAbortController = null;
                 showToast('Request aborted', 'info', 1500);
                 // 等待一小段时间让旧的请求清理
                 await new Promise(resolve => setTimeout(resolve, 100));
+            }
+            // 取消 showDescriptionWithActions 中的 setTimeout（无论是否有正在进行的请求）
+            if (currentCancelShowDescription) {
+                currentCancelShowDescription();
+                currentCancelShowDescription = null;
             }
 
             // 3. 重置对话状态到适当阶段
@@ -4405,16 +4405,16 @@
             // 2. 终止当前正在进行的请求
             if (currentAbortController) {
                 currentAbortController.abort();
-                // 取消 showDescriptionWithActions 中的 setTimeout
-                if (currentCancelShowDescription) {
-                    currentCancelShowDescription();
-                    currentCancelShowDescription = null;
-                }
                 // 立即清理全局 abort controller，防止竞态条件
                 currentAbortController = null;
                 showToast('Request aborted', 'info', 1500);
                 // 等待一小段时间让旧的请求清理
                 await new Promise(resolve => setTimeout(resolve, 100));
+            }
+            // 取消 showDescriptionWithActions 中的 setTimeout（无论是否有正在进行的请求）
+            if (currentCancelShowDescription) {
+                currentCancelShowDescription();
+                currentCancelShowDescription = null;
             }
 
             // 3. 重置对话状态到适当阶段
@@ -4424,7 +4424,7 @@
                 conversationState.userRequirement = '';
                 conversationState.experimentDescription = '';
                 conversationState.messages = [];
-                
+
                 const welcomeMsg = chatMessagesDiv.querySelector('.chat-message.welcome');
                 if (welcomeMsg) {
                     welcomeMsg.style.display = 'flex';
@@ -4433,7 +4433,7 @@
                 const lastUserWrapper = Array.from(remainingWrappers)
                     .reverse()
                     .find(w => w.classList.contains('user-wrapper'));
-                
+
                 if (lastUserWrapper) {
                     conversationState.stage = CONVERSATION_STAGES.DESCRIBING;
                     conversationState.userRequirement = lastUserWrapper.dataset.originalPrompt || '';
@@ -4444,7 +4444,7 @@
             chatInput.value = originalPrompt;
             sendBtn.style.display = 'flex';
             stopBtn.style.display = 'none';
-            
+
             showToast('Redoing message...', 'info', 1500);
             await sendMessage(false);
         };
