@@ -97,7 +97,7 @@
 
         .psyclaw-accordion {
             border: 1px solid var(--border-gray);
-            border-radius: 20px;
+            border-radius: 12px;
             overflow: hidden;
             width: 100%;
             background: var(--bg-light);
@@ -483,7 +483,7 @@
         .chat-interface {
             background: var(--bg-white);
             border: 1px solid var(--border-gray);
-            border-radius: 20px;
+            border-radius: 12px;
             overflow: hidden;
             flex: 1;
             display: flex;
@@ -510,7 +510,7 @@
         .chat-message {
             margin-bottom: 16px;
             padding: 14px 18px;
-            border-radius: 16px;
+            border-radius: 10px;
             max-width: 100%;
             word-wrap: break-word;
             font-family: 'DM Sans', sans-serif;
@@ -684,7 +684,7 @@
         }
 
         /* 仅在 chain-content 内部显示上边框 */
-        .think-chain-content .inline-description-actions,
+        .normal-message-content .inline-description-actions,
         .message-chain-content .inline-description-actions {
             border-top: 1px solid var(--border-light);
         }
@@ -742,7 +742,7 @@
             gap: 8px;
             padding: 6px 12px;
             background: rgba(20, 86, 240, 0.1);
-            border-radius: 20px;
+            border-radius: 12px;
             font-size: 12px;
             font-weight: 500;
             color: var(--brand-blue);
@@ -801,7 +801,7 @@
         /* 普通消息折叠区域样式 - MiniMax Design System */
         .message-chain-container {
             margin-bottom: 12px;
-            border-radius: 20px;
+            border-radius: 12px;
             overflow: visible;
             background: #ffffff;
             display: none;
@@ -829,11 +829,11 @@
             -webkit-user-select: none;
             user-select: none;
             transition: background 0.25s ease, border-radius 0.3s ease;
-            border-radius: 20px;
+            border-radius: 12px;
         }
 
         .message-chain-container:not(.collapsed) .message-chain-header {
-            border-radius: 20px 20px 0 0;
+            border-radius: 12px 12px 0 0;
             border-bottom: 1px solid #f2f3f5;
         }
 
@@ -906,10 +906,10 @@
             border-top: 1px solid rgba(0,0,0,0.1);
         }
 
-        /* Thinking 消息折叠区域样式 - MiniMax Design System */
-        .think-chain-container {
-            margin-bottom: 12px;
-            border-radius: 20px;
+        /* 普通消息折叠区域样式 - MiniMax Design System */
+        .normal-message-container {
+            margin-bottom: 8px;
+            border-radius: 12px;
             overflow: visible;
             background: #ffffff;
             display: none;
@@ -919,15 +919,15 @@
             width: 100%;
         }
 
-        .think-chain-container.has-content {
+        .normal-message-container.has-content {
             display: block;
         }
 
-        .think-chain-container:hover {
+        .normal-message-container:hover {
             box-shadow: rgba(36, 36, 36, 0.08) 0px 12px 16px -4px;
         }
 
-        .think-chain-header {
+        .normal-message-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -937,19 +937,19 @@
             -webkit-user-select: none;
             user-select: none;
             transition: background 0.25s ease, border-radius 0.3s ease;
-            border-radius: 20px;
+            border-radius: 12px;
         }
 
-        .think-chain-container:not(.collapsed) .think-chain-header {
-            border-radius: 20px 20px 0 0;
+        .normal-message-container:not(.collapsed) .normal-message-header {
+            border-radius: 12px 12px 0 0;
             border-bottom: 1px solid #f2f3f5;
         }
 
-        .think-chain-header:hover {
+        .normal-message-header:hover {
             background: #f9fafb;
         }
 
-        .think-chain-title {
+        .normal-message-title {
             font-family: 'Outfit', sans-serif;
             font-size: 14px;
             font-weight: 500;
@@ -959,14 +959,14 @@
             gap: 10px;
         }
 
-        .think-chain-icon {
+        .normal-message-icon {
             width: 18px;
             height: 18px;
             flex-shrink: 0;
             object-fit: contain;
         }
 
-        .think-chain-toggle-icon {
+        .normal-message-toggle-icon {
             width: 16px;
             height: 16px;
             cursor: pointer;
@@ -974,14 +974,15 @@
             vertical-align: middle;
         }
 
-        .think-chain-toggle-icon.collapsed {
+        .normal-message-toggle-icon.collapsed {
             transform: rotate(-90deg);
         }
 
-        .think-chain-content {
-            max-height: 0;
-            overflow: hidden;
-            padding: 0 20px;
+        .normal-message-content {
+            max-height: 100px;  /* 默认折叠状态显示约4-5行 */
+            overflow-y: auto;   /* 折叠时允许滚轮滚动 */
+            overflow-x: hidden;
+            padding: 16px 20px;  /* 折叠时保持上下内边距 */
             font-family: 'DM Sans', sans-serif;
             font-size: 14px;
             line-height: 1.5;
@@ -992,21 +993,21 @@
             transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
                         padding 0.35s cubic-bezier(0.4, 0, 0.2, 1),
                         opacity 0.3s ease;
-            opacity: 0;
+            opacity: 0.85;  /* 折叠时稍微透明 */
         }
 
-        .think-chain-content:not(.collapsed) {
+        .normal-message-content.expanded {
             padding: 20px;
             opacity: 1;
             overflow: visible;
             max-height: none;
         }
 
-        .think-chain-content.editing {
+        .normal-message-content.editing {
             position: relative;
         }
 
-        .think-chain-content.editing .description-actions-inline {
+        .normal-message-content.editing .description-actions-inline {
             display: flex;
             gap: 12px;
             margin-top: 12px;
@@ -1050,7 +1051,7 @@
             padding: 16px;
             background: #ffffff;
             border: 1px solid #f2f3f5;
-            border-radius: 24px;
+            border-radius: 12px;
             transition: all 0.3s ease;
             margin: 12px;
             box-shadow: rgba(44, 30, 116, 0.06) 0px 4px 16px;
@@ -1130,7 +1131,7 @@
             display: none;
             padding: 8px;
             background: var(--bg-white);
-            border-radius: 16px;
+            border-radius: 10px;
             margin-bottom: 4px;
         }
 
@@ -1144,7 +1145,7 @@
             gap: 12px;
             padding: 8px 12px;
             background: var(--bg-light);
-            border-radius: 16px;
+            border-radius: 8px;
             border: 1px solid var(--border-gray);
             position: relative;
         }
@@ -1698,7 +1699,7 @@
             bottom: 0;
             background: rgba(20, 86, 240, 0.1);
             border: 2px dashed var(--brand-blue);
-            border-radius: 20px;
+            border-radius: 12px;
             z-index: 100;
             pointer-events: none;
             align-items: center;
@@ -2148,6 +2149,7 @@
         let deepThinkEnabled = true;
         let assistantMessageCount = 0; // 追踪AI回复数量
         let currentAbortController = null; // 用于终止当前请求的 AbortController
+        let currentCancelShowDescription = null; // 用于取消 showDescriptionWithActions 中的 setTimeout
 
         function formatFileSize(bytes) {
             if (bytes === 0) return '0 B';
@@ -3063,50 +3065,58 @@
             assistantMessageCount++;
             const isFirstAssistantMessage = assistantMessageCount === 1;
 
-            // 创建 Think Chain 容器 - 初始就显示，但内容折叠
-            const thinkContainer = document.createElement('div');
-            thinkContainer.className = 'think-chain-container has-content'; // 默认显示容器
+            // 创建普通消息折叠容器 - 初始就显示，但内容折叠
+            const messageContainer = document.createElement('div');
+            messageContainer.className = 'normal-message-container has-content'; // 默认显示容器
 
-            const thinkHeader = document.createElement('div');
-            thinkHeader.className = 'think-chain-header';
-            thinkHeader.innerHTML = `
-                <span class="think-chain-title">
-                    <img src="icon/thinking.svg" class="think-chain-icon" alt="Thinking">
-                    <span class="think-chain-text" id="thinkChainText">${title}</span>
+            const messageHeader = document.createElement('div');
+            messageHeader.className = 'normal-message-header';
+            messageHeader.innerHTML = `
+                <span class="normal-message-title">
+                    <img src="icon/thinking.svg" class="normal-message-icon" alt="Thinking">
+                    <span class="normal-message-text" id="normalMessageText">${title}</span>
                     <span class="loading-dots" id="loadingDots"><span></span><span></span><span></span></span>
                 </span>
-                <img src="icon/open.svg" class="think-chain-toggle-icon" id="toggleIcon" alt="Expand">
+                <img src="icon/open.svg" class="normal-message-toggle-icon collapsed" id="toggleIcon" alt="Expand">
             `;
 
-            const thinkContent = document.createElement('div');
-            thinkContent.className = 'think-chain-content'; // 默认展开
-            thinkContent.textContent = initialThinkContent; // 设置初始内容
+            const messageContent = document.createElement('div');
+            messageContent.className = 'normal-message-content'; // 默认折叠，显示10px
+            messageContent.textContent = initialThinkContent; // 设置初始内容
 
-            const toggleIcon = thinkHeader.querySelector('#toggleIcon');
-            const loadingDots = thinkHeader.querySelector('#loadingDots');
-            const thinkChainText = thinkHeader.querySelector('#thinkChainText');
+            const toggleIcon = messageHeader.querySelector('#toggleIcon');
+            const loadingDots = messageHeader.querySelector('#loadingDots');
+            const normalMessageText = messageHeader.querySelector('#normalMessageText');
 
             // 点击标题折叠/展开
-            thinkHeader.addEventListener('click', () => {
-                const isCollapsed = thinkContent.classList.toggle('collapsed');
-                toggleIcon.classList.toggle('collapsed', isCollapsed);
-                thinkContainer.classList.toggle('collapsed', isCollapsed);
+            messageHeader.addEventListener('click', () => {
+                const isExpanded = messageContent.classList.toggle('expanded');
+                toggleIcon.classList.toggle('collapsed', !isExpanded);
+                messageContainer.classList.toggle('expanded', isExpanded);
+                
+                // 保存当前滚动位置
+                const savedScrollTop = messageContent.scrollTop;
                 
                 // 动态设置 max-height 以实现平滑动画
-                if (!isCollapsed) {
+                if (isExpanded) {
                     // 展开时，不限制高度，让内容完全显示
-                    thinkContent.style.maxHeight = 'none';
+                    messageContent.style.maxHeight = 'none';
                 } else {
-                    // 收起时，先设置到实际高度，然后触发动画
-                    thinkContent.style.maxHeight = thinkContent.scrollHeight + 'px';
+                    // 收起时，先设置到实际高度，然后触发动画到100px
+                    messageContent.style.maxHeight = messageContent.scrollHeight + 'px';
                     requestAnimationFrame(() => {
-                        thinkContent.style.maxHeight = '0';
+                        messageContent.style.maxHeight = '100px';
                     });
                 }
+                
+                // 恢复滚动位置，防止文字横向压缩
+                requestAnimationFrame(() => {
+                    messageContent.scrollTop = savedScrollTop;
+                });
             });
 
-            thinkContainer.appendChild(thinkHeader);
-            thinkContainer.appendChild(thinkContent);
+            messageContainer.appendChild(messageHeader);
+            messageContainer.appendChild(messageContent);
 
             // 创建消息主体 - 初始隐藏，有内容时再显示
             const msgDiv = document.createElement('div');
@@ -3132,7 +3142,7 @@
                 </button>
             `;
 
-            wrapper.appendChild(thinkContainer);
+            wrapper.appendChild(messageContainer);
             wrapper.appendChild(msgDiv);
             wrapper.appendChild(messageActions);
             
@@ -3144,22 +3154,26 @@
 
             return {
                 wrapper,
-                thinkContainer,
-                thinkContent,
+                messageContainer,
+                messageContent,
                 msgDiv,
                 updateThink: (content) => {
+                    // 检查DOM元素是否仍然存在（可能被redo删除）
+                    if (!wrapper.isConnected) return;
                     // 只在用户没有主动滚动时才自动滚动到底部
-                    const isAtBottom = thinkContent.scrollHeight - thinkContent.scrollTop - thinkContent.clientHeight < 30;
-                    thinkContent.textContent = content;
+                    const isAtBottom = messageContent.scrollHeight - messageContent.scrollTop - messageContent.clientHeight < 30;
+                    messageContent.textContent = content;
                     // 如果当前是展开状态，更新 max-height（无限制）
-                    if (!thinkContent.classList.contains('collapsed')) {
-                        thinkContent.style.maxHeight = 'none';
+                    if (messageContent.classList.contains('expanded')) {
+                        messageContent.style.maxHeight = 'none';
                     }
                     if (isAtBottom) {
-                        thinkContent.scrollTop = thinkContent.scrollHeight;
+                        messageContent.scrollTop = messageContent.scrollHeight;
                     }
                 },
                 updateMessage: (content, isStreaming = true) => {
+                    // 检查DOM元素是否仍然存在（可能被redo删除）
+                    if (!wrapper.isConnected) return;
                     // 有内容时才显示
                     if (content && content.trim()) {
                         // 流式输出开始时添加streaming类
@@ -3167,11 +3181,11 @@
                             wrapper.classList.add('streaming');
                         }
                         // 只在用户没有主动滚动时才自动滚动到底部
-                        const isAtBottom = thinkContent.scrollHeight - thinkContent.scrollTop - thinkContent.clientHeight < 30;
-                        // 将内容放入think容器中，而不是直接显示在消息中
-                        thinkContent.textContent = content;
+                        const isAtBottom = messageContent.scrollHeight - messageContent.scrollTop - messageContent.clientHeight < 30;
+                        // 将内容放入消息容器中，而不是直接显示在消息中
+                        messageContent.textContent = content;
                         if (isAtBottom) {
-                            thinkContent.scrollTop = thinkContent.scrollHeight;
+                            messageContent.scrollTop = messageContent.scrollHeight;
                         }
                         // 只在用户已经在底部时才自动滚动外层容器
                         const isChatAtBottom = chatMessagesDiv.scrollHeight - chatMessagesDiv.scrollTop - chatMessagesDiv.clientHeight < 50;
@@ -3181,11 +3195,16 @@
                     }
                 },
                 finalizeMessage: (content, showActions = false) => {
+                    // 检查DOM元素是否仍然存在（可能被redo删除）
+                    if (!wrapper.isConnected) {
+                        console.log('Message wrapper no longer in DOM, skipping finalize');
+                        return;
+                    }
                     // 流式输出结束，移除streaming类
                     wrapper.classList.remove('streaming');
                     // 更新文字为已完成
-                    if (thinkChainText) {
-                        thinkChainText.textContent = `${title} completed`;
+                    if (normalMessageText) {
+                        normalMessageText.textContent = `${title} completed`;
                     }
                     // 隐藏 loading dots
                     if (loadingDots) {
@@ -3199,11 +3218,19 @@
                     } catch (e) {
                         // 不是有效的JSON，按原样显示
                     }
-                    // 将最终内容放入think容器
-                    thinkContent.textContent = displayContent;
-                    // 更新 max-height（如果当前是展开状态，无限制）
-                    if (!thinkContent.classList.contains('collapsed')) {
-                        thinkContent.style.maxHeight = 'none';
+                    // 将最终内容放入消息容器
+                    messageContent.textContent = displayContent;
+                    // 如果当前是展开状态，自动收起
+                    if (messageContent.classList.contains('expanded')) {
+                        // 收起消息框
+                        messageContent.classList.remove('expanded');
+                        messageContainer.classList.remove('expanded');
+                        toggleIcon.classList.add('collapsed');
+                        // 触发动画到收起高度
+                        messageContent.style.maxHeight = messageContent.scrollHeight + 'px';
+                        requestAnimationFrame(() => {
+                            messageContent.style.maxHeight = '100px';
+                        });
                     }
 
                     // 如果需要显示操作按钮（flowchart消息），创建按钮栏
@@ -3269,57 +3296,65 @@
                 },
                 showDescriptionWithActions: (description, settings, schema) => {
                     // 更新文字为已完成
-                    if (thinkChainText) {
-                        thinkChainText.textContent = `${title} completed`;
+                    if (normalMessageText) {
+                        normalMessageText.textContent = `${title} completed`;
                     }
                     // 隐藏 loading dots
                     if (loadingDots) {
                         loadingDots.style.display = 'none';
                     }
                     // 清空现有内容，只显示描述文本
-                    thinkContent.innerHTML = '';
+                    messageContent.innerHTML = '';
 
                     // 创建描述内容区域
                     const descContentDiv = document.createElement('div');
                     descContentDiv.className = 'description-content-text';
                     descContentDiv.style.cssText = 'width: 100%; white-space: pre-wrap; line-height: 1.6; font-weight: 400;';
                     descContentDiv.textContent = description;
-                    thinkContent.appendChild(descContentDiv);
+                    messageContent.appendChild(descContentDiv);
 
                     // 自动展开显示内容
-                    thinkContent.classList.remove('collapsed');
-                    wrapper.classList.remove('collapsed');
-                    thinkContainer.classList.remove('collapsed');
+                    messageContent.classList.add('expanded');
+                    wrapper.classList.add('expanded');
+                    messageContainer.classList.add('expanded');
 
                     // 设置 max-height 以实现平滑动画（无限制）
                     requestAnimationFrame(() => {
-                        thinkContent.style.maxHeight = 'none';
+                        messageContent.style.maxHeight = 'none';
                     });
 
-                    // 等待一小段时间让用户看到生成的 outline，然后收起并生成 flowchart
-                    setTimeout(() => {
-                        // 先设置 max-height 为当前实际高度，以便触发动画
-                        thinkContent.style.maxHeight = thinkContent.scrollHeight + 'px';
-                        
-                        // 强制重绘以确保过渡生效
-                        thinkContent.offsetHeight;
-                        
-                        // 添加收起动画
-                        thinkContent.classList.add('collapsed');
-                        wrapper.classList.add('collapsed');
-                        thinkContainer.classList.add('collapsed');
-                        
-                        // 设置 max-height 为 0 来触发动画
-                        thinkContent.style.maxHeight = '0';
+                    // 用于存储 timeout IDs，以便可以取消
+                    let timeoutId1 = null;
+                    let timeoutId2 = null;
+                    let isCancelled = false;
 
-                        // 更新 toggle 图标 - 从 thinkHeader 获取
-                        const toggleIcon = thinkHeader ? thinkHeader.querySelector('#toggleIcon') : null;
+                    // 等待一小段时间让用户看到生成的 outline，然后收起并生成 flowchart
+                    timeoutId1 = setTimeout(() => {
+                        if (isCancelled) return;
+
+                        // 先设置 max-height 为当前实际高度，以便触发动画
+                        messageContent.style.maxHeight = messageContent.scrollHeight + 'px';
+
+                        // 强制重绘以确保过渡生效
+                        messageContent.offsetHeight;
+
+                        // 添加收起动画
+                        messageContent.classList.remove('expanded');
+                        wrapper.classList.remove('expanded');
+                        messageContainer.classList.remove('expanded');
+
+                        // 设置 max-height 为 100px 来触发动画
+                        messageContent.style.maxHeight = '100px';
+
+                        // 更新 toggle 图标 - 从 messageHeader 获取
+                        const toggleIcon = messageHeader ? messageHeader.querySelector('#toggleIcon') : null;
                         if (toggleIcon) {
                             toggleIcon.classList.add('collapsed');
                         }
 
                         // 等待收起动画完成后，再生成 flowchart
-                        setTimeout(() => {
+                        timeoutId2 = setTimeout(() => {
+                            if (isCancelled) return;
                             generateFlowchartJSON(settings, schema);
                         }, 400); // 等待 CSS 动画完成 (0.4s)
                     }, 1500); // 给用户 1.5 秒时间查看生成的 outline
@@ -3329,6 +3364,13 @@
                     if (isAtBottom) {
                         chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
                     }
+
+                    // 返回取消函数
+                    return () => {
+                        isCancelled = true;
+                        if (timeoutId1) clearTimeout(timeoutId1);
+                        if (timeoutId2) clearTimeout(timeoutId2);
+                    };
                 }
             };
         }
@@ -3358,7 +3400,13 @@
         async function sendMessage(skipUserMessage = false) {
             // 隐藏描述操作按钮栏
             hideDescriptionActionsBar();
-            
+
+            // 如果有正在进行的请求，先终止它
+            if (currentAbortController) {
+                currentAbortController.abort();
+                currentAbortController = null;
+            }
+
             // 等待 schema 加载完成
             const schema = await ensureFlowchartSchema();
 
@@ -3425,6 +3473,12 @@
         }
 
         async function generateExperimentDescription(userRequirement, settings, schema, skipUserMessage = false) {
+            // 如果已经有正在进行的请求，先终止它
+            if (currentAbortController) {
+                currentAbortController.abort();
+                currentAbortController = null;
+            }
+
             // Store user requirement and update state
             conversationState.userRequirement = userRequirement;
             conversationState.stage = CONVERSATION_STAGES.DESCRIBING;
@@ -3457,6 +3511,8 @@
 
             // Create AbortController for this request
             currentAbortController = new AbortController();
+            // 保存本地引用，防止竞态条件
+            const localAbortController = currentAbortController;
 
             // Use assistant message component for streaming
             const assistantMsg = addAssistantMessageWithThink();
@@ -3464,8 +3520,16 @@
             let isAborted = false;
             const stopHandler = () => {
                 isAborted = true;
-                currentAbortController.abort();
-                currentAbortController = null;
+                localAbortController.abort();
+                // 只在当前请求仍然是活动请求时才清理全局变量
+                if (currentAbortController === localAbortController) {
+                    currentAbortController = null;
+                }
+                // 取消 showDescriptionWithActions 中的 setTimeout
+                if (currentCancelShowDescription) {
+                    currentCancelShowDescription();
+                    currentCancelShowDescription = null;
+                }
                 stopBtn.removeEventListener('click', stopHandler);
             };
             stopBtn.addEventListener('click', stopHandler);
@@ -3623,7 +3687,8 @@
                 conversationState.experimentDescription = fullContent.trim();
 
                 // Show description with action buttons in the think chain content
-                assistantMsg.showDescriptionWithActions(conversationState.experimentDescription, settings, schema);
+                // 保存取消函数到全局变量，以便在 abort 时取消 setTimeout
+                currentCancelShowDescription = assistantMsg.showDescriptionWithActions(conversationState.experimentDescription, settings, schema);
 
             } catch (e) {
                 if (isAborted ||
@@ -3632,6 +3697,11 @@
                     e.message?.includes('ERR_ABORTED')) {
                     console.log('Request aborted by user');
                     assistantMsg.finalizeMessage(fullContent || 'Stopped');
+                    // 取消 showDescriptionWithActions 中的 setTimeout
+                    if (currentCancelShowDescription) {
+                        currentCancelShowDescription();
+                        currentCancelShowDescription = null;
+                    }
                 } else {
                     assistantMsg.updateMessage(`❌ ${e.message}`);
                     assistantMsg.msgDiv.classList.add('error');
@@ -3640,15 +3710,24 @@
                 sendBtn.style.display = 'flex';
                 stopBtn.style.display = 'none';
                 stopBtn.removeEventListener('click', stopHandler);
-                currentAbortController = null;
+                // 只在当前请求仍然是活动请求时才清理全局变量，防止竞态条件
+                if (currentAbortController === localAbortController) {
+                    currentAbortController = null;
+                }
                 chatInput.focus();
             }
         }
 
         async function generateFlowchartJSON(settings, schema, skipUserMessage = false) {
+            // 如果已经有正在进行的请求，先终止它
+            if (currentAbortController) {
+                currentAbortController.abort();
+                currentAbortController = null;
+            }
+
             // 隐藏描述操作按钮栏
             hideDescriptionActionsBar();
-            
+
             conversationState.stage = CONVERSATION_STAGES.GENERATING;
 
             let apiUrl = settings.api_url.rstrip('/');
@@ -3667,6 +3746,8 @@
 
             // Create AbortController for this request
             currentAbortController = new AbortController();
+            // 保存本地引用，防止竞态条件
+            const localAbortController = currentAbortController;
 
             // Use assistant message component for streaming, with initial think content
             const assistantMsg = addAssistantMessageWithThink('Generating flowchart JSON based on the experiment description...', 'Flowchart');
@@ -3674,8 +3755,11 @@
             let isAborted = false;
             const stopHandler = () => {
                 isAborted = true;
-                currentAbortController.abort();
-                currentAbortController = null;
+                localAbortController.abort();
+                // 只在当前请求仍然是活动请求时才清理全局变量
+                if (currentAbortController === localAbortController) {
+                    currentAbortController = null;
+                }
                 stopBtn.removeEventListener('click', stopHandler);
             };
             stopBtn.addEventListener('click', stopHandler);
@@ -3914,7 +3998,10 @@
                 sendBtn.style.display = 'flex';
                 stopBtn.style.display = 'none';
                 stopBtn.removeEventListener('click', stopHandler);
-                currentAbortController = null;
+                // 只在当前请求仍然是活动请求时才清理全局变量，防止竞态条件
+                if (currentAbortController === localAbortController) {
+                    currentAbortController = null;
+                }
                 chatInput.focus();
             }
         }
@@ -4005,7 +4092,7 @@
                 min-height: 40px;
                 padding: 14px 18px;
                 border: 2px solid var(--brand-blue);
-                border-radius: 16px;
+                border-radius: 10px;
                 font-family: 'DM Sans', sans-serif;
                 font-size: 13px;
                 line-height: 1.6;
@@ -4208,14 +4295,7 @@
                 return;
             }
 
-            // 1. 终止当前正在进行的请求
-            if (currentAbortController) {
-                currentAbortController.abort();
-                currentAbortController = null;
-                showToast('Request aborted', 'info', 1500);
-            }
-
-            // 2. 找到当前用户消息及其之后的所有消息并删除
+            // 1. 立即找到当前用户消息及其之后的所有消息并删除（不等待）
             const allWrappers = Array.from(chatMessagesDiv.querySelectorAll('.message-wrapper, .assistant-message-wrapper'));
             const currentIndex = allWrappers.findIndex(w => w === wrapper || w.contains(wrapper));
             
@@ -4223,14 +4303,22 @@
 
             // 删除当前消息及之后的所有消息（包括AI回复）
             const wrappersToRemove = allWrappers.slice(currentIndex);
-            wrappersToRemove.forEach(w => {
-                w.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
-                w.style.opacity = '0';
-                w.style.transform = 'translateX(20px)';
-            });
-
-            await new Promise(resolve => setTimeout(resolve, 300));
             wrappersToRemove.forEach(w => w.remove());
+
+            // 2. 终止当前正在进行的请求
+            if (currentAbortController) {
+                currentAbortController.abort();
+                // 取消 showDescriptionWithActions 中的 setTimeout
+                if (currentCancelShowDescription) {
+                    currentCancelShowDescription();
+                    currentCancelShowDescription = null;
+                }
+                // 立即清理全局 abort controller，防止竞态条件
+                currentAbortController = null;
+                showToast('Request aborted', 'info', 1500);
+                // 等待一小段时间让旧的请求清理
+                await new Promise(resolve => setTimeout(resolve, 100));
+            }
 
             // 3. 重置对话状态到适当阶段
             // 检查是否还有之前的消息
@@ -4309,25 +4397,25 @@
                 return;
             }
 
-            // 1. 终止当前正在进行的请求
-            if (currentAbortController) {
-                currentAbortController.abort();
-                currentAbortController = null;
-                showToast('Request aborted', 'info', 1500);
-            }
-
-            // 2. 删除该用户消息及其之后的所有消息
+            // 1. 立即删除该用户消息及其之后的所有消息（不等待）
             const userWrapperIndex = allWrappers.findIndex(w => w === userWrapper || w.contains(userWrapper));
             const wrappersToRemove = allWrappers.slice(userWrapperIndex);
-            
-            wrappersToRemove.forEach(w => {
-                w.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
-                w.style.opacity = '0';
-                w.style.transform = 'translateX(20px)';
-            });
-
-            await new Promise(resolve => setTimeout(resolve, 300));
             wrappersToRemove.forEach(w => w.remove());
+
+            // 2. 终止当前正在进行的请求
+            if (currentAbortController) {
+                currentAbortController.abort();
+                // 取消 showDescriptionWithActions 中的 setTimeout
+                if (currentCancelShowDescription) {
+                    currentCancelShowDescription();
+                    currentCancelShowDescription = null;
+                }
+                // 立即清理全局 abort controller，防止竞态条件
+                currentAbortController = null;
+                showToast('Request aborted', 'info', 1500);
+                // 等待一小段时间让旧的请求清理
+                await new Promise(resolve => setTimeout(resolve, 100));
+            }
 
             // 3. 重置对话状态到适当阶段
             const remainingWrappers = chatMessagesDiv.querySelectorAll('.message-wrapper, .assistant-message-wrapper');

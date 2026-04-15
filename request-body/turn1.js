@@ -23,7 +23,10 @@ const turn1 = {
         },
         {
             role: "user",
-            content: "Please generate a comprehensive experiment description based on my requirements above."
+            content: `[User Requirements]
+{userRequirement}
+
+Please generate a comprehensive experiment description based on my requirements above.`
         }
     ],
     temperature: 0,
