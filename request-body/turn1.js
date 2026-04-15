@@ -28,7 +28,7 @@ const turn1 = {
     ],
     temperature: 0,
     top_p: 0,
-    max_tokens: 128,
+    // max_tokens: 128,
     stream: true,
     extra_body: {"enable_search": true}
 };

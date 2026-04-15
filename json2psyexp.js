@@ -687,8 +687,33 @@ function generateFlow(routines, loops) {
     const routineNames = routines.map((rect, index) => rect.name || `Routine_${index + 1}`);
 
     const processedLoops = loops.map(loop => {
-        const startRoutineIndex = Math.floor((loop.startPoint - 1) / 2);
-        const endRoutineIndex = Math.floor((loop.endPoint - 1) / 2);
+        let startRoutineIndex, endRoutineIndex;
+        
+        // 新格式：从 list 计算 startPoint 和 endPoint
+        // startPoint = first routine's Point - 1, endPoint = last routine's Point + 1
+        if (loop.list && Array.isArray(loop.list) && loop.list.length > 0) {
+            const routinePoints = loop.list
+                .filter(item => item.Point !== undefined)
+                .map(item => item.Point)
+                .sort((a, b) => a - b);
+            
+            if (routinePoints.length > 0) {
+                const firstPoint = routinePoints[0];
+                const lastPoint = routinePoints[routinePoints.length - 1];
+                // Point = (routineIndex + 1) * 2, 所以 routineIndex = Point / 2 - 1
+                startRoutineIndex = Math.floor(firstPoint / 2) - 1;
+                endRoutineIndex = Math.floor(lastPoint / 2) - 1;
+            } else {
+                // 回退到旧格式
+                startRoutineIndex = Math.floor((loop.startPoint - 1) / 2);
+                endRoutineIndex = Math.floor((loop.endPoint - 1) / 2);
+            }
+        } else {
+            // 旧格式：直接使用 startPoint 和 endPoint
+            startRoutineIndex = Math.floor((loop.startPoint - 1) / 2);
+            endRoutineIndex = Math.floor((loop.endPoint - 1) / 2);
+        }
+        
         const variableNames = detectVariablesFromRoutines(routines, startRoutineIndex, endRoutineIndex);
 
         return {

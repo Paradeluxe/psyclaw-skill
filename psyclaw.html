@@ -5420,22 +5420,38 @@
             requestAnimationFrame(frame);
         }
 
-        // 辅助函数：将 connections 转换为 loops 数组
+        // 辅助函数：将 connections 转换为 loops 数组（新格式：包含 list，不包含 startPoint/endPoint）
         function connectionsToLoops(conns) {
             return conns.map((conn, index) => {
                 const startPoint = parseInt(conn.start.label);
                 const endPoint = parseInt(conn.end.label);
                 
+                // 根据 startPoint 和 endPoint 计算包含的 routine 索引
+                // startPoint = routineIdx * 2 + 1，所以 routineIdx = (startPoint - 1) / 2
+                const startRoutineIdx = Math.floor((startPoint - 1) / 2);
+                const endRoutineIdx = Math.floor((endPoint - 1) / 2);
+                
+                // 构建 list：包含该 loop 中的所有 routines
+                const list = [];
+                for (let i = startRoutineIdx; i <= endRoutineIdx && i < routineRects.length; i++) {
+                    const rect = routineRects[i];
+                    if (rect) {
+                        list.push({
+                            name: rect.name,
+                            Point: (i + 1) * 2  // routine 的 Point 是偶数：2, 4, 6...
+                        });
+                    }
+                }
+                
                 return {
                     id: index,
                     name: conn.loopName || `loop_${index}`,
-                    startPoint: startPoint,
-                    endPoint: endPoint,
                     nRounds: conn.loopReps || 1,
                     type: conn.loopType || 'sequential',
                     conditions: conn.loopConditions || '',
                     conditionsFile: conn.loopConditionsFile || '',
-                    isTrials: conn.loopIsTrials !== false
+                    isTrials: conn.loopIsTrials !== false,
+                    list: list
                 };
             });
         }
@@ -5533,11 +5549,31 @@
                 }
                 if (projectData.loops && Array.isArray(projectData.loops)) {
                     projectData.loops.forEach(l => {
+                        let startPoint = l.startPoint;
+                        let endPoint = l.endPoint;
+                        
+                        // 新格式：从 list 计算 startPoint 和 endPoint
+                        if (l.list && Array.isArray(l.list) && l.list.length > 0) {
+                            const routinePoints = l.list
+                                .filter(item => item.Point !== undefined)
+                                .map(item => item.Point)
+                                .sort((a, b) => a - b);
+                            
+                            if (routinePoints.length > 0) {
+                                const firstPoint = routinePoints[0];
+                                const lastPoint = routinePoints[routinePoints.length - 1];
+                                // startPoint = first routine's Point - 1
+                                // endPoint = last routine's Point + 1
+                                startPoint = firstPoint - 1;
+                                endPoint = lastPoint + 1;
+                            }
+                        }
+                        
                         loops.push({
                             id: l.id,
                             name: l.name,
-                            startPoint: l.startPoint,
-                            endPoint: l.endPoint,
+                            startPoint: startPoint,
+                            endPoint: endPoint,
                             nRounds: l.nRounds || 1,
                             type: l.type || 'sequential',
                             conditions: l.conditions || '',
@@ -5945,8 +5981,18 @@
                     if (item.Point !== undefined) {
                         // 顶层 routine
                         allRoutines.push(item);
+                    } else if (item.list !== undefined) {
+                        // Loop：新格式，通过 list 字段识别，并提取内部的 routines
+                        loopsData.push(item);
+                        if (Array.isArray(item.list)) {
+                            item.list.forEach(subItem => {
+                                if (subItem.Point !== undefined) {
+                                    allRoutines.push(subItem);
+                                }
+                            });
+                        }
                     } else if (item.startPoint !== undefined) {
-                        // Loop：保存 loop 信息，并提取内部的 routines
+                        // Loop：旧格式兼容（有 startPoint 字段）
                         loopsData.push(item);
                         if (item.list && Array.isArray(item.list)) {
                             item.list.forEach(subItem => {
@@ -6010,6 +6056,7 @@
                     let endPoint = loop.endPoint;
 
                     // 如果 loop 有 list，根据内部 routines 的 Point 重新计算 startPoint 和 endPoint
+                    // 新规则：startPoint = first routine's Point - 1, endPoint = last routine's Point + 1
                     if (loop.list && Array.isArray(loop.list) && loop.list.length > 0) {
                         const loopRoutinePoints = loop.list
                             .filter(item => item.Point !== undefined)
@@ -6020,14 +6067,9 @@
                             const firstPoint = loopRoutinePoints[0];
                             const lastPoint = loopRoutinePoints[loopRoutinePoints.length - 1];
 
-                            // 转换为 routine 索引（0-based），然后转换为 point 格式（1, 3, 5...）
-                            const firstIndex = pointToIndex[firstPoint];
-                            const lastIndex = pointToIndex[lastPoint];
-
-                            if (firstIndex !== undefined && lastIndex !== undefined) {
-                                startPoint = firstIndex * 2 + 1;
-                                endPoint = lastIndex * 2 + 1;
-                            }
+                            // 新规则：直接使用 Point - 1 和 Point + 1
+                            startPoint = firstPoint - 1;
+                            endPoint = lastPoint + 1;
                         }
                     }
 
