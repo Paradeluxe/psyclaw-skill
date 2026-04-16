@@ -577,16 +577,16 @@
             will-change: transform, opacity;
         }
 
-        .message-wrapper:hover .message-actions {
-            opacity: 1;
-            transform: translateY(0);
+        /* 流式输出完成后显示按钮 */
+        .message-wrapper:not(.streaming) .message-actions {
+            opacity: 0;
+            transform: translateY(-4px);
         }
 
-        /* 流式输出过程中保持按钮稳定 */
-        .message-wrapper.streaming .message-actions {
+        /* 鼠标悬停且非流式状态时显示按钮 */
+        .message-wrapper:not(.streaming):hover .message-actions {
             opacity: 1;
             transform: translateY(0);
-            transition: none;
         }
 
         .message-action-btn {
@@ -734,6 +734,17 @@
         .btn-text:hover {
             color: var(--primary-700);
             background: rgba(20, 86, 240, 0.05);
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
         }
 
         .stage-indicator {
@@ -1991,41 +2002,75 @@
             }
         });
 
-        // 请求体配置（从外部文件加载）
-        let requestBodyTurn1 = null;
-        let requestBodyTurn2 = null;
+        // 请求体配置（从外部文件加载）- 支持 turn1 和 turn2 分离
+        let turn1Config = null;
+        let turn2Config = null;
 
         async function loadRequestBodyConfigs() {
             try {
-                const [text1, text2] = await Promise.all([
-                    fetch('request-body/turn1.js').then(r => r.text()),
-                    fetch('request-body/turn2.js').then(r => r.text())
-                ]);
-                requestBodyTurn1 = eval(`(function() { ${text1}; return turn1; })()`);
-                requestBodyTurn2 = eval(`(function() { ${text2}; return turn2; })()`);
+                // 加载 turn1.js - 生成实验描述
+                const turn1Text = await fetch('request-body/turn1.js').then(r => r.text());
+                turn1Config = eval(`(function() { ${turn1Text}; return turn1; })()`);
+                
+                // 加载 turn2.js - 生成 Flowchart JSON
+                const turn2Text = await fetch('request-body/turn2.js').then(r => r.text());
+                turn2Config = eval(`(function() { ${turn2Text}; return turn2; })()`);
+                
                 console.log('Request body configs loaded successfully');
+                console.log('Turn1 config:', turn1Config ? 'loaded' : 'not loaded');
+                console.log('Turn2 config:', turn2Config ? 'loaded' : 'not loaded');
             } catch (error) {
-                console.error('Failed to load request body configs:', error);
+                console.error('Failed to load request body config:', error);
                 throw error;
             }
         }
 
-        function buildRequestBody(turn, settings, deepThinkEnabled, extraParams = {}) {
-            const template = turn === 1 ? requestBodyTurn1 : requestBodyTurn2;
+        // 构建 Turn 1 请求体 - 生成实验描述
+        function buildTurn1RequestBody(settings, deepThinkEnabled, userRequirement) {
+            const template = turn1Config;
             if (!template) {
-                throw new Error(`Request body config for turn ${turn} not loaded`);
+                throw new Error('Turn1 request body config not loaded');
             }
 
             const messages = template.messages.map(msg => {
                 let content = msg.content;
-                if (turn === 1 && extraParams.userRequirement) {
-                    content = content.replace('{userRequirement}', extraParams.userRequirement);
+                if (userRequirement) {
+                    content = content.replace('{userRequirement}', userRequirement);
                 }
-                if (turn === 2 && extraParams.experimentDescription) {
-                    content = content.replace('{experimentDescription}', extraParams.experimentDescription);
+                return { role: msg.role, content: content };
+            });
+
+            const requestBody = {
+                model: settings.model,
+                messages: messages,
+                temperature: template.temperature,
+                top_p: template.top_p,
+                stream: template.stream,
+                enable_thinking: deepThinkEnabled
+            };
+            if (deepThinkEnabled) {
+                requestBody.thinking_budget = 512;
+            }
+            if (template.extra_body) {
+                requestBody.extra_body = template.extra_body;
+            }
+            return requestBody;
+        }
+
+        // 构建 Turn 2 请求体 - 生成 Flowchart JSON
+        function buildTurn2RequestBody(settings, deepThinkEnabled, experimentDescription, schema) {
+            const template = turn2Config;
+            if (!template) {
+                throw new Error('Turn2 request body config not loaded');
+            }
+
+            const messages = template.messages.map(msg => {
+                let content = msg.content;
+                if (experimentDescription) {
+                    content = content.replace('{experimentDescription}', experimentDescription);
                 }
-                if (extraParams.schema) {
-                    content = content.replace('{schema}', JSON.stringify(extraParams.schema, null, 2));
+                if (schema) {
+                    content = content.replace('{schema}', JSON.stringify(schema, null, 2));
                 }
                 return { role: msg.role, content: content };
             });
@@ -2043,6 +2088,14 @@
                 requestBody.thinking_budget = 512;
             }
             return requestBody;
+        }
+
+        // 兼容旧接口 - 如果有代码还在调用 buildRequestBody
+        function buildRequestBody(settings, deepThinkEnabled, extraParams = {}) {
+            if (extraParams.experimentDescription && extraParams.schema) {
+                return buildTurn2RequestBody(settings, deepThinkEnabled, extraParams.experimentDescription, extraParams.schema);
+            }
+            return buildTurn1RequestBody(settings, deepThinkEnabled, extraParams.userRequirement);
         }
 
         document.addEventListener('DOMContentLoaded', async function() {
@@ -2129,6 +2182,7 @@
         }
 
         const chatMessagesDiv = document.getElementById('chatMessages');
+        
         const chatInput = document.getElementById('chatInput');
         const sendBtn = document.getElementById('sendBtn');
         const stopBtn = document.getElementById('stopBtn');
@@ -2148,8 +2202,400 @@
         let currentFile = null;
         let deepThinkEnabled = true;
         let assistantMessageCount = 0; // 追踪AI回复数量
-        let currentAbortController = null; // 用于终止当前请求的 AbortController
         let currentCancelShowDescription = null; // 用于取消 showDescriptionWithActions 中的 setTimeout
+        
+        // ==========================================
+        // 标准化的消息状态管理系统
+        // ==========================================
+        
+        // 消息状态枚举 - 采用大厂标准
+        const MESSAGE_STATES = {
+            PENDING: 'pending',         // 等待发送
+            STREAMING: 'streaming',     // 流式输出中
+            COMPLETED: 'completed',     // 已完成
+            ERROR: 'error',             // 错误
+            ABORTED: 'aborted'          // 已中止
+        };
+        
+        // 消息操作类型
+        const MESSAGE_ACTIONS = {
+            COPY: 'copy',
+            RETRY: 'retry',
+            EDIT: 'edit',
+            DELETE: 'delete',
+            STOP: 'stop'
+        };
+        
+        // AbortController 管理器 - 解决竞态条件问题
+        class AbortControllerManager {
+            constructor() {
+                this.controller = null;
+                this.isActive = false;
+            }
+            
+            start() {
+                this.controller = new AbortController();
+                this.isActive = true;
+                return this.controller.signal;
+            }
+            
+            stop() {
+                if (this.controller) {
+                    this.controller.abort();
+                    this.controller = null;
+                    this.isActive = false;
+                }
+            }
+            
+            isAborted(signal) {
+                return signal?.aborted === true;
+            }
+        }
+        
+        const abortManager = new AbortControllerManager();
+        
+        // 智能滚动管理器 - 解决流式输出时的滚动问题
+        class SmartScrollManager {
+            constructor(container) {
+                this.container = container;
+                this.userScrolled = false;
+                this.threshold = 100; // 距离底部多少像素认为用户在看底部
+                this.setupListeners();
+            }
+            
+            setupListeners() {
+                if (!this.container) return;
+                
+                this.container.addEventListener('scroll', () => {
+                    const { scrollTop, scrollHeight, clientHeight } = this.container;
+                    const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
+                    this.userScrolled = distanceFromBottom > this.threshold;
+                });
+            }
+            
+            isAtBottom() {
+                if (!this.container) return true;
+                const { scrollTop, scrollHeight, clientHeight } = this.container;
+                return scrollHeight - scrollTop - clientHeight < this.threshold;
+            }
+            
+            scrollToBottom(smooth = false) {
+                if (!this.container) return;
+                
+                if (smooth) {
+                    this.container.scrollTo({
+                        top: this.container.scrollHeight,
+                        behavior: 'smooth'
+                    });
+                } else {
+                    this.container.scrollTop = this.container.scrollHeight;
+                }
+            }
+            
+            scrollToBottomIfNeeded(smooth = false) {
+                if (this.isAtBottom() && !this.userScrolled) {
+                    this.scrollToBottom(smooth);
+                }
+            }
+        }
+        
+        // 初始化智能滚动管理器（在所有类定义之后）
+        let smartScrollManager = null;
+        if (chatMessagesDiv) {
+            smartScrollManager = new SmartScrollManager(chatMessagesDiv);
+        }
+        
+        // 标准化的消息对象工厂函数
+        function createMessage(options = {}) {
+            return {
+                id: `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+                role: options.role || 'assistant',
+                content: options.content || '',
+                state: options.state || MESSAGE_STATES.PENDING,
+                timestamp: new Date(),
+                thinkContent: options.thinkContent || '',
+                originalPrompt: options.originalPrompt || '',
+                metadata: options.metadata || {}
+            };
+        }
+        
+        // 消息状态转换验证
+        function canTransitionTo(currentState, targetState) {
+            const validTransitions = {
+                [MESSAGE_STATES.PENDING]: [MESSAGE_STATES.STREAMING, MESSAGE_STATES.COMPLETED, MESSAGE_STATES.ERROR, MESSAGE_STATES.ABORTED],
+                [MESSAGE_STATES.STREAMING]: [MESSAGE_STATES.COMPLETED, MESSAGE_STATES.ERROR, MESSAGE_STATES.ABORTED],
+                [MESSAGE_STATES.COMPLETED]: [MESSAGE_STATES.STREAMING, MESSAGE_STATES.ERROR], // 可以重试或标记错误
+                [MESSAGE_STATES.ERROR]: [MESSAGE_STATES.STREAMING], // 可以重试
+                [MESSAGE_STATES.ABORTED]: [MESSAGE_STATES.STREAMING] // 可以重试
+            };
+            
+            return validTransitions[currentState]?.includes(targetState) || false;
+        }
+        
+        // 标准化的操作确认对话框
+        async function confirmAction(action, options = {}) {
+            const {
+                title = 'Confirm Action',
+                message = 'Are you sure?',
+                confirmText = 'Confirm',
+                cancelText = 'Cancel',
+                confirmClass = 'btn-primary',
+                showCancel = true
+            } = options;
+            
+            return new Promise((resolve) => {
+                // 创建确认对话框
+                const overlay = document.createElement('div');
+                overlay.className = 'confirm-overlay';
+                overlay.style.cssText = `
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    background: rgba(0, 0, 0, 0.5);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    z-index: 10000;
+                    animation: fadeIn 0.2s ease;
+                `;
+                
+                overlay.innerHTML = `
+                    <div class="confirm-dialog" style="
+                        background: white;
+                        border-radius: 12px;
+                        padding: 24px;
+                        max-width: 400px;
+                        width: 90%;
+                        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+                        animation: slideUp 0.3s ease;
+                    ">
+                        <h3 style="margin: 0 0 12px 0; font-size: 18px; font-weight: 600; color: #222;">${title}</h3>
+                        <p style="margin: 0 0 20px 0; color: #666; font-size: 14px; line-height: 1.5;">${message}</p>
+                        <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                            ${showCancel ? `<button class="btn-cancel" style="
+                                padding: 8px 16px;
+                                border-radius: 6px;
+                                border: 1px solid #e5e7eb;
+                                background: white;
+                                color: #666;
+                                cursor: pointer;
+                                font-size: 14px;
+                                transition: all 0.2s;
+                            ">${cancelText}</button>` : ''}
+                            <button class="btn-confirm ${confirmClass}" style="
+                                padding: 8px 16px;
+                                border-radius: 6px;
+                                border: none;
+                                background: #1456f0;
+                                color: white;
+                                cursor: pointer;
+                                font-size: 14px;
+                                font-weight: 500;
+                                transition: all 0.2s;
+                            ">${confirmText}</button>
+                        </div>
+                    </div>
+                `;
+                
+                // 添加动画样式
+                const style = document.createElement('style');
+                style.textContent = `
+                    @keyframes fadeIn {
+                        from { opacity: 0; }
+                        to { opacity: 1; }
+                    }
+                    @keyframes slideUp {
+                        from { transform: translateY(20px); opacity: 0; }
+                        to { transform: translateY(0); opacity: 1; }
+                    }
+                    .confirm-overlay:hover .btn-cancel {
+                        background: #f3f4f6;
+                    }
+                    .confirm-overlay .btn-confirm:hover {
+                        background: #2563eb;
+                        transform: translateY(-1px);
+                    }
+                `;
+                document.head.appendChild(style);
+                
+                document.body.appendChild(overlay);
+                
+                // 事件处理
+                const cleanup = () => {
+                    document.body.removeChild(overlay);
+                    document.head.removeChild(style);
+                };
+                
+                overlay.querySelector('.btn-confirm').addEventListener('click', () => {
+                    cleanup();
+                    resolve(true);
+                });
+                
+                if (showCancel) {
+                    overlay.querySelector('.btn-cancel').addEventListener('click', () => {
+                        cleanup();
+                        resolve(false);
+                    });
+                }
+                
+                overlay.addEventListener('click', (e) => {
+                    if (e.target === overlay) {
+                        cleanup();
+                        resolve(false);
+                    }
+                });
+            });
+        }
+        
+        // 标准化 Toast 提示 - 已存在，使用现有的 showToast 函数
+        
+        // ==========================================
+        // 标准化的错误处理系统
+        // ==========================================
+        
+        // 错误类型分类
+        const ERROR_TYPES = {
+            NETWORK_ERROR: 'network_error',       // 网络错误
+            API_ERROR: 'api_error',               // API 错误
+            VALIDATION_ERROR: 'validation_error', // 验证错误
+            ABORT_ERROR: 'abort_error',           // 用户中止
+            TIMEOUT_ERROR: 'timeout_error',       // 超时错误
+            UNKNOWN_ERROR: 'unknown_error'        // 未知错误
+        };
+        
+        // 错误消息映射 - 提供用户友好的错误提示
+        const ERROR_MESSAGES = {
+            [ERROR_TYPES.NETWORK_ERROR]: {
+                title: 'Network Error',
+                message: 'Unable to connect to the server. Please check your internet connection.',
+                suggestion: 'Try again in a few moments.'
+            },
+            [ERROR_TYPES.API_ERROR]: {
+                title: 'API Error',
+                message: 'The API returned an error.',
+                suggestion: 'Please check your API settings and try again.'
+            },
+            [ERROR_TYPES.VALIDATION_ERROR]: {
+                title: 'Validation Error',
+                message: 'The request data is invalid.',
+                suggestion: 'Please check your input and try again.'
+            },
+            [ERROR_TYPES.ABORT_ERROR]: {
+                title: 'Request Cancelled',
+                message: 'The request was cancelled.',
+                suggestion: 'You can start a new request.'
+            },
+            [ERROR_TYPES.TIMEOUT_ERROR]: {
+                title: 'Request Timeout',
+                message: 'The request took too long to complete.',
+                suggestion: 'Please try again or use a smaller input.'
+            },
+            [ERROR_TYPES.UNKNOWN_ERROR]: {
+                title: 'Unknown Error',
+                message: 'An unexpected error occurred.',
+                suggestion: 'Please try again.'
+            }
+        };
+        
+        // 错误分类器
+        function classifyError(error) {
+            if (error.name === 'AbortError' || 
+                error.message?.includes('aborted')) {
+                return ERROR_TYPES.ABORT_ERROR;
+            }
+            
+            if (error.message?.includes('Failed to fetch') ||
+                error.message?.includes('NetworkError') ||
+                error.message?.includes('net::ERR')) {
+                return ERROR_TYPES.NETWORK_ERROR;
+            }
+            
+            if (error.message?.includes('timeout') ||
+                error.message?.includes('Timeout')) {
+                return ERROR_TYPES.TIMEOUT_ERROR;
+            }
+            
+            if (error.message?.includes('API Error') ||
+                error.message?.includes('status 4') ||
+                error.message?.includes('status 5')) {
+                return ERROR_TYPES.API_ERROR;
+            }
+            
+            return ERROR_TYPES.UNKNOWN_ERROR;
+        }
+        
+        // 标准化的错误处理函数
+        function handleError(error, options = {}) {
+            const errorType = classifyError(error);
+            const errorInfo = ERROR_MESSAGES[errorType] || ERROR_MESSAGES[ERROR_TYPES.UNKNOWN_ERROR];
+            
+            const {
+                showToUser = true,
+                logToConsole = true,
+                title = errorInfo.title,
+                message = errorInfo.message,
+                suggestion = errorInfo.suggestion
+            } = options;
+            
+            // 日志记录
+            if (logToConsole) {
+                console.error('Error:', {
+                    type: errorType,
+                    title,
+                    message,
+                    suggestion,
+                    originalError: error
+                });
+            }
+            
+            // 用户提示
+            if (showToUser) {
+                const userMessage = `${message} ${suggestion}`;
+                showToast(userMessage, 'error', 4000);
+            }
+            
+            return {
+                type: errorType,
+                title,
+                message,
+                suggestion,
+                originalError: error
+            };
+        }
+        
+        // 错误恢复建议
+        function getRecoveryAction(error) {
+            const errorType = classifyError(error);
+            
+            switch (errorType) {
+                case ERROR_TYPES.NETWORK_ERROR:
+                    return {
+                        action: 'retry',
+                        label: 'Retry',
+                        description: 'Try connecting again'
+                    };
+                case ERROR_TYPES.API_ERROR:
+                    return {
+                        action: 'check_settings',
+                        label: 'Check Settings',
+                        description: 'Review your API configuration'
+                    };
+                case ERROR_TYPES.TIMEOUT_ERROR:
+                    return {
+                        action: 'reduce_input',
+                        label: 'Try Again',
+                        description: 'Use smaller input or wait'
+                    };
+                default:
+                    return {
+                        action: 'retry',
+                        label: 'Retry',
+                        description: 'Attempt the operation again'
+                    };
+            }
+        }
 
         function formatFileSize(bytes) {
             if (bytes === 0) return '0 B';
@@ -3027,18 +3473,13 @@
                 wrapper.dataset.originalPrompt = content; // 存储原始 prompt 用于重做
                 wrapper.appendChild(msgDiv);
 
-                // 创建消息操作按钮栏（用户消息有复制、重做和删除按钮）
+                // 创建消息操作按钮栏（用户消息有复制和删除按钮）
                 const messageActions = document.createElement('div');
                 messageActions.className = 'message-actions';
                 messageActions.innerHTML = `
                     <button class="message-action-btn" data-tooltip="Copy" onclick="copyMessage(this)">
                         <svg viewBox="0 0 24 24">
                             <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
-                        </svg>
-                    </button>
-                    <button class="message-action-btn" data-tooltip="Redo" onclick="redoMessage(this)">
-                        <svg viewBox="0 0 24 24">
-                            <path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/>
                         </svg>
                     </button>
                     <button class="message-action-btn danger" data-tooltip="Delete" onclick="deleteMessage(this)">
@@ -3401,10 +3842,9 @@
             // 隐藏描述操作按钮栏
             hideDescriptionActionsBar();
 
-            // 如果有正在进行的请求，先终止它
-            if (currentAbortController) {
-                currentAbortController.abort();
-                currentAbortController = null;
+            // 如果有正在进行的请求，先终止它（使用标准化的 abortManager）
+            if (abortManager.isActive) {
+                abortManager.stop();
             }
 
             // 等待 schema 加载完成
@@ -3474,9 +3914,8 @@
 
         async function generateExperimentDescription(userRequirement, settings, schema, skipUserMessage = false) {
             // 如果已经有正在进行的请求，先终止它
-            if (currentAbortController) {
-                currentAbortController.abort();
-                currentAbortController = null;
+            if (abortManager.isActive) {
+                abortManager.stop();
             }
 
             // Store user requirement and update state
@@ -3509,10 +3948,8 @@
             sendBtn.style.display = 'none';
             stopBtn.style.display = 'flex';
 
-            // Create AbortController for this request
-            currentAbortController = new AbortController();
-            // 保存本地引用，防止竞态条件
-            const localAbortController = currentAbortController;
+            // 使用标准化的 AbortController 管理器
+            const signal = abortManager.start();
 
             // Use assistant message component for streaming
             const assistantMsg = addAssistantMessageWithThink();
@@ -3520,11 +3957,7 @@
             let isAborted = false;
             const stopHandler = () => {
                 isAborted = true;
-                localAbortController.abort();
-                // 只在当前请求仍然是活动请求时才清理全局变量
-                if (currentAbortController === localAbortController) {
-                    currentAbortController = null;
-                }
+                abortManager.stop();
                 // 取消 showDescriptionWithActions 中的 setTimeout
                 if (currentCancelShowDescription) {
                     currentCancelShowDescription();
@@ -3538,8 +3971,8 @@
             let thinkContent = '';
 
             try {
-                // Build request body for Turn 1 (Generate Plan)
-                const requestBody = buildRequestBody(1, settings, deepThinkEnabled, extraParams);
+                // Build request body for combined request
+                const requestBody = buildRequestBody(settings, deepThinkEnabled, extraParams);
 
                 let response;
                 try {
@@ -3550,7 +3983,7 @@
                             'Content-Type': 'application/json'
                         },
                         body: JSON.stringify(requestBody),
-                        signal: currentAbortController.signal
+                        signal: signal
                     });
                 } catch (fetchError) {
                     if (isAborted ||
@@ -3710,19 +4143,15 @@
                 sendBtn.style.display = 'flex';
                 stopBtn.style.display = 'none';
                 stopBtn.removeEventListener('click', stopHandler);
-                // 只在当前请求仍然是活动请求时才清理全局变量，防止竞态条件
-                if (currentAbortController === localAbortController) {
-                    currentAbortController = null;
-                }
+                abortManager.stop();
                 chatInput.focus();
             }
         }
 
         async function generateFlowchartJSON(settings, schema, skipUserMessage = false) {
             // 如果已经有正在进行的请求，先终止它
-            if (currentAbortController) {
-                currentAbortController.abort();
-                currentAbortController = null;
+            if (abortManager.isActive) {
+                abortManager.stop();
             }
 
             // 隐藏描述操作按钮栏
@@ -3744,10 +4173,8 @@
             sendBtn.style.display = 'none';
             stopBtn.style.display = 'flex';
 
-            // Create AbortController for this request
-            currentAbortController = new AbortController();
-            // 保存本地引用，防止竞态条件
-            const localAbortController = currentAbortController;
+            // 使用标准化的 AbortController 管理器
+            const signal = abortManager.start();
 
             // Use assistant message component for streaming, with initial think content
             const assistantMsg = addAssistantMessageWithThink('Generating flowchart JSON based on the experiment description...', 'Flowchart');
@@ -3755,11 +4182,7 @@
             let isAborted = false;
             const stopHandler = () => {
                 isAborted = true;
-                localAbortController.abort();
-                // 只在当前请求仍然是活动请求时才清理全局变量
-                if (currentAbortController === localAbortController) {
-                    currentAbortController = null;
-                }
+                abortManager.stop();
                 stopBtn.removeEventListener('click', stopHandler);
             };
             stopBtn.addEventListener('click', stopHandler);
@@ -3768,8 +4191,8 @@
             let thinkContent = '';
 
             try {
-                // Build request body for Turn 2
-                const requestBody = buildRequestBody(2, settings, deepThinkEnabled, extraParams);
+                // Build request body for combined request (fallback for manual regenerate)
+                const requestBody = buildRequestBody(settings, deepThinkEnabled, extraParams);
 
                 let response;
                 try {
@@ -3780,7 +4203,7 @@
                             'Content-Type': 'application/json'
                         },
                         body: JSON.stringify(requestBody),
-                        signal: currentAbortController.signal
+                        signal: signal
                     });
                 } catch (fetchError) {
                     if (isAborted ||
@@ -3998,10 +4421,7 @@
                 sendBtn.style.display = 'flex';
                 stopBtn.style.display = 'none';
                 stopBtn.removeEventListener('click', stopHandler);
-                // 只在当前请求仍然是活动请求时才清理全局变量，防止竞态条件
-                if (currentAbortController === localAbortController) {
-                    currentAbortController = null;
-                }
+                abortManager.stop();
                 chatInput.focus();
             }
         }
@@ -4237,7 +4657,7 @@
             wrapper.dataset.editing = 'true';
         };
 
-        // 删除消息功能
+        // 删除消息功能 - 添加确认对话框
         window.deleteMessage = async function(btn) {
             const wrapper = btn.closest('.message-wrapper');
             if (!wrapper) return;
@@ -4250,16 +4670,34 @@
             const isUserMessage = wrapper.classList.contains('user-wrapper');
 
             let messagesToRemove = [messageContainer];
+            let confirmMessage = 'Are you sure you want to delete this message?';
 
             // 如果是用户消息，需要删除该消息之后的所有消息
             if (isUserMessage) {
-                const allWrappers = Array.from(chatMessagesDiv.querySelectorAll('.message-wrapper, .assistant-message-wrapper'));
+                // 只查询顶层消息包装器，避免重复计算嵌套结构
+                const allWrappers = Array.from(chatMessagesDiv.children).filter(
+                    child => child.classList.contains('message-wrapper') || 
+                             child.classList.contains('assistant-message-wrapper')
+                );
                 const currentIndex = allWrappers.findIndex(w => w === messageContainer || w.contains(messageContainer));
 
                 if (currentIndex !== -1) {
                     // 获取当前消息及之后的所有消息
                     messagesToRemove = allWrappers.slice(currentIndex);
+                    confirmMessage = `Deleting this message will also delete ${messagesToRemove.length - 1} subsequent message(s). Are you sure?`;
                 }
+            }
+
+            // 显示标准化确认对话框
+            const confirmed = await confirmAction('Delete Message', {
+                message: confirmMessage,
+                confirmText: 'Delete',
+                cancelText: 'Cancel',
+                confirmClass: 'btn-danger'
+            });
+
+            if (!confirmed) {
+                return; // 用户取消操作
             }
 
             // 添加淡出动画
@@ -4284,7 +4722,7 @@
             showToast('Message deleted', 'success', 1500);
         };
 
-        // 重做消息功能：终止当前请求，删除当前消息及之后的所有消息，带着上下文重跑
+        // 重做消息功能：终止当前请求，删除当前消息及之后的所有消息，带着上下文重跑 - 添加确认对话框
         window.redoMessage = async function(btn) {
             const wrapper = btn.closest('.message-wrapper');
             if (!wrapper) return;
@@ -4296,20 +4734,35 @@
             }
 
             // 1. 立即找到当前用户消息及其之后的所有消息并删除（不等待）
-            const allWrappers = Array.from(chatMessagesDiv.querySelectorAll('.message-wrapper, .assistant-message-wrapper'));
+            // 只查询顶层消息包装器，避免重复计算嵌套结构
+            const allWrappers = Array.from(chatMessagesDiv.children).filter(
+                child => child.classList.contains('message-wrapper') || 
+                         child.classList.contains('assistant-message-wrapper')
+            );
             const currentIndex = allWrappers.findIndex(w => w === wrapper || w.contains(wrapper));
             
             if (currentIndex === -1) return;
 
             // 删除当前消息及之后的所有消息（包括AI回复）
             const wrappersToRemove = allWrappers.slice(currentIndex);
+
+            // 显示标准化确认对话框
+            const confirmed = await confirmAction('Regenerate Response', {
+                message: `Regenerating will delete ${wrappersToRemove.length} message(s) and generate a new response. Continue?`,
+                confirmText: 'Regenerate',
+                cancelText: 'Cancel',
+                confirmClass: 'btn-primary'
+            });
+
+            if (!confirmed) {
+                return; // 用户取消操作
+            }
+
             wrappersToRemove.forEach(w => w.remove());
 
             // 2. 终止当前正在进行的请求
-            if (currentAbortController) {
-                currentAbortController.abort();
-                // 立即清理全局 abort controller，防止竞态条件
-                currentAbortController = null;
+            if (abortManager.isActive) {
+                abortManager.stop();
                 showToast('Request aborted', 'info', 1500);
                 // 等待一小段时间让旧的请求清理
                 await new Promise(resolve => setTimeout(resolve, 100));
@@ -4341,12 +4794,14 @@
                 const lastUserWrapper = Array.from(remainingWrappers)
                     .reverse()
                     .find(w => w.classList.contains('user-wrapper'));
-                
+
                 if (lastUserWrapper) {
-                    // 如果之前有用户消息，我们认为是在 DESCRIBING 阶段
-                    conversationState.stage = CONVERSATION_STAGES.DESCRIBING;
+                    // 如果之前有用户消息，重置到 IDLE 阶段，让系统重新生成 outline
+                    // 因为 redo 意味着要重新生成当前消息及其后续内容
+                    conversationState.stage = CONVERSATION_STAGES.IDLE;
                     conversationState.userRequirement = lastUserWrapper.dataset.originalPrompt || '';
-                    // experimentDescription 保持不变，因为我们删除了当前消息及之后的内容
+                    // 重要：清空 experimentDescription，让系统重新生成 outline
+                    conversationState.experimentDescription = '';
                 }
             }
 
@@ -4364,13 +4819,17 @@
             await sendMessage(false);
         };
 
-        // AI消息的重做功能：找到对应的用户消息并重做
+        // AI消息的重做功能：找到对应的用户消息并重做 - 添加确认对话框
         window.redoAssistantMessage = async function(btn) {
             const assistantWrapper = btn.closest('.assistant-message-wrapper');
             if (!assistantWrapper) return;
 
             // 找到当前AI消息在聊天历史中的位置
-            const allWrappers = Array.from(chatMessagesDiv.querySelectorAll('.message-wrapper, .assistant-message-wrapper'));
+            // 只查询顶层消息包装器，避免重复计算嵌套结构
+            const allWrappers = Array.from(chatMessagesDiv.children).filter(
+                child => child.classList.contains('message-wrapper') || 
+                         child.classList.contains('assistant-message-wrapper')
+            );
             const currentIndex = allWrappers.findIndex(w => w === assistantWrapper);
             
             if (currentIndex === -1) return;
@@ -4400,13 +4859,24 @@
             // 1. 立即删除该用户消息及其之后的所有消息（不等待）
             const userWrapperIndex = allWrappers.findIndex(w => w === userWrapper || w.contains(userWrapper));
             const wrappersToRemove = allWrappers.slice(userWrapperIndex);
+
+            // 显示标准化确认对话框
+            const confirmed = await confirmAction('Regenerate AI Response', {
+                message: `Regenerating will delete ${wrappersToRemove.length} message(s) and generate a new response. Continue?`,
+                confirmText: 'Regenerate',
+                cancelText: 'Cancel',
+                confirmClass: 'btn-primary'
+            });
+
+            if (!confirmed) {
+                return; // 用户取消操作
+            }
+
             wrappersToRemove.forEach(w => w.remove());
 
             // 2. 终止当前正在进行的请求
-            if (currentAbortController) {
-                currentAbortController.abort();
-                // 立即清理全局 abort controller，防止竞态条件
-                currentAbortController = null;
+            if (abortManager.isActive) {
+                abortManager.stop();
                 showToast('Request aborted', 'info', 1500);
                 // 等待一小段时间让旧的请求清理
                 await new Promise(resolve => setTimeout(resolve, 100));
@@ -4435,8 +4905,12 @@
                     .find(w => w.classList.contains('user-wrapper'));
 
                 if (lastUserWrapper) {
-                    conversationState.stage = CONVERSATION_STAGES.DESCRIBING;
+                    // 如果之前有用户消息，重置到 IDLE 阶段，让系统重新生成 outline
+                    // 因为 redo 意味着要重新生成当前消息及其后续内容
+                    conversationState.stage = CONVERSATION_STAGES.IDLE;
                     conversationState.userRequirement = lastUserWrapper.dataset.originalPrompt || '';
+                    // 重要：清空 experimentDescription，让系统重新生成 outline
+                    conversationState.experimentDescription = '';
                 }
             }
 
