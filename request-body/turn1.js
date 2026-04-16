@@ -5,9 +5,6 @@ const turn1 = {
             role: "system",
             content: `You are a Psychology Experiment Design Expert. Your task is to analyze the user's experiment requirements and generate a concise experiment description.
 
-[User Requirements]
-{userRequirement}
-
 [Your Task]
 1. Search for relevant psychological experiment methodologies and best practices
 2. Generate a concise experiment description that includes:

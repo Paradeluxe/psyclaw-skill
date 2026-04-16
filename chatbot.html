@@ -841,6 +841,9 @@
             user-select: none;
             transition: background 0.25s ease, border-radius 0.3s ease;
             border-radius: 12px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
         }
 
         .message-chain-container:not(.collapsed) .message-chain-header {
@@ -901,7 +904,7 @@
         .message-chain-content:not(.collapsed) {
             padding: 20px;
             opacity: 1;
-            overflow: visible;
+            overflow-y: auto;
             max-height: none;
         }
 
@@ -949,6 +952,9 @@
             user-select: none;
             transition: background 0.25s ease, border-radius 0.3s ease;
             border-radius: 12px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
         }
 
         .normal-message-container:not(.collapsed) .normal-message-header {
@@ -990,10 +996,9 @@
         }
 
         .normal-message-content {
-            max-height: 100px;  /* 默认折叠状态显示约4-5行 */
-            overflow-y: auto;   /* 折叠时允许滚轮滚动 */
-            overflow-x: hidden;
-            padding: 16px 20px;  /* 折叠时保持上下内边距 */
+            max-height: calc(1.5em * 20);  /* 默认展开 20 行高度 */
+            overflow-y: auto;
+            padding: 20px;
             font-family: 'DM Sans', sans-serif;
             font-size: 14px;
             line-height: 1.5;
@@ -1004,14 +1009,14 @@
             transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
                         padding 0.35s cubic-bezier(0.4, 0, 0.2, 1),
                         opacity 0.3s ease;
-            opacity: 0.85;  /* 折叠时稍微透明 */
+            opacity: 1;
         }
 
-        .normal-message-content.expanded {
-            padding: 20px;
-            opacity: 1;
-            overflow: visible;
-            max-height: none;
+        .normal-message-content.collapsed {
+            padding: 0 20px;
+            opacity: 0;
+            overflow: hidden;
+            max-height: 0;  /* 收起时完全收起 */
         }
 
         .normal-message-content.editing {
@@ -3531,23 +3536,23 @@
 
             // 点击标题折叠/展开
             messageHeader.addEventListener('click', () => {
-                const isExpanded = messageContent.classList.toggle('expanded');
-                toggleIcon.classList.toggle('collapsed', !isExpanded);
-                messageContainer.classList.toggle('expanded', isExpanded);
+                const isCollapsed = messageContent.classList.toggle('collapsed');
+                toggleIcon.classList.toggle('collapsed', isCollapsed);
+                messageContainer.classList.toggle('collapsed', isCollapsed);
                 
                 // 保存当前滚动位置
                 const savedScrollTop = messageContent.scrollTop;
                 
                 // 动态设置 max-height 以实现平滑动画
-                if (isExpanded) {
-                    // 展开时，不限制高度，让内容完全显示
-                    messageContent.style.maxHeight = 'none';
-                } else {
-                    // 收起时，先设置到实际高度，然后触发动画到100px
+                if (isCollapsed) {
+                    // 收起时，先设置到实际高度，然后触发动画到 0
                     messageContent.style.maxHeight = messageContent.scrollHeight + 'px';
                     requestAnimationFrame(() => {
-                        messageContent.style.maxHeight = '100px';
+                        messageContent.style.maxHeight = '0';
                     });
+                } else {
+                    // 展开时，设置为 20 行高度
+                    messageContent.style.maxHeight = 'calc(1.5em * 20)';
                 }
                 
                 // 恢复滚动位置，防止文字横向压缩
@@ -3599,14 +3604,14 @@
                 messageContent,
                 msgDiv,
                 updateThink: (content) => {
-                    // 检查DOM元素是否仍然存在（可能被redo删除）
+                    // 检查 DOM 元素是否仍然存在（可能被 redo 删除）
                     if (!wrapper.isConnected) return;
                     // 只在用户没有主动滚动时才自动滚动到底部
                     const isAtBottom = messageContent.scrollHeight - messageContent.scrollTop - messageContent.clientHeight < 30;
                     messageContent.textContent = content;
-                    // 如果当前是展开状态，更新 max-height（无限制）
-                    if (messageContent.classList.contains('expanded')) {
-                        messageContent.style.maxHeight = 'none';
+                    // 如果当前不是收起状态，更新 max-height 为 20 行高度
+                    if (!messageContent.classList.contains('collapsed')) {
+                        messageContent.style.maxHeight = 'calc(1.5em * 20)';
                     }
                     if (isAtBottom) {
                         messageContent.scrollTop = messageContent.scrollHeight;
@@ -3661,18 +3666,8 @@
                     }
                     // 将最终内容放入消息容器
                     messageContent.textContent = displayContent;
-                    // 如果当前是展开状态，自动收起
-                    if (messageContent.classList.contains('expanded')) {
-                        // 收起消息框
-                        messageContent.classList.remove('expanded');
-                        messageContainer.classList.remove('expanded');
-                        toggleIcon.classList.add('collapsed');
-                        // 触发动画到收起高度
-                        messageContent.style.maxHeight = messageContent.scrollHeight + 'px';
-                        requestAnimationFrame(() => {
-                            messageContent.style.maxHeight = '100px';
-                        });
-                    }
+                    // 如果当前不是收起状态，保持展开（不需要自动收起）
+                    // 用户点击才会收起
 
                     // 如果需要显示操作按钮（flowchart消息），创建按钮栏
                     if (showActions) {
@@ -3754,15 +3749,7 @@
                     descContentDiv.textContent = description;
                     messageContent.appendChild(descContentDiv);
 
-                    // 自动展开显示内容
-                    messageContent.classList.add('expanded');
-                    wrapper.classList.add('expanded');
-                    messageContainer.classList.add('expanded');
-
-                    // 设置 max-height 以实现平滑动画（无限制）
-                    requestAnimationFrame(() => {
-                        messageContent.style.maxHeight = 'none';
-                    });
+                    // 默认已经是展开状态，不需要额外操作
 
                     // 用于存储 timeout IDs，以便可以取消
                     let timeoutId1 = null;
@@ -3780,12 +3767,12 @@
                         messageContent.offsetHeight;
 
                         // 添加收起动画
-                        messageContent.classList.remove('expanded');
-                        wrapper.classList.remove('expanded');
-                        messageContainer.classList.remove('expanded');
+                        messageContent.classList.add('collapsed');
+                        wrapper.classList.add('collapsed');
+                        messageContainer.classList.add('collapsed');
 
-                        // 设置 max-height 为 100px 来触发动画
-                        messageContent.style.maxHeight = '100px';
+                        // 设置 max-height 为 0 来触发动画
+                        messageContent.style.maxHeight = '0';
 
                         // 更新 toggle 图标 - 从 messageHeader 获取
                         const toggleIcon = messageHeader ? messageHeader.querySelector('#toggleIcon') : null;
