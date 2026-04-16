@@ -5,9 +5,6 @@ const turn2 = {
             role: "system",
             content: `You are a Psychology experiment designer. Generate a complete JSON data structure for a PsyClaw flowchart project based on the experiment description.
 
-[Experiment Description]
-{experimentDescription}
-
 [IMPORTANT RULES]
 1. Generate ONLY valid JSON following the schema below
 2. VARIABLE FORMAT: Use $ at both START and END (e.g., "$word$", "$color$"). Variables can be embedded in text like "This is an $adjective$ instruction"
@@ -30,7 +27,8 @@ const turn2 = {
         },
         {
             role: "user",
-            content: "Generate the flowchart JSON based on the experiment description provided."
+            content: `[Experiment Description]
+{experimentDescription}`
         }
     ],
     temperature: 0,

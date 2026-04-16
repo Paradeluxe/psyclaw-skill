@@ -2049,6 +2049,7 @@
     <script src="json2psyexp.js"></script>
     <script>
         console.log('Script starting');
+        const DEBUG = false;
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
         
@@ -5308,14 +5309,32 @@
             flowStartX = pointsData.startX;
             flowEndX = pointsData.endX;
             reassignSnapPoints();
+            
+            if (DEBUG) {
+                console.log('Generated points:', {
+                    displayCount,
+                    linePointsCount: linePoints.length,
+                    linePoints: linePoints.map(p => ({ label: p.label, x: p.x }))
+                });
+            }
 
-            // 从后向前遍历，以便删除loop时不会影响索引
+            // 从后向前遍历，以便删除 loop 时不会影响索引
             for (let i = connections.length - 1; i >= 0; i--) {
                 const labels = connectionLabels[i];
                 const newStartPoint = linePoints.find(p => p.label === labels.startLabel);
                 const newEndPoint = linePoints.find(p => p.label === labels.endLabel);
                 
-                // 检查loop的起点和终点是否都对应实际存在的routine
+                if (DEBUG) {
+                    console.log(`Processing connection ${i}:`, {
+                        loopName: labels.loopName,
+                        startLabel: labels.startLabel,
+                        endLabel: labels.endLabel,
+                        foundStart: newStartPoint ? newStartPoint.x : 'NOT FOUND',
+                        foundEnd: newEndPoint ? newEndPoint.x : 'NOT FOUND'
+                    });
+                }
+                
+                // 检查 loop 的起点和终点是否都对应实际存在的 routine
                 // loop使用连接点label（奇数）：label 2i+1 是 routine i 的左侧，也是 routine i-1 的右侧（i>0时）
                 function isLabelValid(label) {
                     const i = (parseInt(label) - 1) / 2;
@@ -5487,7 +5506,8 @@
                         return {
                             name: c.name || `Condition ${i + 1}`,
                             weight: c.weight !== undefined ? c.weight : 1,
-                            values: []
+                            values: Array.isArray(c.values) ? c.values : [],
+                            _valueKeys: c._valueKeys || []
                         };
                     }
                 });
@@ -6119,6 +6139,19 @@
                 // 更新界面
                 updatePoints();
                 updateRoutineCount();
+                
+                if (DEBUG) {
+                    console.log('After updatePoints:', {
+                        routineRects: routineRects.length,
+                        connections: connections.length,
+                        linePoints: linePoints.length,
+                        connections_data: connections.map(c => ({
+                            loopName: c.loopName,
+                            start: c.start,
+                            end: c.end
+                        }))
+                    });
+                }
                 
                 draw();
                 

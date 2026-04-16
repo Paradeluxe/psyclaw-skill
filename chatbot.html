@@ -7,6 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&family=Poppins:wght@400;500;600&family=Roboto:wght@400;500&family=JetBrains+Mono:wght@400;500&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -52,6 +53,33 @@
             --shadow-brand: rgba(44, 30, 116, 0.16) 0px 0px 15px;
             --shadow-brand-offset: rgba(44, 30, 116, 0.11) 6.5px 2px 17.5px;
             --shadow-elevated: rgba(36, 36, 36, 0.08) 0px 12px 16px -4px;
+        }
+
+        /* Scrollbar Styles - Light theme inspired by MiniMax design */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.15);
+            border-radius: 4px;
+            transition: background 0.2s ease;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 0, 0, 0.25);
+        }
+
+        /* Firefox scrollbar */
+        * {
+            scrollbar-width: thin;
+            scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
         }
 
         body {
@@ -508,14 +536,14 @@
         }
 
         .chat-message {
-            margin-bottom: 16px;
-            padding: 14px 18px;
-            border-radius: 10px;
+            margin-bottom: 4px;
+            padding: 12px 16px;
+            border-radius: 8px;
             max-width: 100%;
             word-wrap: break-word;
             font-family: 'DM Sans', sans-serif;
             font-size: 14px;
-            line-height: 1.6;
+            line-height: 1.5;
         }
 
         .chat-message.user {
@@ -813,13 +841,15 @@
         .message-chain-container {
             margin-bottom: 12px;
             border-radius: 12px;
-            overflow: visible;
+            overflow: hidden;
             background: #ffffff;
-            display: none;
             border: 1px solid #e5e7eb;
             box-shadow: rgba(0, 0, 0, 0.08) 0px 4px 6px;
             transition: box-shadow 0.3s ease, transform 0.3s ease;
             width: 100%;
+            max-height: 500px;
+            display: flex;
+            flex-direction: column;
         }
 
         .message-chain-container.has-content {
@@ -906,6 +936,8 @@
             opacity: 1;
             overflow-y: auto;
             max-height: none;
+            flex: 1;
+            min-height: 0;
         }
 
         .message-chain-content.editing {
@@ -924,13 +956,15 @@
         .normal-message-container {
             margin-bottom: 8px;
             border-radius: 12px;
-            overflow: visible;
+            overflow: hidden;
             background: #ffffff;
-            display: none;
             border: 1px solid #e5e7eb;
             box-shadow: rgba(0, 0, 0, 0.08) 0px 4px 6px;
             transition: box-shadow 0.3s ease, transform 0.3s ease;
             width: 100%;
+            max-height: 500px;
+            display: flex;
+            flex-direction: column;
         }
 
         .normal-message-container.has-content {
@@ -1010,6 +1044,8 @@
                         padding 0.35s cubic-bezier(0.4, 0, 0.2, 1),
                         opacity 0.3s ease;
             opacity: 1;
+            flex: 1;
+            min-height: 0;
         }
 
         .normal-message-content.collapsed {
@@ -1034,7 +1070,7 @@
 
 
         .message-wrapper {
-            margin-bottom: 16px;
+            margin-bottom: 8px;
         }
 
         .message-wrapper.user-wrapper {
@@ -1829,6 +1865,159 @@
             background: #f2f3f5;
             color: #45515e;
         }
+
+        /* Markdown 内容样式 */
+        .chat-message .markdown-body {
+            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--text-primary);
+        }
+
+        .chat-message .markdown-body p {
+            margin-bottom: 1em;
+        }
+
+        .chat-message .markdown-body p:last-child {
+            margin-bottom: 0;
+        }
+
+        .chat-message .markdown-body h1,
+        .chat-message .markdown-body h2,
+        .chat-message .markdown-body h3,
+        .chat-message .markdown-body h4,
+        .chat-message .markdown-body h5,
+        .chat-message .markdown-body h6 {
+            margin-top: 1.5em;
+            margin-bottom: 0.5em;
+            font-weight: 600;
+            line-height: 1.25;
+            color: var(--text-dark);
+        }
+
+        .chat-message .markdown-body h1 {
+            font-size: 1.5em;
+            border-bottom: 1px solid var(--border-gray);
+            padding-bottom: 0.3em;
+        }
+
+        .chat-message .markdown-body h2 {
+            font-size: 1.3em;
+            border-bottom: 1px solid var(--border-gray);
+            padding-bottom: 0.3em;
+        }
+
+        .chat-message .markdown-body h3 {
+            font-size: 1.1em;
+        }
+
+        .chat-message .markdown-body h4 {
+            font-size: 1em;
+        }
+
+        .chat-message .markdown-body ul,
+        .chat-message .markdown-body ol {
+            padding-left: 2em;
+            margin-bottom: 1em;
+        }
+
+        .chat-message .markdown-body li {
+            margin-bottom: 0.5em;
+        }
+
+        .chat-message .markdown-body li > ul,
+        .chat-message .markdown-body li > ol {
+            margin-top: 0.5em;
+            margin-bottom: 0;
+        }
+
+        .chat-message .markdown-body code {
+            font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+            font-size: 0.9em;
+            background: var(--bg-light);
+            padding: 0.2em 0.4em;
+            border-radius: 3px;
+            color: var(--text-charcoal);
+        }
+
+        .chat-message .markdown-body pre {
+            font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+            font-size: 0.9em;
+            background: #f6f8fa;
+            padding: 16px;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin-bottom: 1em;
+            border: 1px solid var(--border-gray);
+        }
+
+        .chat-message .markdown-body pre code {
+            background: transparent;
+            padding: 0;
+            color: var(--text-primary);
+        }
+
+        .chat-message .markdown-body blockquote {
+            border-left: 4px solid var(--brand-blue);
+            padding-left: 1em;
+            margin-left: 0;
+            margin-bottom: 1em;
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+
+        .chat-message .markdown-body table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-bottom: 1em;
+            display: block;
+            overflow-x: auto;
+        }
+
+        .chat-message .markdown-body th,
+        .chat-message .markdown-body td {
+            border: 1px solid var(--border-gray);
+            padding: 8px 12px;
+            text-align: left;
+        }
+
+        .chat-message .markdown-body th {
+            background: var(--bg-light);
+            font-weight: 600;
+        }
+
+        .chat-message .markdown-body tr:nth-child(even) {
+            background: var(--bg-light);
+        }
+
+        .chat-message .markdown-body hr {
+            border: none;
+            border-top: 1px solid var(--border-gray);
+            margin: 1.5em 0;
+        }
+
+        .chat-message .markdown-body a {
+            color: var(--brand-blue);
+            text-decoration: none;
+        }
+
+        .chat-message .markdown-body a:hover {
+            text-decoration: underline;
+        }
+
+        .chat-message .markdown-body strong {
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .chat-message .markdown-body em {
+            font-style: italic;
+        }
+
+        .chat-message .markdown-body img {
+            max-width: 100%;
+            height: auto;
+        }
     </style>
 </head>
 <body>
@@ -1984,6 +2173,16 @@
 
     <script>
         console.log('PsyClaw Chatbot starting');
+
+        // 配置 marked.js
+        if (typeof marked !== 'undefined') {
+            marked.setOptions({
+                breaks: true,
+                gfm: true,
+                headerIds: false,
+                mangle: false
+            });
+        }
 
         // 全局错误处理：过滤掉中止相关的错误
         window.addEventListener('error', function(event) {
@@ -3469,7 +3668,7 @@
             
             const msgDiv = document.createElement('div');
             msgDiv.className = `chat-message ${role}`;
-            msgDiv.textContent = content;
+            msgDiv.innerHTML = marked.parse(content);
             
             // 用户消息也使用 wrapper 并添加操作按钮
             if (role === 'user') {
@@ -3503,13 +3702,46 @@
             return msgDiv;
         }
 
+        function addProgressMessage(message) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'message-wrapper';
+            wrapper.style.cssText = 'display: flex; flex-direction: column; align-items: flex-start; width: 100%; margin-bottom: 16px;';
+            
+            const progressDiv = document.createElement('div');
+            progressDiv.className = 'chat-message';
+            progressDiv.style.cssText = `
+                color: #8e8e93;
+                width: 100% !important;
+                max-width: 100% !important;
+                margin-left: 0;
+                margin-right: auto;
+                font-family: 'DM Sans', sans-serif;
+                font-size: 14px;
+                line-height: 1.5;
+                font-weight: 400;
+                padding: 4px 0;
+                background: transparent;
+                border: none;
+            `;
+            progressDiv.textContent = message;
+            
+            wrapper.appendChild(progressDiv);
+            chatMessagesDiv.appendChild(wrapper);
+            chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
+            return progressDiv;
+        }
+
         function addAssistantMessageWithThink(initialThinkContent = '', title = 'Outlining') {
             const wrapper = document.createElement('div');
             wrapper.className = 'message-wrapper';
 
-            // 增加AI回复计数
+            // 增加 AI 回复计数
             assistantMessageCount++;
             const isFirstAssistantMessage = assistantMessageCount === 1;
+
+            // 根据标题选择图标
+            const iconSrc = title === 'Flowchart' ? 'icon/flowchart.svg' : 'icon/thinking.svg';
+            const iconAlt = title === 'Flowchart' ? 'Flowchart' : 'Thinking';
 
             // 创建普通消息折叠容器 - 初始就显示，但内容折叠
             const messageContainer = document.createElement('div');
@@ -3519,7 +3751,7 @@
             messageHeader.className = 'normal-message-header';
             messageHeader.innerHTML = `
                 <span class="normal-message-title">
-                    <img src="icon/thinking.svg" class="normal-message-icon" alt="Thinking">
+                    <img src="${iconSrc}" class="normal-message-icon" alt="${iconAlt}">
                     <span class="normal-message-text" id="normalMessageText">${title}</span>
                     <span class="loading-dots" id="loadingDots"><span></span><span></span><span></span></span>
                 </span>
@@ -3527,8 +3759,8 @@
             `;
 
             const messageContent = document.createElement('div');
-            messageContent.className = 'normal-message-content'; // 默认折叠，显示10px
-            messageContent.textContent = initialThinkContent; // 设置初始内容
+            messageContent.className = 'normal-message-content'; // 默认折叠，显示 10px
+            messageContent.innerHTML = marked.parse(initialThinkContent); // 设置初始内容
 
             const toggleIcon = messageHeader.querySelector('#toggleIcon');
             const loadingDots = messageHeader.querySelector('#loadingDots');
@@ -3569,28 +3801,8 @@
             msgDiv.className = 'chat-message assistant';
             msgDiv.style.display = 'none'; // 初始隐藏
 
-            // 创建消息操作按钮栏（第一个AI回复不显示）
-            const messageActions = document.createElement('div');
-            messageActions.className = 'message-actions';
-            if (isFirstAssistantMessage) {
-                messageActions.style.display = 'none'; // 第一个AI回复隐藏按钮
-            }
-            messageActions.innerHTML = `
-                <button class="message-action-btn" data-tooltip="Copy" onclick="copyMessage(this)">
-                    <svg viewBox="0 0 24 24">
-                        <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
-                    </svg>
-                </button>
-                <button class="message-action-btn" data-tooltip="Redo" onclick="redoAssistantMessage(this)">
-                    <svg viewBox="0 0 24 24">
-                        <path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/>
-                    </svg>
-                </button>
-            `;
-
             wrapper.appendChild(messageContainer);
             wrapper.appendChild(msgDiv);
-            wrapper.appendChild(messageActions);
             
             const assistantWrapper = document.createElement('div');
             assistantWrapper.className = 'assistant-message-wrapper';
@@ -3606,47 +3818,58 @@
                 updateThink: (content) => {
                     // 检查 DOM 元素是否仍然存在（可能被 redo 删除）
                     if (!wrapper.isConnected) return;
-                    // 只在用户没有主动滚动时才自动滚动到底部
-                    const isAtBottom = messageContent.scrollHeight - messageContent.scrollTop - messageContent.clientHeight < 30;
-                    messageContent.textContent = content;
+                    // 先在更新前检查是否在底部（使用更严格的阈值）
+                    const isAtBottom = messageContent.scrollHeight - messageContent.scrollTop - messageContent.clientHeight < 10;
+                    messageContent.innerHTML = marked.parse(content);
                     // 如果当前不是收起状态，更新 max-height 为 20 行高度
                     if (!messageContent.classList.contains('collapsed')) {
                         messageContent.style.maxHeight = 'calc(1.5em * 20)';
                     }
-                    if (isAtBottom) {
-                        messageContent.scrollTop = messageContent.scrollHeight;
-                    }
+                    // 等待 DOM 更新后滚动
+                    requestAnimationFrame(() => {
+                        if (isAtBottom) {
+                            messageContent.scrollTop = messageContent.scrollHeight;
+                            // 只有当消息内容也在底部时，才滚动外层容器（使用更宽松的阈值）
+                            const isChatAtBottom = chatMessagesDiv.scrollHeight - chatMessagesDiv.scrollTop - chatMessagesDiv.clientHeight < 100;
+                            if (isChatAtBottom) {
+                                chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
+                            }
+                        }
+                    });
                 },
                 updateMessage: (content, isStreaming = true) => {
-                    // 检查DOM元素是否仍然存在（可能被redo删除）
+                    // 检查 DOM 元素是否仍然存在（可能被 redo 删除）
                     if (!wrapper.isConnected) return;
                     // 有内容时才显示
                     if (content && content.trim()) {
-                        // 流式输出开始时添加streaming类
+                        // 流式输出开始时添加 streaming 类
                         if (isStreaming) {
                             wrapper.classList.add('streaming');
                         }
-                        // 只在用户没有主动滚动时才自动滚动到底部
-                        const isAtBottom = messageContent.scrollHeight - messageContent.scrollTop - messageContent.clientHeight < 30;
+                        // 先在更新前检查是否在底部（使用更严格的阈值）
+                        const isAtBottom = messageContent.scrollHeight - messageContent.scrollTop - messageContent.clientHeight < 10;
                         // 将内容放入消息容器中，而不是直接显示在消息中
-                        messageContent.textContent = content;
-                        if (isAtBottom) {
-                            messageContent.scrollTop = messageContent.scrollHeight;
-                        }
-                        // 只在用户已经在底部时才自动滚动外层容器
-                        const isChatAtBottom = chatMessagesDiv.scrollHeight - chatMessagesDiv.scrollTop - chatMessagesDiv.clientHeight < 50;
-                        if (isChatAtBottom) {
-                            chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
-                        }
+                        messageContent.innerHTML = marked.parse(content);
+                        // 等待 DOM 更新后滚动
+                        requestAnimationFrame(() => {
+                            if (isAtBottom) {
+                                messageContent.scrollTop = messageContent.scrollHeight;
+                                // 只有当消息内容也在底部时，才滚动外层容器（使用更宽松的阈值）
+                                const isChatAtBottom = chatMessagesDiv.scrollHeight - chatMessagesDiv.scrollTop - chatMessagesDiv.clientHeight < 100;
+                                if (isChatAtBottom) {
+                                    chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
+                                }
+                            }
+                        });
                     }
                 },
                 finalizeMessage: (content, showActions = false) => {
-                    // 检查DOM元素是否仍然存在（可能被redo删除）
+                    // 检查 DOM 元素是否仍然存在（可能被 redo 删除）
                     if (!wrapper.isConnected) {
                         console.log('Message wrapper no longer in DOM, skipping finalize');
                         return;
                     }
-                    // 流式输出结束，移除streaming类
+                    // 流式输出结束，移除 streaming 类
                     wrapper.classList.remove('streaming');
                     // 更新文字为已完成
                     if (normalMessageText) {
@@ -3656,16 +3879,23 @@
                     if (loadingDots) {
                         loadingDots.style.display = 'none';
                     }
-                    // 最终显示时尝试格式化JSON
+                    // 最终显示时尝试格式化 JSON
                     let displayContent = content;
                     try {
                         const parsed = JSON.parse(content);
                         displayContent = JSON.stringify(parsed, null, 2);
                     } catch (e) {
-                        // 不是有效的JSON，按原样显示
+                        // 不是有效的 JSON，按原样显示
                     }
                     // 将最终内容放入消息容器
-                    messageContent.textContent = displayContent;
+                    messageContent.innerHTML = marked.parse(displayContent);
+                    // 等待 DOM 更新后检查并滚动
+                    requestAnimationFrame(() => {
+                        const isMessageAtBottom = messageContent.scrollHeight - messageContent.scrollTop - messageContent.clientHeight < 30;
+                        if (isMessageAtBottom) {
+                            messageContent.scrollTop = messageContent.scrollHeight;
+                        }
+                    });
                     // 如果当前不是收起状态，保持展开（不需要自动收起）
                     // 用户点击才会收起
 
@@ -3745,11 +3975,16 @@
                     // 创建描述内容区域
                     const descContentDiv = document.createElement('div');
                     descContentDiv.className = 'description-content-text';
-                    descContentDiv.style.cssText = 'width: 100%; white-space: pre-wrap; line-height: 1.6; font-weight: 400;';
-                    descContentDiv.textContent = description;
+                    descContentDiv.style.cssText = 'width: 100%; line-height: 1.6; font-weight: 400;';
+                    descContentDiv.innerHTML = marked.parse(description);
                     messageContent.appendChild(descContentDiv);
 
                     // 默认已经是展开状态，不需要额外操作
+                    
+                    // 等待 DOM 渲染完成后滚动到底部，确保用户看到完整的 outline
+                    requestAnimationFrame(() => {
+                        chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
+                    });
 
                     // 用于存储 timeout IDs，以便可以取消
                     let timeoutId1 = null;
@@ -3783,15 +4018,11 @@
                         // 等待收起动画完成后，再生成 flowchart
                         timeoutId2 = setTimeout(() => {
                             if (isCancelled) return;
+                            // Add progress message before generating flowchart
+                            addProgressMessage('Outline completed. Now generating the flowchart based on the experiment description...');
                             generateFlowchartJSON(settings, schema);
                         }, 400); // 等待 CSS 动画完成 (0.4s)
                     }, 1500); // 给用户 1.5 秒时间查看生成的 outline
-
-                    // 只在用户已经在底部时才自动滚动
-                    const isAtBottom = chatMessagesDiv.scrollHeight - chatMessagesDiv.scrollTop - chatMessagesDiv.clientHeight < 50;
-                    if (isAtBottom) {
-                        chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
-                    }
 
                     // 返回取消函数
                     return () => {
@@ -3806,7 +4037,7 @@
 
 
         function updateMessage(msgDiv, content) {
-            msgDiv.textContent = content;
+            msgDiv.innerHTML = marked.parse(content);
             chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
         }
 
@@ -3935,6 +4166,10 @@
             sendBtn.style.display = 'none';
             stopBtn.style.display = 'flex';
 
+            // 显示进度提示：使用的模型和开始运行
+            const modelName = settings.model_name || settings.model || 'AI Model';
+            addProgressMessage(`Starting experiment design with ${modelName}...`);
+
             // 使用标准化的 AbortController 管理器
             const signal = abortManager.start();
 
@@ -4018,11 +4253,6 @@
                                         if (delta.reasoning_content) {
                                             thinkContent += delta.reasoning_content;
                                             assistantMsg.updateThink(thinkContent);
-                                            // Only auto-scroll if user is near bottom
-                                            const isAtBottom = chatMessagesDiv.scrollHeight - chatMessagesDiv.scrollTop - chatMessagesDiv.clientHeight < 100;
-                                            if (isAtBottom) {
-                                                chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
-                                            }
                                         }
 
                                         // Handle content
@@ -4048,11 +4278,6 @@
                                                         }
                                                         const messageWithoutThink = fullContent.replace(/<think>[\s\S]*?<\/think>/, '').trim();
                                                         assistantMsg.updateMessage(messageWithoutThink);
-                                                        // Only auto-scroll if user is near bottom
-                                                        const isAtBottom = chatMessagesDiv.scrollHeight - chatMessagesDiv.scrollTop - chatMessagesDiv.clientHeight < 100;
-                                                        if (isAtBottom) {
-                                                            chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
-                                                        }
                                                     }
                                                 } else if (hasOpenThink && !hasCloseThink) {
                                                     const thinkParts = fullContent.split('<think>');
@@ -4061,20 +4286,10 @@
                                                         if (currentThinkContent && currentThinkContent !== thinkContent) {
                                                             thinkContent = currentThinkContent;
                                                             assistantMsg.updateThink(thinkContent);
-                                                            // Only auto-scroll if user is near bottom
-                                                            const isAtBottom = chatMessagesDiv.scrollHeight - chatMessagesDiv.scrollTop - chatMessagesDiv.clientHeight < 100;
-                                                            if (isAtBottom) {
-                                                                chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
-                                                            }
                                                         }
                                                     }
                                                 } else if (!hasOpenThink) {
                                                     assistantMsg.updateMessage(fullContent);
-                                                    // Only auto-scroll if user is near bottom
-                                                    const isAtBottom = chatMessagesDiv.scrollHeight - chatMessagesDiv.scrollTop - chatMessagesDiv.clientHeight < 100;
-                                                    if (isAtBottom) {
-                                                        chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
-                                                    }
                                                 }
                                             }
                                         }
@@ -4268,11 +4483,6 @@
                                                         }
                                                         const messageWithoutThink = fullContent.replace(/<think>[\s\S]*?<\/think>/, '').trim();
                                                         assistantMsg.updateMessage(messageWithoutThink);
-                                                        // Only auto-scroll if user is near bottom
-                                                        const isAtBottom = chatMessagesDiv.scrollHeight - chatMessagesDiv.scrollTop - chatMessagesDiv.clientHeight < 100;
-                                                        if (isAtBottom) {
-                                                            chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
-                                                        }
                                                     }
                                                 } else if (hasOpenThink && !hasCloseThink) {
                                                     const thinkParts = fullContent.split('<think>');
@@ -4281,20 +4491,10 @@
                                                         if (currentThinkContent && currentThinkContent !== thinkContent) {
                                                             thinkContent = currentThinkContent;
                                                             assistantMsg.updateThink(thinkContent);
-                                                            // Only auto-scroll if user is near bottom
-                                                            const isAtBottom = chatMessagesDiv.scrollHeight - chatMessagesDiv.scrollTop - chatMessagesDiv.clientHeight < 100;
-                                                            if (isAtBottom) {
-                                                                chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
-                                                            }
                                                         }
                                                     }
                                                 } else if (!hasOpenThink) {
                                                     assistantMsg.updateMessage(fullContent);
-                                                    // Only auto-scroll if user is near bottom
-                                                    const isAtBottom = chatMessagesDiv.scrollHeight - chatMessagesDiv.scrollTop - chatMessagesDiv.clientHeight < 100;
-                                                    if (isAtBottom) {
-                                                        chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
-                                                    }
                                                 }
                                             }
                                         }
@@ -4385,13 +4585,48 @@
                 }, '*');
 
                 // Finalize message with actions (Regenerate button)
-                assistantMsg.finalizeMessage(cleanContent, true);
+                assistantMsg.finalizeMessage(cleanContent);
+
+                // 等待一小段时间让用户看到 flowchart，然后自动收起
+                setTimeout(() => {
+                    // 收起 flowchart 消息
+                    const messageContent = assistantMsg.messageContent;
+                    const messageContainer = assistantMsg.messageContainer;
+                    const wrapper = assistantMsg.wrapper;
+                    const toggleIcon = wrapper.querySelector('#toggleIcon');
+                    
+                    if (messageContent && messageContainer && wrapper) {
+                        // 先设置 max-height 为当前实际高度，以便触发动画
+                        messageContent.style.maxHeight = messageContent.scrollHeight + 'px';
+                        
+                        // 强制重绘以确保过渡生效
+                        messageContent.offsetHeight;
+                        
+                        // 添加收起动画
+                        messageContent.classList.add('collapsed');
+                        wrapper.classList.add('collapsed');
+                        messageContainer.classList.add('collapsed');
+                        
+                        // 设置 max-height 为 0 来触发动画
+                        messageContent.style.maxHeight = '0';
+                        
+                        // 更新 toggle 图标
+                        if (toggleIcon) {
+                            toggleIcon.classList.add('collapsed');
+                        }
+                        
+                        // 等待收起动画完成后，显示进度消息
+                        setTimeout(() => {
+                            addProgressMessage('Flowchart generated successfully. You can now review and edit the experiment structure.');
+                        }, 400); // 等待 CSS 动画完成 (0.4s)
+                    }
+                }, 2000); // 给用户 2 秒时间查看生成的 flowchart
 
                 // Reset conversation state
                 conversationState.stage = CONVERSATION_STAGES.IDLE;
                 conversationState.userRequirement = '';
                 conversationState.experimentDescription = '';
-                assistantMessageCount = 0; // 重置AI回复计数
+                assistantMessageCount = 0; // 重置 AI 回复计数
 
             } catch (e) {
                 if (isAborted ||

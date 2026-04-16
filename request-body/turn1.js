@@ -16,14 +16,12 @@ const turn1 = {
    - Response collection methods
    - Any loops, conditions, or branching logic
    - Timing parameters
-3. A mostly common experiment design should include: (1) Instruction for the entire experiment; (2) Practice Phase (under a practice loop); (3) Instruction for Main Experiment; (4) Main Experiment (under a main experiment loop); (5) Ending.`
+3. A mostly common experiment design should include: (1) Instruction for the entire experiment; (2) Practice Loop; (3) Instruction for Main Experiment; (4) Main Experiment Loop; (5) Ending.`
         },
         {
             role: "user",
             content: `[User Requirements]
-{userRequirement}
-
-Please generate a comprehensive experiment description based on my requirements above.`
+{userRequirement}`
         }
     ],
     temperature: 0,
