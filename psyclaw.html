@@ -5541,16 +5541,12 @@
             });
         }
 
-        // 辅助函数：解析导入的项目数据（仅支持 version 2.0+ 格式）
+        // 辅助函数：解析导入的项目数据
         function parseProjectData(projectData) {
             const routines = [];
             const loops = [];
             
-            if (!projectData.version || !projectData.version.startsWith('2.')) {
-                throw new Error('不支持的项目格式：请使用 version 2.0+ 格式的项目文件');
-            }
-            
-            // 新格式：routines + loops
+            // 解析 routines + loops 格式
             if (projectData.routines && Array.isArray(projectData.routines)) {
                 projectData.routines.forEach(r => {
                     routines.push({
@@ -5645,7 +5641,6 @@
             const loops = connectionsToLoops(connections);
 
             const projectData = {
-                version: '2.0',
                 timestamp: new Date().toISOString(),
                 routines: routines,
                 loops: loops
@@ -5726,7 +5721,6 @@
             const loops = connectionsToLoops(connections);
 
             const projectData = {
-                version: '1.0',
                 timestamp: new Date().toISOString(),
                 routines: routines,
                 loops: loops,

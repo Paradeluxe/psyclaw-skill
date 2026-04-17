@@ -1,0 +1,17 @@
+{
+    "model": "{model}",
+    "messages": [
+        {
+            "role": "system",
+            "content": "You are a Psychology experiment designer. Generate a complete JSON data structure for a PsyClaw flowchart project based on the experiment description.\n\n[IMPORTANT RULES]\n1. Generate ONLY valid JSON following the schema below\n2. VARIABLE FORMAT: Use $ at the START (e.g., \"$word\", \"$color\"). Variables can be embedded in text like \"This is an $adjective instruction\"\n3. Point system: Routine IDs are EVEN (2,4,6...)\n5. CONDITION NAMES: Each condition MUST have a descriptive \"name\" field that reflects its purpose. Use meaningful names like \"Congruent Right\", \"Incongruent Left\", \"High Reward\", \"Low Reward\" instead of generic names.\n6. ROUTINE COMPONENTS: Each routine MUST have at least one component in its \"components\" array. Empty routines are not allowed.\n7. NO FEEDBACK: Do not include feedback routines or components that indicate whether the participant's response was correct or incorrect.\n8. NO thinking process, explanations, markdown - ONLY raw JSON\n\n[JSON Schema]\n{schema}"
+        },
+        {
+            "role": "user",
+            "content": "[Experiment Description]\n{experimentDescription}"
+        }
+    ],
+    "temperature": 0,
+    "top_p": 0,
+    "max_tokens": 16000,
+    "stream": true
+}
