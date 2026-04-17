@@ -97,8 +97,8 @@
             height: 100%;
             display: flex;
             flex-direction: column;
-            padding: 10px;
-            gap: 12px;
+            padding: 8px;
+            gap: 10px;
         }
 
         .chatbot-header {
@@ -549,7 +549,7 @@
         .chat-message.user {
             background: var(--text-charcoal);
             color: var(--bg-white);
-            margin-left: auto;
+            margin-left: 5px;
             text-align: right;
             width: fit-content;
             max-width: 85%;
@@ -675,9 +675,9 @@
         .message-action-btn::after {
             content: attr(data-tooltip);
             position: absolute;
-            bottom: 100%;
+            top: 100%;
             left: 50%;
-            transform: translateX(-50%) translateY(-6px);
+            transform: translateX(-50%);
             padding: 4px 8px;
             background: rgba(0, 0, 0, 0.8);
             color: white;
@@ -686,7 +686,6 @@
             white-space: nowrap;
             opacity: 0;
             visibility: hidden;
-            transition: all 0.2s ease;
             pointer-events: none;
             z-index: 1000;
         }
@@ -694,12 +693,11 @@
         .message-action-btn:hover::after {
             opacity: 1;
             visibility: visible;
-            transform: translateX(-50%) translateY(-4px);
         }
 
-        /* 用户消息操作栏靠右 */
+        /* 用户消息操作栏靠左 */
         .user-wrapper .message-actions {
-            justify-content: flex-end;
+            justify-content: flex-start;
         }
 
         /* 内联操作按钮栏样式 */
@@ -1032,7 +1030,7 @@
         .normal-message-content {
             max-height: calc(1.5em * 20);  /* 默认展开 20 行高度 */
             overflow-y: auto;
-            padding: 20px;
+            padding: 12px;
             font-family: 'DM Sans', sans-serif;
             font-size: 14px;
             line-height: 1.5;
@@ -1040,6 +1038,7 @@
             background: transparent;
             white-space: pre-wrap;
             word-wrap: break-word;
+            list-style-position: inside;
             transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
                         padding 0.35s cubic-bezier(0.4, 0, 0.2, 1),
                         opacity 0.3s ease;
@@ -1049,7 +1048,7 @@
         }
 
         .normal-message-content.collapsed {
-            padding: 0 20px;
+            padding: 0 12px;
             opacity: 0;
             overflow: hidden;
             max-height: 0;  /* 收起时完全收起 */
@@ -1075,8 +1074,19 @@
 
         .message-wrapper.user-wrapper {
             display: flex;
-            flex-direction: column;
-            align-items: flex-end;
+            flex-direction: row;
+            align-items: flex-start;
+            justify-content: flex-end;
+            gap: 4px;
+        }
+
+        .message-wrapper.user-wrapper .chat-message {
+            order: 1;
+        }
+
+        .message-wrapper.user-wrapper .message-actions {
+            order: 0;
+            margin-top: 8px;
         }
 
         .assistant-message-wrapper {
@@ -1118,7 +1128,7 @@
             animation: slideDown 0.3s ease;
             box-shadow: 0 2px 8px rgba(0,0,0,0.08);
             display: none;
-            justify-content: center;
+            justify-content: flex-start;
         }
 
         @keyframes slideDown {
@@ -1160,7 +1170,7 @@
         .chat-input-row {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 0;
             background: transparent;
             padding: 0;
         }
@@ -1177,6 +1187,7 @@
             width: 100%;
             padding: 0 4px;
             box-sizing: border-box;
+            margin-bottom: 12px;
         }
 
         .file-card-container {
@@ -3740,8 +3751,17 @@
             const isFirstAssistantMessage = assistantMessageCount === 1;
 
             // 根据标题选择图标
-            const iconSrc = title === 'Flowchart' ? 'icon/flowchart.svg' : 'icon/thinking.svg';
-            const iconAlt = title === 'Flowchart' ? 'Flowchart' : 'Thinking';
+            let iconSrc, iconAlt;
+            if (title === 'Outlining') {
+                iconSrc = 'icon/list.svg';
+                iconAlt = 'Outline';
+            } else if (title === 'Flowchart') {
+                iconSrc = 'icon/flowchart.svg';
+                iconAlt = 'Flowchart';
+            } else {
+                iconSrc = 'icon/thinking.svg';
+                iconAlt = 'Thinking';
+            }
 
             // 创建普通消息折叠容器 - 初始就显示，但内容折叠
             const messageContainer = document.createElement('div');

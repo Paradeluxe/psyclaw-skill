@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
@@ -645,7 +645,6 @@
         }
 
         .preview-modal-content {
-            flex: 1;
             overflow: auto;
             display: flex;
             flex-direction: column;
@@ -1403,7 +1402,7 @@
             left: 0;
             top: 0;
             bottom: 0;
-            width: 12px;
+            width: 8px;
             cursor: ew-resize;
             z-index: 1002;
             display: flex;
@@ -1415,9 +1414,9 @@
         .chatbot-resizer::after {
             content: '';
             width: 4px;
-            height: 60px;
-            background: var(--border-gray);
-            border-radius: 2px;
+            height: 100%;
+            background: transparent;
+            /* border-radius: 2px; */
             transition: background 0.2s;
         }
 
@@ -4972,12 +4971,12 @@
                     
                     Object.values(component).forEach(value => {
                         if (typeof value === 'string') {
-                            // 匹配 $variableName$ 格式（变量被$包裹）
-                            const matches = value.match(/\$([a-zA-Z_][a-zA-Z0-9_]*)\$/g);
+                            // 匹配 $variableName 格式（变量以$开头）
+                            const matches = value.match(/\$([a-zA-Z_][a-zA-Z0-9_]*)(?![a-zA-Z0-9_])/g);
                             if (matches) {
                                 matches.forEach(match => {
-                                    // 提取变量名（去掉首尾$）
-                                    const varName = match.replace(/^\$/, '').replace(/\$$/, '');
+                                    // 提取变量名（去掉开头的$）
+                                    const varName = match.replace(/^\$/, '');
                                     if (varName) variables.add(varName);
                                 });
                             }
@@ -4998,7 +4997,7 @@
                     return parsed.filter(c => c._meta !== true).map((c, i) => {
                         if (typeof c.values === 'object' && c.values !== null && !Array.isArray(c.values)) {
                             const origKeys = Object.keys(c.values);
-                            const valueKeys = origKeys.map(k => k.replace(/^\$/, '').replace(/\$$/, ''));
+                            const valueKeys = origKeys.map(k => k.replace(/^\$/, ''));
                             const values = origKeys.flatMap(k => Array.isArray(c.values[k]) ? c.values[k] : [c.values[k]]);
                             return {
                                 name: c.name || `Condition ${i + 1}`,
@@ -5448,7 +5447,9 @@
                 // 根据 startPoint 和 endPoint 计算包含的 routine 索引
                 // startPoint = routineIdx * 2 + 1，所以 routineIdx = (startPoint - 1) / 2
                 const startRoutineIdx = Math.floor((startPoint - 1) / 2);
-                const endRoutineIdx = Math.floor((endPoint - 1) / 2);
+                // endPoint 连接到 routine 的右侧，表示 loop 在该 routine 结束
+                // 根据 loop 结束点定位逻辑：endRoutineIndex = Math.floor((endPoint - 1) / 2) - 1
+                const endRoutineIdx = Math.floor((endPoint - 1) / 2) - 1;
                 
                 // 构建 list：包含该 loop 中的所有 routines
                 const list = [];
@@ -5494,7 +5495,7 @@
                 const converted = parsed.map((c, i) => {
                     if (typeof c.values === 'object' && c.values !== null && !Array.isArray(c.values)) {
                         const origKeys = Object.keys(c.values);
-                        const valueKeys = origKeys.map(k => k.replace(/^\$/, '').replace(/\$$/, ''));
+                        const valueKeys = origKeys.map(k => k.replace(/^\$/, ''));
                         const values = origKeys.flatMap(k => Array.isArray(c.values[k]) ? c.values[k] : [c.values[k]]);
                         return {
                             name: c.name || `Condition ${i + 1}`,
@@ -5540,108 +5541,69 @@
             });
         }
 
-        // 辅助函数：解析导入的项目数据，支持新旧两种格式
+        // 辅助函数：解析导入的项目数据（仅支持 version 2.0+ 格式）
         function parseProjectData(projectData) {
             const routines = [];
             const loops = [];
             
-            // 检查版本：新格式（version 2.0+）或旧格式
-            if (projectData.version && projectData.version.startsWith('2.')) {
-                // 新格式：routines + loops
-                if (projectData.routines && Array.isArray(projectData.routines)) {
-                    projectData.routines.forEach(r => {
-                        routines.push({
-                            id: r.id,
-                            name: r.name,
-                            x: r.x,
-                            y: r.y,
-                            width: r.width || 200,
-                            height: r.height,
-                            duration: r.duration,
-                            avtpComponents: r.avtpComponents || [],
-                            borderRadius: 10,
-                            isDragging: false,
-                            offsetX: 0,
-                            offsetY: 0,
-                            keys: r.keys || 'Space, F, J'
-                        });
+            if (!projectData.version || !projectData.version.startsWith('2.')) {
+                throw new Error('不支持的项目格式：请使用 version 2.0+ 格式的项目文件');
+            }
+            
+            // 新格式：routines + loops
+            if (projectData.routines && Array.isArray(projectData.routines)) {
+                projectData.routines.forEach(r => {
+                    routines.push({
+                        id: r.id,
+                        name: r.name,
+                        x: r.x,
+                        y: r.y,
+                        width: r.width || 200,
+                        height: r.height,
+                        duration: r.duration,
+                        avtpComponents: r.avtpComponents || [],
+                        borderRadius: 10,
+                        isDragging: false,
+                        offsetX: 0,
+                        offsetY: 0,
+                        keys: r.keys || 'Space, F, J'
                     });
-                }
-                if (projectData.loops && Array.isArray(projectData.loops)) {
-                    projectData.loops.forEach(l => {
-                        let startPoint = l.startPoint;
-                        let endPoint = l.endPoint;
+                });
+            }
+            if (projectData.loops && Array.isArray(projectData.loops)) {
+                projectData.loops.forEach(l => {
+                    let startPoint = l.startPoint;
+                    let endPoint = l.endPoint;
+                    
+                    // 新格式：从 list 计算 startPoint 和 endPoint
+                    if (l.list && Array.isArray(l.list) && l.list.length > 0) {
+                        const routinePoints = l.list
+                            .filter(item => item.Point !== undefined)
+                            .map(item => item.Point)
+                            .sort((a, b) => a - b);
                         
-                        // 新格式：从 list 计算 startPoint 和 endPoint
-                        if (l.list && Array.isArray(l.list) && l.list.length > 0) {
-                            const routinePoints = l.list
-                                .filter(item => item.Point !== undefined)
-                                .map(item => item.Point)
-                                .sort((a, b) => a - b);
-                            
-                            if (routinePoints.length > 0) {
-                                const firstPoint = routinePoints[0];
-                                const lastPoint = routinePoints[routinePoints.length - 1];
-                                // startPoint = first routine's Point - 1
-                                // endPoint = last routine's Point + 1
-                                startPoint = firstPoint - 1;
-                                endPoint = lastPoint + 1;
-                            }
+                        if (routinePoints.length > 0) {
+                            const firstPoint = routinePoints[0];
+                            const lastPoint = routinePoints[routinePoints.length - 1];
+                            // startPoint = first routine's Point - 1
+                            // endPoint = last routine's Point + 1
+                            startPoint = firstPoint - 1;
+                            endPoint = lastPoint + 1;
                         }
-                        
-                        loops.push({
-                            id: l.id,
-                            name: l.name,
-                            startPoint: startPoint,
-                            endPoint: endPoint,
-                            nRounds: l.nRounds || 1,
-                            type: l.type || 'sequential',
-                            conditions: l.conditions || '',
-                            conditionsFile: l.conditionsFile || '',
-                            isTrials: l.isTrials !== false
-                        });
+                    }
+                    
+                    loops.push({
+                        id: l.id,
+                        name: l.name,
+                        startPoint: startPoint,
+                        endPoint: endPoint,
+                        nRounds: l.nRounds || 1,
+                        type: l.type || 'sequential',
+                        conditions: l.conditions || '',
+                        conditionsFile: l.conditionsFile || '',
+                        isTrials: l.isTrials !== false
                     });
-                }
-            } else {
-                // 旧格式：routineRects + connections
-                if (projectData.routineRects && Array.isArray(projectData.routineRects)) {
-                    routines.push(...projectData.routineRects);
-                }
-                if (projectData.connections && Array.isArray(projectData.connections)) {
-                    // 转换旧格式的 connections 为新格式的 loops
-                    projectData.connections.forEach((conn, index) => {
-                        if (typeof conn.from === 'number' && typeof conn.to === 'number') {
-                            // 旧简单格式：from/to 是点编号
-                            // from 是奇数点（loop 起点），to 是奇数点（loop 终点）
-                            loops.push({
-                                id: index,
-                                name: conn.loopName || `loop_${index}`,
-                                startPoint: conn.from,
-                                endPoint: conn.to,
-                                nRounds: conn.loopReps || 1,
-                                type: conn.loopType || 'sequential',
-                                conditions: conn.loopConditions || '',
-                                conditionsFile: conn.loopConditionsFile || '',
-                                isTrials: conn.loopIsTrials !== false
-                            });
-                        } else if (conn.start && conn.end) {
-                            // 旧详细格式：有 start/end 点
-                            const startPoint = parseInt(conn.start.label);
-                            const endPoint = parseInt(conn.end.label);
-                            loops.push({
-                                id: index,
-                                name: conn.loopName || `loop_${index}`,
-                                startPoint: startPoint,
-                                endPoint: endPoint,
-                                nRounds: conn.loopReps || 1,
-                                type: conn.loopType || 'sequential',
-                                conditions: conn.loopConditions || '',
-                                conditionsFile: conn.loopConditionsFile || '',
-                                isTrials: conn.loopIsTrials !== false
-                            });
-                        }
-                    });
-                }
+                });
             }
 
             return { routines, loops };
@@ -5748,11 +5710,26 @@
                 saveLoopFormChanges();
             }
 
+            // 构建 routines 数据
+            const routines = routineRects.map(rect => ({
+                id: rect.id,
+                name: rect.name,
+                x: rect.x,
+                y: rect.y,
+                width: rect.width,
+                height: rect.height,
+                duration: rect.duration,
+                avtpComponents: rect.avtpComponents || []
+            }));
+
+            // 将 connections 转换为 loops
+            const loops = connectionsToLoops(connections);
+
             const projectData = {
                 version: '1.0',
                 timestamp: new Date().toISOString(),
-                routineRects: routineRects,
-                connections: connections,
+                routines: routines,
+                loops: loops,
                 currentRoutineCount: currentRoutineCount,
                 routineIdCounter: routineIdCounter,
                 loopIdCounter: loopIdCounter

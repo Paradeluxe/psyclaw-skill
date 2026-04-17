@@ -235,8 +235,11 @@ function convertToPsyExpXML(projectData) {
 function collectRandomPatternsFromRoutine(routine) {
     const patterns = [];
     
-    if (routine.components && Array.isArray(routine.components)) {
-        routine.components.forEach(component => {
+    // 支持 components 和 avtpComponents 两种格式
+    const components = routine.components || routine.avtpComponents || [];
+    
+    if (Array.isArray(components)) {
+        components.forEach(component => {
             collectRandomPatternsFromComponent(component, patterns);
         });
     }
@@ -389,9 +392,10 @@ function generateRoutine(routine, index, allRandomPatterns) {
         xml += generateRoutineRandomCodeComponent(routinePatterns, index);
     }
     
-    // 处理 components 数组
-    if (routine.components && Array.isArray(routine.components)) {
-        for (const component of routine.components) {
+    // 处理 components 数组（支持 components 和 avtpComponents 两种格式）
+    const components = routine.components || routine.avtpComponents || [];
+    if (Array.isArray(components)) {
+        for (const component of components) {
             if (component && component.enabled !== false) {
                 if (component.type === 'audio') {
                     xml += generateAudioComponentFromSchema(component, routineName);
@@ -655,7 +659,7 @@ function generateKeyboardComponentFromSchema(component, routineName) {
  */
 function detectVariablesFromRoutines(routines, startIndex, endIndex) {
     const variables = new Set();
-    const dollarPattern = /\$([^$]+)\$/g;
+    const dollarPattern = /\$([a-zA-Z_][a-zA-Z0-9_]*)(?![a-zA-Z0-9_])/g;
 
     for (let i = startIndex; i <= endIndex && i < routines.length; i++) {
         const routine = routines[i];
@@ -691,28 +695,29 @@ function generateFlow(routines, loops) {
         
         // 新格式：从 list 计算 startPoint 和 endPoint
         // startPoint = first routine's Point - 1, endPoint = last routine's Point + 1
-        if (loop.list && Array.isArray(loop.list) && loop.list.length > 0) {
-            const routinePoints = loop.list
-                .filter(item => item.Point !== undefined)
-                .map(item => item.Point)
-                .sort((a, b) => a - b);
-            
-            if (routinePoints.length > 0) {
-                const firstPoint = routinePoints[0];
-                const lastPoint = routinePoints[routinePoints.length - 1];
-                // Point = (routineIndex + 1) * 2, 所以 routineIndex = Point / 2 - 1
-                startRoutineIndex = Math.floor(firstPoint / 2) - 1;
-                endRoutineIndex = Math.floor(lastPoint / 2) - 1;
-            } else {
-                // 回退到旧格式
-                startRoutineIndex = Math.floor((loop.startPoint - 1) / 2);
-                endRoutineIndex = Math.floor((loop.endPoint - 1) / 2);
-            }
-        } else {
-            // 旧格式：直接使用 startPoint 和 endPoint
-            startRoutineIndex = Math.floor((loop.startPoint - 1) / 2);
-            endRoutineIndex = Math.floor((loop.endPoint - 1) / 2);
+        // list 是单一数据源（Single Source of Truth）
+        if (!loop.list || !Array.isArray(loop.list) || loop.list.length === 0) {
+            console.warn(`Loop "${loop.name}" 缺少 list 字段或 list 为空，跳过`);
+            return null;
         }
+        
+        const routinePoints = loop.list
+            .filter(item => item.Point !== undefined)
+            .map(item => item.Point)
+            .sort((a, b) => a - b);
+        
+        if (routinePoints.length === 0) {
+            console.warn(`Loop "${loop.name}" 的 list 中没有有效的 Point，跳过`);
+            return null;
+        }
+        
+        const firstPoint = routinePoints[0];
+        const lastPoint = routinePoints[routinePoints.length - 1];
+        // Point = (routineIndex + 1) * 2, 所以 routineIndex = Point / 2 - 1
+        startRoutineIndex = Math.floor(firstPoint / 2) - 1;
+        // lastPoint 是 loop.list 中最后一个 routine 的 Point
+        // 直接计算该 routine 的索引：index = Point / 2 - 1
+        endRoutineIndex = Math.floor(lastPoint / 2) - 1;
         
         const variableNames = detectVariablesFromRoutines(routines, startRoutineIndex, endRoutineIndex);
 
@@ -726,7 +731,7 @@ function generateFlow(routines, loops) {
             depth: 0,
             variableNames: variableNames
         };
-    });
+    }).filter(loop => loop !== null);  // 过滤掉无效的 loops
     
     // 根据 loop 的包含关系重新计算深度
     // 被包含越多的 loop，depth 应该越大

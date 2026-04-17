@@ -1,0 +1,1397 @@
+{
+  "flowchart": [
+    {
+      "name": "Instruction_Main",
+      "Point": 2,
+      "components": [
+        {
+          "name": "instruction_text",
+          "type": "text",
+          "text": "Welcome! In this experiment, you will see words displayed on the screen. Your task is to ignore the meaning of the word and instead press the key corresponding to the color of the text.\n\nKeys:\nF = Red\nJ = Blue\nK = Green\nL = Yellow\n\nPlease respond as quickly and accurately as possible.",
+          "color": "black",
+          "font": "Arial",
+          "letterHeight": 0.05,
+          "pos": [
+            0,
+            0
+          ],
+          "startTime": 0,
+          "duration": -1,
+          "stopWithRoutine": true,
+          "units": "height",
+          "anchor": "center"
+        },
+        {
+          "name": "start_response",
+          "type": "keyboard",
+          "startTime": 0,
+          "duration": -1,
+          "keys": "space",
+          "forceEndRoutine": true
+        }
+      ]
+    },
+    {
+      "name": "Practice_Instructions",
+      "Point": 4,
+      "components": [
+        {
+          "name": "practice_instr_text",
+          "type": "text",
+          "text": "This is a practice block. Feedback will be provided. Press Space to begin.",
+          "color": "black",
+          "font": "Arial",
+          "letterHeight": 0.05,
+          "pos": [
+            0,
+            0
+          ],
+          "startTime": 0,
+          "duration": -1,
+          "stopWithRoutine": true,
+          "units": "height",
+          "anchor": "center"
+        },
+        {
+          "name": "practice_start_response",
+          "type": "keyboard",
+          "startTime": 0,
+          "duration": -1,
+          "keys": "space",
+          "forceEndRoutine": true
+        }
+      ]
+    },
+    {
+      "name": "Loop_Practice",
+      "Point": 6,
+      "nRounds": 8,
+      "type": "random",
+      "conditions": [
+        {
+          "name": "Congruent_Red",
+          "weight": 1,
+          "values": {
+            "$condition_type": [
+              "congruent"
+            ],
+            "$word": [
+              "RED"
+            ],
+            "$ink_color": [
+              "red"
+            ]
+          }
+        },
+        {
+          "name": "Congruent_Blue",
+          "weight": 1,
+          "values": {
+            "$condition_type": [
+              "congruent"
+            ],
+            "$word": [
+              "BLUE"
+            ],
+            "$ink_color": [
+              "blue"
+            ]
+          }
+        },
+        {
+          "name": "Congruent_Green",
+          "weight": 1,
+          "values": {
+            "$condition_type": [
+              "congruent"
+            ],
+            "$word": [
+              "GREEN"
+            ],
+            "$ink_color": [
+              "green"
+            ]
+          }
+        },
+        {
+          "name": "Congruent_Yellow",
+          "weight": 1,
+          "values": {
+            "$condition_type": [
+              "congruent"
+            ],
+            "$word": [
+              "YELLOW"
+            ],
+            "$ink_color": [
+              "yellow"
+            ]
+          }
+        },
+        {
+          "name": "Incongruent_RedWord_BlueInk",
+          "weight": 1,
+          "values": {
+            "$condition_type": [
+              "incongruent"
+            ],
+            "$word": [
+              "RED"
+            ],
+            "$ink_color": [
+              "blue"
+            ]
+          }
+        },
+        {
+          "name": "Incongruent_BlueWord_RedInk",
+          "weight": 1,
+          "values": {
+            "$condition_type": [
+              "incongruent"
+            ],
+            "$word": [
+              "BLUE"
+            ],
+            "$ink_color": [
+              "red"
+            ]
+          }
+        },
+        {
+          "name": "Incongruent_GreenWord_YellowInk",
+          "weight": 1,
+          "values": {
+            "$condition_type": [
+              "incongruent"
+            ],
+            "$word": [
+              "GREEN"
+            ],
+            "$ink_color": [
+              "yellow"
+            ]
+          }
+        },
+        {
+          "name": "Incongruent_YellowWord_GreenInk",
+          "weight": 1,
+          "values": {
+            "$condition_type": [
+              "incongruent"
+            ],
+            "$word": [
+              "YELLOW"
+            ],
+            "$ink_color": [
+              "green"
+            ]
+          }
+        },
+        {
+          "name": "Neutral_Chair",
+          "weight": 1,
+          "values": {
+            "$condition_type": [
+              "neutral"
+            ],
+            "$word": [
+              "CHAIR"
+            ],
+            "$ink_color": [
+              "black"
+            ]
+          }
+        },
+        {
+          "name": "Neutral_Table",
+          "weight": 1,
+          "values": {
+            "$condition_type": [
+              "neutral"
+            ],
+            "$word": [
+              "TABLE"
+            ],
+            "$ink_color": [
+              "black"
+            ]
+          }
+        },
+        {
+          "name": "Neutral_Door",
+          "weight": 1,
+          "values": {
+            "$condition_type": [
+              "neutral"
+            ],
+            "$word": [
+              "DOOR"
+            ],
+            "$ink_color": [
+              "black"
+            ]
+          }
+        },
+        {
+          "name": "Neutral_Lamp",
+          "weight": 1,
+          "values": {
+            "$condition_type": [
+              "neutral"
+            ],
+            "$word": [
+              "LAMP"
+            ],
+            "$ink_color": [
+              "black"
+            ]
+          }
+        },
+        {
+          "name": "Mixed_Congruent",
+          "weight": 1,
+          "values": {
+            "$condition_type": [
+              "congruent"
+            ],
+            "$word": [
+              "RED"
+            ],
+            "$ink_color": [
+              "red"
+            ]
+          }
+        },
+        {
+          "name": "Mixed_Incongruent",
+          "weight": 1,
+          "values": {
+            "$condition_type": [
+              "incongruent"
+            ],
+            "$word": [
+              "BLUE"
+            ],
+            "$ink_color": [
+              "green"
+            ]
+          }
+        },
+        {
+          "name": "Mixed_Neutral",
+          "weight": 1,
+          "values": {
+            "$condition_type": [
+              "neutral"
+            ],
+            "$word": [
+              "BOOK"
+            ],
+            "$ink_color": [
+              "black"
+            ]
+          }
+        },
+        {
+          "name": "Mixed_Mixed",
+          "weight": 1,
+          "values": {
+            "$condition_type": [
+              "mixed"
+            ],
+            "$word": [
+              "PEN"
+            ],
+            "$ink_color": [
+              "black"
+            ]
+          }
+        }
+      ],
+      "list": [
+        {
+          "name": "Practice_Fixation",
+          "Point": 8,
+          "components": [
+            {
+              "name": "fixation_cross",
+              "type": "text",
+              "text": "+",
+              "color": "black",
+              "font": "Arial",
+              "letterHeight": 0.1,
+              "pos": [
+                0,
+                0
+              ],
+              "startTime": 0,
+              "duration": 500,
+              "stopWithRoutine": true,
+              "units": "height",
+              "anchor": "center"
+            }
+          ]
+        },
+        {
+          "name": "Practice_Stimulus",
+          "Point": 10,
+          "components": [
+            {
+              "name": "stimulus_word",
+              "type": "text",
+              "text": "$word",
+              "color": "$ink_color",
+              "font": "Arial",
+              "letterHeight": 0.1,
+              "pos": [
+                0,
+                0
+              ],
+              "startTime": 0,
+              "duration": -1,
+              "stopWithRoutine": false,
+              "units": "height",
+              "anchor": "center"
+            },
+            {
+              "name": "response_key",
+              "type": "keyboard",
+              "startTime": 0,
+              "duration": 2000,
+              "keys": "f,j,k,l",
+              "forceEndRoutine": true
+            }
+          ]
+        },
+        {
+          "name": "Practice_Feedback",
+          "Point": 12,
+          "components": [
+            {
+              "name": "feedback_text",
+              "type": "text",
+              "text": "Correct!",
+              "color": "green",
+              "font": "Arial",
+              "letterHeight": 0.1,
+              "pos": [
+                0,
+                0
+              ],
+              "startTime": 0,
+              "duration": 500,
+              "stopWithRoutine": true,
+              "units": "height",
+              "anchor": "center"
+            }
+          ]
+        },
+        {
+          "name": "Practice_ITI",
+          "Point": 14,
+          "components": [
+            {
+              "name": "iti_blank",
+              "type": "text",
+              "text": "",
+              "color": "white",
+              "font": "Arial",
+              "letterHeight": 0.1,
+              "pos": [
+                0,
+                0
+              ],
+              "startTime": 0,
+              "duration": 500,
+              "stopWithRoutine": true,
+              "units": "height",
+              "anchor": "center"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Main_Instructions",
+      "Point": 16,
+      "components": [
+        {
+          "name": "main_instr_text",
+          "type": "text",
+          "text": "You are now ready for the main task. There are 60 trials. Try to be fast and accurate. Good luck!\n\nPress Space to begin.",
+          "color": "black",
+          "font": "Arial",
+          "letterHeight": 0.05,
+          "pos": [
+            0,
+            0
+          ],
+          "startTime": 0,
+          "duration": -1,
+          "stopWithRoutine": true,
+          "units": "height",
+          "anchor": "center"
+        },
+        {
+          "name": "main_start_response",
+          "type": "keyboard",
+          "startTime": 0,
+          "duration": -1,
+          "keys": "space",
+          "forceEndRoutine": true
+        }
+      ]
+    },
+    {
+      "name": "Loop_Main",
+      "Point": 18,
+      "nRounds": 60,
+      "type": "random",
+      "conditions": [
+        {
+          "name": "Congruent_Red",
+          "weight": 1,
+          "values": {
+            "$condition_type": [
+              "congruent"
+            ],
+            "$word": [
+              "RED"
+            ],
+            "$ink_color": [
+              "red"
+            ]
+          }
+        },
+        {
+          "name": "Congruent_Blue",
+          "weight": 1,
+          "values": {
+            "$condition_type": [
+              "congruent"
+            ],
+            "$word": [
+              "BLUE"
+            ],
+            "$ink_color": [
+              "blue"
+            ]
+          }
+        },
+        {
+          "name": "Congruent_Green",
+          "weight": 1,
+          "values": {
+            "$condition_type": [
+              "congruent"
+            ],
+            "$word": [
+              "GREEN"
+            ],
+            "$ink_color": [
+              "green"
+            ]
+          }
+        },
+        {
+          "name": "Congruent_Yellow",
+          "weight": 1,
+          "values": {
+            "$condition_type": [
+              "congruent"
+            ],
+            "$word": [
+              "YELLOW"
+            ],
+            "$ink_color": [
+              "yellow"
+            ]
+          }
+        },
+        {
+          "name": "Incongruent_RedWord_BlueInk",
+          "weight": 1,
+          "values": {
+            "$condition_type": [
+              "incongruent"
+            ],
+            "$word": [
+              "RED"
+            ],
+            "$ink_color": [
+              "blue"
+            ]
+          }
+        },
+        {
+          "name": "Incongruent_BlueWord_RedInk",
+          "weight": 1,
+          "values": {
+            "$condition_type": [
+              "incongruent"
+            ],
+            "$word": [
+              "BLUE"
+            ],
+            "$ink_color": [
+              "red"
+            ]
+          }
+        },
+        {
+          "name": "Incongruent_GreenWord_YellowInk",
+          "weight": 1,
+          "values": {
+            "$condition_type": [
+              "incongruent"
+            ],
+            "$word": [
+              "GREEN"
+            ],
+            "$ink_color": [
+              "yellow"
+            ]
+          }
+        },
+        {
+          "name": "Incongruent_YellowWord_GreenInk",
+          "weight": 1,
+          "values": {
+            "$condition_type": [
+              "incongruent"
+            ],
+            "$word": [
+              "YELLOW"
+            ],
+            "$ink_color": [
+              "green"
+            ]
+          }
+        },
+        {
+          "name": "Neutral_Chair",
+          "weight": 1,
+          "values": {
+            "$condition_type": [
+              "neutral"
+            ],
+            "$word": [
+              "CHAIR"
+            ],
+            "$ink_color": [
+              "black"
+            ]
+          }
+        },
+        {
+          "name": "Neutral_Table",
+          "weight": 1,
+          "values": {
+            "$condition_type": [
+              "neutral"
+            ],
+            "$word": [
+              "TABLE"
+            ],
+            "$ink_color": [
+              "black"
+            ]
+          }
+        },
+        {
+          "name": "Neutral_Door",
+          "weight": 1,
+          "values": {
+            "$condition_type": [
+              "neutral"
+            ],
+            "$word": [
+              "DOOR"
+            ],
+            "$ink_color": [
+              "black"
+            ]
+          }
+        },
+        {
+          "name": "Neutral_Lamp",
+          "weight": 1,
+          "values": {
+            "$condition_type": [
+              "neutral"
+            ],
+            "$word": [
+              "LAMP"
+            ],
+            "$ink_color": [
+              "black"
+            ]
+          }
+        },
+        {
+          "name": "Neutral_Book",
+          "weight": 1,
+          "values": {
+            "$condition_type": [
+              "neutral"
+            ],
+            "$word": [
+              "BOOK"
+            ],
+            "$ink_color": [
+              "black"
+            ]
+          }
+        },
+        {
+          "name": "Neutral_Pen",
+          "weight": 1,
+          "values": {
+            "$condition_type": [
+              "neutral"
+            ],
+            "$word": [
+              "PEN"
+            ],
+            "$ink_color": [
+              "black"
+            ]
+          }
+        },
+        {
+          "name": "Congruent_Red_2",
+          "weight": 1,
+          "values": {
+            "$condition_type": [
+              "congruent"
+            ],
+            "$word": [
+              "RED"
+            ],
+            "$ink_color": [
+              "red"
+            ]
+          }
+        },
+        {
+          "name": "Congruent_Blue_2",
+          "weight": 1,
+          "values": {
+            "$condition_type": [
+              "congruent"
+            ],
+            "$word": [
+              "BLUE"
+            ],
+            "$ink_color": [
+              "blue"
+            ]
+          }
+        },
+        {
+          "name": "Congruent_Green_2",
+          "weight": 1,
+          "values": {
+            "$condition_type": [
+              "congruent"
+            ],
+            "$word": [
+              "GREEN"
+            ],
+            "$ink_color": [
+              "green"
+            ]
+          }
+        },
+        {
+          "name": "Congruent_Yellow_2",
+          "weight": 1,
+          "values": {
+            "$condition_type": [
+              "congruent"
+            ],
+            "$word": [
+              "YELLOW"
+            ],
+            "$ink_color": [
+              "yellow"
+            ]
+          }
+        },
+        {
+          "name": "Incongruent_RedWord_BlueInk_2",
+          "weight": 1,
+          "values": {
+            "$condition_type": [
+              "incongruent"
+            ],
+            "$word": [
+              "RED"
+            ],
+            "$ink_color": [
+              "blue"
+            ]
+          }
+        },
+        {
+          "name": "Incongruent_BlueWord_RedInk_2",
+          "weight": 1,
+          "values": {
+            "$condition_type": [
+              "incongruent"
+            ],
+            "$word": [
+              "BLUE"
+            ],
+            "$ink_color": [
+              "red"
+            ]
+          }
+        },
+        {
+          "name": "Incongruent_GreenWord_YellowInk_2",
+          "weight": 1,
+          "values": {
+            "$condition_type": [
+              "incongruent"
+            ],
+            "$word": [
+              "GREEN"
+            ],
+            "$ink_color": [
+              "yellow"
+            ]
+          }
+        },
+        {
+          "name": "Incongruent_YellowWord_GreenInk_2",
+          "weight": 1,
+          "values": {
+            "$condition_type": [
+              "incongruent"
+            ],
+            "$word": [
+              "YELLOW"
+            ],
+            "$ink_color": [
+              "green"
+            ]
+          }
+        },
+        {
+          "name": "Neutral_Chair_2",
+          "weight": 1,
+          "values": {
+            "$condition_type": [
+              "neutral"
+            ],
+            "$word": [
+              "CHAIR"
+            ],
+            "$ink_color": [
+              "black"
+            ]
+          }
+        },
+        {
+          "name": "Neutral_Table_2",
+          "weight": 1,
+          "values": {
+            "$condition_type": [
+              "neutral"
+            ],
+            "$word": [
+              "TABLE"
+            ],
+            "$ink_color": [
+              "black"
+            ]
+          }
+        },
+        {
+          "name": "Neutral_Door_2",
+          "weight": 1,
+          "values": {
+            "$condition_type": [
+              "neutral"
+            ],
+            "$word": [
+              "DOOR"
+            ],
+            "$ink_color": [
+              "black"
+            ]
+          }
+        },
+        {
+          "name": "Neutral_Lamp_2",
+          "weight": 1,
+          "values": {
+            "$condition_type": [
+              "neutral"
+            ],
+            "$word": [
+              "LAMP"
+            ],
+            "$ink_color": [
+              "black"
+            ]
+          }
+        },
+        {
+          "name": "Neutral_Book_2",
+          "weight": 1,
+          "values": {
+            "$condition_type": [
+              "neutral"
+            ],
+            "$word": [
+              "BOOK"
+            ],
+            "$ink_color": [
+              "black"
+            ]
+          }
+        },
+        {
+          "name": "Neutral_Pen_2",
+          "weight": 1,
+          "values": {
+            "$condition_type": [
+              "neutral"
+            ],
+            "$word": [
+              "PEN"
+            ],
+            "$ink_color": [
+              "black"
+            ]
+          }
+        },
+        {
+          "name": "Congruent_Red_3",
+          "weight": 1,
+          "values": {
+            "$condition_type": [
+              "congruent"
+            ],
+            "$word": [
+              "RED"
+            ],
+            "$ink_color": [
+              "red"
+            ]
+          }
+        },
+        {
+          "name": "Congruent_Blue_3",
+          "weight": 1,
+          "values": {
+            "$condition_type": [
+              "congruent"
+            ],
+            "$word": [
+              "BLUE"
+            ],
+            "$ink_color": [
+              "blue"
+            ]
+          }
+        },
+        {
+          "name": "Congruent_Green_3",
+          "weight": 1,
+          "values": {
+            "$condition_type": [
+              "congruent"
+            ],
+            "$word": [
+              "GREEN"
+            ],
+            "$ink_color": [
+              "green"
+            ]
+          }
+        },
+        {
+          "name": "Congruent_Yellow_3",
+          "weight": 1,
+          "values": {
+            "$condition_type": [
+              "congruent"
+            ],
+            "$word": [
+              "YELLOW"
+            ],
+            "$ink_color": [
+              "yellow"
+            ]
+          }
+        },
+        {
+          "name": "Incongruent_RedWord_BlueInk_3",
+          "weight": 1,
+          "values": {
+            "$condition_type": [
+              "incongruent"
+            ],
+            "$word": [
+              "RED"
+            ],
+            "$ink_color": [
+              "blue"
+            ]
+          }
+        },
+        {
+          "name": "Incongruent_BlueWord_RedInk_3",
+          "weight": 1,
+          "values": {
+            "$condition_type": [
+              "incongruent"
+            ],
+            "$word": [
+              "BLUE"
+            ],
+            "$ink_color": [
+              "red"
+            ]
+          }
+        },
+        {
+          "name": "Incongruent_GreenWord_YellowInk_3",
+          "weight": 1,
+          "values": {
+            "$condition_type": [
+              "incongruent"
+            ],
+            "$word": [
+              "GREEN"
+            ],
+            "$ink_color": [
+              "yellow"
+            ]
+          }
+        },
+        {
+          "name": "Incongruent_YellowWord_GreenInk_3",
+          "weight": 1,
+          "values": {
+            "$condition_type": [
+              "incongruent"
+            ],
+            "$word": [
+              "YELLOW"
+            ],
+            "$ink_color": [
+              "green"
+            ]
+          }
+        },
+        {
+          "name": "Neutral_Chair_3",
+          "weight": 1,
+          "values": {
+            "$condition_type": [
+              "neutral"
+            ],
+            "$word": [
+              "CHAIR"
+            ],
+            "$ink_color": [
+              "black"
+            ]
+          }
+        },
+        {
+          "name": "Neutral_Table_3",
+          "weight": 1,
+          "values": {
+            "$condition_type": [
+              "neutral"
+            ],
+            "$word": [
+              "TABLE"
+            ],
+            "$ink_color": [
+              "black"
+            ]
+          }
+        },
+        {
+          "name": "Neutral_Door_3",
+          "weight": 1,
+          "values": {
+            "$condition_type": [
+              "neutral"
+            ],
+            "$word": [
+              "DOOR"
+            ],
+            "$ink_color": [
+              "black"
+            ]
+          }
+        },
+        {
+          "name": "Neutral_Lamp_3",
+          "weight": 1,
+          "values": {
+            "$condition_type": [
+              "neutral"
+            ],
+            "$word": [
+              "LAMP"
+            ],
+            "$ink_color": [
+              "black"
+            ]
+          }
+        },
+        {
+          "name": "Neutral_Book_3",
+          "weight": 1,
+          "values": {
+            "$condition_type": [
+              "neutral"
+            ],
+            "$word": [
+              "BOOK"
+            ],
+            "$ink_color": [
+              "black"
+            ]
+          }
+        },
+        {
+          "name": "Neutral_Pen_3",
+          "weight": 1,
+          "values": {
+            "$condition_type": [
+              "neutral"
+            ],
+            "$word": [
+              "PEN"
+            ],
+            "$ink_color": [
+              "black"
+            ]
+          }
+        },
+        {
+          "name": "Congruent_Red_4",
+          "weight": 1,
+          "values": {
+            "$condition_type": [
+              "congruent"
+            ],
+            "$word": [
+              "RED"
+            ],
+            "$ink_color": [
+              "red"
+            ]
+          }
+        },
+        {
+          "name": "Congruent_Blue_4",
+          "weight": 1,
+          "values": {
+            "$condition_type": [
+              "congruent"
+            ],
+            "$word": [
+              "BLUE"
+            ],
+            "$ink_color": [
+              "blue"
+            ]
+          }
+        },
+        {
+          "name": "Congruent_Green_4",
+          "weight": 1,
+          "values": {
+            "$condition_type": [
+              "congruent"
+            ],
+            "$word": [
+              "GREEN"
+            ],
+            "$ink_color": [
+              "green"
+            ]
+          }
+        },
+        {
+          "name": "Congruent_Yellow_4",
+          "weight": 1,
+          "values": {
+            "$condition_type": [
+              "congruent"
+            ],
+            "$word": [
+              "YELLOW"
+            ],
+            "$ink_color": [
+              "yellow"
+            ]
+          }
+        },
+        {
+          "name": "Incongruent_RedWord_BlueInk_4",
+          "weight": 1,
+          "values": {
+            "$condition_type": [
+              "incongruent"
+            ],
+            "$word": [
+              "RED"
+            ],
+            "$ink_color": [
+              "blue"
+            ]
+          }
+        },
+        {
+          "name": "Incongruent_BlueWord_RedInk_4",
+          "weight": 1,
+          "values": {
+            "$condition_type": [
+              "incongruent"
+            ],
+            "$word": [
+              "BLUE"
+            ],
+            "$ink_color": [
+              "red"
+            ]
+          }
+        },
+        {
+          "name": "Incongruent_GreenWord_YellowInk_4",
+          "weight": 1,
+          "values": {
+            "$condition_type": [
+              "incongruent"
+            ],
+            "$word": [
+              "GREEN"
+            ],
+            "$ink_color": [
+              "yellow"
+            ]
+          }
+        },
+        {
+          "name": "Incongruent_YellowWord_GreenInk_4",
+          "weight": 1,
+          "values": {
+            "$condition_type": [
+              "incongruent"
+            ],
+            "$word": [
+              "YELLOW"
+            ],
+            "$ink_color": [
+              "green"
+            ]
+          }
+        },
+        {
+          "name": "Neutral_Chair_4",
+          "weight": 1,
+          "values": {
+            "$condition_type": [
+              "neutral"
+            ],
+            "$word": [
+              "CHAIR"
+            ],
+            "$ink_color": [
+              "black"
+            ]
+          }
+        },
+        {
+          "name": "Neutral_Table_4",
+          "weight": 1,
+          "values": {
+            "$condition_type": [
+              "neutral"
+            ],
+            "$word": [
+              "TABLE"
+            ],
+            "$ink_color": [
+              "black"
+            ]
+          }
+        },
+        {
+          "name": "Neutral_Door_4",
+          "weight": 1,
+          "values": {
+            "$condition_type": [
+              "neutral"
+            ],
+            "$word": [
+              "DOOR"
+            ],
+            "$ink_color": [
+              "black"
+            ]
+          }
+        },
+        {
+          "name": "Neutral_Lamp_4",
+          "weight": 1,
+          "values": {
+            "$condition_type": [
+              "neutral"
+            ],
+            "$word": [
+              "LAMP"
+            ],
+            "$ink_color": [
+              "black"
+            ]
+          }
+        },
+        {
+          "name": "Neutral_Book_4",
+          "weight": 1,
+          "values": {
+            "$condition_type": [
+              "neutral"
+            ],
+            "$word": [
+              "BOOK"
+            ],
+            "$ink_color": [
+              "black"
+            ]
+          }
+        },
+        {
+          "name": "Neutral_Pen_4",
+          "weight": 1,
+          "values": {
+            "$condition_type": [
+              "neutral"
+            ],
+            "$word": [
+              "PEN"
+            ],
+            "$ink_color": [
+              "black"
+            ]
+          }
+        }
+      ],
+      "list": [
+        {
+          "name": "Main_Fixation",
+          "Point": 20,
+          "components": [
+            {
+              "name": "fixation_cross_main",
+              "type": "text",
+              "text": "+",
+              "color": "black",
+              "font": "Arial",
+              "letterHeight": 0.1,
+              "pos": [
+                0,
+                0
+              ],
+              "startTime": 0,
+              "duration": 500,
+              "stopWithRoutine": true,
+              "units": "height",
+              "anchor": "center"
+            }
+          ]
+        },
+        {
+          "name": "Main_Stimulus",
+          "Point": 22,
+          "components": [
+            {
+              "name": "stimulus_word_main",
+              "type": "text",
+              "text": "$word",
+              "color": "$ink_color",
+              "font": "Arial",
+              "letterHeight": 0.1,
+              "pos": [
+                0,
+                0
+              ],
+              "startTime": 0,
+              "duration": -1,
+              "stopWithRoutine": false,
+              "units": "height",
+              "anchor": "center"
+            },
+            {
+              "name": "response_key_main",
+              "type": "keyboard",
+              "startTime": 0,
+              "duration": 2000,
+              "keys": "f,j,k,l",
+              "forceEndRoutine": true
+            }
+          ]
+        },
+        {
+          "name": "Main_ITI",
+          "Point": 24,
+          "components": [
+            {
+              "name": "iti_blank_main",
+              "type": "text",
+              "text": "",
+              "color": "white",
+              "font": "Arial",
+              "letterHeight": 0.1,
+              "pos": [
+                0,
+                0
+              ],
+              "startTime": 0,
+              "duration": 500,
+              "stopWithRoutine": true,
+              "units": "height",
+              "anchor": "center"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Ending",
+      "Point": 26,
+      "components": [
+        {
+          "name": "ending_text",
+          "type": "text",
+          "text": "Thank you for participating! Your results have been recorded. You may close this window.",
+          "color": "black",
+          "font": "Arial",
+          "letterHeight": 0.05,
+          "pos": [
+            0,
+            0
+          ],
+          "startTime": 0,
+          "duration": -1,
+          "stopWithRoutine": true,
+          "units": "height",
+          "anchor": "center"
+        }
+      ]
+    }
+  ]
+}

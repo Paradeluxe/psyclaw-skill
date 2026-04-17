@@ -490,7 +490,7 @@
         },
         "values": {
           "type": "object",
-          "description": "Dictionary mapping a single variable name to its possible values. Only ONE variable is allowed per condition. Key is the variable name (e.g., '$color$'), value is an array of all possible values for that variable.",
+          "description": "Dictionary mapping a single variable name to its possible values. Only ONE variable is allowed per condition. Key is the variable name (e.g., '$color'), value is an array of all possible values for that variable.",
           "minProperties": 1,
           "maxProperties": 1,
           "additionalProperties": {
@@ -498,7 +498,7 @@
             "description": "All possible values for this variable",
             "items": {
               "oneOf": [
-                { "type": "string", "description": "String value or $var$ reference" },
+                { "type": "string", "description": "String value or $var reference" },
                 { "type": "number", "description": "Numeric value" },
                 { "type": "boolean", "description": "Boolean value" }
               ]

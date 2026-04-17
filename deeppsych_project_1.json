@@ -1,107 +1,272 @@
 {
   "version": "2.0",
-  "timestamp": "2026-04-10T09:13:10.836Z",
+  "timestamp": "2026-04-17T05:12:07.067Z",
   "routines": [
     {
       "id": 0,
-      "name": "fixation",
+      "name": "Global_Instructions",
       "x": 85,
       "y": 240,
       "width": 200,
-      "height": 140,
-      "duration": 1000,
-      "avtpComponents": [
-        {
-          "type": "text",
-          "text": "+",
-          "color": "white",
-          "font": "Arial",
-          "letterHeight": 0.1,
-          "pos": [
-            0,
-            0
-          ],
-          "opacity": 1,
-          "units": "norm",
-          "enabled": true,
-          "path": "",
-          "startTime": 0,
-          "duration": 3000,
-          "ori": 0,
-          "contrast": 1,
-          "flip": "None",
-          "languageStyle": "LTR",
-          "draggable": false
-        }
-      ]
-    },
-    {
-      "id": 2,
-      "name": "stimulus",
-      "x": 335,
-      "y": 240,
-      "width": 200,
-      "height": 140,
-      "duration": 2000,
-      "avtpComponents": [
-        {
-          "type": "text",
-          "text": "$word",
-          "color": "$color",
-          "font": "Arial",
-          "letterHeight": 0.15,
-          "pos": [
-            0,
-            0
-          ],
-          "opacity": 1,
-          "units": "norm",
-          "enabled": true
-        }
-      ]
-    },
-    {
-      "id": 4,
-      "name": "response",
-      "x": 585,
-      "y": 240,
-      "width": 200,
-      "height": 140,
+      "height": 146,
       "duration": -1,
       "avtpComponents": [
         {
+          "name": "instruction_text",
+          "type": "text",
+          "text": "Welcome to the Stroop Task.\n\nYour task is to identify the COLOR of the text, not the word itself.\n\nPress 'F' for Left (e.g., Red/Blue)\nPress 'J' for Right (e.g., Green/Yellow)\n\nPress SPACE to begin practice.",
+          "color": "white",
+          "pos": [
+            0,
+            0
+          ],
+          "letterHeight": 0.1,
+          "startTime": 0,
+          "duration": -1,
+          "stopWithRoutine": false,
+          "anchor": "center",
+          "enabled": true
+        },
+        {
+          "name": "start_response",
           "type": "keyboard",
-          "keys": "1,2,3,4",
-          "store": "last key",
-          "storeCorrect": true,
-          "discardPrevious": true,
-          "registerOn": "press",
+          "keys": "space",
+          "startTime": 0,
+          "duration": -1,
+          "stopWithRoutine": true,
           "forceEndRoutine": true,
           "enabled": true
         }
       ]
     },
     {
-      "id": 6,
-      "name": "feedback",
-      "x": 835,
+      "id": 1,
+      "name": "Fixation_Practice",
+      "x": 335,
       "y": 240,
       "width": 200,
       "height": 140,
-      "duration": 1000,
+      "duration": -1,
       "avtpComponents": [
         {
+          "name": "fixation_cross",
           "type": "text",
-          "text": "Correct!",
-          "color": "green",
-          "font": "Arial",
-          "letterHeight": 0.1,
+          "text": "+",
+          "color": "white",
           "pos": [
             0,
             0
           ],
-          "opacity": 1,
-          "units": "norm",
+          "letterHeight": 0.5,
+          "startTime": 0,
+          "duration": 500,
+          "stopWithRoutine": true,
+          "anchor": "center",
+          "enabled": true
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Stimulus_Practice",
+      "x": 585,
+      "y": 240,
+      "width": 200,
+      "height": 146,
+      "duration": -1,
+      "avtpComponents": [
+        {
+          "name": "stimulus_text",
+          "type": "text",
+          "text": "$word",
+          "color": "$ink_color",
+          "pos": [
+            0,
+            0
+          ],
+          "letterHeight": 0.3,
+          "startTime": 0,
+          "duration": 2000,
+          "stopWithRoutine": true,
+          "anchor": "center",
+          "enabled": true
+        },
+        {
+          "name": "response_key",
+          "type": "keyboard",
+          "keys": "f,j",
+          "startTime": 0,
+          "duration": 2000,
+          "stopWithRoutine": true,
+          "forceEndRoutine": true,
+          "enabled": true
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "ITI_Practice",
+      "x": 835,
+      "y": 240,
+      "width": 200,
+      "height": 140,
+      "duration": -1,
+      "avtpComponents": [
+        {
+          "name": "blank_screen",
+          "type": "text",
+          "text": "",
+          "startTime": 0,
+          "duration": 1000,
+          "stopWithRoutine": true,
+          "enabled": true
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "name": "Main_Instructions",
+      "x": 1085,
+      "y": 240,
+      "width": 200,
+      "height": 146,
+      "duration": -1,
+      "avtpComponents": [
+        {
+          "name": "main_instr_text",
+          "type": "text",
+          "text": "Ready for the main experiment?\nRemember: Name the INK COLOR only.\n\nPress SPACE to start.",
+          "color": "white",
+          "pos": [
+            0,
+            0
+          ],
+          "letterHeight": 0.1,
+          "startTime": 0,
+          "duration": -1,
+          "stopWithRoutine": false,
+          "anchor": "center",
+          "enabled": true
+        },
+        {
+          "name": "start_main",
+          "type": "keyboard",
+          "keys": "space",
+          "startTime": 0,
+          "duration": -1,
+          "stopWithRoutine": true,
+          "forceEndRoutine": true,
+          "enabled": true
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "name": "Fixation_Main",
+      "x": 1335,
+      "y": 240,
+      "width": 200,
+      "height": 140,
+      "duration": -1,
+      "avtpComponents": [
+        {
+          "name": "fixation_cross",
+          "type": "text",
+          "text": "+",
+          "color": "white",
+          "pos": [
+            0,
+            0
+          ],
+          "letterHeight": 0.5,
+          "startTime": 0,
+          "duration": 500,
+          "stopWithRoutine": true,
+          "anchor": "center",
+          "enabled": true
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "name": "Stimulus_Main",
+      "x": 1585,
+      "y": 240,
+      "width": 200,
+      "height": 146,
+      "duration": -1,
+      "avtpComponents": [
+        {
+          "name": "stimulus_text",
+          "type": "text",
+          "text": "$word",
+          "color": "$ink_color",
+          "pos": [
+            0,
+            0
+          ],
+          "letterHeight": 0.3,
+          "startTime": 0,
+          "duration": 2000,
+          "stopWithRoutine": true,
+          "anchor": "center",
+          "enabled": true
+        },
+        {
+          "name": "response_key",
+          "type": "keyboard",
+          "keys": "f,j",
+          "startTime": 0,
+          "duration": 2000,
+          "stopWithRoutine": true,
+          "forceEndRoutine": true,
+          "enabled": true
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "name": "ITI_Main",
+      "x": 1835,
+      "y": 240,
+      "width": 200,
+      "height": 140,
+      "duration": -1,
+      "avtpComponents": [
+        {
+          "name": "blank_screen",
+          "type": "text",
+          "text": "",
+          "startTime": 0,
+          "duration": 1000,
+          "stopWithRoutine": true,
+          "enabled": true
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "name": "Ending_Screen",
+      "x": 2085,
+      "y": 240,
+      "width": 200,
+      "height": 140,
+      "duration": -1,
+      "avtpComponents": [
+        {
+          "name": "thank_you_text",
+          "type": "text",
+          "text": "Thank you for participating!\n\nTotal time: $total_time ms",
+          "color": "white",
+          "pos": [
+            0,
+            0
+          ],
+          "letterHeight": 0.1,
+          "startTime": 0,
+          "duration": -1,
+          "stopWithRoutine": false,
+          "anchor": "center",
           "enabled": true
         }
       ]
@@ -110,14 +275,57 @@
   "loops": [
     {
       "id": 0,
-      "name": "trials",
-      "startPoint": 1,
-      "endPoint": 7,
-      "nRounds": 10,
+      "name": "Practice_Loop",
+      "nRounds": 1,
       "type": "random",
-      "conditions": "[{\"name\":\"Condition 1\",\"weight\":1,\"values\":[\"RED\",\"red\"]},{\"name\":\"Condition 2\",\"weight\":1,\"values\":[\"BLUE\",\"blue\"]},{\"name\":\"Condition 3\",\"weight\":1,\"values\":[\"GREEN\",\"green\"]},{\"name\":\"Condition 4\",\"weight\":1,\"values\":[\"YELLOW\",\"yellow\"]}]",
+      "conditions": "[{\"name\":\"Congruent_Practice\",\"weight\":1,\"values\":[true],\"_valueKeys\":[\"is_congruent\"]},{\"name\":\"Incongruent_Practice\",\"weight\":1,\"values\":[false],\"_valueKeys\":[\"is_congruent\"]}]",
       "conditionsFile": "",
-      "isTrials": true
+      "isTrials": true,
+      "list": [
+        {
+          "name": "Fixation_Practice",
+          "Point": 4
+        },
+        {
+          "name": "Stimulus_Practice",
+          "Point": 6
+        },
+        {
+          "name": "ITI_Practice",
+          "Point": 8
+        },
+        {
+          "name": "Main_Instructions",
+          "Point": 10
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "name": "Main_Experiment_Loop",
+      "nRounds": 1,
+      "type": "random",
+      "conditions": "[{\"name\":\"Congruent_Main\",\"weight\":1,\"values\":[true],\"_valueKeys\":[\"is_congruent\"]},{\"name\":\"Incongruent_Main\",\"weight\":1,\"values\":[false],\"_valueKeys\":[\"is_congruent\"]}]",
+      "conditionsFile": "",
+      "isTrials": true,
+      "list": [
+        {
+          "name": "Fixation_Main",
+          "Point": 12
+        },
+        {
+          "name": "Stimulus_Main",
+          "Point": 14
+        },
+        {
+          "name": "ITI_Main",
+          "Point": 16
+        },
+        {
+          "name": "Ending_Screen",
+          "Point": 18
+        }
+      ]
     }
   ]
 }

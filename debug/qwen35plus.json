@@ -1,0 +1,364 @@
+{
+  "version": "2.0",
+  "timestamp": "2026-04-17T08:05:14.491Z",
+  "routines": [
+    {
+      "id": 0,
+      "name": "Instructions",
+      "x": 85,
+      "y": 240,
+      "width": 200,
+      "height": 146,
+      "duration": -1,
+      "avtpComponents": [
+        {
+          "name": "instr_text",
+          "type": "text",
+          "text": "Welcome to the Stroop Task.\n\nYou will see color words (e.g., RED, BLUE) printed in different ink colors.\n\nYOUR TASK: Identify the INK COLOR as quickly as possible.\nIgnore the meaning of the word.\n\nKey Mapping:\nf = Red\nj = Blue\nk = Green\nl = Yellow\n\nPress Space to begin practice.",
+          "color": "white",
+          "font": "Arial",
+          "letterHeight": 0.05,
+          "pos": [
+            0,
+            0
+          ],
+          "startTime": 0,
+          "duration": -1,
+          "stopWithRoutine": true,
+          "units": "norm",
+          "anchor": "center",
+          "enabled": true
+        },
+        {
+          "name": "instr_key",
+          "type": "keyboard",
+          "startTime": 0,
+          "duration": -1,
+          "stopWithRoutine": true,
+          "forceEndRoutine": true,
+          "keys": "space",
+          "registerOn": "press",
+          "enabled": true
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "name": "Fixation",
+      "x": 335,
+      "y": 240,
+      "width": 200,
+      "height": 140,
+      "duration": -1,
+      "avtpComponents": [
+        {
+          "name": "fix_cross",
+          "type": "text",
+          "text": "+",
+          "color": "white",
+          "font": "Arial",
+          "letterHeight": 0.1,
+          "pos": [
+            0,
+            0
+          ],
+          "startTime": 0,
+          "duration": 500,
+          "stopWithRoutine": true,
+          "units": "norm",
+          "anchor": "center",
+          "enabled": true
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Stimulus",
+      "x": 585,
+      "y": 240,
+      "width": 200,
+      "height": 146,
+      "duration": -1,
+      "avtpComponents": [
+        {
+          "name": "stroop_word",
+          "type": "text",
+          "text": "$word",
+          "color": "$color",
+          "font": "Arial",
+          "letterHeight": 0.1,
+          "pos": [
+            0,
+            0
+          ],
+          "startTime": 0,
+          "duration": -1,
+          "stopWithRoutine": true,
+          "units": "norm",
+          "anchor": "center",
+          "enabled": true
+        },
+        {
+          "name": "resp_keys",
+          "type": "keyboard",
+          "startTime": 0,
+          "duration": 2000,
+          "stopWithRoutine": true,
+          "forceEndRoutine": true,
+          "keys": "f,j,k,l",
+          "registerOn": "press",
+          "enabled": true
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "ITI",
+      "x": 835,
+      "y": 240,
+      "width": 200,
+      "height": 140,
+      "duration": -1,
+      "avtpComponents": [
+        {
+          "name": "blank_screen",
+          "type": "text",
+          "text": "",
+          "color": "black",
+          "pos": [
+            0,
+            0
+          ],
+          "startTime": 0,
+          "duration": 1000,
+          "stopWithRoutine": true,
+          "units": "norm",
+          "enabled": true
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "name": "MainInstructions",
+      "x": 1085,
+      "y": 240,
+      "width": 200,
+      "height": 146,
+      "duration": -1,
+      "avtpComponents": [
+        {
+          "name": "main_instr_text",
+          "type": "text",
+          "text": "Practice Complete.\n\nNow beginning the main experiment.\n\nRemember: Focus on INK COLOR, ignore the word.\nNo feedback will be given.\n\nPress Space to start.",
+          "color": "white",
+          "font": "Arial",
+          "letterHeight": 0.05,
+          "pos": [
+            0,
+            0
+          ],
+          "startTime": 0,
+          "duration": -1,
+          "stopWithRoutine": true,
+          "units": "norm",
+          "anchor": "center",
+          "enabled": true
+        },
+        {
+          "name": "main_start_key",
+          "type": "keyboard",
+          "startTime": 0,
+          "duration": -1,
+          "stopWithRoutine": true,
+          "forceEndRoutine": true,
+          "keys": "space",
+          "registerOn": "press",
+          "enabled": true
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "name": "Fixation",
+      "x": 1335,
+      "y": 240,
+      "width": 200,
+      "height": 140,
+      "duration": -1,
+      "avtpComponents": [
+        {
+          "name": "fix_cross",
+          "type": "text",
+          "text": "+",
+          "color": "white",
+          "font": "Arial",
+          "letterHeight": 0.1,
+          "pos": [
+            0,
+            0
+          ],
+          "startTime": 0,
+          "duration": 500,
+          "stopWithRoutine": true,
+          "units": "norm",
+          "anchor": "center",
+          "enabled": true
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "name": "Stimulus",
+      "x": 1585,
+      "y": 240,
+      "width": 200,
+      "height": 146,
+      "duration": -1,
+      "avtpComponents": [
+        {
+          "name": "stroop_word",
+          "type": "text",
+          "text": "$word",
+          "color": "$color",
+          "font": "Arial",
+          "letterHeight": 0.1,
+          "pos": [
+            0,
+            0
+          ],
+          "startTime": 0,
+          "duration": -1,
+          "stopWithRoutine": true,
+          "units": "norm",
+          "anchor": "center",
+          "enabled": true
+        },
+        {
+          "name": "resp_keys",
+          "type": "keyboard",
+          "startTime": 0,
+          "duration": 2000,
+          "stopWithRoutine": true,
+          "forceEndRoutine": true,
+          "keys": "f,j,k,l",
+          "registerOn": "press",
+          "enabled": true
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "name": "ITI",
+      "x": 1835,
+      "y": 240,
+      "width": 200,
+      "height": 140,
+      "duration": -1,
+      "avtpComponents": [
+        {
+          "name": "blank_screen",
+          "type": "text",
+          "text": "",
+          "color": "black",
+          "pos": [
+            0,
+            0
+          ],
+          "startTime": 0,
+          "duration": 1000,
+          "stopWithRoutine": true,
+          "units": "norm",
+          "enabled": true
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "name": "Debrief",
+      "x": 2085,
+      "y": 240,
+      "width": 200,
+      "height": 146,
+      "duration": -1,
+      "avtpComponents": [
+        {
+          "name": "end_text",
+          "type": "text",
+          "text": "Experiment Complete.\n\nThank you for your participation.\n\nThis task measured the 'Stroop Effect', where reaction times are slower when the word meaning conflicts with the ink color compared to when they match.\n\nPress Space to exit.",
+          "color": "white",
+          "font": "Arial",
+          "letterHeight": 0.05,
+          "pos": [
+            0,
+            0
+          ],
+          "startTime": 0,
+          "duration": -1,
+          "stopWithRoutine": true,
+          "units": "norm",
+          "anchor": "center",
+          "enabled": true
+        },
+        {
+          "name": "exit_key",
+          "type": "keyboard",
+          "startTime": 0,
+          "duration": -1,
+          "stopWithRoutine": true,
+          "forceEndRoutine": true,
+          "keys": "space",
+          "registerOn": "press",
+          "enabled": true
+        }
+      ]
+    }
+  ],
+  "loops": [
+    {
+      "id": 0,
+      "name": "PracticeLoop",
+      "nRounds": 1,
+      "type": "random",
+      "conditions": "[{\"name\":\"Congruent Red\",\"weight\":1,\"values\":[\"RED\",\"red\"],\"_valueKeys\":[\"word\",\"color\"]},{\"name\":\"Congruent Blue\",\"weight\":1,\"values\":[\"BLUE\",\"blue\"],\"_valueKeys\":[\"word\",\"color\"]},{\"name\":\"Congruent Green\",\"weight\":1,\"values\":[\"GREEN\",\"green\"],\"_valueKeys\":[\"word\",\"color\"]},{\"name\":\"Congruent Yellow\",\"weight\":1,\"values\":[\"YELLOW\",\"yellow\"],\"_valueKeys\":[\"word\",\"color\"]},{\"name\":\"Incongruent Red Word\",\"weight\":1,\"values\":[\"RED\",\"blue\",\"green\",\"yellow\"],\"_valueKeys\":[\"word\",\"color\"]},{\"name\":\"Incongruent Blue Word\",\"weight\":1,\"values\":[\"BLUE\",\"red\",\"green\",\"yellow\"],\"_valueKeys\":[\"word\",\"color\"]},{\"name\":\"Incongruent Green Word\",\"weight\":1,\"values\":[\"GREEN\",\"red\",\"blue\",\"yellow\"],\"_valueKeys\":[\"word\",\"color\"]},{\"name\":\"Incongruent Yellow Word\",\"weight\":1,\"values\":[\"YELLOW\",\"red\",\"blue\",\"green\"],\"_valueKeys\":[\"word\",\"color\"]}]",
+      "conditionsFile": "",
+      "isTrials": true,
+      "list": [
+        {
+          "name": "Fixation",
+          "Point": 4
+        },
+        {
+          "name": "Stimulus",
+          "Point": 6
+        },
+        {
+          "name": "ITI",
+          "Point": 8
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "name": "MainLoop",
+      "nRounds": 1,
+      "type": "fullRandom",
+      "conditions": "[{\"name\":\"Congruent Red\",\"weight\":10,\"values\":[\"RED\",\"red\"],\"_valueKeys\":[\"word\",\"color\"]},{\"name\":\"Congruent Blue\",\"weight\":10,\"values\":[\"BLUE\",\"blue\"],\"_valueKeys\":[\"word\",\"color\"]},{\"name\":\"Congruent Green\",\"weight\":10,\"values\":[\"GREEN\",\"green\"],\"_valueKeys\":[\"word\",\"color\"]},{\"name\":\"Congruent Yellow\",\"weight\":10,\"values\":[\"YELLOW\",\"yellow\"],\"_valueKeys\":[\"word\",\"color\"]},{\"name\":\"Incongruent Red Word\",\"weight\":10,\"values\":[\"RED\",\"blue\",\"green\",\"yellow\"],\"_valueKeys\":[\"word\",\"color\"]},{\"name\":\"Incongruent Blue Word\",\"weight\":10,\"values\":[\"BLUE\",\"red\",\"green\",\"yellow\"],\"_valueKeys\":[\"word\",\"color\"]},{\"name\":\"Incongruent Green Word\",\"weight\":10,\"values\":[\"GREEN\",\"red\",\"blue\",\"yellow\"],\"_valueKeys\":[\"word\",\"color\"]},{\"name\":\"Incongruent Yellow Word\",\"weight\":10,\"values\":[\"YELLOW\",\"red\",\"blue\",\"green\"],\"_valueKeys\":[\"word\",\"color\"]}]",
+      "conditionsFile": "",
+      "isTrials": true,
+      "list": [
+        {
+          "name": "Fixation",
+          "Point": 12
+        },
+        {
+          "name": "Stimulus",
+          "Point": 14
+        },
+        {
+          "name": "ITI",
+          "Point": 16
+        }
+      ]
+    }
+  ]
+}
