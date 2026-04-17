@@ -539,13 +539,13 @@
 
         .chat-message {
             margin-bottom: 4px;
-            padding: 12px 24px;
+            padding: 12px 32px;
             border-radius: 8px;
             max-width: 100%;
             word-wrap: break-word;
             font-family: 'DM Sans', sans-serif;
             font-size: 14px;
-            line-height: 1.5;
+            line-height: 1.65;
         }
 
         .chat-message.user {
@@ -605,7 +605,11 @@
 
         .thinking-message-container {
             width: 100%;
-            margin-bottom: 2px;
+            margin-bottom: 0;
+        }
+
+        .thinking-message-container + .normal-message-container {
+            margin-top: -20px;
         }
 
         .thinking-message-header {
@@ -626,29 +630,36 @@
         }
 
         .thinking-message-header:hover {
-            background: rgba(0, 0, 0, 0.05);
+            background: transparent;
         }
 
         .thinking-message-title {
             display: flex;
             align-items: center;
             gap: 8px;
+            font-size: 13px;
         }
 
         .thinking-message-content {
             max-height: 0;
             overflow: hidden;
             transition: max-height 0.3s ease;
-            margin-top: 4px;
-            padding-left: 28px;
+            margin-top: -2px;
+            padding: 0 40px 0 20px;
+            margin-left: 19px;
             color: #888;
-            font-size: 14px;
+            font-size: 12px;
             line-height: 1.6;
+            border-left: 1px solid transparent;
+            list-style-position: inside;
+            text-align: justify;
         }
 
         .thinking-message-content.expanded {
             max-height: none;
             overflow: visible;
+            padding-bottom: 10px;
+            border-left: 1px solid rgba(0, 0, 0, 0.12);
         }
 
         .chat-message.thinking .thinking-title {
@@ -912,7 +923,7 @@
         }
 
         .message-chain-container.has-content {
-            display: block;
+            display: flex;
         }
 
         .message-chain-container:hover {
@@ -976,10 +987,10 @@
         .message-chain-content {
             max-height: 0;
             overflow: hidden;
-            padding: 0 20px;
+            padding: 0 28px;
             font-family: 'DM Sans', sans-serif;
             font-size: 14px;
-            line-height: 1.5;
+            line-height: 1.65;
             color: #45515e;
             background: transparent;
             white-space: pre-wrap;
@@ -991,7 +1002,7 @@
         }
 
         .message-chain-content:not(.collapsed) {
-            padding: 20px;
+            padding: 24px 28px;
             opacity: 1;
             overflow-y: auto;
             max-height: none;
@@ -1027,7 +1038,11 @@
         }
 
         .normal-message-container.has-content {
-            display: block;
+            display: flex;
+        }
+
+        .normal-message-container.collapsed {
+            margin-bottom: 2px;
         }
 
         .normal-message-container:hover {
@@ -1089,12 +1104,12 @@
         }
 
         .normal-message-content {
-            max-height: calc(1.5em * 20);  /* 默认展开 20 行高度 */
+            max-height: calc(1.65em * 20);  /* 默认展开 20 行高度 */
             overflow-y: auto;
-            padding: 12px;
+            padding: 16px 28px;
             font-family: 'DM Sans', sans-serif;
             font-size: 14px;
-            line-height: 1.5;
+            line-height: 1.65;
             color: #45515e;
             background: transparent;
             white-space: pre-wrap;
@@ -1109,7 +1124,7 @@
         }
 
         .normal-message-content.collapsed {
-            padding: 0 12px;
+            padding: 0 28px;
             opacity: 0;
             overflow: hidden;
             max-height: 0;  /* 收起时完全收起 */
@@ -1127,6 +1142,23 @@
             border-top: 1px solid rgba(0,0,0,0.1);
         }
 
+        .json-block {
+            font-family: 'JetBrains Mono', 'Fira Code', 'DM Sans', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 16px 20px;
+            background: rgba(0, 0, 0, 0.02);
+            border-radius: 6px;
+            overflow-x: auto;
+            white-space: pre;
+        }
+
+        .json-key { color: #7c3aed; }
+        .json-string { color: #059669; }
+        .json-number { color: #2563eb; }
+        .json-boolean { color: #dc2626; }
+        .json-null { color: #9ca3af; }
+        .json-bracket { color: #475569; }
 
 
         .message-wrapper {
@@ -2953,6 +2985,30 @@
             }
         }
 
+        // Helper function: Syntax highlight JSON for display
+        function highlightJSON(jsonStr) {
+            if (!jsonStr) return '';
+            jsonStr = jsonStr.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            return jsonStr.replace(
+                /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,
+                function (match) {
+                    let cls = 'json-number';
+                    if (/^"/.test(match)) {
+                        if (/:$/.test(match)) {
+                            cls = 'json-key';
+                        } else {
+                            cls = 'json-string';
+                        }
+                    } else if (/true|false/.test(match)) {
+                        cls = 'json-boolean';
+                    } else if (/null/.test(match)) {
+                        cls = 'json-null';
+                    }
+                    return '<span class="' + cls + '">' + match + '</span>';
+                }
+            );
+        }
+
         // 辅助函数：从AI响应中提取JSON内容
         function extractJSON(text) {
             if (!text || typeof text !== 'string') {
@@ -3780,7 +3836,7 @@
             return msgDiv;
         }
 
-        function addProgressMessage(message) {
+        function addProgressMessage(message, useHtml = false) {
             const wrapper = document.createElement('div');
             wrapper.className = 'message-wrapper';
             wrapper.style.cssText = 'display: flex; flex-direction: column; align-items: flex-start; width: 100%; margin-bottom: 16px;';
@@ -3788,7 +3844,7 @@
             const progressDiv = document.createElement('div');
             progressDiv.className = 'chat-message';
             progressDiv.style.cssText = `
-                color: #8e8e93;
+                color: #000000;
                 width: 100% !important;
                 max-width: 100% !important;
                 margin-left: 0;
@@ -3801,7 +3857,11 @@
                 background: transparent;
                 border: none;
             `;
-            progressDiv.textContent = message;
+            if (useHtml) {
+                progressDiv.innerHTML = message;
+            } else {
+                progressDiv.textContent = message;
+            }
             
             wrapper.appendChild(progressDiv);
             chatMessagesDiv.appendChild(wrapper);
@@ -3945,14 +4005,17 @@
                     messageContainer.classList.remove('collapsed');
                     messageContent.classList.remove('collapsed');
                     wrapper.classList.remove('collapsed');
-                    messageContent.style.maxHeight = 'none';
+                    messageContent.style.maxHeight = '';
                     if (toggleIcon) toggleIcon.classList.remove('collapsed');
+                    setTimeout(() => {
+                        chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
+                    }, 50);
                 } else {
                     // Collapse
                     messageContainer.classList.add('collapsed');
                     messageContent.classList.add('collapsed');
                     wrapper.classList.add('collapsed');
-                    messageContent.style.maxHeight = '0';
+                    messageContent.style.maxHeight = '0px';
                     if (toggleIcon) toggleIcon.classList.add('collapsed');
                 }
             });
@@ -4044,7 +4107,11 @@
                         // 不是有效的 JSON，按原样显示
                     }
                     // 将最终内容放入消息容器
-                    messageContent.innerHTML = marked.parse(displayContent);
+                    if (title === 'Flowchart') {
+                        messageContent.innerHTML = `<pre class="json-block">${highlightJSON(displayContent)}</pre>`;
+                    } else {
+                        messageContent.innerHTML = marked.parse(displayContent);
+                    }
                     // 等待 DOM 更新后检查并滚动
                     requestAnimationFrame(() => {
                         const isMessageAtBottom = messageContent.scrollHeight - messageContent.scrollTop - messageContent.clientHeight < 30;
@@ -4324,7 +4391,7 @@
 
             // 显示进度提示：使用的模型和开始运行
             const modelName = settings.model_name || settings.model || 'AI Model';
-            addProgressMessage(`Starting experiment design with ${modelName}...`);
+            addProgressMessage(`Starting experiment design with <b>${modelName}</b>...`, true);
 
             // 使用 isAborted 标志来控制流程，不使用 AbortController 的 signal
             // 这样可以避免浏览器显示 net::ERR_ABORTED 错误
