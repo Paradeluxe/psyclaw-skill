@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
@@ -67,12 +67,11 @@
             background: var(--bg-white);
             font-family: var(--font-ui);
             overflow: hidden;
-            padding: 20px 20px 20px 0;
+            padding: 0;
             padding-right: 340px;
             transition: padding-right 0.1s ease;
             color: var(--text-primary);
             line-height: 1.5;
-            /* 防止字体加载时的布局偏移 */
             font-synthesis: none;
         }
 
@@ -85,7 +84,9 @@
         }
 
         .canvas-container {
-            margin-left: 0;
+            flex: 1;
+            position: relative;
+            overflow: hidden;
         }
 
         .container {
@@ -943,11 +944,11 @@
 
         .routine-controls {
             position: fixed;
-            left: 20px;
-            top: 50%;
-            transform: translateY(-50%);
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
             display: flex;
-            flex-direction: column;
+            flex-direction: row;
             gap: 6px;
             z-index: 1000;
         }
@@ -961,6 +962,11 @@
             z-index: 1000;
             width: auto;
             flex-shrink: 0;
+            transition: left 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body:has(.task-sidebar.open) .viewport-controls {
+            left: 300px;
         }
 
         .zoom-level {
@@ -1437,6 +1443,11 @@
             z-index: 2000;
             display: flex;
             gap: 6px;
+            transition: left 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body:has(.task-sidebar.open) .undo-button-container {
+            left: 300px;
         }
 
         .undo-button, .action-button {
@@ -1523,6 +1534,385 @@
                 transform: translateX(400px);
                 opacity: 0;
             }
+        }
+
+        /* ===== Task Sidebar - LEFT side, push canvas ===== */
+        .main-layout {
+            display: flex;
+            flex-direction: row;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+        }
+
+        .task-sidebar-wrapper {
+            display: flex;
+            flex-direction: row;
+            height: 100vh;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .task-sidebar {
+            width: 0;
+            height: 100vh;
+            background: var(--bg-white);
+            border-right: 1px solid var(--border-gray);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            flex-shrink: 0;
+        }
+
+        .task-sidebar.open {
+            width: 280px;
+        }
+
+        .task-sidebar-toggle {
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 22px;
+            height: 64px;
+            background: var(--bg-white);
+            border: 1px solid var(--border-gray);
+            border-left: none;
+            border-radius: 0 8px 8px 0;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            color: var(--text-muted);
+            z-index: 1001;
+            box-shadow: 3px 0 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .task-sidebar-wrapper:has(.task-sidebar.open) .task-sidebar-toggle {
+            left: 280px;
+        }
+
+        .task-sidebar-toggle svg {
+            transform: rotate(180deg);
+        }
+
+        .task-sidebar-wrapper:has(.task-sidebar.open) .task-sidebar-toggle svg {
+            transform: rotate(0deg);
+        }
+
+        .task-sidebar-toggle:hover {
+            background: #f5f5f5;
+            color: var(--text-dark);
+        }
+
+        .task-sidebar-toggle svg {
+            width: 14px;
+            height: 14px;
+            transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Sidebar Header */
+        .task-sidebar-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 14px 10px 14px;
+            flex-shrink: 0;
+        }
+
+        .task-sidebar-title-group {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .task-sidebar-title {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-dark);
+            letter-spacing: 0.01em;
+        }
+
+        .task-sidebar-count {
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--text-muted);
+            background: #f0f0f0;
+            padding: 2px 7px;
+            border-radius: 6px;
+        }
+
+        .task-sidebar-header-actions {
+            display: flex;
+            gap: 2px;
+        }
+
+        .task-header-btn {
+            width: 28px;
+            height: 28px;
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            transition: all 0.15s ease;
+        }
+
+        .task-header-btn:hover {
+            background: rgba(0, 0, 0, 0.06);
+            color: var(--text-dark);
+        }
+
+        .task-header-btn svg {
+            width: 15px;
+            height: 15px;
+        }
+
+        /* Search */
+        .task-sidebar-search {
+            padding: 4px 12px 10px 12px;
+            flex-shrink: 0;
+        }
+
+        .task-search-input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .task-search-icon {
+            position: absolute;
+            left: 10px;
+            width: 14px;
+            height: 14px;
+            color: var(--text-muted);
+            pointer-events: none;
+        }
+
+        .task-search-input {
+            width: 100%;
+            padding: 7px 10px 7px 30px;
+            border: 1px solid transparent;
+            border-radius: 7px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 13px;
+            color: var(--text-dark);
+            background: #f0f0f0;
+            transition: all 0.2s ease;
+        }
+
+        .task-search-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .task-search-input:focus {
+            outline: none;
+            background: white;
+            border-color: var(--border-gray);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.08);
+        }
+
+        /* Task List */
+        .task-sidebar-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px;
+        }
+
+        .task-sidebar-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .task-sidebar-list::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .task-sidebar-list::-webkit-scrollbar-thumb {
+            background: var(--border-gray);
+            border-radius: 3px;
+        }
+
+        .task-sidebar-list::-webkit-scrollbar-thumb:hover {
+            background: #c0c0c0;
+        }
+
+        /* Section Header */
+        .task-section-header {
+            padding: 12px 8px 6px 8px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* Task Item */
+        .task-sidebar-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            margin-bottom: 4px;
+        }
+
+        .task-sidebar-item:hover {
+            background: rgba(0, 0, 0, 0.04);
+        }
+
+        .task-sidebar-item.active {
+            background: #f0f4ff;
+        }
+
+        .task-sidebar-item-icon {
+            width: 16px;
+            height: 16px;
+            flex-shrink: 0;
+            margin-right: 10px;
+            color: var(--text-muted);
+        }
+
+        .task-sidebar-item.active .task-sidebar-item-icon {
+            color: var(--brand-blue);
+        }
+
+        .task-sidebar-item-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .task-sidebar-item-name {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            font-weight: 400;
+            color: var(--text-dark);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            line-height: 1.4;
+        }
+
+        .task-sidebar-item.active .task-sidebar-item-name {
+            font-weight: 500;
+        }
+
+        .task-sidebar-item-actions {
+            display: flex;
+            gap: 2px;
+            opacity: 0;
+            transition: opacity 0.15s ease;
+            flex-shrink: 0;
+            margin-left: 8px;
+        }
+
+        .task-sidebar-item:hover .task-sidebar-item-actions {
+            opacity: 1;
+        }
+
+        .task-sidebar-item-btn {
+            width: 24px;
+            height: 24px;
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            transition: all 0.15s ease;
+            padding: 0;
+        }
+
+        .task-sidebar-item-btn:hover {
+            background: rgba(0, 0, 0, 0.1);
+            color: var(--text-dark);
+        }
+
+        .task-sidebar-item-btn.delete:hover {
+            background: rgba(239, 68, 68, 0.15);
+            color: #ef4444;
+        }
+
+        .task-sidebar-item-btn svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        /* Footer */
+        .task-sidebar-footer {
+            padding: 10px 12px 16px 12px;
+            border-top: 1px solid var(--border-light);
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+
+        .task-sidebar-new-btn {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 9px;
+            background: var(--brand-blue);
+            border: none;
+            border-radius: 7px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 13px;
+            font-weight: 500;
+            color: white;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .task-sidebar-new-btn:hover {
+            background: var(--primary-700);
+        }
+
+        .task-sidebar-new-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .task-sidebar-new-btn svg {
+            width: 15px;
+            height: 15px;
+        }
+
+        .task-sidebar-empty {
+            padding: 48px 16px;
+            text-align: center;
+        }
+
+        .task-sidebar-empty svg {
+            width: 36px;
+            height: 36px;
+            margin-bottom: 10px;
+            opacity: 0.25;
+            color: var(--text-muted);
+        }
+
+        .task-sidebar-empty-text {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-dark);
+            margin-bottom: 4px;
+        }
+
+        .task-sidebar-empty-subtext {
+            font-size: 12px;
+            color: var(--text-muted);
+            line-height: 1.5;
         }
     </style>
 </head>
@@ -1984,7 +2374,62 @@
     </div>
 </div>
 
-<div class="canvas-container">
+<div class="main-layout">
+    <!-- Task Sidebar - Left side -->
+    <div class="task-sidebar-wrapper" id="taskSidebarWrapper">
+        <button type="button" class="task-sidebar-toggle" id="taskSidebarToggle" title="Toggle task panel">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
+            </svg>
+        </button>
+        
+        <div class="task-sidebar" id="taskSidebar">
+            <div class="task-sidebar-header">
+                <div class="task-sidebar-title-group">
+                    <span class="task-sidebar-title">Chats</span>
+                    <span class="task-sidebar-count" id="taskSidebarCount">0</span>
+                </div>
+                <div class="task-sidebar-header-actions">
+                    <button type="button" class="task-header-btn" id="taskSearchToggle" title="Search">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                        </svg>
+                    </button>
+                    <button type="button" class="task-header-btn" id="taskCollapseBtn" title="Close panel">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div class="task-sidebar-search" id="taskSidebarSearch" style="display: none;">
+                <div class="task-search-input-wrapper">
+                    <svg class="task-search-icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                    </svg>
+                    <input type="text" class="task-search-input" id="taskSearchInput" placeholder="Search chats...">
+                </div>
+            </div>
+            <div class="task-sidebar-list" id="taskSidebarList">
+                <div class="task-sidebar-empty">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V6h16v12zM6 10h2v2H6zm0 4h8v2H6zm10 0h2v2h-2zm-6-4h8v2h-8z"/></svg>
+                    <div class="task-sidebar-empty-text">No chats yet</div>
+                    <div class="task-sidebar-empty-subtext">Start a new conversation</div>
+                </div>
+            </div>
+            <div class="task-sidebar-footer">
+                <button type="button" class="task-sidebar-new-btn" id="taskSidebarNewBtn">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                    </svg>
+                    New chat
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Canvas Container -->
+    <div class="canvas-container">
         <div class="routine-controls">
             <button class="action-button" id="addRoutine" title="Add Routine">
                 <span class="action-icon">
@@ -2040,6 +2485,7 @@
     </div>
 </div>
 
+<!-- Chatbot Panel -->
 <div class="chatbot-panel" id="chatbotPanel">
     <div class="chatbot-resizer" id="chatbotResizer"></div>
     <iframe src="chatbot.html" title="Chatbot Panel" id="chatbotFrame"></iframe>
@@ -2121,6 +2567,423 @@
         // Initial padding setup
         const initialChatbotWidth = chatbotPanel.offsetWidth;
         document.body.style.paddingRight = (initialChatbotWidth + 20) + 'px';
+
+        // ===== Task Sidebar Logic =====
+        const taskSidebar = document.getElementById('taskSidebar');
+        const taskSidebarToggle = document.getElementById('taskSidebarToggle');
+        const taskSidebarList = document.getElementById('taskSidebarList');
+        const taskSidebarNewBtn = document.getElementById('taskSidebarNewBtn');
+        const taskSidebarCount = document.getElementById('taskSidebarCount');
+        const taskSearchToggle = document.getElementById('taskSearchToggle');
+        const taskSearchInput = document.getElementById('taskSearchInput');
+        const taskSidebarSearch = document.getElementById('taskSidebarSearch');
+        const taskCollapseBtn = document.getElementById('taskCollapseBtn');
+
+        const TASKS_KEY = 'psyclaw_tasks';
+
+        let tasks = [];
+        let currentTaskId = null;
+        let currentSearchQuery = '';
+        const MAX_TASKS = 20;
+
+        // Utility functions
+        function generateTaskId() {
+            return 'task_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function formatTaskDate(dateStr) {
+            const date = new Date(dateStr);
+            const now = new Date();
+            const diffMs = now - date;
+            const diffMins = Math.floor(diffMs / 60000);
+            const diffHours = Math.floor(diffMs / 3600000);
+            const diffDays = Math.floor(diffMs / 86400000);
+
+            if (diffMins < 1) return 'Just now';
+            if (diffMins < 60) return `${diffMins}m ago`;
+            if (diffHours < 24) return `${diffHours}h ago`;
+            if (diffDays < 7) return `${diffDays}d ago`;
+            return date.toLocaleDateString();
+        }
+
+        function getTimeSectionLabel(dateStr) {
+            const date = new Date(dateStr);
+            const now = new Date();
+            const diffDays = Math.floor((now - date) / 86400000);
+
+            if (diffDays === 0) return 'Today';
+            if (diffDays === 1) return 'Yesterday';
+            if (diffDays <= 7) return 'Previous 7 Days';
+            if (diffDays <= 30) return 'Previous 30 Days';
+            return 'Older';
+        }
+
+        function getGroupedTasks() {
+            const sections = {
+                'Today': [],
+                'Yesterday': [],
+                'Previous 7 Days': [],
+                'Previous 30 Days': [],
+                'Older': []
+            };
+
+            tasks.forEach(task => {
+                const label = getTimeSectionLabel(task.updatedAt || task.createdAt);
+                sections[label].push(task);
+            });
+
+            const result = [];
+            for (const [label, items] of Object.entries(sections)) {
+                if (items.length > 0) {
+                    result.push({ label, items });
+                }
+            }
+            return result;
+        }
+
+        function getFilteredTasks() {
+            if (!currentSearchQuery) return tasks;
+            const query = currentSearchQuery.toLowerCase();
+            return tasks.filter(task => task.name.toLowerCase().includes(query));
+        }
+
+        function renderTaskItem(task) {
+            return `
+                <div class="task-sidebar-item ${task.id === currentTaskId ? 'active' : ''}" data-task-id="${task.id}">
+                    <svg class="task-sidebar-item-icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
+                    </svg>
+                    <div class="task-sidebar-item-content">
+                        <div class="task-sidebar-item-name">${escapeHtml(task.name)}</div>
+                    </div>
+                    <div class="task-sidebar-item-actions">
+                        <button class="task-sidebar-item-btn" data-tooltip="Rename" onclick="renameTask('${task.id}', event)">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                        </button>
+                        <button class="task-sidebar-item-btn delete" data-tooltip="Delete" onclick="deleteTask('${task.id}', event)">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderTaskSidebarList() {
+            const filteredTasks = getFilteredTasks();
+
+            if (filteredTasks.length === 0) {
+                if (currentSearchQuery) {
+                    taskSidebarList.innerHTML = `
+                        <div class="task-sidebar-empty">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                            <div class="task-sidebar-empty-text">No results found</div>
+                            <div class="task-sidebar-empty-subtext">Try a different search term</div>
+                        </div>
+                    `;
+                } else {
+                    taskSidebarList.innerHTML = `
+                        <div class="task-sidebar-empty">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V6h16v12zM6 10h2v2H6zm0 4h8v2H6zm10 0h2v2h-2zm-6-4h8v2h-8z"/></svg>
+                            <div class="task-sidebar-empty-text">No chats yet</div>
+                            <div class="task-sidebar-empty-subtext">Start a new conversation</div>
+                        </div>
+                    `;
+                }
+                return;
+            }
+
+            if (currentSearchQuery) {
+                taskSidebarList.innerHTML = filteredTasks.map(task => renderTaskItem(task)).join('');
+            } else {
+                const groups = getGroupedTasks();
+                taskSidebarList.innerHTML = groups.map(group => `
+                    <div class="task-section-header">${group.label}</div>
+                    ${group.items.map(task => renderTaskItem(task)).join('')}
+                `).join('');
+            }
+
+            taskSidebarList.querySelectorAll('.task-sidebar-item').forEach(item => {
+                item.addEventListener('click', (e) => {
+                    if (!e.target.closest('.task-sidebar-item-actions')) {
+                        switchToTask(item.dataset.taskId);
+                    }
+                });
+            });
+        }
+
+        function updateTaskSidebarUI() {
+            taskSidebarCount.textContent = `${tasks.length}`;
+            taskSidebarNewBtn.disabled = tasks.length >= MAX_TASKS;
+            renderTaskSidebarList();
+        }
+
+        // Toggle sidebar
+        function toggleTaskSidebar() {
+            const isOpen = taskSidebar.classList.contains('open');
+            if (isOpen) {
+                closeTaskSidebar();
+            } else {
+                openTaskSidebar();
+            }
+        }
+
+        function openTaskSidebar() {
+            taskSidebar.classList.add('open');
+            taskSidebarToggle.classList.add('opened');
+            renderTaskSidebarList();
+        }
+
+        function closeTaskSidebar() {
+            taskSidebar.classList.remove('open');
+            taskSidebarToggle.classList.remove('opened');
+        }
+
+        // Create new task
+        function addNewTask() {
+            if (tasks.length >= MAX_TASKS) return;
+
+            const taskNumber = tasks.length + 1;
+            const newTask = {
+                id: generateTaskId(),
+                name: `Task ${taskNumber}`,
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
+                messages: [],
+                conversationState: {
+                    stage: 'idle',
+                    userRequirement: '',
+                    experimentDescription: '',
+                    messages: []
+                },
+                flowchartData: null
+            };
+
+            tasks.push(newTask);
+            currentTaskId = newTask.id;
+            saveTasks();
+            updateTaskSidebarUI();
+
+            // Notify chatbot iframe to create new task
+            if (chatbotFrame.contentWindow) {
+                chatbotFrame.contentWindow.postMessage({
+                    type: 'create-task',
+                    task: newTask
+                }, '*');
+            }
+        }
+
+        // Switch to task
+        function switchToTask(taskId) {
+            if (taskId === currentTaskId) return;
+
+            // Save current task state first
+            if (currentTaskId && chatbotFrame.contentWindow) {
+                chatbotFrame.contentWindow.postMessage({
+                    type: 'save-current-task',
+                    taskId: currentTaskId
+                }, '*');
+            }
+
+            currentTaskId = taskId;
+            saveTasks();
+            updateTaskSidebarUI();
+
+            // Load task in chatbot
+            const task = tasks.find(t => t.id === taskId);
+            if (task && chatbotFrame.contentWindow) {
+                chatbotFrame.contentWindow.postMessage({
+                    type: 'load-task',
+                    task: task
+                }, '*');
+            }
+        }
+
+        // Delete task
+        window.deleteTask = function(taskId, event) {
+            event.stopPropagation();
+            if (tasks.length <= 1) return;
+
+            tasks = tasks.filter(t => t.id !== taskId);
+            if (currentTaskId === taskId) {
+                currentTaskId = tasks[0].id;
+            }
+            saveTasks();
+            updateTaskSidebarUI();
+
+            // Notify chatbot
+            if (chatbotFrame.contentWindow) {
+                chatbotFrame.contentWindow.postMessage({
+                    type: 'task-deleted',
+                    taskId: taskId
+                }, '*');
+            }
+        };
+
+        // Rename task
+        window.renameTask = function(taskId, event) {
+            event.stopPropagation();
+            const task = tasks.find(t => t.id === taskId);
+            if (!task) return;
+
+            const newName = prompt('Rename chat:', task.name);
+            if (newName && newName.trim()) {
+                task.name = newName.trim();
+                task.updatedAt = new Date().toISOString();
+                saveTasks();
+                updateTaskSidebarUI();
+            }
+        };
+
+        // Save tasks to localStorage
+        function saveTasks() {
+            try {
+                localStorage.setItem('psyclaw_tasks', JSON.stringify(tasks));
+                localStorage.setItem('psyclaw_current_task_id', currentTaskId);
+            } catch (e) {
+                console.warn('Failed to save tasks:', e);
+            }
+        }
+
+        // Load tasks from localStorage
+        function loadTasks() {
+            try {
+                const saved = localStorage.getItem('psyclaw_tasks');
+                const savedCurrentId = localStorage.getItem('psyclaw_current_task_id');
+
+                if (saved) {
+                    tasks = JSON.parse(saved);
+                    currentTaskId = savedCurrentId || (tasks.length > 0 ? tasks[0].id : null);
+                } else {
+                    // Create default task
+                    const defaultTask = {
+                        id: generateTaskId(),
+                        name: 'Task 1',
+                        createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString(),
+                        messages: [],
+                        conversationState: {
+                            stage: 'idle',
+                            userRequirement: '',
+                            experimentDescription: '',
+                            messages: []
+                        },
+                        flowchartData: null
+                    };
+                    tasks = [defaultTask];
+                    currentTaskId = defaultTask.id;
+                    saveTasks();
+                }
+
+                updateTaskSidebarUI();
+
+                // Load current task in chatbot
+                if (currentTaskId) {
+                    const task = tasks.find(t => t.id === currentTaskId);
+                    if (task && chatbotFrame.contentWindow) {
+                        chatbotFrame.contentWindow.postMessage({
+                            type: 'load-task',
+                            task: task
+                        }, '*');
+                    }
+                }
+            } catch (e) {
+                console.warn('Failed to load tasks:', e);
+                tasks = [];
+                currentTaskId = null;
+            }
+        }
+
+        // Event listeners
+        if (taskSidebarToggle) {
+            taskSidebarToggle.addEventListener('click', toggleTaskSidebar);
+        }
+
+        if (taskSidebarNewBtn) {
+            taskSidebarNewBtn.addEventListener('click', addNewTask);
+        }
+
+        if (taskSearchToggle) {
+            taskSearchToggle.addEventListener('click', () => {
+                const isVisible = taskSidebarSearch.style.display !== 'none';
+                taskSidebarSearch.style.display = isVisible ? 'none' : 'block';
+                if (!isVisible) {
+                    setTimeout(() => taskSearchInput.focus(), 100);
+                } else {
+                    taskSearchInput.value = '';
+                    currentSearchQuery = '';
+                    renderTaskSidebarList();
+                }
+            });
+        }
+
+        if (taskSearchInput) {
+            taskSearchInput.addEventListener('input', (e) => {
+                currentSearchQuery = e.target.value;
+                renderTaskSidebarList();
+            });
+        }
+
+        if (taskCollapseBtn) {
+            taskCollapseBtn.addEventListener('click', closeTaskSidebar);
+        }
+
+        // Listen for messages from chatbot iframe
+        window.addEventListener('message', (e) => {
+            if (!e.data || !e.data.type) return;
+
+            switch (e.data.type) {
+                case 'task-created':
+                    // Chatbot created a new task, add it to our list
+                    if (e.data.task) {
+                        tasks.push(e.data.task);
+                        currentTaskId = e.data.task.id;
+                        saveTasks();
+                        updateTaskSidebarUI();
+                    }
+                    break;
+
+                case 'task-updated':
+                    // Chatbot updated current task
+                    if (e.data.task && currentTaskId) {
+                        const idx = tasks.findIndex(t => t.id === currentTaskId);
+                        if (idx >= 0) {
+                            tasks[idx] = { ...tasks[idx], ...e.data.task };
+                            saveTasks();
+                            updateTaskSidebarUI();
+                        }
+                    }
+                    break;
+
+                case 'request-tasks':
+                    // Chatbot is asking for current tasks
+                    chatbotFrame.contentWindow.postMessage({
+                        type: 'tasks-data',
+                        tasks: tasks,
+                        currentTaskId: currentTaskId
+                    }, '*');
+                    break;
+
+                case 'save-tasks':
+                    // Chatbot is saving tasks to us
+                    if (e.data.tasks && Array.isArray(e.data.tasks)) {
+                        tasks = e.data.tasks;
+                        currentTaskId = e.data.currentTaskId || currentTaskId;
+                        localStorage.setItem(TASKS_KEY, JSON.stringify(tasks));
+                        localStorage.setItem('psyclaw_current_task_id', currentTaskId || '');
+                        updateTaskSidebarUI();
+                    }
+                    break;
+            }
+        });
+
+        // Initialize tasks
+        loadTasks();
 
         let isCanvasPanning = false;
         let canvasPanStartX = 0;
@@ -5921,8 +6784,15 @@
                 } catch (parseError) {
                     console.log('Direct parse failed, trying to fix JSON...');
                     
-                    // 尝试修复：移除末尾的逗号
+                    // 尝试修复：移除 <think> 标签及其内容（AI 推理过程）
                     let fixedContent = content.trim();
+                    fixedContent = fixedContent.replace(/<think>[\s\S]*?<\/think>/g, '');
+                    
+                    // 尝试修复：移除注释（// 和 /* */）
+                    fixedContent = fixedContent.replace(/\/\/.*$/gm, '');
+                    fixedContent = fixedContent.replace(/\/\*[\s\S]*?\*\//g, '');
+                    
+                    // 尝试修复：移除末尾的逗号
                     if (fixedContent.endsWith(',}')) {
                         fixedContent = fixedContent.slice(0, -2) + '}';
                     }
@@ -6142,6 +7012,99 @@
 
                 // 显示通知
                 showNotification('✅ Flowchart loaded: ' + fileName);
+            } else if (e.data && e.data.type === 'request-flowchart-state') {
+                // 保存当前 flowchart 状态并发送给 chatbot
+                const flowchartState = {
+                    routines: routineRects.map((rect, index) => ({
+                        id: rect.id,
+                        name: rect.name,
+                        x: rect.x,
+                        y: rect.y,
+                        width: rect.width,
+                        height: rect.height,
+                        duration: rect.duration,
+                        avtpComponents: rect.avtpComponents || [],
+                        Point: (index + 1) * 2
+                    })),
+                    loops: connectionsToLoops(connections)
+                };
+                
+                window.parent.postMessage({
+                    type: 'flowchart-state-response',
+                    requestId: e.data.requestId,
+                    state: flowchartState,
+                    timestamp: new Date().toISOString()
+                }, '*');
+            } else if (e.data && e.data.type === 'restore-flowchart-state') {
+                // 恢复 flowchart 状态
+                const state = e.data.state;
+                if (!state || !state.routines || !Array.isArray(state.routines)) {
+                    // 如果没有有效的状态数据，清空 flowchart
+                    routineRects.length = 0;
+                    connections.length = 0;
+                    selectedRoutineIndex = -1;
+                    activeDragRect = null;
+                    currentRoutineCount = 0;
+                    routineIdCounter = 0;
+                    loopIdCounter = 0;
+                    updatePoints();
+                    updateRoutineCount();
+                    draw();
+                    return;
+                }
+                
+                // 清空当前状态
+                routineRects.length = 0;
+                connections.length = 0;
+                selectedRoutineIndex = -1;
+                activeDragRect = null;
+                
+                // 恢复 routines
+                state.routines.forEach((r) => {
+                    routineRects.push({
+                        id: r.id,
+                        name: r.name,
+                        x: r.x,
+                        y: r.y,
+                        width: r.width || 200,
+                        height: r.height || 150,
+                        duration: r.duration,
+                        avtpComponents: r.avtpComponents || [],
+                        borderRadius: 10,
+                        isDragging: false,
+                        offsetX: 0,
+                        offsetY: 0
+                    });
+                });
+                
+                // 恢复 loops
+                if (state.loops && Array.isArray(state.loops)) {
+                    connections.push(...loopsToConnections(state.loops));
+                }
+                
+                currentRoutineCount = routineRects.length;
+                routineIdCounter = routineRects.length;
+                loopIdCounter = 0;
+                
+                // 重新计算高度和深度
+                updateAllRoutineHeights();
+                rebuildAllConnectionDepths();
+                
+                currentProjectFile = null;
+                fileHandle = null;
+                
+                updatePoints();
+                updateRoutineCount();
+                draw();
+                saveState();
+                
+                window.parent.postMessage({
+                    type: 'flowchart-state-restored',
+                    success: true,
+                    routinesCount: routineRects.length,
+                    loopsCount: connections.length,
+                    timestamp: new Date().toISOString()
+                }, '*');
             }
         });
 
