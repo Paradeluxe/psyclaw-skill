@@ -2501,6 +2501,7 @@
         
         let tasks = [];
         let currentTaskId = null;
+        let pendingTaskDeletion = false; // Flag to indicate tasks need sync after generation
         
         // Task Sidebar DOM Elements
         const taskSidebarToggle = document.getElementById('taskSidebarToggle');
@@ -2538,16 +2539,62 @@
             return date.toLocaleDateString();
         }
         
-        // Generate smart task name from user input
-        function generateSmartTaskName(messages) {
-            if (!messages || !Array.isArray(messages) || messages.length === 0) {
+        // Generate smart task name from experiment description (outline)
+        // experimentDescription is the AI-generated outline that contains **Experiment Summary:**
+        function generateSmartTaskName(experimentDescription) {
+            // Must have experimentDescription to generate a meaningful task name
+            if (!experimentDescription || typeof experimentDescription !== 'string') {
                 return null;
             }
-            
+
+            // Extract **Experiment Summary:** from the outline
+            const summaryMatch = experimentDescription.match(/\*\*Experiment Summary:\*\*\s*(.+?)(?:\n|$)/i);
+            if (summaryMatch && summaryMatch[1]) {
+                let summary = summaryMatch[1].trim();
+                // Remove any markdown formatting
+                summary = summary.replace(/\*\*/g, '').replace(/\*/g, '').trim();
+                // Limit length to 50 characters
+                if (summary.length > 50) {
+                    const breakPoint = summary.substring(0, 50).lastIndexOf(' ');
+                    if (breakPoint > 20) {
+                        summary = summary.substring(0, breakPoint);
+                    } else {
+                        summary = summary.substring(0, 50);
+                    }
+                }
+                // Remove trailing punctuation
+                summary = summary.replace(/[.,;:!?]+$/, '').trim();
+                if (summary.length >= 3) {
+                    return summary;
+                }
+            }
+
+            // If no Experiment Summary found, return null (don't generate from other sources)
+            return null;
+        }
+
+        // Generate smart task name from user input (fallback for backward compatibility)
+        // messages can be either an array of HTML strings or a single combined HTML string
+        function generateSmartTaskNameFromMessages(messages) {
+            if (!messages || messages.length === 0) {
+                return null;
+            }
+
+            // Convert to array format for processing
+            let messagesToProcess;
+            if (typeof messages === 'string') {
+                // If it's a single HTML string, parse it to extract individual message elements
+                messagesToProcess = [messages];
+            } else if (Array.isArray(messages)) {
+                messagesToProcess = messages;
+            } else {
+                return null;
+            }
+
             // Collect text content from first few messages
             const maxMessagesToAnalyze = 5;
-            const messagesToAnalyze = messages.slice(0, maxMessagesToAnalyze);
-            
+            const messagesToAnalyze = messagesToProcess.slice(0, maxMessagesToAnalyze);
+
             // Extract meaningful text from messages
             const textContent = [];
             for (const msg of messagesToAnalyze) {
@@ -2559,22 +2606,22 @@
                     tempDiv.innerHTML = msg;
                     text = tempDiv.textContent || tempDiv.innerText || '';
                 }
-                
+
                 // Clean and add to collection
                 const cleaned = text.trim().replace(/\s+/g, ' ');
                 if (cleaned.length > 5) { // Only consider meaningful messages
                     textContent.push(cleaned);
                 }
             }
-            
+
             if (textContent.length === 0) {
                 return null;
             }
-            
+
             // Join all text
             const combinedText = textContent.join(' ').trim();
             const lowerText = combinedText.toLowerCase();
-            
+
             // Strategy 1: Look for specific experiment/task names first
             const experimentNames = [
                 { pattern: /\bflanker\b/i, extract: 'Flanker Task' },
@@ -2590,13 +2637,13 @@
                 { pattern: /\breaction[\s-]?time\b/i, extract: 'Reaction Time Task' },
                 { pattern: /\bdecision[\s-]?making\b/i, extract: 'Decision Making Task' },
             ];
-            
+
             for (const { pattern, extract } of experimentNames) {
                 if (pattern.test(combinedText)) {
                     return extract;
                 }
             }
-            
+
             // Strategy 2: Extract key descriptive noun phrases from first user message
             // Look for patterns like "create a [X] experiment/task" or "design [X] task"
             const descriptivePatterns = [
@@ -2605,7 +2652,7 @@
                 /(?:i\s+want\s+to\s+(?:create|design|build|make))\s+(?:a|an|the)?\s*(.+?)\s*(?:experiment|task|study|test)/i,
                 /(?:i\s+need\s+(?:a|an|the)?\s*(.+?)\s*(?:experiment|task|study|test))/i,
             ];
-            
+
             for (const pattern of descriptivePatterns) {
                 const match = combinedText.match(pattern);
                 if (match && match[1]) {
@@ -2614,13 +2661,13 @@
                     extracted = extracted.replace(/\b(for|with|that|which|where|when)\b.*$/i, '').trim();
                     if (extracted.length > 3 && extracted.length < 40) {
                         // Capitalize properly
-                        return extracted.split(' ').map(word => 
+                        return extracted.split(' ').map(word =>
                             word.charAt(0).toUpperCase() + word.slice(1)
                         ).join(' ');
                     }
                 }
             }
-            
+
             // Strategy 3: Extract the first meaningful sentence/phrase (up to ~30 chars)
             // Remove common prefixes first
             let cleanText = combinedText;
@@ -2643,15 +2690,15 @@
                 /^write\s+/i,
                 /^implement\s+/i,
             ];
-            
+
             for (const prefix of prefixesToRemove) {
                 cleanText = cleanText.replace(prefix, '');
             }
             cleanText = cleanText.trim();
-            
+
             // Take the first sentence (up to period or question mark)
             let firstSentence = cleanText.split(/[.!?]/)[0].trim();
-            
+
             // Limit length
             if (firstSentence.length > 35) {
                 // Try to break at word boundary
@@ -2662,66 +2709,60 @@
                     firstSentence = firstSentence.substring(0, 35);
                 }
             }
-            
+
             // Remove trailing punctuation
             firstSentence = firstSentence.replace(/[.,;:!?]+$/, '').trim();
-            
+
             // Capitalize properly
             if (firstSentence.length > 0) {
                 firstSentence = firstSentence.charAt(0).toUpperCase() + firstSentence.slice(1);
             }
-            
+
             if (firstSentence.length >= 3) {
                 return firstSentence;
             }
-            
+
             return null;
         }
         
         // Check if task name should be updated based on new content
-        function shouldUpdateTaskName(task, messages) {
+        function shouldUpdateTaskName(task, experimentDescription) {
             // Don't update if task already has a custom name (not auto-generated)
             const autoGeneratedPatterns = [
                 /^Task \d+$/,
-                /^New Task$/
+                /^New Task$/,
+                /^New$/
             ];
-            
-            const isAutoGenerated = autoGeneratedPatterns.some(pattern => 
+
+            const isAutoGenerated = autoGeneratedPatterns.some(pattern =>
                 pattern.test(task.name)
             );
-            
+
             if (!isAutoGenerated) {
                 return false;
             }
-            
-            // Generate new name from messages
-            const newName = generateSmartTaskName(messages);
-            
+
+            // Generate new name from experiment description (outline)
+            const newName = generateSmartTaskName(experimentDescription);
+
             // Only update if new name is meaningful and different
             return newName && newName !== task.name;
         }
         
         // Create new task
-        function createTask(name = null, messages = []) {
+        function createTask(name = null) {
             const taskNumber = tasks.length + 1;
             
-            // If no name provided, try to generate from messages
-            let finalName = name;
-            if (!finalName && messages.length > 0) {
-                finalName = generateSmartTaskName(messages);
-            }
-            
-            // Fallback to default naming
-            if (!finalName) {
-                finalName = `Task ${taskNumber}`;
-            }
+            // If no name provided, use default naming
+            // Task name will be updated later when experimentDescription is generated
+            let finalName = name || 'New';
             
             const task = {
                 id: generateTaskId(),
                 name: finalName,
                 createdAt: new Date().toISOString(),
                 updatedAt: new Date().toISOString(),
-                messages: [], // Store chat messages HTML
+                messages: '', // Store all chat messages as a single combined HTML structure
                 conversationState: {
                     stage: CONVERSATION_STAGES.IDLE,
                     userRequirement: '',
@@ -2767,21 +2808,10 @@
             const task = tasks.find(t => t.id === currentTaskId);
             if (!task) return;
             
-            // Save messages HTML - only get top-level wrappers to avoid duplicates
-            // Assistant messages are wrapped in .assistant-message-wrapper which contains .message-wrapper
-            // We should only save the top-level containers
-            const allWrappers = chatMessagesDiv.querySelectorAll('.message-wrapper, .assistant-message-wrapper');
-            const topLevelWrappers = Array.from(allWrappers).filter(wrapper => {
-                // Only include wrappers that are not nested inside another wrapper
-                const parent = wrapper.parentElement;
-                return !parent || !parent.classList.contains('assistant-message-wrapper');
-            });
-            const newMessages = topLevelWrappers.map(wrapper => wrapper.outerHTML);
-            
-            // Only update if message count changed to avoid unnecessary saves
-            if (JSON.stringify(task.messages) !== JSON.stringify(newMessages)) {
-                task.messages = newMessages;
-            }
+            // Save ALL messages as a single combined structure (prog-think-normal-prog-think-normal...)
+            // This treats the entire conversation as one unit
+            const chatHTML = chatMessagesDiv.innerHTML;
+            task.messages = chatHTML;
             
             // Save conversation state
             task.conversationState = {
@@ -2797,9 +2827,9 @@
                 task.flowchartState = flowchartState;
             }
             
-            // Auto-update task name based on messages if it's still auto-generated
-            if (task.messages && task.messages.length > 0 && shouldUpdateTaskName(task, task.messages)) {
-                const newName = generateSmartTaskName(task.messages);
+            // Auto-update task name based on experiment description (outline) if it's still auto-generated
+            if (conversationState.experimentDescription && shouldUpdateTaskName(task, conversationState.experimentDescription)) {
+                const newName = generateSmartTaskName(conversationState.experimentDescription);
                 if (newName) {
                     task.name = newName;
                     updateTaskUI(); // Update UI to reflect new name
@@ -2828,20 +2858,23 @@
             // Clear current messages completely
             chatMessagesDiv.innerHTML = '';
             
-            // Restore messages - remove duplicates based on content
-            if (task.messages && task.messages.length > 0) {
-                // Use Set to remove duplicate messages
+            // Restore messages - treat as a single combined structure
+            if (task.messages && typeof task.messages === 'string' && task.messages.length > 0) {
+                chatMessagesDiv.innerHTML = task.messages;
+                
+                // Re-initialize normal message toggles after restoring HTML
+                initializeNormalMessageToggles();
+            } else if (Array.isArray(task.messages) && task.messages.length > 0) {
+                // Legacy format: array of messages - convert to combined format
                 const uniqueMessages = [...new Set(task.messages)];
                 chatMessagesDiv.innerHTML = uniqueMessages.join('');
                 
                 // Re-initialize normal message toggles after restoring HTML
                 initializeNormalMessageToggles();
                 
-                // Update task.messages if duplicates were removed
-                if (uniqueMessages.length !== task.messages.length) {
-                    task.messages = uniqueMessages;
-                    saveTasks();
-                }
+                // Update to new format
+                task.messages = chatMessagesDiv.innerHTML;
+                saveTasks();
             } else {
                 // Show welcome message if no messages
                 chatMessagesDiv.innerHTML = '<div class="chat-message welcome">Describe your experiment requirements. The AI will first generate a detailed description, then create the flowchart JSON.</div>';
@@ -2998,6 +3031,12 @@
             const task = tasks.find(t => t.id === taskId);
             if (!task) return;
             
+            // Check if there's an active generation in progress for the current task
+            if (abortManager.isActive && taskId === currentTaskId) {
+                showToast('Cannot delete task while generating. Please stop the generation first.', 'warning', 3000);
+                return;
+            }
+            
             const confirmed = await confirmAction('Delete Task', {
                 message: `Are you sure you want to delete "${task.name}"? This action cannot be undone.`,
                 confirmText: 'Delete',
@@ -3021,7 +3060,7 @@
                     loadTaskState(tasks[0].id);
                 } else {
                     // Create default task if no tasks left
-                    const defaultTask = createTask('Task 1');
+                    const defaultTask = createTask('New');
                     tasks.push(defaultTask);
                     currentTaskId = defaultTask.id;
                     chatMessagesDiv.innerHTML = '<div class="chat-message welcome">Describe your experiment requirements. The AI will first generate a detailed description, then create the flowchart JSON.</div>';
@@ -3139,7 +3178,7 @@
                 
                 // If no tasks, create default task
                 if (tasks.length === 0) {
-                    const defaultTask = createTask('Task 1');
+                    const defaultTask = createTask('New');
                     tasks.push(defaultTask);
                     currentTaskId = defaultTask.id;
                 }
@@ -5119,10 +5158,12 @@
                         }
 
                         // 等待收起动画完成后，再生成 flowchart
-                        timeoutId2 = setTimeout(() => {
+                        timeoutId2 = setTimeout(async () => {
                             if (isCancelled) return;
                             // Add progress message before generating flowchart
                             addProgressMessage('Outline completed. Now generating the flowchart based on the experiment description...');
+                            // Save task state after adding progress message
+                            await saveCurrentTaskState();
                             generateFlowchartJSON(settings, schema);
                         }, 400); // 等待 CSS 动画完成 (0.4s)
                     }, 1500); // 给用户 1.5 秒时间查看生成的 outline
@@ -5277,6 +5318,9 @@
             // 显示进度提示：使用的模型和开始运行
             const modelName = settings.model_name || settings.model || 'AI Model';
             addProgressMessage(`Starting experiment design with <b>${modelName}</b>...`, true);
+            
+            // Save task state after adding progress message
+            await saveCurrentTaskState();
 
             // 使用 isAborted 标志来控制流程，不使用 AbortController 的 signal
             // 这样可以避免浏览器显示 net::ERR_ABORTED 错误
@@ -5471,6 +5515,17 @@
                     abortManager.stop();
                 }
                 chatInput.focus();
+                
+                // Handle pending task deletion if any
+                if (pendingTaskDeletion) {
+                    console.log('Processing pending task deletion after generation');
+                    // Request fresh tasks data from parent to sync state
+                    window.parent.postMessage({
+                        type: 'request-tasks-sync',
+                        timestamp: new Date().toISOString()
+                    }, '*');
+                    pendingTaskDeletion = false;
+                }
             }
         }
 
@@ -5756,8 +5811,10 @@
                         }
                         
                         // 等待收起动画完成后，显示进度消息
-                        setTimeout(() => {
+                        setTimeout(async () => {
                             addProgressMessage('Flowchart generated successfully. You can now review and edit the experiment structure.');
+                            // Save task state after adding progress message
+                            await saveCurrentTaskState();
                         }, 400); // 等待 CSS 动画完成 (0.4s)
                     }
                 }, 2000); // 给用户 2 秒时间查看生成的 flowchart
@@ -5788,6 +5845,17 @@
                     abortManager.stop();
                 }
                 chatInput.focus();
+                
+                // Handle pending task deletion if any
+                if (pendingTaskDeletion) {
+                    console.log('Processing pending task deletion after generation');
+                    // Request fresh tasks data from parent to sync state
+                    window.parent.postMessage({
+                        type: 'request-tasks-sync',
+                        timestamp: new Date().toISOString()
+                    }, '*');
+                    pendingTaskDeletion = false;
+                }
             }
         }
 
@@ -6396,7 +6464,10 @@
             } else if (e.data.type === 'save-current-task') {
                 saveCurrentTaskState().catch(e => console.warn('Failed to save current task:', e));
             } else if (e.data.type === 'task-deleted') {
-                handleTaskDeletedFromParent(e.data.taskId);
+                handleTaskDeletedFromParent(e.data);
+            } else if (e.data.type === 'tasks-sync-data') {
+                // Received tasks sync data from parent after generation
+                handleTasksSyncFromParent(e.data);
             }
         });
         
@@ -6472,19 +6543,63 @@
         }
         
         // Handle task deletion from parent
-        function handleTaskDeletedFromParent(taskId) {
-            tasks = tasks.filter(t => t.id !== taskId);
-            if (currentTaskId === taskId && tasks.length > 0) {
-                loadTaskState(tasks[0].id);
-            } else if (tasks.length === 0) {
-                chatMessagesDiv.innerHTML = '<div class="chat-message welcome">Describe your experiment requirements. The AI will first generate a detailed description, then create the flowchart JSON.</div>';
-                conversationState = {
-                    stage: CONVERSATION_STAGES.IDLE,
-                    userRequirement: '',
-                    experimentDescription: '',
-                    messages: []
-                };
+        function handleTaskDeletedFromParent(data) {
+            const taskId = data.taskId;
+            
+            // Check if there's an active generation in progress
+            if (abortManager.isActive) {
+                console.log('Task deletion received during generation, will sync after completion');
+                // Don't modify anything during generation
+                // Just remember that we need to sync tasks after generation
+                pendingTaskDeletion = true;
+                return;
             }
+            
+            // Remove the deleted task from local tasks array
+            tasks = tasks.filter(t => t.id !== taskId);
+            
+            // Update current task ID from parent
+            if (data.currentTaskId) {
+                currentTaskId = data.currentTaskId;
+            }
+            
+            // Load the new current task state only if it's not the current task
+            // (if it is the current task, we're already showing it)
+            if (currentTaskId && currentTaskId !== taskId) {
+                const task = tasks.find(t => t.id === currentTaskId);
+                if (task) {
+                    loadTaskState(currentTaskId);
+                }
+            }
+            
+            saveTasks();
+            updateTaskUI();
+        }
+
+        // Handle tasks sync from parent after generation completes
+        function handleTasksSyncFromParent(data) {
+            if (!data.tasks || !Array.isArray(data.tasks)) return;
+            
+            console.log('Received tasks sync data from parent');
+            
+            // Preserve current task's unsaved messages if it exists in new tasks
+            const currentTask = tasks.find(t => t.id === currentTaskId);
+            
+            // Update tasks array from parent
+            tasks = data.tasks;
+            
+            // Update current task ID from parent
+            if (data.currentTaskId) {
+                currentTaskId = data.currentTaskId;
+            }
+            
+            // If current task was deleted, switch to another task
+            const currentTaskExists = tasks.find(t => t.id === currentTaskId);
+            if (!currentTaskExists && tasks.length > 0) {
+                currentTaskId = tasks[0].id;
+                loadTaskState(currentTaskId);
+            }
+            
             saveTasks();
             updateTaskUI();
         }

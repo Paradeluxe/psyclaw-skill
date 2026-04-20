@@ -1566,7 +1566,39 @@
         }
 
         .task-sidebar.open {
-            width: 280px;
+            width: var(--task-sidebar-width, 280px);
+            min-width: 200px;
+            max-width: 500px;
+        }
+
+        .task-sidebar.resizing {
+            transition: none;
+        }
+
+        .task-sidebar-resizer {
+            position: absolute;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            width: 8px;
+            cursor: ew-resize;
+            z-index: 1002;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            pointer-events: auto;
+        }
+
+        .task-sidebar-resizer::after {
+            content: '';
+            width: 4px;
+            height: 100%;
+            background: transparent;
+            transition: background 0.2s;
+        }
+
+        .task-sidebar-resizer:hover::after {
+            background: var(--brand-blue);
         }
 
         .task-sidebar-toggle {
@@ -1591,7 +1623,11 @@
         }
 
         .task-sidebar-wrapper:has(.task-sidebar.open) .task-sidebar-toggle {
-            left: 280px;
+            left: var(--task-sidebar-width, 280px);
+        }
+
+        .task-sidebar-wrapper:has(.task-sidebar.resizing) .task-sidebar-toggle {
+            transition: none;
         }
 
         .task-sidebar-toggle svg {
@@ -2384,6 +2420,7 @@
         </button>
         
         <div class="task-sidebar" id="taskSidebar">
+            <div class="task-sidebar-resizer" id="taskSidebarResizer"></div>
             <div class="task-sidebar-header">
                 <div class="task-sidebar-title-group">
                     <span class="task-sidebar-title">Chats</span>
@@ -2570,6 +2607,46 @@
 
         // ===== Task Sidebar Logic =====
         const taskSidebar = document.getElementById('taskSidebar');
+        const taskSidebarResizer = document.getElementById('taskSidebarResizer');
+        let isResizingTaskSidebar = false;
+        let taskSidebarStartX = 0;
+        let taskSidebarStartWidth = 0;
+
+        taskSidebarResizer.addEventListener('mousedown', (e) => {
+            if (!taskSidebar.classList.contains('open')) return;
+            isResizingTaskSidebar = true;
+            taskSidebarStartX = e.clientX;
+            taskSidebarStartWidth = taskSidebar.offsetWidth;
+            document.body.style.cursor = 'ew-resize';
+            document.body.style.userSelect = 'none';
+            taskSidebar.classList.add('resizing');
+            e.stopPropagation();
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!isResizingTaskSidebar) return;
+
+            const delta = e.clientX - taskSidebarStartX;
+            const newWidth = taskSidebarStartWidth + delta;
+
+            const minWidth = 200;
+            const maxWidth = 500;
+
+            const clampedWidth = Math.max(minWidth, Math.min(maxWidth, newWidth));
+            taskSidebar.style.width = clampedWidth + 'px';
+            
+            // Update CSS variable for toggle button position
+            taskSidebarWrapper.style.setProperty('--task-sidebar-width', clampedWidth + 'px');
+        });
+
+        document.addEventListener('mouseup', () => {
+            if (isResizingTaskSidebar) {
+                isResizingTaskSidebar = false;
+                document.body.style.cursor = '';
+                document.body.style.userSelect = '';
+                taskSidebar.classList.remove('resizing');
+            }
+        });
         const taskSidebarToggle = document.getElementById('taskSidebarToggle');
         const taskSidebarList = document.getElementById('taskSidebarList');
         const taskSidebarNewBtn = document.getElementById('taskSidebarNewBtn');
@@ -2807,12 +2884,42 @@
         // Delete task
         window.deleteTask = function(taskId, event) {
             event.stopPropagation();
-            if (tasks.length <= 1) return;
+
+            const task = tasks.find(t => t.id === taskId);
+            if (!task) return;
+
+            // Confirm deletion
+            const confirmed = confirm(`Are you sure you want to delete "${task.name}"? This action cannot be undone.`);
+            if (!confirmed) return;
 
             tasks = tasks.filter(t => t.id !== taskId);
+            
+            // If deleted current task, switch to another task or create default
             if (currentTaskId === taskId) {
-                currentTaskId = tasks[0].id;
+                if (tasks.length > 0) {
+                    currentTaskId = tasks[0].id;
+                } else {
+                    // Create default task if no tasks left
+                    const defaultTask = {
+                        id: generateTaskId(),
+                        name: 'New',
+                        createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString(),
+                        messages: '',
+                        conversationState: {
+                            stage: 'idle',
+                            userRequirement: '',
+                            experimentDescription: '',
+                            messages: []
+                        },
+                        flowchartData: null,
+                        flowchartState: null
+                    };
+                    tasks.push(defaultTask);
+                    currentTaskId = defaultTask.id;
+                }
             }
+            
             saveTasks();
             updateTaskSidebarUI();
 
@@ -2820,7 +2927,10 @@
             if (chatbotFrame.contentWindow) {
                 chatbotFrame.contentWindow.postMessage({
                     type: 'task-deleted',
-                    taskId: taskId
+                    taskId: taskId,
+                    currentTaskId: currentTaskId
+                    // Note: Don't pass tasks array here, let chatbot update its own tasks array
+                    // to avoid overwriting unsaved state during generation
                 }, '*');
             }
         };
@@ -2863,7 +2973,7 @@
                     // Create default task
                     const defaultTask = {
                         id: generateTaskId(),
-                        name: 'Task 1',
+                        name: 'New',
                         createdAt: new Date().toISOString(),
                         updatedAt: new Date().toISOString(),
                         messages: [],
@@ -2978,6 +3088,16 @@
                         localStorage.setItem('psyclaw_current_task_id', currentTaskId || '');
                         updateTaskSidebarUI();
                     }
+                    break;
+
+                case 'request-tasks-sync':
+                    // Chatbot requests fresh tasks data after generation completes
+                    // Send current tasks state to chatbot for sync
+                    chatbotFrame.contentWindow.postMessage({
+                        type: 'tasks-sync-data',
+                        tasks: tasks,
+                        currentTaskId: currentTaskId
+                    }, '*');
                     break;
             }
         });
@@ -6783,9 +6903,19 @@
                     projectData = JSON.parse(content);
                 } catch (parseError) {
                     console.log('Direct parse failed, trying to fix JSON...');
+                    console.log('Parse error:', parseError.message);
+                    
+                    // 尝试修复：先提取可能的JSON结构
+                    let fixedContent = content.trim();
+                    
+                    // 尝试提取 ```json 代码块
+                    const jsonBlockMatch = fixedContent.match(/```(?:json)?\s*([\s\S]*?)```/);
+                    if (jsonBlockMatch) {
+                        fixedContent = jsonBlockMatch[1].trim();
+                        console.log('Extracted JSON from code block');
+                    }
                     
                     // 尝试修复：移除 <think> 标签及其内容（AI 推理过程）
-                    let fixedContent = content.trim();
                     fixedContent = fixedContent.replace(/<think>[\s\S]*?<\/think>/g, '');
                     
                     // 尝试修复：移除注释（// 和 /* */）
@@ -6808,16 +6938,18 @@
                     fixedContent = fixedContent.replace(/([{,]\s*)([a-zA-Z_][a-zA-Z0-9_]*)\s*:/g, '$1"$2":');
                     
                     // 修复单引号包裹的字符串（改为双引号）
-                    // 先处理简单情况：'string' -> "string"
-                    fixedContent = fixedContent.replace(/'([^'\\]*)'/g, '"$1"');
+                    // 注意：这个修复可能会破坏包含单引号的有效字符串
+                    // 所以我们只修复那些看起来像JSON属性值的单引号
+                    // 匹配模式：: 'value' 或 , 'value'
+                    fixedContent = fixedContent.replace(/(:\s*)'([^'\\]*)'([,}\]])/g, '$1"$2"$3');
                     
                     try {
                         projectData = JSON.parse(fixedContent);
                         console.log('Parsed fixed JSON:', projectData);
                     } catch (fixError) {
                         console.error('Failed to parse JSON even after fixing:', fixError);
-                        console.log('Last 500 chars:', content.slice(-500));
-                        console.log('Full content:', content);
+                        console.log('Fixed content preview:', fixedContent.substring(0, 200));
+                        console.log('Last 500 chars of original:', content.slice(-500));
                         showNotification('❌ Invalid JSON format from AI');
                         return;
                     }
