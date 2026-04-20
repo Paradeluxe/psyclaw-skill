@@ -5261,17 +5261,18 @@
                 }
             }
 
+            // 先清空输入框和文件，避免用户看到延迟
+            chatInput.value = '';
+            clearFile();
+            sendBtn.style.display = 'none';
+            stopBtn.style.display = 'flex';
+            
             if (!skipUserMessage) {
                 addMessage(userRequirement, 'user');
             }
             
             // Save task state and auto-update task name based on user input
             await saveCurrentTaskState();
-            
-            chatInput.value = '';
-            clearFile();
-            sendBtn.style.display = 'none';
-            stopBtn.style.display = 'flex';
 
             // 显示进度提示：使用的模型和开始运行
             const modelName = settings.model_name || settings.model || 'AI Model';
