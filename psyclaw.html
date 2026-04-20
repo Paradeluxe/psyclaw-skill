@@ -87,6 +87,7 @@
             flex: 1;
             position: relative;
             overflow: hidden;
+            z-index: 1;
         }
 
         .container {
@@ -494,10 +495,10 @@
 
         .confirm-modal-container {
             background: var(--bg-white);
-            border-radius: 20px;
+            border-radius: 16px;
             padding: 24px;
-            box-shadow: var(--shadow-brand);
-            max-width: 400px;
+            box-shadow: rgba(44, 30, 116, 0.16) 0px 0px 15px, rgba(0, 0, 0, 0.08) 0px 12px 16px -4px;
+            max-width: 360px;
             width: 90%;
         }
 
@@ -505,47 +506,50 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 16px;
+            margin-bottom: 12px;
         }
 
         .confirm-modal-title {
             font-size: 18px;
             font-weight: 600;
-            color: var(--text-dark);
-            font-family: var(--font-display);
+            color: #18181b;
+            font-family: 'DM Sans', sans-serif;
+            letter-spacing: -0.01em;
         }
 
         .confirm-modal-close {
-            width: 32px;
-            height: 32px;
+            width: 28px;
+            height: 28px;
             border: none;
-            background: var(--bg-light);
+            background: transparent;
             border-radius: 8px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 18px;
-            color: var(--text-secondary);
-            transition: all 0.2s;
+            font-size: 20px;
+            color: #8e8e93;
+            transition: all 0.15s ease;
+            margin-right: -4px;
         }
 
         .confirm-modal-close:hover {
-            background: var(--primary-200);
-            color: var(--brand-blue);
+            background: #f0f0f0;
+            color: #45515e;
         }
 
         .confirm-modal-message {
             font-size: 14px;
-            color: var(--text-secondary);
+            color: #45515e;
             margin-bottom: 24px;
-            line-height: 1.6;
-            font-family: var(--font-ui);
+            line-height: 1.5;
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 400;
         }
 
         .confirm-modal-buttons {
             display: flex;
-            gap: 12px;
+            gap: 10px;
             justify-content: flex-end;
         }
 
@@ -555,30 +559,31 @@
             font-size: 13px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s;
-            font-family: var(--font-ui);
+            transition: all 0.15s ease;
+            font-family: 'DM Sans', sans-serif;
         }
 
         .confirm-modal-btn-cancel {
-            background: var(--bg-white);
-            border: 1.5px solid var(--border-gray);
-            color: var(--text-dark);
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            color: #45515e;
         }
 
         .confirm-modal-btn-cancel:hover {
-            background: var(--bg-light);
-            border-color: var(--text-secondary);
+            background: #f9fafb;
+            border-color: #d1d5db;
+            color: #374151;
         }
 
         .confirm-modal-btn-confirm {
-            background: var(--text-charcoal);
-            border: 1.5px solid var(--text-charcoal);
-            color: var(--bg-white);
+            background: #181e25;
+            border: 1px solid #181e25;
+            color: #ffffff;
         }
 
         .confirm-modal-btn-confirm:hover {
-            background: var(--brand-blue);
-            border-color: var(--brand-blue);
+            background: #1456f0;
+            border-color: #1456f0;
         }
 
         .preview-modal {
@@ -951,6 +956,7 @@
             flex-direction: row;
             gap: 6px;
             z-index: 1000;
+            transition: left 0.5s cubic-bezier(0.4, 0, 0.2, 1), transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .viewport-controls {
@@ -962,11 +968,11 @@
             z-index: 1000;
             width: auto;
             flex-shrink: 0;
-            transition: left 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: left 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         body:has(.task-sidebar.open) .viewport-controls {
-            left: 300px;
+            left: calc(var(--task-sidebar-width, 280px) + 20px);
         }
 
         .zoom-level {
@@ -1443,7 +1449,7 @@
             z-index: 2000;
             display: flex;
             gap: 6px;
-            transition: left 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: left 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         body:has(.task-sidebar.open) .undo-button-container {
@@ -1557,18 +1563,18 @@
             width: 0;
             height: 100vh;
             background: var(--bg-white);
-            border-right: 1px solid var(--border-gray);
+            border-right: none;
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
             flex-shrink: 0;
+            z-index: 100;
         }
 
         .task-sidebar.open {
             width: var(--task-sidebar-width, 280px);
-            min-width: 200px;
-            max-width: 500px;
+            border-right: 1px solid var(--border-gray);
         }
 
         .task-sidebar.resizing {
@@ -1616,10 +1622,10 @@
             border-left: none;
             border-radius: 0 8px 8px 0;
             cursor: pointer;
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
             color: var(--text-muted);
             z-index: 1001;
-            box-shadow: 3px 0 8px rgba(0, 0, 0, 0.08);
+            box-shadow: none;
         }
 
         .task-sidebar-wrapper:has(.task-sidebar.open) .task-sidebar-toggle {
@@ -1646,7 +1652,7 @@
         .task-sidebar-toggle svg {
             width: 14px;
             height: 14px;
-            transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         /* Sidebar Header */
@@ -1908,7 +1914,10 @@
             font-weight: 500;
             color: white;
             cursor: pointer;
-            transition: all 0.15s ease;
+            transition: background 0.15s ease;
+            flex-shrink: 0;
+            white-space: nowrap;
+            overflow: hidden;
         }
 
         .task-sidebar-new-btn:hover {
@@ -1923,6 +1932,23 @@
         .task-sidebar-new-btn svg {
             width: 15px;
             height: 15px;
+            flex-shrink: 0;
+        }
+
+        .task-sidebar-new-btn-text {
+            opacity: 0;
+            max-width: 0;
+            overflow: hidden;
+            white-space: nowrap;
+            transform: scaleX(0);
+            transform-origin: left center;
+            transition: opacity 0.3s ease 0.1s, max-width 0.5s cubic-bezier(0.4, 0, 0.2, 1), transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .task-sidebar.open .task-sidebar-new-btn-text {
+            opacity: 1;
+            max-width: 100px;
+            transform: scaleX(1);
         }
 
         .task-sidebar-empty {
@@ -2459,7 +2485,7 @@
                     <svg viewBox="0 0 24 24" fill="currentColor">
                         <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
                     </svg>
-                    New chat
+                    <span class="task-sidebar-new-btn-text">New chat</span>
                 </button>
             </div>
         </div>
@@ -2534,7 +2560,138 @@
         const DEBUG = false;
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
-        
+
+        // 标准化的操作确认对话框
+        async function confirmAction(action, options = {}) {
+            const {
+                title = 'Confirm Action',
+                message = 'Are you sure?',
+                confirmText = 'Confirm',
+                cancelText = 'Cancel',
+                confirmClass = 'btn-primary',
+                showCancel = true
+            } = options;
+
+            return new Promise((resolve) => {
+                // 创建确认对话框
+                const overlay = document.createElement('div');
+                overlay.className = 'confirm-overlay';
+                overlay.style.cssText = `
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    background: rgba(0, 0, 0, 0.45);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    z-index: 10000;
+                    animation: fadeIn 0.2s ease;
+                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+                    backdrop-filter: blur(4px);
+                `;
+
+                overlay.innerHTML = `
+                    <div class="confirm-dialog" style="
+                        background: white;
+                        border-radius: 12px;
+                        padding: 24px;
+                        max-width: 400px;
+                        width: 90%;
+                        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+                        animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+                    ">
+                        <h3 style="margin: 0 0 8px 0; font-size: 18px; font-weight: 600; color: #111827; line-height: 1.4; letter-spacing: -0.01em;">${title}</h3>
+                        <p style="margin: 0 0 24px 0; color: #6b7280; font-size: 14px; line-height: 1.5;">${message}</p>
+                        <div style="display: flex; gap: 8px; justify-content: flex-end;">
+                            ${showCancel ? `<button class="btn-cancel" style="
+                                padding: 8px 16px;
+                                border-radius: 8px;
+                                border: none;
+                                background: transparent;
+                                color: #374151;
+                                cursor: pointer;
+                                font-size: 14px;
+                                font-weight: 500;
+                                transition: all 0.15s ease;
+                            ">${cancelText}</button>` : ''}
+                            <button class="btn-confirm ${confirmClass}" style="
+                                padding: 8px 16px;
+                                border-radius: 8px;
+                                border: none;
+                                background: #111827;
+                                color: white;
+                                cursor: pointer;
+                                font-size: 14px;
+                                font-weight: 500;
+                                transition: all 0.15s ease;
+                            ">${confirmText}</button>
+                        </div>
+                    </div>
+                `;
+
+                // 添加动画样式
+                const style = document.createElement('style');
+                style.textContent = `
+                    @keyframes fadeIn {
+                        from { opacity: 0; }
+                        to { opacity: 1; }
+                    }
+                    @keyframes slideUp {
+                        from { transform: translateY(8px) scale(0.98); opacity: 0; }
+                        to { transform: translateY(0) scale(1); opacity: 1; }
+                    }
+                    .confirm-overlay .btn-cancel:hover {
+                        background: #f3f4f6;
+                        color: #111827;
+                    }
+                    .confirm-overlay .btn-confirm:hover {
+                        background: #374151;
+                        transform: translateY(-1px);
+                    }
+                    .confirm-overlay .btn-confirm.btn-danger {
+                        background: #dc2626;
+                    }
+                    .confirm-overlay .btn-confirm.btn-danger:hover {
+                        background: #b91c1c;
+                    }
+                    .confirm-overlay .btn-confirm:active,
+                    .confirm-overlay .btn-cancel:active {
+                        transform: scale(0.98);
+                    }
+                `;
+                document.head.appendChild(style);
+
+                document.body.appendChild(overlay);
+
+                // 事件处理
+                const cleanup = () => {
+                    document.body.removeChild(overlay);
+                    document.head.removeChild(style);
+                };
+
+                overlay.querySelector('.btn-confirm').addEventListener('click', () => {
+                    cleanup();
+                    resolve(true);
+                });
+
+                if (showCancel) {
+                    overlay.querySelector('.btn-cancel').addEventListener('click', () => {
+                        cleanup();
+                        resolve(false);
+                    });
+                }
+
+                overlay.addEventListener('click', (e) => {
+                    if (e.target === overlay) {
+                        cleanup();
+                        resolve(false);
+                    }
+                });
+            });
+        }
+
         // 预加载图标
         const tapIcon = new Image();
         tapIcon.src = 'icon/tap.svg';
@@ -2814,11 +2971,39 @@
             taskSidebar.classList.add('open');
             taskSidebarToggle.classList.add('opened');
             renderTaskSidebarList();
+            // 平滑过渡 viewportX，避免 Flowchart 跳动
+            animateViewportX(-140); // 任务栏宽度的一半（280px / 2）
         }
 
         function closeTaskSidebar() {
             taskSidebar.classList.remove('open');
             taskSidebarToggle.classList.remove('opened');
+            // 平滑过渡 viewportX，避免 Flowchart 跳动
+            animateViewportX(140); // 恢复原来的位置
+        }
+
+        // 平滑动画过渡 viewportX
+        function animateViewportX(deltaX) {
+            const startX = viewportX;
+            const targetX = viewportX + deltaX;
+            const duration = 500; // 与 CSS 动画时间一致（0.5s）
+            const startTime = performance.now();
+
+            function animate(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                // 使用 ease-out 缓动函数
+                const easeProgress = 1 - Math.pow(1 - progress, 3);
+                
+                viewportX = startX + (targetX - startX) * easeProgress;
+                draw();
+
+                if (progress < 1) {
+                    requestAnimationFrame(animate);
+                }
+            }
+
+            requestAnimationFrame(animate);
         }
 
         // Create new task
@@ -2882,14 +3067,19 @@
         }
 
         // Delete task
-        window.deleteTask = function(taskId, event) {
+        window.deleteTask = async function(taskId, event) {
             event.stopPropagation();
 
             const task = tasks.find(t => t.id === taskId);
             if (!task) return;
 
             // Confirm deletion
-            const confirmed = confirm(`Are you sure you want to delete "${task.name}"? This action cannot be undone.`);
+            const confirmed = await confirmAction('Delete Task', {
+                message: `Are you sure you want to delete "${task.name}"? This action cannot be undone.`,
+                confirmText: 'Delete',
+                cancelText: 'Cancel',
+                confirmClass: 'btn-danger'
+            });
             if (!confirmed) return;
 
             tasks = tasks.filter(t => t.id !== taskId);

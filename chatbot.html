@@ -3575,7 +3575,7 @@
                 confirmClass = 'btn-primary',
                 showCancel = true
             } = options;
-            
+
             return new Promise((resolve) => {
                 // 创建确认对话框
                 const overlay = document.createElement('div');
@@ -3586,14 +3586,16 @@
                     left: 0;
                     right: 0;
                     bottom: 0;
-                    background: rgba(0, 0, 0, 0.5);
+                    background: rgba(0, 0, 0, 0.45);
                     display: flex;
                     align-items: center;
                     justify-content: center;
                     z-index: 10000;
                     animation: fadeIn 0.2s ease;
+                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+                    backdrop-filter: blur(4px);
                 `;
-                
+
                 overlay.innerHTML = `
                     <div class="confirm-dialog" style="
                         background: white;
@@ -3601,37 +3603,38 @@
                         padding: 24px;
                         max-width: 400px;
                         width: 90%;
-                        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-                        animation: slideUp 0.3s ease;
+                        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+                        animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
                     ">
-                        <h3 style="margin: 0 0 12px 0; font-size: 18px; font-weight: 600; color: #222;">${title}</h3>
-                        <p style="margin: 0 0 20px 0; color: #666; font-size: 14px; line-height: 1.5;">${message}</p>
-                        <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                        <h3 style="margin: 0 0 8px 0; font-size: 18px; font-weight: 600; color: #111827; line-height: 1.4; letter-spacing: -0.01em;">${title}</h3>
+                        <p style="margin: 0 0 24px 0; color: #6b7280; font-size: 14px; line-height: 1.5;">${message}</p>
+                        <div style="display: flex; gap: 8px; justify-content: flex-end;">
                             ${showCancel ? `<button class="btn-cancel" style="
                                 padding: 8px 16px;
-                                border-radius: 6px;
-                                border: 1px solid #e5e7eb;
-                                background: white;
-                                color: #666;
+                                border-radius: 8px;
+                                border: none;
+                                background: transparent;
+                                color: #374151;
                                 cursor: pointer;
                                 font-size: 14px;
-                                transition: all 0.2s;
+                                font-weight: 500;
+                                transition: all 0.15s ease;
                             ">${cancelText}</button>` : ''}
                             <button class="btn-confirm ${confirmClass}" style="
                                 padding: 8px 16px;
-                                border-radius: 6px;
+                                border-radius: 8px;
                                 border: none;
-                                background: #1456f0;
+                                background: #111827;
                                 color: white;
                                 cursor: pointer;
                                 font-size: 14px;
                                 font-weight: 500;
-                                transition: all 0.2s;
+                                transition: all 0.15s ease;
                             ">${confirmText}</button>
                         </div>
                     </div>
                 `;
-                
+
                 // 添加动画样式
                 const style = document.createElement('style');
                 style.textContent = `
@@ -3640,15 +3643,26 @@
                         to { opacity: 1; }
                     }
                     @keyframes slideUp {
-                        from { transform: translateY(20px); opacity: 0; }
-                        to { transform: translateY(0); opacity: 1; }
+                        from { transform: translateY(8px) scale(0.98); opacity: 0; }
+                        to { transform: translateY(0) scale(1); opacity: 1; }
                     }
-                    .confirm-overlay:hover .btn-cancel {
+                    .confirm-overlay .btn-cancel:hover {
                         background: #f3f4f6;
+                        color: #111827;
                     }
                     .confirm-overlay .btn-confirm:hover {
-                        background: #2563eb;
+                        background: #374151;
                         transform: translateY(-1px);
+                    }
+                    .confirm-overlay .btn-confirm.btn-danger {
+                        background: #dc2626;
+                    }
+                    .confirm-overlay .btn-confirm.btn-danger:hover {
+                        background: #b91c1c;
+                    }
+                    .confirm-overlay .btn-confirm:active,
+                    .confirm-overlay .btn-cancel:active {
+                        transform: scale(0.98);
                     }
                 `;
                 document.head.appendChild(style);
