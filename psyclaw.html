@@ -6063,28 +6063,19 @@
                         tasks = projectData.tasks;
                         currentTaskId = projectData.currentTaskId || (tasks.length > 0 ? tasks[0].id : null);
                         
-                        // 构建当前导入的 flowchart 数据（使用 flowchart 数组格式）
-                        const flowchartArray = [];
-                        
-                        // 添加 routines
-                        routineRects.forEach(rect => {
-                            flowchartArray.push({
-                                Point: rect.id,
-                                name: rect.name,
-                                duration: rect.duration,
-                                components: rect.avtpComponents || []
-                            });
-                        });
-                        
-                        // 添加 loops
+                        // 构建当前导入的 flowchart 数据（使用 routines + loops 格式，与保存时一致）
+                        const routinesData = routineRects.map(rect => ({
+                            id: rect.id,
+                            name: rect.name,
+                            duration: rect.duration,
+                            avtpComponents: rect.avtpComponents || []
+                        }));
                         const loopsData = connectionsToLoops(connections);
-                        loopsData.forEach(loop => {
-                            flowchartArray.push(loop);
-                        });
                         
                         const flowchartData = {
                             timestamp: new Date().toISOString(),
-                            flowchart: flowchartArray
+                            routines: routinesData,
+                            loops: loopsData
                         };
                         
                         // 更新当前任务的 flowchartData
@@ -6195,28 +6186,19 @@
                             tasks = projectData.tasks;
                             currentTaskId = projectData.currentTaskId || (tasks.length > 0 ? tasks[0].id : null);
                             
-                            // 构建当前导入的 flowchart 数据（使用 flowchart 数组格式）
-                            const flowchartArray = [];
-                            
-                            // 添加 routines
-                            routineRects.forEach(rect => {
-                                flowchartArray.push({
-                                    Point: rect.id,
-                                    name: rect.name,
-                                    duration: rect.duration,
-                                    components: rect.avtpComponents || []
-                                });
-                            });
-                            
-                            // 添加 loops
+                            // 构建当前导入的 flowchart 数据（使用 routines + loops 格式，与保存时一致）
+                            const routinesData = routineRects.map(rect => ({
+                                id: rect.id,
+                                name: rect.name,
+                                duration: rect.duration,
+                                avtpComponents: rect.avtpComponents || []
+                            }));
                             const loopsData = connectionsToLoops(connections);
-                            loopsData.forEach(loop => {
-                                flowchartArray.push(loop);
-                            });
                             
                             const flowchartData = {
                                 timestamp: new Date().toISOString(),
-                                flowchart: flowchartArray
+                                routines: routinesData,
+                                loops: loopsData
                             };
                             
                             // 更新当前任务的 flowchartData
