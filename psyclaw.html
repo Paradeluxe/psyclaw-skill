@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
@@ -3081,6 +3081,41 @@
                 confirmClass: 'btn-danger'
             });
             if (!confirmed) return;
+
+            // If deleting the current task, request chatbot to save its state first
+            // This ensures live messages during generation are preserved
+            if (currentTaskId === taskId && chatbotFrame.contentWindow) {
+                await new Promise(resolve => {
+                    // Set timeout to avoid waiting forever
+                    const timeout = setTimeout(resolve, 2000);
+                    
+                    // Listen for save completion
+                    const handler = (e) => {
+                        if (e.data && e.data.type === 'current-task-saved' && e.data.taskId === taskId) {
+                            clearTimeout(timeout);
+                            window.removeEventListener('message', handler);
+                            resolve();
+                        }
+                    };
+                    window.addEventListener('message', handler);
+                    
+                    // Request save
+                    chatbotFrame.contentWindow.postMessage({
+                        type: 'save-current-task',
+                        taskId: taskId
+                    }, '*');
+                });
+                
+                // Reload tasks from localStorage to get the saved state
+                try {
+                    const savedTasks = localStorage.getItem('psyclaw_tasks');
+                    if (savedTasks) {
+                        tasks = JSON.parse(savedTasks);
+                    }
+                } catch (e) {
+                    console.warn('Failed to reload tasks after save:', e);
+                }
+            }
 
             tasks = tasks.filter(t => t.id !== taskId);
             

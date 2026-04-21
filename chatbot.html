@@ -2415,7 +2415,7 @@
         }
 
         // 构建 Turn 1 请求体 - 生成实验描述
-        function buildTurn1RequestBody(settings, deepThinkEnabled, userRequirement) {
+        function buildTurn1RequestBody(settings, deepThinkEnabled, userRequirement, existingOutline = null) {
             const template = turn1Config;
             if (!template) {
                 throw new Error('Turn1 request body config not loaded');
@@ -2425,6 +2425,10 @@
                 let content = msg.content;
                 if (userRequirement) {
                     content = content.replace('{userRequirement}', userRequirement);
+                }
+                // If modifying existing outline, add context
+                if (existingOutline && msg.role === 'user') {
+                    content += `\n\n[Current Experiment Outline]\n${existingOutline}\n\nPlease modify the above outline based on the new requirements. Maintain the same structure and format.`;
                 }
                 return { role: msg.role, content: content };
             });
@@ -2447,7 +2451,7 @@
         }
 
         // 构建 Turn 2 请求体 - 生成 Flowchart JSON
-        function buildTurn2RequestBody(settings, deepThinkEnabled, experimentDescription, schema) {
+        function buildTurn2RequestBody(settings, deepThinkEnabled, experimentDescription, schema, existingFlowchart = null) {
             const template = turn2Config;
             if (!template) {
                 throw new Error('Turn2 request body config not loaded');
@@ -2460,6 +2464,10 @@
                 }
                 if (schema) {
                     content = content.replace('{schema}', JSON.stringify(schema, null, 2));
+                }
+                // If modifying existing flowchart, add context
+                if (existingFlowchart && msg.role === 'system') {
+                    content += `\n\n[IMPORTANT: Modifying Existing Flowchart]\nYou are modifying an existing flowchart. The current flowchart JSON is provided below. Please update it based on the new experiment description while maintaining valid JSON structure and following the schema. Preserve existing routine IDs and structure where possible, only making necessary changes.\n\n[Current Flowchart JSON]\n${typeof existingFlowchart === 'string' ? existingFlowchart : JSON.stringify(existingFlowchart, null, 2)}`;
                 }
                 return { role: msg.role, content: content };
             });
@@ -2482,9 +2490,9 @@
         // 兼容旧接口 - 如果有代码还在调用 buildRequestBody
         function buildRequestBody(settings, deepThinkEnabled, extraParams = {}) {
             if (extraParams.experimentDescription && extraParams.schema) {
-                return buildTurn2RequestBody(settings, deepThinkEnabled, extraParams.experimentDescription, extraParams.schema);
+                return buildTurn2RequestBody(settings, deepThinkEnabled, extraParams.experimentDescription, extraParams.schema, extraParams.existingFlowchart);
             }
-            return buildTurn1RequestBody(settings, deepThinkEnabled, extraParams.userRequirement);
+            return buildTurn1RequestBody(settings, deepThinkEnabled, extraParams.userRequirement, extraParams.existingOutline);
         }
 
         document.addEventListener('DOMContentLoaded', async function() {
@@ -2502,6 +2510,67 @@
         let tasks = [];
         let currentTaskId = null;
         let pendingTaskDeletion = false; // Flag to indicate tasks need sync after generation
+        
+        // Generation execution context - ensures task isolation
+        class GenerationContext {
+            constructor(taskId) {
+                this.taskId = taskId;
+                this.isAborted = false;
+                this.timestamp = Date.now();
+            }
+            
+            abort() {
+                this.isAborted = true;
+            }
+            
+            isValid() {
+                return !this.isAborted && this.taskId === currentTaskId;
+            }
+        }
+        
+        let activeGenerationContext = null; // Current active generation context
+        
+        // Verify we're still on the same task before processing generation results
+        function verifyGenerationContext(context) {
+            if (!context || context.isAborted) {
+                console.log('Generation context aborted');
+                return false;
+            }
+            if (context.taskId !== currentTaskId) {
+                console.log('Task switched during generation, ignoring stale results');
+                return false;
+            }
+            return true;
+        }
+        
+        // Clean up any ongoing generation when switching tasks
+        // Note: We no longer abort active requests to allow background task execution
+        async function cleanupGenerationForTaskSwitch() {
+            // Save the current generation context to the task so it can continue in background
+            if (activeGenerationContext && currentTaskId) {
+                const currentTask = tasks.find(t => t.id === currentTaskId);
+                if (currentTask) {
+                    // Store reference to ongoing generation in the task
+                    currentTask.generationContext = activeGenerationContext;
+                    console.log(`Task ${currentTaskId} generation will continue in background`);
+                }
+            }
+            
+            // Clear the active context reference (but don't abort it)
+            activeGenerationContext = null;
+            
+            // Cancel any pending description actions for UI cleanup only
+            if (currentCancelShowDescription) {
+                currentCancelShowDescription();
+                currentCancelShowDescription = null;
+            }
+            
+            // Hide description actions bar
+            hideDescriptionActionsBar();
+            
+            // Note: We intentionally do NOT call abortManager.stop() here
+            // This allows the previous task's request to continue in background
+        }
         
         // Task Sidebar DOM Elements
         const taskSidebarToggle = document.getElementById('taskSidebarToggle');
@@ -2862,15 +2931,17 @@
             if (task.messages && typeof task.messages === 'string' && task.messages.length > 0) {
                 chatMessagesDiv.innerHTML = task.messages;
                 
-                // Re-initialize normal message toggles after restoring HTML
+                // Re-initialize message toggles after restoring HTML
                 initializeNormalMessageToggles();
+                initializeThinkingMessageToggles();
             } else if (Array.isArray(task.messages) && task.messages.length > 0) {
                 // Legacy format: array of messages - convert to combined format
                 const uniqueMessages = [...new Set(task.messages)];
                 chatMessagesDiv.innerHTML = uniqueMessages.join('');
                 
-                // Re-initialize normal message toggles after restoring HTML
+                // Re-initialize message toggles after restoring HTML
                 initializeNormalMessageToggles();
+                initializeThinkingMessageToggles();
                 
                 // Update to new format
                 task.messages = chatMessagesDiv.innerHTML;
@@ -2913,6 +2984,22 @@
             }
             
             currentTaskId = taskId;
+            
+            // Restore generation state if there's an active generation for this task
+            if (task.generationContext && abortManager.isActive(taskId)) {
+                // There's an ongoing generation for this task
+                activeGenerationContext = task.generationContext;
+                console.log(`Restored active generation for task ${taskId}`);
+                
+                // Update UI to show stop button
+                sendBtn.style.display = 'none';
+                stopBtn.style.display = 'flex';
+            } else {
+                // No active generation, ensure UI shows send button
+                sendBtn.style.display = 'flex';
+                stopBtn.style.display = 'none';
+            }
+            
             updateTaskUI();
         }
         
@@ -2967,12 +3054,56 @@
             });
         }
         
+        // Re-initialize all thinking message toggles (called after restoring messages from storage)
+        function initializeThinkingMessageToggles() {
+            document.querySelectorAll('.thinking-message-container').forEach(thinkingContainer => {
+                const thinkingHeader = thinkingContainer.querySelector('.thinking-message-header');
+                const thinkingContent = thinkingContainer.querySelector('.thinking-message-content');
+                
+                if (!thinkingHeader || !thinkingContent) return;
+                
+                // Hide loading dots when restoring from storage (thinking is always completed)
+                const loadingDots = thinkingHeader.querySelector('.loading-dots');
+                if (loadingDots) {
+                    loadingDots.style.display = 'none';
+                }
+                
+                // Update title to "Thinking completed" when restoring
+                const thinkingTitle = thinkingHeader.querySelector('.thinking-title');
+                if (thinkingTitle) {
+                    thinkingTitle.textContent = 'Thinking completed';
+                }
+                
+                // Ensure thinking content is collapsed when restoring
+                thinkingContent.classList.remove('expanded');
+                thinkingContent.style.maxHeight = '0';
+                
+                // Remove any existing event listeners by cloning
+                const newHeader = thinkingHeader.cloneNode(true);
+                thinkingHeader.parentNode.replaceChild(newHeader, thinkingHeader);
+                
+                // Add click event to toggle expand/collapse
+                newHeader.addEventListener('click', () => {
+                    if (thinkingContent.classList.contains('expanded')) {
+                        thinkingContent.classList.remove('expanded');
+                        thinkingContent.style.maxHeight = '0';
+                    } else {
+                        thinkingContent.classList.add('expanded');
+                        thinkingContent.style.maxHeight = 'none';
+                    }
+                });
+            });
+        }
+        
         // Switch to task
         async function switchToTask(taskId) {
             if (taskId === currentTaskId) {
                 closeTaskDropdown();
                 return;
             }
+            
+            // Clean up any ongoing generation for the current task
+            await cleanupGenerationForTaskSwitch();
             
             // Save current task state (including flowchart)
             await saveCurrentTaskState();
@@ -3032,7 +3163,7 @@
             if (!task) return;
             
             // Check if there's an active generation in progress for the current task
-            if (abortManager.isActive && taskId === currentTaskId) {
+            if (abortManager.isActive(currentTaskId) && taskId === currentTaskId) {
                 showToast('Cannot delete task while generating. Please stop the generation first.', 'warning', 3000);
                 return;
             }
@@ -3462,26 +3593,54 @@
         // AbortController 管理器 - 解决竞态条件问题
         class AbortControllerManager {
             constructor() {
-                this.controller = null;
-                this.isActive = false;
+                // Map to store controllers per task
+                this.controllers = new Map();
+                this.activeTaskId = null;
             }
             
-            start() {
-                this.controller = new AbortController();
-                this.isActive = true;
-                return this.controller.signal;
+            start(taskId) {
+                // Stop any existing controller for this task
+                this.stop(taskId);
+                
+                const controller = new AbortController();
+                this.controllers.set(taskId, controller);
+                this.activeTaskId = taskId;
+                return controller.signal;
             }
             
-            stop() {
-                if (this.controller) {
-                    this.controller.abort();
-                    this.controller = null;
-                    this.isActive = false;
+            stop(taskId) {
+                if (taskId) {
+                    // Stop specific task's controller
+                    const controller = this.controllers.get(taskId);
+                    if (controller) {
+                        controller.abort();
+                        this.controllers.delete(taskId);
+                    }
+                    if (this.activeTaskId === taskId) {
+                        this.activeTaskId = null;
+                    }
+                } else {
+                    // Stop current active controller (legacy behavior)
+                    if (this.activeTaskId) {
+                        this.stop(this.activeTaskId);
+                    }
                 }
+            }
+            
+            isActive(taskId) {
+                if (taskId) {
+                    return this.controllers.has(taskId);
+                }
+                return this.activeTaskId !== null && this.controllers.has(this.activeTaskId);
             }
             
             isAborted(signal) {
                 return signal?.aborted === true;
+            }
+            
+            // Get controller for a specific task
+            getController(taskId) {
+                return this.controllers.get(taskId);
             }
         }
         
@@ -5219,8 +5378,8 @@
             hideDescriptionActionsBar();
 
             // 如果有正在进行的请求，先终止它（使用标准化的 abortManager）
-            if (abortManager.isActive) {
-                abortManager.stop();
+            if (abortManager.isActive(currentTaskId)) {
+                abortManager.stop(currentTaskId);
             }
 
             // 等待 schema 加载完成
@@ -5280,7 +5439,12 @@
 
             // Determine which stage we're in and route accordingly
             if (conversationState.stage === CONVERSATION_STAGES.IDLE) {
-                // Turn 1: Generate experiment description
+                // Check if we already have an outline (modification mode)
+                if (conversationState.experimentDescription) {
+                    // Modification mode: User wants to modify existing outline and regenerate flowchart
+                    addProgressMessage('Modifying existing experiment outline based on your new requirements...', true);
+                }
+                // Turn 1: Generate experiment description (or modify existing)
                 await generateExperimentDescription(message, settings, schema, skipUserMessage);
             } else if (conversationState.stage === CONVERSATION_STAGES.DESCRIBING) {
                 // Turn 2: Generate flowchart JSON using the description
@@ -5289,10 +5453,14 @@
         }
 
         async function generateExperimentDescription(userRequirement, settings, schema, skipUserMessage = false) {
-            // 如果已经有正在进行的请求，先终止它
-            if (abortManager.isActive) {
-                abortManager.stop();
+            // 如果已经有正在进行的请求，先终止它（仅终止当前任务的）
+            if (abortManager.isActive(currentTaskId)) {
+                abortManager.stop(currentTaskId);
             }
+
+            // Create generation context for task isolation
+            const context = new GenerationContext(currentTaskId);
+            activeGenerationContext = context;
 
             // Store user requirement and update state
             conversationState.userRequirement = userRequirement;
@@ -5314,6 +5482,11 @@
                 } catch (e) {
                     console.warn('Failed to read file:', e);
                 }
+            }
+
+            // If we already have an outline (modification mode), include it
+            if (conversationState.experimentDescription) {
+                extraParams.existingOutline = conversationState.experimentDescription;
             }
 
             // 先清空输入框和文件，避免用户看到延迟
@@ -5341,7 +5514,8 @@
             let isAborted = false;
             const stopHandler = () => {
                 isAborted = true;
-                abortManager.stop();
+                context.abort();
+                abortManager.stop(currentTaskId);
                 // 取消 showDescriptionWithActions 中的 setTimeout
                 if (currentCancelShowDescription) {
                     currentCancelShowDescription();
@@ -5352,7 +5526,8 @@
             stopBtn.addEventListener('click', stopHandler);
 
             // Use assistant message component for streaming
-            const assistantMsg = addAssistantMessageWithThink('', 'Outlining', deepThinkEnabled);
+            const isModifying = !!extraParams.existingOutline;
+            const assistantMsg = addAssistantMessageWithThink('', isModifying ? 'Modifying Outline' : 'Outlining', deepThinkEnabled);
 
             let fullContent = '';
             let thinkContent = '';
@@ -5374,11 +5549,16 @@
                         body: JSON.stringify(requestBody)
                     });
                 } catch (fetchError) {
-                    if (isAborted) {
-                        // 用户主动中止，直接返回
+                    if (isAborted || !verifyGenerationContext(context)) {
+                        // 用户主动中止或任务已切换，直接返回
                         return;
                     }
                     throw new Error(`Network error: ${fetchError.message}`);
+                }
+
+                // Verify task hasn't switched while waiting for response
+                if (!verifyGenerationContext(context)) {
+                    return;
                 }
 
                 if (!response.ok) {
@@ -5392,8 +5572,8 @@
 
                 try {
                     while (true) {
-                        // 检查是否被中止
-                        if (isAborted) {
+                        // 检查是否被中止或任务已切换
+                        if (isAborted || !verifyGenerationContext(context)) {
                             reader.cancel();
                             break;
                         }
@@ -5485,6 +5665,11 @@
                     // Stream ended
                 }
 
+                // Final context verification before processing results
+                if (!verifyGenerationContext(context)) {
+                    return;
+                }
+
                 if (isAborted) {
                     assistantMsg.finalizeMessage(fullContent || 'Stopped');
                     return;
@@ -5502,10 +5687,11 @@
 
             } catch (e) {
                 if (isAborted ||
+                    !verifyGenerationContext(context) ||
                     e.name === 'AbortError' ||
                     e.message?.includes('aborted') ||
                     e.message?.includes('ERR_ABORTED')) {
-                    // 用户主动中止，不显示错误
+                    // 用户主动中止或任务已切换，不显示错误
                     assistantMsg.finalizeMessage(fullContent || 'Stopped');
                     // 取消 showDescriptionWithActions 中的 setTimeout
                     if (currentCancelShowDescription) {
@@ -5517,6 +5703,15 @@
                     assistantMsg.msgDiv.classList.add('error');
                 }
             } finally {
+                // Clear generation context
+                if (activeGenerationContext === context) {
+                    activeGenerationContext = null;
+                }
+                // Also clear the task's generation context
+                const task = tasks.find(t => t.id === currentTaskId);
+                if (task) {
+                    task.generationContext = null;
+                }
                 // 只有在没有调用 showDescriptionWithActions 时才重置按钮
                 // 如果 showDescriptionWithActions 被调用，generateFlowchartJSON 会处理按钮状态
                 if (!currentCancelShowDescription) {
@@ -5525,8 +5720,8 @@
                 }
                 stopBtn.removeEventListener('click', stopHandler);
                 // 只有在中止器仍然活跃时才停止它
-                if (abortManager.isActive) {
-                    abortManager.stop();
+                if (abortManager.isActive(currentTaskId)) {
+                    abortManager.stop(currentTaskId);
                 }
                 chatInput.focus();
                 
@@ -5544,10 +5739,14 @@
         }
 
         async function generateFlowchartJSON(settings, schema, skipUserMessage = false) {
-            // 如果已经有正在进行的请求，先终止它
-            if (abortManager.isActive) {
-                abortManager.stop();
+            // 如果已经有正在进行的请求，先终止它（仅终止当前任务的）
+            if (abortManager.isActive(currentTaskId)) {
+                abortManager.stop(currentTaskId);
             }
+
+            // Create generation context for task isolation
+            const context = new GenerationContext(currentTaskId);
+            activeGenerationContext = context;
 
             // 隐藏描述操作按钮栏
             hideDescriptionActionsBar();
@@ -5565,6 +5764,19 @@
                 schema: schema
             };
 
+            // If we already have a flowchart (modification mode), include it
+            if (currentTaskId) {
+                const task = tasks.find(t => t.id === currentTaskId);
+                if (task) {
+                    // Prefer flowchartState over flowchartData
+                    if (task.flowchartState) {
+                        extraParams.existingFlowchart = task.flowchartState;
+                    } else if (task.flowchartData) {
+                        extraParams.existingFlowchart = task.flowchartData;
+                    }
+                }
+            }
+
             sendBtn.style.display = 'none';
             stopBtn.style.display = 'flex';
 
@@ -5573,13 +5785,19 @@
             let isAborted = false;
             const stopHandler = () => {
                 isAborted = true;
-                abortManager.stop();
+                context.abort();
+                abortManager.stop(currentTaskId);
                 stopBtn.removeEventListener('click', stopHandler);
             };
             stopBtn.addEventListener('click', stopHandler);
 
             // Use assistant message component for streaming, with initial think content
-            const assistantMsg = addAssistantMessageWithThink('Generating flowchart JSON based on the experiment description...', 'Flowchart', deepThinkEnabled);
+            const isModifyingFlowchart = !!extraParams.existingFlowchart;
+            const assistantMsg = addAssistantMessageWithThink(
+                isModifyingFlowchart ? 'Updating flowchart JSON based on the modified description...' : 'Generating flowchart JSON based on the experiment description...',
+                isModifyingFlowchart ? 'Updating Flowchart' : 'Flowchart',
+                deepThinkEnabled
+            );
 
             let fullContent = '';
             let thinkContent = '';
@@ -5601,11 +5819,16 @@
                         body: JSON.stringify(requestBody)
                     });
                 } catch (fetchError) {
-                    if (isAborted) {
-                        // 用户主动中止，直接返回
+                    if (isAborted || !verifyGenerationContext(context)) {
+                        // 用户主动中止或任务已切换，直接返回
                         return;
                     }
                     throw new Error(`Network error: ${fetchError.message}`);
+                }
+
+                // Verify task hasn't switched while waiting for response
+                if (!verifyGenerationContext(context)) {
+                    return;
                 }
 
                 if (!response.ok) {
@@ -5619,8 +5842,8 @@
 
                 try {
                     while (true) {
-                        // 检查是否被中止
-                        if (isAborted) {
+                        // 检查是否被中止或任务已切换
+                        if (isAborted || !verifyGenerationContext(context)) {
                             reader.cancel();
                             break;
                         }
@@ -5717,6 +5940,11 @@
                     // Stream ended
                 }
 
+                // Final context verification before processing results
+                if (!verifyGenerationContext(context)) {
+                    return;
+                }
+
                 if (isAborted) {
                     assistantMsg.finalizeMessage(fullContent || 'Stopped');
                     return;
@@ -5774,6 +6002,11 @@
                     }
                 }
 
+                // Verify task hasn't switched before sending to parent
+                if (!verifyGenerationContext(context)) {
+                    return;
+                }
+
                 // Send to parent window
                 const tempFileName = 'temp_generated_flowchart.json';
                 window.parent.postMessage({
@@ -5798,6 +6031,9 @@
 
                 // 等待一小段时间让用户看到 flowchart，然后自动收起
                 setTimeout(() => {
+                    // Verify task hasn't switched before showing progress message
+                    if (!verifyGenerationContext(context)) return;
+                    
                     // 收起 flowchart 消息
                     const messageContent = assistantMsg.messageContent;
                     const messageContainer = assistantMsg.messageContainer;
@@ -5826,40 +6062,56 @@
                         
                         // 等待收起动画完成后，显示进度消息
                         setTimeout(async () => {
-                            addProgressMessage('Flowchart generated successfully. You can now review and edit the experiment structure.');
+                            // Final verification before updating UI
+                            if (!verifyGenerationContext(context)) return;
+                            
+                            const successMsg = isModifyingFlowchart
+                                ? 'Flowchart updated successfully. Your modifications have been applied.'
+                                : 'Flowchart generated successfully. You can now review and edit the experiment structure.';
+                            addProgressMessage(successMsg);
                             // Save task state after adding progress message
                             await saveCurrentTaskState();
                         }, 400); // 等待 CSS 动画完成 (0.4s)
                     }
                 }, 2000); // 给用户 2 秒时间查看生成的 flowchart
 
-                // Reset conversation state
+                // Reset conversation state - keep experimentDescription for potential future modifications
                 conversationState.stage = CONVERSATION_STAGES.IDLE;
                 conversationState.userRequirement = '';
-                conversationState.experimentDescription = '';
+                // Note: We keep experimentDescription so that subsequent messages can modify the existing outline
                 assistantMessageCount = 0; // 重置 AI 回复计数
 
             } catch (e) {
                 if (isAborted ||
+                    !verifyGenerationContext(context) ||
                     e.name === 'AbortError' ||
                     e.message?.includes('aborted') ||
                     e.message?.includes('ERR_ABORTED')) {
-                    // 用户主动中止，不显示错误
+                    // 用户主动中止或任务已切换，不显示错误
                     assistantMsg.finalizeMessage(fullContent || 'Stopped');
                 } else {
                     assistantMsg.updateMessage(`❌ ${e.message}`);
                     assistantMsg.msgDiv.classList.add('error');
                 }
             } finally {
+                // Clear generation context
+                if (activeGenerationContext === context) {
+                    activeGenerationContext = null;
+                }
+                // Also clear the task's generation context
+                const task = tasks.find(t => t.id === currentTaskId);
+                if (task) {
+                    task.generationContext = null;
+                }
                 sendBtn.style.display = 'flex';
                 stopBtn.style.display = 'none';
                 stopBtn.removeEventListener('click', stopHandler);
                 // 只有在中止器仍然活跃时才停止它
-                if (abortManager.isActive) {
-                    abortManager.stop();
+                if (abortManager.isActive(currentTaskId)) {
+                    abortManager.stop(currentTaskId);
                 }
                 chatInput.focus();
-                
+
                 // Handle pending task deletion if any
                 if (pendingTaskDeletion) {
                     console.log('Processing pending task deletion after generation');
@@ -6207,9 +6459,9 @@
 
             wrappersToRemove.forEach(w => w.remove());
 
-            // 2. 终止当前正在进行的请求
-            if (abortManager.isActive) {
-                abortManager.stop();
+            // 2. 终止当前正在进行的请求（仅终止当前任务的）
+            if (abortManager.isActive(currentTaskId)) {
+                abortManager.stop(currentTaskId);
                 showToast('Request aborted', 'info', 1500);
                 // 等待一小段时间让旧的请求清理
                 await new Promise(resolve => setTimeout(resolve, 100));
@@ -6321,9 +6573,9 @@
 
             wrappersToRemove.forEach(w => w.remove());
 
-            // 2. 终止当前正在进行的请求
-            if (abortManager.isActive) {
-                abortManager.stop();
+            // 2. 终止当前正在进行的请求（仅终止当前任务的）
+            if (abortManager.isActive(currentTaskId)) {
+                abortManager.stop(currentTaskId);
                 showToast('Request aborted', 'info', 1500);
                 // 等待一小段时间让旧的请求清理
                 await new Promise(resolve => setTimeout(resolve, 100));
@@ -6476,7 +6728,23 @@
             } else if (e.data.type === 'load-task' && e.data.task) {
                 handleLoadTaskFromParent(e.data.task);
             } else if (e.data.type === 'save-current-task') {
-                saveCurrentTaskState().catch(e => console.warn('Failed to save current task:', e));
+                // Parent is requesting save before deletion
+                saveCurrentTaskState().then(() => {
+                    // Notify parent that save is complete
+                    window.parent.postMessage({
+                        type: 'current-task-saved',
+                        taskId: e.data.taskId || currentTaskId,
+                        timestamp: new Date().toISOString()
+                    }, '*');
+                }).catch(e => {
+                    console.warn('Failed to save current task:', e);
+                    // Still notify parent even on error to avoid timeout
+                    window.parent.postMessage({
+                        type: 'current-task-saved',
+                        taskId: e.data.taskId || currentTaskId,
+                        timestamp: new Date().toISOString()
+                    }, '*');
+                });
             } else if (e.data.type === 'task-deleted') {
                 handleTaskDeletedFromParent(e.data);
             } else if (e.data.type === 'tasks-sync-data') {
@@ -6494,6 +6762,9 @@
                 switchToTask(task.id);
                 return;
             }
+            
+            // Clean up any ongoing generation before creating new task
+            cleanupGenerationForTaskSwitch().catch(e => console.warn('Failed to cleanup generation:', e));
             
             // Save current task state before switching
             saveCurrentTaskState().catch(e => console.warn('Failed to save current task:', e));
@@ -6560,8 +6831,8 @@
         function handleTaskDeletedFromParent(data) {
             const taskId = data.taskId;
             
-            // Check if there's an active generation in progress
-            if (abortManager.isActive) {
+            // Check if there's an active generation in progress for current task
+            if (abortManager.isActive(currentTaskId)) {
                 console.log('Task deletion received during generation, will sync after completion');
                 // Don't modify anything during generation
                 // Just remember that we need to sync tasks after generation
@@ -6596,8 +6867,9 @@
             
             console.log('Received tasks sync data from parent');
             
-            // Preserve current task's unsaved messages if it exists in new tasks
+            // Preserve current task's live messages from DOM before sync
             const currentTask = tasks.find(t => t.id === currentTaskId);
+            const liveMessages = currentTask ? chatMessagesDiv.innerHTML : null;
             
             // Update tasks array from parent
             tasks = data.tasks;
@@ -6612,6 +6884,10 @@
             if (!currentTaskExists && tasks.length > 0) {
                 currentTaskId = tasks[0].id;
                 loadTaskState(currentTaskId);
+            } else if (currentTaskExists && liveMessages !== null) {
+                // Restore live messages for the current running task
+                currentTaskExists.messages = liveMessages;
+                chatMessagesDiv.innerHTML = liveMessages;
             }
             
             saveTasks();
