@@ -6484,6 +6484,11 @@
             } else if (e.data.type === 'tasks-sync-data') {
                 // Received tasks sync data from parent after generation
                 handleTasksSyncFromParent(e.data);
+            } else if (e.data.type === 'project-folder-selected') {
+                // Received project folder info from parent
+                projectFolderPath = e.data.folderPath;
+                projectFolderHandle = e.data.folderHandle;
+                console.log('Project folder synced:', projectFolderPath);
             }
         });
         

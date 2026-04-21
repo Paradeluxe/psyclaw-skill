@@ -4,6 +4,33 @@
  */
 
 /**
+ * 安全地将时间值转换为秒
+ * 处理数字、变量引用（以$开头）和无效值
+ * @param {any} value - 时间值（毫秒）
+ * @param {boolean} allowVarRef - 是否允许变量引用（默认false，变量引用会被转为空字符串）
+ * @returns {string} 转换后的秒数或空字符串
+ */
+function convertTimeToSeconds(value, allowVarRef = false) {
+    // 如果是字符串且以 $ 开头，说明是变量引用
+    if (typeof value === 'string' && value.startsWith('$')) {
+        // 如果允许变量引用则返回原值，否则返回空字符串
+        // PsychoPy Builder在绘制时无法解析变量引用，会导致NaN错误
+        return allowVarRef ? value : '';
+    }
+    // 如果是数字或可以转换为数字
+    if (value !== undefined && value !== null && !isNaN(Number(value))) {
+        const num = Number(value);
+        // -1 表示无限持续时间，返回空字符串
+        if (num === -1) {
+            return '';
+        }
+        return (num / 1000).toFixed(1);
+    }
+    // 其他情况返回空字符串
+    return '';
+}
+
+/**
  * 收集routine中所有的#[start,end,total_num]格式的随机数表达式
  * @param {Object} routineRect - Routine数据
  * @returns {Array} 随机数表达式数组
@@ -423,8 +450,8 @@ function generateAudioComponentFromSchema(component, routineName) {
     const name = component.name || `${routineName}_audio`;
     const soundPath = component.path || '';
     const volume = component.volume !== undefined ? component.volume : 1.0;
-    const startTime = ((component.startTime || 0) / 1000).toFixed(1);
-    const duration = component.duration && component.duration !== -1 ? (component.duration / 1000).toFixed(1) : '';
+    const startTime = convertTimeToSeconds(component.startTime) || '0.0';
+    const duration = convertTimeToSeconds(component.duration);
     const stopWithRoutine = component.stopWithRoutine !== false ? 'True' : 'False';
     const forceEndRoutine = component.forceEndRoutine === true ? 'True' : 'False';
     const loop = component.loop === true ? 'True' : 'False';
@@ -461,14 +488,16 @@ function generateVideoComponentFromSchema(component, routineName) {
     const videoPath = component.path || '';
     const volume = component.volume !== undefined ? component.volume : 1.0;
     const loop = component.loop === true ? 'True' : 'False';
-    const startTime = ((component.startTime || 0) / 1000).toFixed(1);
-    const duration = component.duration && component.duration !== -1 ? (component.duration / 1000).toFixed(1) : '';
+    const startTime = convertTimeToSeconds(component.startTime) || '0.0';
+    const duration = convertTimeToSeconds(component.duration);
     const stopWithRoutine = component.stopWithRoutine !== false ? 'True' : 'False';
     const forceEndRoutine = component.forceEndRoutine === true ? 'True' : 'False';
     const pos = component.pos || [0, 0];
+    const posX = pos[0] !== undefined && pos[0] !== null ? pos[0] : 0;
+    const posY = pos[1] !== undefined && pos[1] !== null ? pos[1] : 0;
     const size = component.size || [null, null];
-    const opacity = component.opacity !== undefined ? component.opacity : 1.0;
-    const ori = component.ori !== undefined ? component.ori : 0;
+    const opacity = component.opacity !== undefined && component.opacity !== null ? component.opacity : 1.0;
+    const ori = component.ori !== undefined && component.ori !== null ? component.ori : 0;
     const units = component.units || 'from exp settings';
     const flip = component.flip || 'None';
     const anchor = component.anchor || 'center';
@@ -484,7 +513,7 @@ function generateVideoComponentFromSchema(component, routineName) {
         <Param val="${videoPath}" valType="str" updates="set every repeat" name="movie"/>
         <Param val="${name}" valType="code" updates="None" name="name"/>
         <Param val="${opacity}" valType="num" updates="constant" name="opacity"/>
-        <Param val="(${pos[0]}, ${pos[1]})" valType="list" updates="constant" name="pos"/>
+        <Param val="(${posX}, ${posY})" valType="list" updates="constant" name="pos"/>
         <Param val="True" valType="bool" updates="None" name="saveStartStop"/>
         <Param val="" valType="code" updates="None" name="startEstim"/>
         <Param val="time (s)" valType="str" updates="None" name="startType"/>
@@ -508,14 +537,16 @@ function generateTextComponentFromSchema(component, routineName) {
     const text = replaceRandomPatternsInValue(component.text) || '';
     const color = replaceRandomPatternsInValue(component.color) || 'white';
     const font = component.font || 'Arial';
-    const letterHeight = component.letterHeight !== undefined ? component.letterHeight : 0.05;
+    const letterHeight = component.letterHeight !== undefined && component.letterHeight !== null ? component.letterHeight : 0.05;
     const pos = component.pos || [0, 0];
-    const ori = component.ori !== undefined ? component.ori : 0;
-    const opacity = component.opacity !== undefined ? component.opacity : '';
-    const startTime = ((component.startTime || 0) / 1000).toFixed(1);
-    const duration = component.duration && component.duration !== -1 ? (component.duration / 1000).toFixed(1) : '';
+    const posX = pos[0] !== undefined && pos[0] !== null ? pos[0] : 0;
+    const posY = pos[1] !== undefined && pos[1] !== null ? pos[1] : 0;
+    const ori = component.ori !== undefined && component.ori !== null ? component.ori : 0;
+    const opacity = component.opacity !== undefined && component.opacity !== null ? component.opacity : 1.0;
+    const startTime = convertTimeToSeconds(component.startTime) || '0.0';
+    const duration = convertTimeToSeconds(component.duration);
     const units = component.units || 'from exp settings';
-    const wrapWidth = component.wrapWidth !== undefined ? component.wrapWidth : '';
+    const wrapWidth = component.wrapWidth !== undefined && component.wrapWidth !== null ? component.wrapWidth : '';
     const languageStyle = component.languageStyle || 'LTR';
     const flip = component.flip || 'None';
     const draggable = component.draggable === true ? 'True' : 'False';
@@ -537,7 +568,7 @@ function generateTextComponentFromSchema(component, routineName) {
         <Param val="${name}" valType="code" updates="None" name="name"/>
         <Param val="${opacity}" valType="num" updates="constant" name="opacity"/>
         <Param val="${ori}" valType="num" updates="constant" name="ori"/>
-        <Param val="(${pos[0]}, ${pos[1]})" valType="list" updates="constant" name="pos"/>
+        <Param val="(${posX}, ${posY})" valType="list" updates="constant" name="pos"/>
         <Param val="True" valType="bool" updates="None" name="saveStartStop"/>
         <Param val="" valType="code" updates="None" name="startEstim"/>
         <Param val="time (s)" valType="str" updates="None" name="startType"/>
@@ -558,18 +589,20 @@ function generateTextComponentFromSchema(component, routineName) {
 function generateImageComponentFromSchema(component, routineName) {
     const name = component.name || `${routineName}_image`;
     const imagePath = component.path || '';
-    const startTime = ((component.startTime || 0) / 1000).toFixed(1);
-    const duration = component.duration && component.duration !== -1 ? (component.duration / 1000).toFixed(1) : '';
+    const startTime = convertTimeToSeconds(component.startTime) || '0.0';
+    const duration = convertTimeToSeconds(component.duration);
     const pos = component.pos || [0, 0];
+    const posX = pos[0] !== undefined && pos[0] !== null ? pos[0] : 0;
+    const posY = pos[1] !== undefined && pos[1] !== null ? pos[1] : 0;
     const size = component.size || [null, null];
-    const opacity = component.opacity !== undefined ? component.opacity : 1.0;
-    const ori = component.ori !== undefined ? component.ori : 0;
-    const contrast = component.contrast !== undefined ? component.contrast : 1.0;
+    const opacity = component.opacity !== undefined && component.opacity !== null ? component.opacity : 1.0;
+    const ori = component.ori !== undefined && component.ori !== null ? component.ori : 0;
+    const contrast = component.contrast !== undefined && component.contrast !== null ? component.contrast : 1.0;
     const color = replaceRandomPatternsInValue(component.color) || '$[1,1,1]';
     const colorSpace = component.colorSpace || 'rgb';
     const flip = component.flip || 'None';
     const interpolate = component.interpolate || 'linear';
-    const textureRes = component.textureRes || 128;
+    const textureRes = component.textureRes !== undefined && component.textureRes !== null ? component.textureRes : 128;
     const units = component.units || 'from exp settings';
     const draggable = component.draggable === true ? 'True' : 'False';
     const anchor = 'center';
@@ -577,7 +610,7 @@ function generateImageComponentFromSchema(component, routineName) {
     const flipHoriz = flip === 'Horizontal' || flip === 'Both' ? 'True' : 'False';
     const flipVert = flip === 'Vertical' || flip === 'Both' ? 'True' : 'False';
     
-    const sizeVal = size[0] !== null && size[1] !== null ? `(${size[0]}, ${size[1]})` : '';
+    const sizeVal = size[0] !== null && size[1] !== null && size[0] !== undefined && size[1] !== undefined ? `(${size[0]}, ${size[1]})` : '';
     
     return `      <ImageComponent name="${name}" plugin="None">
         <Param val="${anchor}" valType="str" updates="constant" name="anchor"/>
@@ -594,7 +627,7 @@ function generateImageComponentFromSchema(component, routineName) {
         <Param val="${name}" valType="code" updates="None" name="name"/>
         <Param val="${opacity}" valType="num" updates="constant" name="opacity"/>
         <Param val="${ori}" valType="num" updates="constant" name="ori"/>
-        <Param val="(${pos[0]}, ${pos[1]})" valType="list" updates="constant" name="pos"/>
+        <Param val="(${posX}, ${posY})" valType="list" updates="constant" name="pos"/>
         <Param val="True" valType="bool" updates="None" name="saveStartStop"/>
         <Param val="" valType="code" updates="None" name="startEstim"/>
         <Param val="time (s)" valType="str" updates="None" name="startType"/>
@@ -614,8 +647,8 @@ function generateImageComponentFromSchema(component, routineName) {
  */
 function generateKeyboardComponentFromSchema(component, routineName) {
     const name = component.name || `${routineName}_key_resp`;
-    const startTime = ((component.startTime || 0) / 1000).toFixed(1);
-    const duration = component.duration && component.duration !== -1 ? (component.duration / 1000).toFixed(1) : '';
+    const startTime = convertTimeToSeconds(component.startTime) || '0.0';
+    const duration = convertTimeToSeconds(component.duration);
     const stopWithRoutine = component.stopWithRoutine !== false ? 'True' : 'False';
     const forceEndRoutine = component.forceEndRoutine === true ? 'True' : 'False';
     const discardPrevious = component.discardPrevious !== false ? 'True' : 'False';
@@ -850,7 +883,184 @@ function generateLoopTerminator(loop) {
     return `    <LoopTerminator name="${loop.name}"/>\n`;
 }
 
+/**
+ * 将条件数据转换为 PsychoPy 兼容的 CSV 格式（用于 Loop 的 conditions file）
+ * PsychoPy Loop Excel/CSV 格式要求：
+ * - 第一行是列标题（变量名，不包含 $ 符号）
+ * - 后续每行代表一个 trial 的参数值
+ * - 支持 weight 列来控制条件权重
+ * @param {Array} conditions - 条件数组，每个条件包含 name, weight, values
+ * @returns {string} CSV 格式的字符串
+ */
+function generateConditionsCSV(conditions) {
+    if (!Array.isArray(conditions) || conditions.length === 0) {
+        return '';
+    }
+
+    // 收集所有变量名
+    const firstCondition = conditions[0];
+    let variableNames = [];
+    
+    // 处理两种格式：
+    // 1. v2.0 Schema: values 是对象 { varName: [values] }
+    // 2. 旧格式: values 是数组，配合 _valueKeys 使用
+    const valuesData = firstCondition.values || {};
+    
+    if (Array.isArray(valuesData)) {
+        // 旧格式：values 是数组，使用 _valueKeys 映射
+        const valueKeys = firstCondition._valueKeys || [];
+        variableNames = valueKeys;
+    } else if (typeof valuesData === 'object') {
+        // v2.0 Schema：values 是对象
+        variableNames = Object.keys(valuesData);
+    }
+    
+    if (variableNames.length === 0) {
+        console.warn('未找到变量名，无法生成 CSV');
+        return '';
+    }
+    
+    // 构建 CSV 头部（移除变量名中的 $ 符号）
+    const cleanVariableNames = variableNames.map(name => name.replace(/\$/g, ''));
+    const headers = ['name', ...cleanVariableNames, 'weight'];
+    let csv = headers.join(',') + '\n';
+
+    // 处理每个条件，展开 values 数组
+    conditions.forEach(condition => {
+        const condName = condition.name || '';
+        const condWeight = condition.weight || 1;
+        const condValues = condition.values || {};
+        
+        // 获取每个变量的值数组
+        let valueArrays = [];
+        
+        if (Array.isArray(condValues)) {
+            // 旧格式：values 是数组
+            valueArrays = condValues.map(val => Array.isArray(val) ? val : [val]);
+        } else {
+            // v2.0 Schema：values 是对象
+            valueArrays = variableNames.map(varName => {
+                const val = condValues[varName];
+                return Array.isArray(val) ? val : [val];
+            });
+        }
+        
+        // 计算最大长度（用于展开多值）
+        const maxLength = Math.max(...valueArrays.map(arr => arr.length), 1);
+        
+        // 为每个值组合生成一行
+        for (let i = 0; i < maxLength; i++) {
+            const row = [condName];
+            
+            valueArrays.forEach((arr) => {
+                const val = arr[i % arr.length];
+                // 处理字符串值，如果包含逗号或引号，需要加引号
+                let formattedVal = val !== undefined ? String(val) : '';
+                if (formattedVal.includes(',') || formattedVal.includes('"') || formattedVal.includes('\n')) {
+                    formattedVal = '"' + formattedVal.replace(/"/g, '""') + '"';
+                }
+                row.push(formattedVal);
+            });
+            
+            row.push(condWeight);
+            csv += row.join(',') + '\n';
+        }
+    });
+
+    return csv;
+}
+
+/**
+ * 生成 Loop 的条件文件（CSV 格式）
+ * 为每个包含 conditions 的 loop 生成一个 CSV 文件
+ * @param {Object} projectData - 项目数据
+ * @returns {Array} 返回文件对象数组，每个对象包含 filename 和 content
+ */
+function generateLoopConditionFiles(projectData) {
+    const files = [];
+    const { loops } = projectData;
+    
+    if (!Array.isArray(loops)) {
+        return files;
+    }
+    
+    loops.forEach(loop => {
+        if (loop.conditions) {
+            let conditions;
+            // 处理 conditions 可能是字符串（JSON）或数组的情况
+            if (typeof loop.conditions === 'string') {
+                try {
+                    conditions = JSON.parse(loop.conditions);
+                } catch (e) {
+                    console.warn(`Loop "${loop.name}" 的 conditions 解析失败:`, e);
+                    return;
+                }
+            } else if (Array.isArray(loop.conditions)) {
+                conditions = loop.conditions;
+            } else {
+                return;
+            }
+            
+            if (conditions.length > 0) {
+                const csvContent = generateConditionsCSV(conditions);
+                if (csvContent) {
+                    files.push({
+                        filename: `${loop.name}_conditions.csv`,
+                        content: csvContent,
+                        loopName: loop.name
+                    });
+                }
+            }
+        }
+    });
+    
+    return files;
+}
+
+/**
+ * 下载 CSV 文件（浏览器环境）
+ * @param {string} filename - 文件名
+ * @param {string} content - CSV 内容
+ */
+function downloadCSV(filename, content) {
+    if (typeof window === 'undefined') {
+        // Node.js 环境
+        const fs = require('fs');
+        fs.writeFileSync(filename, content, 'utf8');
+        console.log(`已生成条件文件: ${filename}`);
+    } else {
+        // 浏览器环境
+        const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        link.setAttribute('href', url);
+        link.setAttribute('download', filename);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+}
+
+/**
+ * 导出所有 Loop 的条件文件
+ * @param {Object} projectData - 项目数据
+ */
+function exportLoopConditionFiles(projectData) {
+    const files = generateLoopConditionFiles(projectData);
+    files.forEach(file => {
+        downloadCSV(file.filename, file.content);
+    });
+    return files;
+}
+
 // 导出函数（如果在模块环境中）
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { convertToPsyExpXML };
+    module.exports = { 
+        convertToPsyExpXML,
+        generateConditionsCSV,
+        generateLoopConditionFiles,
+        exportLoopConditionFiles,
+        downloadCSV
+    };
 }

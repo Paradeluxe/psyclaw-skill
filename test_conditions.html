@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Conditions CSV Generation</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        h1 {
+            color: #333;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h2 {
+            color: #1456f0;
+            margin-top: 0;
+        }
+        pre {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            overflow-x: auto;
+            border: 1px solid #e9ecef;
+        }
+        button {
+            background: #1456f0;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0d3d99;
+        }
+        .success {
+            color: #28a745;
+        }
+        .error {
+            color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 测试 Conditions CSV 生成功能</h1>
+    
+    <div class="test-section">
+        <h2>测试数据</h2>
+        <p>以下是从 deeppsych_project_1.json 中提取的 conditions 数据格式：</p>
+        <pre id="testData"></pre>
+    </div>
+
+    <div class="test-section">
+        <h2>生成的 CSV 文件</h2>
+        <div id="results"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>操作</h2>
+        <button onclick="runAllTests()">运行所有测试</button>
+        <button onclick="downloadAllFiles()">下载所有 CSV 文件</button>
+    </div>
+
+    <script src="json2psyexp.js"></script>
+    <script>
+        // 测试数据 - 模拟 deeppsych_project_1.json 中的 conditions 格式
+        const testProjectData = {
+            routines: [],
+            loops: [
+                {
+                    name: "PracticeLoop",
+                    nRounds: 1,
+                    type: "random",
+                    conditions: [
+                        {
+                            name: "PracticeTrial",
+                            weight: 5,
+                            values: {
+                                fixation_duration: [500, 750, 1000, 1250, 1500]
+                            }
+                        }
+                    ]
+                },
+                {
+                    name: "MainLoop",
+                    nRounds: 10,
+                    type: "fullRandom",
+                    conditions: [
+                        {
+                            name: "MainTrialCondition",
+                            weight: 5,
+                            values: {
+                                fixation_duration: [500, 750, 1000, 1250, 1500]
+                            }
+                        }
+                    ]
+                }
+            ]
+        };
+
+        // v2.0 Schema 格式测试数据
+        const testProjectDataV2 = {
+            routines: [],
+            loops: [
+                {
+                    name: "StroopLoop",
+                    nRounds: 1,
+                    type: "random",
+                    conditions: [
+                        {
+                            name: "Congruent_Red",
+                            weight: 1,
+                            values: {
+                                "$congruency": ["congruent"],
+                                "$stimulus_text": ["RED"],
+                                "$ink_color": ["#FF0000"]
+                            }
+                        },
+                        {
+                            name: "Congruent_Green",
+                            weight: 1,
+                            values: {
+                                "$congruency": ["congruent"],
+                                "$stimulus_text": ["GREEN"],
+                                "$ink_color": ["#00FF00"]
+                            }
+                        },
+                        {
+                            name: "Incongruent_Red",
+                            weight: 1,
+                            values: {
+                                "$congruency": ["incongruent"],
+                                "$stimulus_text": ["GREEN"],
+                                "$ink_color": ["#FF0000"]
+                            }
+                        },
+                        {
+                            name: "Incongruent_Green",
+                            weight: 1,
+                            values: {
+                                "$congruency": ["incongruent"],
+                                "$stimulus_text": ["RED"],
+                                "$ink_color": ["#00FF00"]
+                            }
+                        }
+                    ]
+                }
+            ]
+        };
+
+        // 显示测试数据
+        document.getElementById('testData').textContent = JSON.stringify(testProjectData, null, 2);
+
+        function runAllTests() {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '';
+
+            // 测试 1: 旧格式
+            const files1 = generateLoopConditionFiles(testProjectData);
+            displayResults('测试 1: 简单条件（单变量多值）', files1);
+
+            // 测试 2: v2.0 格式
+            const files2 = generateLoopConditionFiles(testProjectDataV2);
+            displayResults('测试 2: v2.0 Schema 格式（多变量）', files2);
+
+            // 测试 3: 空 conditions
+            const emptyProject = { routines: [], loops: [{ name: "EmptyLoop", conditions: [] }] };
+            const files3 = generateLoopConditionFiles(emptyProject);
+            displayResults('测试 3: 空 conditions', files3);
+
+            // 测试 4: 旧格式（values 是数组，有 _valueKeys）
+            const oldFormatProject = {
+                routines: [],
+                loops: [{
+                    name: "OldFormatLoop",
+                    nRounds: 1,
+                    type: "random",
+                    conditions: [
+                        {
+                            name: "Trial1",
+                            weight: 5,
+                            values: [[500, 750, 1000, 1250, 1500]],
+                            _valueKeys: ["fixation_duration"]
+                        }
+                    ]
+                }]
+            };
+            const files4 = generateLoopConditionFiles(oldFormatProject);
+            displayResults('测试 4: 旧格式（values 数组 + _valueKeys）', files4);
+        }
+
+        function displayResults(testName, files) {
+            const resultsDiv = document.getElementById('results');
+            
+            const section = document.createElement('div');
+            section.className = 'test-section';
+            
+            let html = `<h3>${testName}</h3>`;
+            
+            if (files.length === 0) {
+                html += '<p class="error">未生成任何文件（conditions 为空或格式不正确）</p>';
+            } else {
+                html += `<p class="success">成功生成 ${files.length} 个文件：</p>`;
+                files.forEach(file => {
+                    html += `
+                        <h4>${file.filename}</h4>
+                        <pre>${file.content}</pre>
+                        <button onclick="downloadSingleFile('${file.filename}', '${file.loopName}')">下载此文件</button>
+                    `;
+                });
+            }
+            
+            section.innerHTML = html;
+            resultsDiv.appendChild(section);
+        }
+
+        function downloadSingleFile(filename, loopName) {
+            // 找到对应的文件内容
+            let allFiles = [];
+            allFiles = allFiles.concat(generateLoopConditionFiles(testProjectData));
+            allFiles = allFiles.concat(generateLoopConditionFiles(testProjectDataV2));
+            
+            const file = allFiles.find(f => f.filename === filename);
+            if (file) {
+                downloadCSV(file.filename, file.content);
+            }
+        }
+
+        function downloadAllFiles() {
+            exportLoopConditionFiles(testProjectData);
+            exportLoopConditionFiles(testProjectDataV2);
+            alert('所有 CSV 文件已下载！');
+        }
+
+        // 自动运行测试
+        window.onload = runAllTests;
+    </script>
+</body>
+</html>
