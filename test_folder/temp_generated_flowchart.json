@@ -1,0 +1,773 @@
+{
+  "timestamp": "2026-04-22T06:55:51.951Z",
+  "routines": [
+    {
+      "id": 0,
+      "name": "instr_start",
+      "x": 85,
+      "y": 240,
+      "width": 200,
+      "height": 146,
+      "duration": -1,
+      "avtpComponents": [
+        {
+          "name": "text_welcome",
+          "type": "text",
+          "text": "Welcome. In this experiment, you will see a green circle appear on the screen. As soon as you see it, press the SPACEBAR as quickly as possible. Please keep your finger on the spacebar ready to press. Do not press before the circle appears.",
+          "color": "white",
+          "font": "Arial",
+          "letterHeight": 0.05,
+          "pos": [
+            0,
+            0
+          ],
+          "startTime": 0,
+          "duration": -1,
+          "stopWithRoutine": true,
+          "units": "norm",
+          "anchor": "center",
+          "enabled": true
+        },
+        {
+          "name": "key_continue",
+          "type": "keyboard",
+          "startTime": 0,
+          "duration": -1,
+          "stopWithRoutine": true,
+          "forceEndRoutine": true,
+          "keys": "space",
+          "registerOn": "press",
+          "enabled": true
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "name": "fixation",
+      "x": 335,
+      "y": 240,
+      "width": 200,
+      "height": 140,
+      "duration": -1,
+      "avtpComponents": [
+        {
+          "name": "text_fix",
+          "type": "text",
+          "text": "+",
+          "color": "white",
+          "font": "Arial",
+          "letterHeight": 0.1,
+          "pos": [
+            0,
+            0
+          ],
+          "startTime": 0,
+          "duration": "$iti_duration",
+          "stopWithRoutine": true,
+          "units": "norm",
+          "anchor": "center",
+          "enabled": true
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "stimulus",
+      "x": 585,
+      "y": 240,
+      "width": 200,
+      "height": 146,
+      "duration": -1,
+      "avtpComponents": [
+        {
+          "name": "shape_target",
+          "type": "image",
+          "path": "green_circle.png",
+          "pos": [
+            0,
+            0
+          ],
+          "size": [
+            0.1,
+            0.1
+          ],
+          "startTime": 0,
+          "duration": 2000,
+          "stopWithRoutine": true,
+          "units": "norm",
+          "opacity": 1,
+          "enabled": true
+        },
+        {
+          "name": "key_response",
+          "type": "keyboard",
+          "startTime": 0,
+          "duration": 2000,
+          "stopWithRoutine": true,
+          "forceEndRoutine": true,
+          "keys": "space",
+          "registerOn": "press",
+          "enabled": true
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "blank_iti",
+      "x": 835,
+      "y": 240,
+      "width": 200,
+      "height": 140,
+      "duration": -1,
+      "avtpComponents": [
+        {
+          "name": "text_blank",
+          "type": "text",
+          "text": "",
+          "color": "black",
+          "pos": [
+            0,
+            0
+          ],
+          "startTime": 0,
+          "duration": 500,
+          "stopWithRoutine": true,
+          "units": "norm",
+          "enabled": true
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "name": "instr_main",
+      "x": 1085,
+      "y": 240,
+      "width": 200,
+      "height": 146,
+      "duration": -1,
+      "avtpComponents": [
+        {
+          "name": "text_instr_main",
+          "type": "text",
+          "text": "The practice session is complete. The main experiment will now begin. It consists of 30 trials. Remember: focus on the center of the screen and press the SPACEBAR immediately when the green circle appears. There is no feedback during this section.",
+          "color": "white",
+          "font": "Arial",
+          "letterHeight": 0.05,
+          "pos": [
+            0,
+            0
+          ],
+          "startTime": 0,
+          "duration": -1,
+          "stopWithRoutine": true,
+          "units": "norm",
+          "anchor": "center",
+          "enabled": true
+        },
+        {
+          "name": "key_start_main",
+          "type": "keyboard",
+          "startTime": 0,
+          "duration": -1,
+          "stopWithRoutine": true,
+          "forceEndRoutine": true,
+          "keys": "space",
+          "registerOn": "press",
+          "enabled": true
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "name": "fixation_main",
+      "x": 1335,
+      "y": 240,
+      "width": 200,
+      "height": 140,
+      "duration": -1,
+      "avtpComponents": [
+        {
+          "name": "text_fix_main",
+          "type": "text",
+          "text": "+",
+          "color": "white",
+          "font": "Arial",
+          "letterHeight": 0.1,
+          "pos": [
+            0,
+            0
+          ],
+          "startTime": 0,
+          "duration": "$iti_duration",
+          "stopWithRoutine": true,
+          "units": "norm",
+          "anchor": "center",
+          "enabled": true
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "name": "stimulus_main",
+      "x": 1585,
+      "y": 240,
+      "width": 200,
+      "height": 146,
+      "duration": -1,
+      "avtpComponents": [
+        {
+          "name": "shape_target_main",
+          "type": "image",
+          "path": "green_circle.png",
+          "pos": [
+            0,
+            0
+          ],
+          "size": [
+            0.1,
+            0.1
+          ],
+          "startTime": 0,
+          "duration": 2000,
+          "stopWithRoutine": true,
+          "units": "norm",
+          "opacity": 1,
+          "enabled": true
+        },
+        {
+          "name": "key_response_main",
+          "type": "keyboard",
+          "startTime": 0,
+          "duration": 2000,
+          "stopWithRoutine": true,
+          "forceEndRoutine": true,
+          "keys": "space",
+          "registerOn": "press",
+          "enabled": true
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "name": "blank_iti_main",
+      "x": 1835,
+      "y": 240,
+      "width": 200,
+      "height": 140,
+      "duration": -1,
+      "avtpComponents": [
+        {
+          "name": "text_blank_main",
+          "type": "text",
+          "text": "",
+          "color": "black",
+          "pos": [
+            0,
+            0
+          ],
+          "startTime": 0,
+          "duration": 500,
+          "stopWithRoutine": true,
+          "units": "norm",
+          "enabled": true
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "name": "debrief",
+      "x": 2085,
+      "y": 240,
+      "width": 200,
+      "height": 146,
+      "duration": -1,
+      "avtpComponents": [
+        {
+          "name": "text_end",
+          "type": "text",
+          "text": "Thank you for participating. Your average reaction time was [X] ms. Please inform the experimenter that you are finished.",
+          "color": "white",
+          "font": "Arial",
+          "letterHeight": 0.05,
+          "pos": [
+            0,
+            0
+          ],
+          "startTime": 0,
+          "duration": -1,
+          "stopWithRoutine": true,
+          "units": "norm",
+          "anchor": "center",
+          "enabled": true
+        },
+        {
+          "name": "key_quit",
+          "type": "keyboard",
+          "startTime": 0,
+          "duration": -1,
+          "stopWithRoutine": true,
+          "forceEndRoutine": true,
+          "keys": "space,escape",
+          "registerOn": "press",
+          "enabled": true
+        }
+      ]
+    }
+  ],
+  "loops": [
+    {
+      "id": 0,
+      "name": "Loop_Practice",
+      "nRounds": 5,
+      "type": "random",
+      "conditions": "[{\"name\":\"Short ITI\",\"weight\":1,\"values\":[1000,1200,1400],\"_valueKeys\":[\"iti_duration\"]},{\"name\":\"Medium ITI\",\"weight\":1,\"values\":[1500,1600],\"_valueKeys\":[\"iti_duration\"]},{\"name\":\"Long ITI\",\"weight\":1,\"values\":[1800,2000],\"_valueKeys\":[\"iti_duration\"]}]",
+      "conditionsFile": "",
+      "isTrials": true,
+      "list": [
+        {
+          "name": "fixation",
+          "Point": 4
+        },
+        {
+          "name": "stimulus",
+          "Point": 6
+        },
+        {
+          "name": "blank_iti",
+          "Point": 8
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "name": "Loop_Main",
+      "nRounds": 30,
+      "type": "fullRandom",
+      "conditions": "[{\"name\":\"Random ITI Sample\",\"weight\":1,\"values\":[1000,1100,1200,1300,1400,1500,1600,1700,1800,1900,2000],\"_valueKeys\":[\"iti_duration\"]}]",
+      "conditionsFile": "",
+      "isTrials": true,
+      "list": [
+        {
+          "name": "fixation_main",
+          "Point": 12
+        },
+        {
+          "name": "stimulus_main",
+          "Point": 14
+        },
+        {
+          "name": "blank_iti_main",
+          "Point": 16
+        }
+      ]
+    }
+  ],
+  "tasks": [
+    {
+      "id": "task_1776760420163_aiu1yxvsj",
+      "name": "Stroop Task for Color-Word Interference",
+      "createdAt": "2026-04-21T08:33:40.163Z",
+      "updatedAt": "2026-04-22T04:52:03.328Z",
+      "messages": "<div class=\"chat-message welcome\" style=\"display: none;\">Describe your experiment requirements. The AI will first generate a detailed description, then create the flowchart JSON.</div><div class=\"message-wrapper user-wrapper\" data-original-prompt=\"test\"><div class=\"chat-message user\"><p>test</p>\n</div><div class=\"message-actions\">\n                    <button class=\"message-action-btn\" data-tooltip=\"Copy\" onclick=\"copyMessage(this)\">\n                        <svg viewBox=\"0 0 24 24\">\n                            <path d=\"M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z\"></path>\n                        </svg>\n                    </button>\n                    <button class=\"message-action-btn danger\" data-tooltip=\"Delete\" onclick=\"deleteMessage(this)\">\n                        <svg viewBox=\"0 0 24 24\">\n                            <path d=\"M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z\"></path>\n                        </svg>\n                    </button>\n                </div></div><div class=\"message-wrapper\" style=\"display: flex; flex-direction: column; align-items: flex-start; width: 100%; margin-bottom: 16px;\"><div class=\"chat-message\" style=\"color: rgb(0, 0, 0); margin-left: 0px; margin-right: auto; font-family: &quot;DM Sans&quot;, sans-serif; font-size: 14px; line-height: 1.5; font-weight: 400; padding: 4px 0px; background: transparent; border: none; width: 100% !important; max-width: 100% !important;\">Starting experiment design with <b>qwen3.5-plus</b>...</div></div><div class=\"assistant-message-wrapper\"><div class=\"message-wrapper streaming collapsed\"><div class=\"message-wrapper\"><div class=\"thinking-message-container\"><div class=\"thinking-message-header\">\n                <img src=\"icon/thinking.svg\" style=\"width: 16px; height: 16px; opacity: 0.6;\" alt=\"Thinking\">\n                <span class=\"thinking-title\">Thinking completed</span>\n                <span class=\"loading-dots\" style=\"display: none;\"><span></span><span></span><span></span></span>\n            </div><div class=\"thinking-message-content\" style=\"max-height: 0px;\"><ol>\n<li><p><strong>Analyze the Request:</strong></p>\n<ul>\n<li><strong>Role:</strong> Psychology Experiment Design Expert.</li>\n<li><strong>Task:</strong> Analyze user requirements and generate a concise experiment description.</li>\n<li><strong>User Input:</strong> \"test\"</li>\n<li><strong>Constraints:</strong><ul>\n<li>Search for relevant methodologies (internal knowledge).</li>\n<li>Generate a concise description including specific sections (Title/Purpose, Design/Procedure, Variables, Trial Structure, Stimuli, Response, Logic, Timing).</li>\n<li>Structure must include: (1) Instruction for entire experiment, (2) Practice Loop, (3) Instruction for Main Experiment, (4) Main Experiment Loop, (5) Ending.</li>\n<li><strong>CRITICAL:</strong> The <strong>Experiment Summary</strong> must be a ONE-SENTENCE summary at the very beginning, under 50 characters, formatted as <code>**Experiment Summary:** [Summary]</code>.</li>\n</ul>\n</li>\n<li><strong>Problem:</strong> The user input is just \"test\". This is not a specific experiment requirement. It's likely a placeholder or a request to demonstrate the format with a generic/common experiment.</li>\n<li><strong>Strategy:</strong> Since there's no specific topic, I should select a classic, well-known psychological paradigm to demonstrate the format correctly. The Stroop Task is a standard choice for cognitive psychology experiments. I will design a standard Color-Word Stroop Task.</li>\n</ul>\n</li>\n<li><p><strong>Drafting the Experiment Summary:</strong></p>\n<ul>\n<li>Needs to be under 50 characters.</li>\n<li>Needs to be one sentence.</li>\n<li>Format: <code>**Experiment Summary:** [Summary]</code></li>\n<li>Draft 1: <strong>Experiment Summary:</strong> Classic Stroop Task Measuring Interference Effects (59 chars) - Too long.</li>\n<li>Draft 2: <strong>Experiment Summary:</strong> Stroop Task Measuring Color-Word Interference (54 chars) - Too long.</li>\n<li>Draft 3: <strong>Experiment Summary:</strong> Stroop Task Assessing Color-Word Interference (51 chars) - Too long.</li>\n<li>Draft 4: <strong>Experiment Summary:</strong> Stroop Task for Color-Word Interference (44 chars) - Good.</li>\n<li>Draft 5: <strong>Experiment Summary:</strong> Visual Stroop Task Measuring Cognitive Interference (52 chars) - Too long.</li>\n<li>Selection: <strong>Experiment Summary:</strong> Stroop Task for Color-Word Interference</li>\n</ul>\n</li>\n<li><p>**</p>\n</li>\n</ol>\n</div></div></div><div class=\"normal-message-container has-content collapsed\" style=\"display: block;\"><div class=\"normal-message-header\">\n                <span class=\"normal-message-title\">\n                    <img src=\"icon/list.svg\" class=\"normal-message-icon\" alt=\"Outline\">\n                <span class=\"normal-message-text\">Outlining completed</span>\n                <span class=\"loading-dots\" style=\"display: none;\"><span></span><span></span><span></span></span>\n            </span>\n            <img src=\"icon/open.svg\" class=\"normal-message-toggle-icon collapsed\" alt=\"Expand\">\n        </div><div class=\"normal-message-content collapsed\" style=\"max-height: 0px;\"><div class=\"description-content-text\" style=\"width: 100%; line-height: 1.6; font-weight: 400;\"><p><strong>Experiment Summary:</strong> Stroop Task for Color-Word Interference</p>\n<p><strong>1. Instruction for Entire Experiment</strong><br>Participants are welcomed and informed that the study investigates reaction time and attention. They are instructed to sit comfortably, minimize head movement, and respond as quickly and accurately as possible using the keyboard. They are told they will see color words printed in colored ink and must identify the ink color, ignoring the word meaning.</p>\n<p><strong>2. Practice Loop</strong></p>\n<ul>\n<li><strong>Purpose:</strong> To familiarize participants with the task mechanics and key mappings without data recording.</li>\n<li><strong>Trials:</strong> 10 trials.</li>\n<li><strong>Feedback:</strong> Immediate feedback (Correct/Incorrect) is displayed after each response.</li>\n<li><strong>Condition:</strong> Balanced congruent (word matches ink) and incongruent (word differs from ink) trials.</li>\n<li><strong>Termination:</strong> Loop ends after 10 trials; participants proceed automatically.</li>\n</ul>\n<p><strong>3. Instruction for Main Experiment</strong><br>Participants are reminded to prioritize speed and accuracy. They are informed that feedback will no longer be provided during this section. They are instructed to press the spacebar to begin when ready.</p>\n<p><strong>4. Main Experiment Loop</strong></p>\n<ul>\n<li><strong>Design:</strong> Within-subjects design manipulating congruency.</li>\n<li><strong>Trials:</strong> 100 trials total (50 Congruent, 50 Incongruent), randomized sequence.</li>\n<li><strong>Trial Structure:</strong><ol>\n<li><strong>Fixation:</strong> Central cross (+) displayed for 500ms.</li>\n<li><strong>Stimulus:</strong> Color word (e.g., \"RED\", \"BLUE\") displayed in colored ink (Red, Blue, Green, Yellow) until response or max 2000ms.</li>\n<li><strong>Inter-Trial Interval (ITI):</strong> Blank screen for 500ms.</li>\n</ol>\n</li>\n<li><strong>Stimulus Details:</strong> Words \"RED\", \"BLUE\", \"GREEN\", \"YELLOW\" presented in Arial font, size 48, centered on a white background.</li>\n<li><strong>Response Collection:</strong> Four key press mapping (e.g., d=Red, f=Blue, j=Green, k=Yellow). Reaction time (ms) and accuracy (0/1) recorded.</li>\n<li><strong>Branching Logic:</strong> None; all participants complete all trials.</li>\n</ul>\n<p><strong>5. Ending</strong><br>Upon completion of the main loop, a \"Thank You\" screen is displayed. Participants are debriefed about the purpose of the Stroop effect (interference between automatic reading and color naming). They are asked if they have questions before being dismissed.</p>\n</div></div></div><div class=\"chat-message assistant\" style=\"display: none;\"></div></div></div><div class=\"message-wrapper\" style=\"display: flex; flex-direction: column; align-items: flex-start; width: 100%; margin-bottom: 16px;\"><div class=\"chat-message\" style=\"color: rgb(0, 0, 0); margin-left: 0px; margin-right: auto; font-family: &quot;DM Sans&quot;, sans-serif; font-size: 14px; line-height: 1.5; font-weight: 400; padding: 4px 0px; background: transparent; border: none; width: 100% !important; max-width: 100% !important;\">Outline completed. Now generating the flowchart based on the experiment description...</div></div><div class=\"assistant-message-wrapper\"><div class=\"message-wrapper collapsed\"><div class=\"message-wrapper\"><div class=\"thinking-message-container\"><div class=\"thinking-message-header\">\n                <img src=\"icon/thinking.svg\" style=\"width: 16px; height: 16px; opacity: 0.6;\" alt=\"Thinking\">\n                <span class=\"thinking-title\">Thinking completed</span>\n                <span class=\"loading-dots\" style=\"display: none;\"><span></span><span></span><span></span></span>\n            </div><div class=\"thinking-message-content\" style=\"max-height: 0px;\"><ol>\n<li><p><strong>Analyze the Request:</strong></p>\n<ul>\n<li><strong>Role:</strong> Psychology experiment designer.</li>\n<li><strong>Task:</strong> Generate a complete JSON data structure for a PsyClaw flowchart project based on the provided experiment description (Stroop Task).</li>\n<li><strong>Constraints:</strong><ul>\n<li>ONLY valid JSON following the provided schema.</li>\n<li>VARIABLE FORMAT: Use <code>$</code> at the START (e.g., <code>$word</code>, <code>$color</code>).</li>\n<li>Point system: Routine IDs are EVEN (2, 4, 6...).</li>\n<li>CONDITION NAMES: Descriptive names (e.g., \"Congruent Red\", \"Incongruent Blue\").</li>\n<li>ROUTINE COMPONENTS: Each routine MUST have at least one component.</li>\n<li>NO FEEDBACK: Do not include feedback routines or components indicating correct/incorrect.</li>\n<li>NO thinking process, explanations, markdown - ONLY raw JSON.</li>\n</ul>\n</li>\n<li><strong>Schema:</strong> PsyClaw Flowchart Schema v2.0.0.</li>\n</ul>\n</li>\n<li><p><strong>Analyze the Experiment Description:</strong></p>\n<ul>\n<li><strong>Task:</strong> Stroop Task (Color-Word Interference).</li>\n<li><strong>Flow:</strong><ol>\n<li>Instruction (Welcome/Task Info).</li>\n<li>Practice Loop (10 trials, balanced congruent/incongruent). <em>Note: Schema says NO FEEDBACK. The description mentions feedback for practice, but the IMPORTANT RULES say \"NO FEEDBACK: Do not include feedback routines or components that indicate whether the participant's response was correct or incorrect.\" I must follow the IMPORTANT RULES over the experiment description regarding feedback.</em></li>\n<li>Instruction (Main Exp Info).</li>\n<li>Main Experiment Loop (100 trials, 50 Congruent, 50 Incongruent, randomized).<ul>\n<li>Trial Structure: Fixation (500ms) -&gt; Stimulus (Word/Color) -&gt; ITI (500ms).</li>\n<li>Response: Keys d, f, j, k mapped to Red, Blue, Green, Yellow.</li>\n</ul>\n</li>\n<li>Ending (Thank You/Debrief).</li>\n</ol>\n</li>\n<li><strong>Variables:</strong><ul>\n<li><code>$word</code>: Text content (RED, BLUE, GREEN, YELLOW).</li>\n<li><code>$color</code>: Ink color (red, blue, green, yellow).</li>\n<li></li>\n</ul>\n</li>\n</ul>\n</li>\n</ol>\n</div></div></div><div class=\"normal-message-container has-content collapsed\" style=\"display: block;\"><div class=\"normal-message-header\">\n                <span class=\"normal-message-title\">\n                    <img src=\"icon/flowchart.svg\" class=\"normal-message-icon\" alt=\"Flowchart\">\n                <span class=\"normal-message-text\">Flowchart completed</span>\n                <span class=\"loading-dots\" style=\"display: none;\"><span></span><span></span><span></span></span>\n            </span>\n            <img src=\"icon/open.svg\" class=\"normal-message-toggle-icon collapsed\" alt=\"Expand\">\n        </div><div class=\"normal-message-content collapsed\" style=\"max-height: 0px;\"><pre class=\"json-block\">{\n  <span class=\"json-key\">\"flowchart\":</span> [\n    {\n      <span class=\"json-key\">\"name\":</span> <span class=\"json-string\">\"WelcomeInstr\"</span>,\n      <span class=\"json-key\">\"Point\":</span> <span class=\"json-number\">2</span>,\n      <span class=\"json-key\">\"components\":</span> [\n        {\n          <span class=\"json-key\">\"name\":</span> <span class=\"json-string\">\"WelcomeText\"</span>,\n          <span class=\"json-key\">\"type\":</span> <span class=\"json-string\">\"text\"</span>,\n          <span class=\"json-key\">\"text\":</span> <span class=\"json-string\">\"Welcome to the study.\\n\\nThis experiment investigates reaction time and attention.\\n\\nYou will see color words printed in colored ink.\\nYour task is to identify the INK COLOR, ignoring the word meaning.\\n\\nSit comfortably and respond as quickly and accurately as possible.\"</span>,\n          <span class=\"json-key\">\"startTime\":</span> <span class=\"json-number\">0</span>,\n          <span class=\"json-key\">\"duration\":</span> <span class=\"json-number\">-1</span>,\n          <span class=\"json-key\">\"color\":</span> <span class=\"json-string\">\"black\"</span>,\n          <span class=\"json-key\">\"font\":</span> <span class=\"json-string\">\"Arial\"</span>,\n          <span class=\"json-key\">\"letterHeight\":</span> <span class=\"json-number\">0.05</span>,\n          <span class=\"json-key\">\"pos\":</span> [\n            <span class=\"json-number\">0</span>,\n            <span class=\"json-number\">0</span>\n          ],\n          <span class=\"json-key\">\"anchor\":</span> <span class=\"json-string\">\"center\"</span>,\n          <span class=\"json-key\">\"stopWithRoutine\":</span> <span class=\"json-boolean\">false</span>\n        },\n        {\n          <span class=\"json-key\">\"name\":</span> <span class=\"json-string\">\"WelcomeKey\"</span>,\n          <span class=\"json-key\">\"type\":</span> <span class=\"json-string\">\"keyboard\"</span>,\n          <span class=\"json-key\">\"startTime\":</span> <span class=\"json-number\">0</span>,\n          <span class=\"json-key\">\"duration\":</span> <span class=\"json-number\">-1</span>,\n          <span class=\"json-key\">\"keys\":</span> <span class=\"json-string\">\"space\"</span>,\n          <span class=\"json-key\">\"forceEndRoutine\":</span> <span class=\"json-boolean\">true</span>,\n          <span class=\"json-key\">\"stopWithRoutine\":</span> <span class=\"json-boolean\">true</span>\n        }\n      ]\n    },\n    {\n      <span class=\"json-key\">\"name\":</span> <span class=\"json-string\">\"PracticeInstr\"</span>,\n      <span class=\"json-key\">\"Point\":</span> <span class=\"json-number\">4</span>,\n      <span class=\"json-key\">\"components\":</span> [\n        {\n          <span class=\"json-key\">\"name\":</span> <span class=\"json-string\">\"PracticeText\"</span>,\n          <span class=\"json-key\">\"type\":</span> <span class=\"json-string\">\"text\"</span>,\n          <span class=\"json-key\">\"text\":</span> <span class=\"json-string\">\"Practice Session\\n\\n10 trials.\\n\\nPress:\\nd = Red\\nf = Blue\\nj = Green\\nk = Yellow\\n\\nPress space to begin.\"</span>,\n          <span class=\"json-key\">\"startTime\":</span> <span class=\"json-number\">0</span>,\n          <span class=\"json-key\">\"duration\":</span> <span class=\"json-number\">-1</span>,\n          <span class=\"json-key\">\"color\":</span> <span class=\"json-string\">\"black\"</span>,\n          <span class=\"json-key\">\"font\":</span> <span class=\"json-string\">\"Arial\"</span>,\n          <span class=\"json-key\">\"letterHeight\":</span> <span class=\"json-number\">0.05</span>,\n          <span class=\"json-key\">\"pos\":</span> [\n            <span class=\"json-number\">0</span>,\n            <span class=\"json-number\">0</span>\n          ],\n          <span class=\"json-key\">\"anchor\":</span> <span class=\"json-string\">\"center\"</span>,\n          <span class=\"json-key\">\"stopWithRoutine\":</span> <span class=\"json-boolean\">false</span>\n        },\n        {\n          <span class=\"json-key\">\"name\":</span> <span class=\"json-string\">\"PracticeKey\"</span>,\n          <span class=\"json-key\">\"type\":</span> <span class=\"json-string\">\"keyboard\"</span>,\n          <span class=\"json-key\">\"startTime\":</span> <span class=\"json-number\">0</span>,\n          <span class=\"json-key\">\"duration\":</span> <span class=\"json-number\">-1</span>,\n          <span class=\"json-key\">\"keys\":</span> <span class=\"json-string\">\"space\"</span>,\n          <span class=\"json-key\">\"forceEndRoutine\":</span> <span class=\"json-boolean\">true</span>,\n          <span class=\"json-key\">\"stopWithRoutine\":</span> <span class=\"json-boolean\">true</span>\n        }\n      ]\n    },\n    {\n      <span class=\"json-key\">\"name\":</span> <span class=\"json-string\">\"PracticeLoop\"</span>,\n      <span class=\"json-key\">\"nRounds\":</span> <span class=\"json-number\">1</span>,\n      <span class=\"json-key\">\"type\":</span> <span class=\"json-string\">\"random\"</span>,\n      <span class=\"json-key\">\"conditions\":</span> [\n        {\n          <span class=\"json-key\">\"name\":</span> <span class=\"json-string\">\"Congruent Red\"</span>,\n          <span class=\"json-key\">\"weight\":</span> <span class=\"json-number\">1</span>,\n          <span class=\"json-key\">\"values\":</span> {\n            <span class=\"json-key\">\"$word\":</span> [\n              <span class=\"json-string\">\"RED\"</span>\n            ],\n            <span class=\"json-key\">\"$color\":</span> [\n              <span class=\"json-string\">\"red\"</span>\n            ]\n          }\n        },\n        {\n          <span class=\"json-key\">\"name\":</span> <span class=\"json-string\">\"Congruent Blue\"</span>,\n          <span class=\"json-key\">\"weight\":</span> <span class=\"json-number\">1</span>,\n          <span class=\"json-key\">\"values\":</span> {\n            <span class=\"json-key\">\"$word\":</span> [\n              <span class=\"json-string\">\"BLUE\"</span>\n            ],\n            <span class=\"json-key\">\"$color\":</span> [\n              <span class=\"json-string\">\"blue\"</span>\n            ]\n          }\n        },\n        {\n          <span class=\"json-key\">\"name\":</span> <span class=\"json-string\">\"Congruent Green\"</span>,\n          <span class=\"json-key\">\"weight\":</span> <span class=\"json-number\">1</span>,\n          <span class=\"json-key\">\"values\":</span> {\n            <span class=\"json-key\">\"$word\":</span> [\n              <span class=\"json-string\">\"GREEN\"</span>\n            ],\n            <span class=\"json-key\">\"$color\":</span> [\n              <span class=\"json-string\">\"green\"</span>\n            ]\n          }\n        },\n        {\n          <span class=\"json-key\">\"name\":</span> <span class=\"json-string\">\"Congruent Yellow\"</span>,\n          <span class=\"json-key\">\"weight\":</span> <span class=\"json-number\">1</span>,\n          <span class=\"json-key\">\"values\":</span> {\n            <span class=\"json-key\">\"$word\":</span> [\n              <span class=\"json-string\">\"YELLOW\"</span>\n            ],\n            <span class=\"json-key\">\"$color\":</span> [\n              <span class=\"json-string\">\"yellow\"</span>\n            ]\n          }\n        },\n        {\n          <span class=\"json-key\">\"name\":</span> <span class=\"json-string\">\"Incongruent Red Word\"</span>,\n          <span class=\"json-key\">\"weight\":</span> <span class=\"json-number\">1</span>,\n          <span class=\"json-key\">\"values\":</span> {\n            <span class=\"json-key\">\"$word\":</span> [\n              <span class=\"json-string\">\"RED\"</span>\n            ],\n            <span class=\"json-key\">\"$color\":</span> [\n              <span class=\"json-string\">\"blue\"</span>,\n              <span class=\"json-string\">\"green\"</span>,\n              <span class=\"json-string\">\"yellow\"</span>\n            ]\n          }\n        },\n        {\n          <span class=\"json-key\">\"name\":</span> <span class=\"json-string\">\"Incongruent Blue Word\"</span>,\n          <span class=\"json-key\">\"weight\":</span> <span class=\"json-number\">1</span>,\n          <span class=\"json-key\">\"values\":</span> {\n            <span class=\"json-key\">\"$word\":</span> [\n              <span class=\"json-string\">\"BLUE\"</span>\n            ],\n            <span class=\"json-key\">\"$color\":</span> [\n              <span class=\"json-string\">\"red\"</span>,\n              <span class=\"json-string\">\"green\"</span>,\n              <span class=\"json-string\">\"yellow\"</span>\n            ]\n          }\n        },\n        {\n          <span class=\"json-key\">\"name\":</span> <span class=\"json-string\">\"Incongruent Green Word\"</span>,\n          <span class=\"json-key\">\"weight\":</span> <span class=\"json-number\">1</span>,\n          <span class=\"json-key\">\"values\":</span> {\n            <span class=\"json-key\">\"$word\":</span> [\n              <span class=\"json-string\">\"GREEN\"</span>\n            ],\n            <span class=\"json-key\">\"$color\":</span> [\n              <span class=\"json-string\">\"red\"</span>,\n              <span class=\"json-string\">\"blue\"</span>,\n              <span class=\"json-string\">\"yellow\"</span>\n            ]\n          }\n        },\n        {\n          <span class=\"json-key\">\"name\":</span> <span class=\"json-string\">\"Incongruent Yellow Word\"</span>,\n          <span class=\"json-key\">\"weight\":</span> <span class=\"json-number\">1</span>,\n          <span class=\"json-key\">\"values\":</span> {\n            <span class=\"json-key\">\"$word\":</span> [\n              <span class=\"json-string\">\"YELLOW\"</span>\n            ],\n            <span class=\"json-key\">\"$color\":</span> [\n              <span class=\"json-string\">\"red\"</span>,\n              <span class=\"json-string\">\"blue\"</span>,\n              <span class=\"json-string\">\"green\"</span>\n            ]\n          }\n        }\n      ],\n      <span class=\"json-key\">\"list\":</span> [\n        {\n          <span class=\"json-key\">\"name\":</span> <span class=\"json-string\">\"PracticeFixation\"</span>,\n          <span class=\"json-key\">\"Point\":</span> <span class=\"json-number\">6</span>,\n          <span class=\"json-key\">\"components\":</span> [\n            {\n              <span class=\"json-key\">\"name\":</span> <span class=\"json-string\">\"FixationText\"</span>,\n              <span class=\"json-key\">\"type\":</span> <span class=\"json-string\">\"text\"</span>,\n              <span class=\"json-key\">\"text\":</span> <span class=\"json-string\">\"+\"</span>,\n              <span class=\"json-key\">\"startTime\":</span> <span class=\"json-number\">0</span>,\n              <span class=\"json-key\">\"duration\":</span> <span class=\"json-number\">500</span>,\n              <span class=\"json-key\">\"color\":</span> <span class=\"json-string\">\"black\"</span>,\n              <span class=\"json-key\">\"font\":</span> <span class=\"json-string\">\"Arial\"</span>,\n              <span class=\"json-key\">\"letterHeight\":</span> <span class=\"json-number\">0.1</span>,\n              <span class=\"json-key\">\"pos\":</span> [\n                <span class=\"json-number\">0</span>,\n                <span class=\"json-number\">0</span>\n              ],\n              <span class=\"json-key\">\"anchor\":</span> <span class=\"json-string\">\"center\"</span>,\n              <span class=\"json-key\">\"stopWithRoutine\":</span> <span class=\"json-boolean\">true</span>\n            }\n          ]\n        },\n        {\n          <span class=\"json-key\">\"name\":</span> <span class=\"json-string\">\"PracticeStimulus\"</span>,\n          <span class=\"json-key\">\"Point\":</span> <span class=\"json-number\">8</span>,\n          <span class=\"json-key\">\"components\":</span> [\n            {\n              <span class=\"json-key\">\"name\":</span> <span class=\"json-string\">\"StimulusText\"</span>,\n              <span class=\"json-key\">\"type\":</span> <span class=\"json-string\">\"text\"</span>,\n              <span class=\"json-key\">\"text\":</span> <span class=\"json-string\">\"$word\"</span>,\n              <span class=\"json-key\">\"startTime\":</span> <span class=\"json-number\">0</span>,\n              <span class=\"json-key\">\"duration\":</span> <span class=\"json-number\">2000</span>,\n              <span class=\"json-key\">\"color\":</span> <span class=\"json-string\">\"$color\"</span>,\n              <span class=\"json-key\">\"font\":</span> <span class=\"json-string\">\"Arial\"</span>,\n              <span class=\"json-key\">\"letterHeight\":</span> <span class=\"json-number\">0.1</span>,\n              <span class=\"json-key\">\"pos\":</span> [\n                <span class=\"json-number\">0</span>,\n                <span class=\"json-number\">0</span>\n              ],\n              <span class=\"json-key\">\"anchor\":</span> <span class=\"json-string\">\"center\"</span>,\n              <span class=\"json-key\">\"stopWithRoutine\":</span> <span class=\"json-boolean\">false</span>\n            },\n            {\n              <span class=\"json-key\">\"name\":</span> <span class=\"json-string\">\"StimulusKey\"</span>,\n              <span class=\"json-key\">\"type\":</span> <span class=\"json-string\">\"keyboard\"</span>,\n              <span class=\"json-key\">\"startTime\":</span> <span class=\"json-number\">0</span>,\n              <span class=\"json-key\">\"duration\":</span> <span class=\"json-number\">2000</span>,\n              <span class=\"json-key\">\"keys\":</span> <span class=\"json-string\">\"d,f,j,k\"</span>,\n              <span class=\"json-key\">\"forceEndRoutine\":</span> <span class=\"json-boolean\">true</span>,\n              <span class=\"json-key\">\"stopWithRoutine\":</span> <span class=\"json-boolean\">true</span>\n            }\n          ]\n        },\n        {\n          <span class=\"json-key\">\"name\":</span> <span class=\"json-string\">\"PracticeITI\"</span>,\n          <span class=\"json-key\">\"Point\":</span> <span class=\"json-number\">10</span>,\n          <span class=\"json-key\">\"components\":</span> [\n            {\n              <span class=\"json-key\">\"name\":</span> <span class=\"json-string\">\"BlankScreen\"</span>,\n              <span class=\"json-key\">\"type\":</span> <span class=\"json-string\">\"text\"</span>,\n              <span class=\"json-key\">\"text\":</span> <span class=\"json-string\">\"\"</span>,\n              <span class=\"json-key\">\"startTime\":</span> <span class=\"json-number\">0</span>,\n              <span class=\"json-key\">\"duration\":</span> <span class=\"json-number\">500</span>,\n              <span class=\"json-key\">\"color\":</span> <span class=\"json-string\">\"black\"</span>,\n              <span class=\"json-key\">\"font\":</span> <span class=\"json-string\">\"Arial\"</span>,\n              <span class=\"json-key\">\"letterHeight\":</span> <span class=\"json-number\">0.05</span>,\n              <span class=\"json-key\">\"pos\":</span> [\n                <span class=\"json-number\">0</span>,\n                <span class=\"json-number\">0</span>\n              ],\n              <span class=\"json-key\">\"anchor\":</span> <span class=\"json-string\">\"center\"</span>,\n              <span class=\"json-key\">\"stopWithRoutine\":</span> <span class=\"json-boolean\">true</span>\n            }\n          ]\n        }\n      ]\n    },\n    {\n      <span class=\"json-key\">\"name\":</span> <span class=\"json-string\">\"MainInstr\"</span>,\n      <span class=\"json-key\">\"Point\":</span> <span class=\"json-number\">12</span>,\n      <span class=\"json-key\">\"components\":</span> [\n        {\n          <span class=\"json-key\">\"name\":</span> <span class=\"json-string\">\"MainText\"</span>,\n          <span class=\"json-key\">\"type\":</span> <span class=\"json-string\">\"text\"</span>,\n          <span class=\"json-key\">\"text\":</span> <span class=\"json-string\">\"Main Experiment\\n\\n100 trials.\\n\\nNo feedback will be provided.\\nPrioritize speed and accuracy.\\n\\nPress space to begin.\"</span>,\n          <span class=\"json-key\">\"startTime\":</span> <span class=\"json-number\">0</span>,\n          <span class=\"json-key\">\"duration\":</span> <span class=\"json-number\">-1</span>,\n          <span class=\"json-key\">\"color\":</span> <span class=\"json-string\">\"black\"</span>,\n          <span class=\"json-key\">\"font\":</span> <span class=\"json-string\">\"Arial\"</span>,\n          <span class=\"json-key\">\"letterHeight\":</span> <span class=\"json-number\">0.05</span>,\n          <span class=\"json-key\">\"pos\":</span> [\n            <span class=\"json-number\">0</span>,\n            <span class=\"json-number\">0</span>\n          ],\n          <span class=\"json-key\">\"anchor\":</span> <span class=\"json-string\">\"center\"</span>,\n          <span class=\"json-key\">\"stopWithRoutine\":</span> <span class=\"json-boolean\">false</span>\n        },\n        {\n          <span class=\"json-key\">\"name\":</span> <span class=\"json-string\">\"MainKey\"</span>,\n          <span class=\"json-key\">\"type\":</span> <span class=\"json-string\">\"keyboard\"</span>,\n          <span class=\"json-key\">\"startTime\":</span> <span class=\"json-number\">0</span>,\n          <span class=\"json-key\">\"duration\":</span> <span class=\"json-number\">-1</span>,\n          <span class=\"json-key\">\"keys\":</span> <span class=\"json-string\">\"space\"</span>,\n          <span class=\"json-key\">\"forceEndRoutine\":</span> <span class=\"json-boolean\">true</span>,\n          <span class=\"json-key\">\"stopWithRoutine\":</span> <span class=\"json-boolean\">true</span>\n        }\n      ]\n    },\n    {\n      <span class=\"json-key\">\"name\":</span> <span class=\"json-string\">\"MainLoop\"</span>,\n      <span class=\"json-key\">\"nRounds\":</span> <span class=\"json-number\">1</span>,\n      <span class=\"json-key\">\"type\":</span> <span class=\"json-string\">\"fullRandom\"</span>,\n      <span class=\"json-key\">\"conditions\":</span> [\n        {\n          <span class=\"json-key\">\"name\":</span> <span class=\"json-string\">\"Congruent Red\"</span>,\n          <span class=\"json-key\">\"weight\":</span> <span class=\"json-number\">12</span>,\n          <span class=\"json-key\">\"values\":</span> {\n            <span class=\"json-key\">\"$word\":</span> [\n              <span class=\"json-string\">\"RED\"</span>\n            ],\n            <span class=\"json-key\">\"$color\":</span> [\n              <span class=\"json-string\">\"red\"</span>\n            ]\n          }\n        },\n        {\n          <span class=\"json-key\">\"name\":</span> <span class=\"json-string\">\"Congruent Blue\"</span>,\n          <span class=\"json-key\">\"weight\":</span> <span class=\"json-number\">13</span>,\n          <span class=\"json-key\">\"values\":</span> {\n            <span class=\"json-key\">\"$word\":</span> [\n              <span class=\"json-string\">\"BLUE\"</span>\n            ],\n            <span class=\"json-key\">\"$color\":</span> [\n              <span class=\"json-string\">\"blue\"</span>\n            ]\n          }\n        },\n        {\n          <span class=\"json-key\">\"name\":</span> <span class=\"json-string\">\"Congruent Green\"</span>,\n          <span class=\"json-key\">\"weight\":</span> <span class=\"json-number\">12</span>,\n          <span class=\"json-key\">\"values\":</span> {\n            <span class=\"json-key\">\"$word\":</span> [\n              <span class=\"json-string\">\"GREEN\"</span>\n            ],\n            <span class=\"json-key\">\"$color\":</span> [\n              <span class=\"json-string\">\"green\"</span>\n            ]\n          }\n        },\n        {\n          <span class=\"json-key\">\"name\":</span> <span class=\"json-string\">\"Congruent Yellow\"</span>,\n          <span class=\"json-key\">\"weight\":</span> <span class=\"json-number\">13</span>,\n          <span class=\"json-key\">\"values\":</span> {\n            <span class=\"json-key\">\"$word\":</span> [\n              <span class=\"json-string\">\"YELLOW\"</span>\n            ],\n            <span class=\"json-key\">\"$color\":</span> [\n              <span class=\"json-string\">\"yellow\"</span>\n            ]\n          }\n        },\n        {\n          <span class=\"json-key\">\"name\":</span> <span class=\"json-string\">\"Incongruent Red Word\"</span>,\n          <span class=\"json-key\">\"weight\":</span> <span class=\"json-number\">12</span>,\n          <span class=\"json-key\">\"values\":</span> {\n            <span class=\"json-key\">\"$word\":</span> [\n              <span class=\"json-string\">\"RED\"</span>\n            ],\n            <span class=\"json-key\">\"$color\":</span> [\n              <span class=\"json-string\">\"blue\"</span>,\n              <span class=\"json-string\">\"green\"</span>,\n              <span class=\"json-string\">\"yellow\"</span>\n            ]\n          }\n        },\n        {\n          <span class=\"json-key\">\"name\":</span> <span class=\"json-string\">\"Incongruent Blue Word\"</span>,\n          <span class=\"json-key\">\"weight\":</span> <span class=\"json-number\">13</span>,\n          <span class=\"json-key\">\"values\":</span> {\n            <span class=\"json-key\">\"$word\":</span> [\n              <span class=\"json-string\">\"BLUE\"</span>\n            ],\n            <span class=\"json-key\">\"$color\":</span> [\n              <span class=\"json-string\">\"red\"</span>,\n              <span class=\"json-string\">\"green\"</span>,\n              <span class=\"json-string\">\"yellow\"</span>\n            ]\n          }\n        },\n        {\n          <span class=\"json-key\">\"name\":</span> <span class=\"json-string\">\"Incongruent Green Word\"</span>,\n          <span class=\"json-key\">\"weight\":</span> <span class=\"json-number\">12</span>,\n          <span class=\"json-key\">\"values\":</span> {\n            <span class=\"json-key\">\"$word\":</span> [\n              <span class=\"json-string\">\"GREEN\"</span>\n            ],\n            <span class=\"json-key\">\"$color\":</span> [\n              <span class=\"json-string\">\"red\"</span>,\n              <span class=\"json-string\">\"blue\"</span>,\n              <span class=\"json-string\">\"yellow\"</span>\n            ]\n          }\n        },\n        {\n          <span class=\"json-key\">\"name\":</span> <span class=\"json-string\">\"Incongruent Yellow Word\"</span>,\n          <span class=\"json-key\">\"weight\":</span> <span class=\"json-number\">13</span>,\n          <span class=\"json-key\">\"values\":</span> {\n            <span class=\"json-key\">\"$word\":</span> [\n              <span class=\"json-string\">\"YELLOW\"</span>\n            ],\n            <span class=\"json-key\">\"$color\":</span> [\n              <span class=\"json-string\">\"red\"</span>,\n              <span class=\"json-string\">\"blue\"</span>,\n              <span class=\"json-string\">\"green\"</span>\n            ]\n          }\n        }\n      ],\n      <span class=\"json-key\">\"list\":</span> [\n        {\n          <span class=\"json-key\">\"name\":</span> <span class=\"json-string\">\"MainFixation\"</span>,\n          <span class=\"json-key\">\"Point\":</span> <span class=\"json-number\">14</span>,\n          <span class=\"json-key\">\"components\":</span> [\n            {\n              <span class=\"json-key\">\"name\":</span> <span class=\"json-string\">\"FixationText\"</span>,\n              <span class=\"json-key\">\"type\":</span> <span class=\"json-string\">\"text\"</span>,\n              <span class=\"json-key\">\"text\":</span> <span class=\"json-string\">\"+\"</span>,\n              <span class=\"json-key\">\"startTime\":</span> <span class=\"json-number\">0</span>,\n              <span class=\"json-key\">\"duration\":</span> <span class=\"json-number\">500</span>,\n              <span class=\"json-key\">\"color\":</span> <span class=\"json-string\">\"black\"</span>,\n              <span class=\"json-key\">\"font\":</span> <span class=\"json-string\">\"Arial\"</span>,\n              <span class=\"json-key\">\"letterHeight\":</span> <span class=\"json-number\">0.1</span>,\n              <span class=\"json-key\">\"pos\":</span> [\n                <span class=\"json-number\">0</span>,\n                <span class=\"json-number\">0</span>\n              ],\n              <span class=\"json-key\">\"anchor\":</span> <span class=\"json-string\">\"center\"</span>,\n              <span class=\"json-key\">\"stopWithRoutine\":</span> <span class=\"json-boolean\">true</span>\n            }\n          ]\n        },\n        {\n          <span class=\"json-key\">\"name\":</span> <span class=\"json-string\">\"MainStimulus\"</span>,\n          <span class=\"json-key\">\"Point\":</span> <span class=\"json-number\">16</span>,\n          <span class=\"json-key\">\"components\":</span> [\n            {\n              <span class=\"json-key\">\"name\":</span> <span class=\"json-string\">\"StimulusText\"</span>,\n              <span class=\"json-key\">\"type\":</span> <span class=\"json-string\">\"text\"</span>,\n              <span class=\"json-key\">\"text\":</span> <span class=\"json-string\">\"$word\"</span>,\n              <span class=\"json-key\">\"startTime\":</span> <span class=\"json-number\">0</span>,\n              <span class=\"json-key\">\"duration\":</span> <span class=\"json-number\">2000</span>,\n              <span class=\"json-key\">\"color\":</span> <span class=\"json-string\">\"$color\"</span>,\n              <span class=\"json-key\">\"font\":</span> <span class=\"json-string\">\"Arial\"</span>,\n              <span class=\"json-key\">\"letterHeight\":</span> <span class=\"json-number\">0.1</span>,\n              <span class=\"json-key\">\"pos\":</span> [\n                <span class=\"json-number\">0</span>,\n                <span class=\"json-number\">0</span>\n              ],\n              <span class=\"json-key\">\"anchor\":</span> <span class=\"json-string\">\"center\"</span>,\n              <span class=\"json-key\">\"stopWithRoutine\":</span> <span class=\"json-boolean\">false</span>\n            },\n            {\n              <span class=\"json-key\">\"name\":</span> <span class=\"json-string\">\"StimulusKey\"</span>,\n              <span class=\"json-key\">\"type\":</span> <span class=\"json-string\">\"keyboard\"</span>,\n              <span class=\"json-key\">\"startTime\":</span> <span class=\"json-number\">0</span>,\n              <span class=\"json-key\">\"duration\":</span> <span class=\"json-number\">2000</span>,\n              <span class=\"json-key\">\"keys\":</span> <span class=\"json-string\">\"d,f,j,k\"</span>,\n              <span class=\"json-key\">\"forceEndRoutine\":</span> <span class=\"json-boolean\">true</span>,\n              <span class=\"json-key\">\"stopWithRoutine\":</span> <span class=\"json-boolean\">true</span>\n            }\n          ]\n        },\n        {\n          <span class=\"json-key\">\"name\":</span> <span class=\"json-string\">\"MainITI\"</span>,\n          <span class=\"json-key\">\"Point\":</span> <span class=\"json-number\">18</span>,\n          <span class=\"json-key\">\"components\":</span> [\n            {\n              <span class=\"json-key\">\"name\":</span> <span class=\"json-string\">\"BlankScreen\"</span>,\n              <span class=\"json-key\">\"type\":</span> <span class=\"json-string\">\"text\"</span>,\n              <span class=\"json-key\">\"text\":</span> <span class=\"json-string\">\"\"</span>,\n              <span class=\"json-key\">\"startTime\":</span> <span class=\"json-number\">0</span>,\n              <span class=\"json-key\">\"duration\":</span> <span class=\"json-number\">500</span>,\n              <span class=\"json-key\">\"color\":</span> <span class=\"json-string\">\"black\"</span>,\n              <span class=\"json-key\">\"font\":</span> <span class=\"json-string\">\"Arial\"</span>,\n              <span class=\"json-key\">\"letterHeight\":</span> <span class=\"json-number\">0.05</span>,\n              <span class=\"json-key\">\"pos\":</span> [\n                <span class=\"json-number\">0</span>,\n                <span class=\"json-number\">0</span>\n              ],\n              <span class=\"json-key\">\"anchor\":</span> <span class=\"json-string\">\"center\"</span>,\n              <span class=\"json-key\">\"stopWithRoutine\":</span> <span class=\"json-boolean\">true</span>\n            }\n          ]\n        }\n      ]\n    },\n    {\n      <span class=\"json-key\">\"name\":</span> <span class=\"json-string\">\"EndScreen\"</span>,\n      <span class=\"json-key\">\"Point\":</span> <span class=\"json-number\">20</span>,\n      <span class=\"json-key\">\"components\":</span> [\n        {\n          <span class=\"json-key\">\"name\":</span> <span class=\"json-string\">\"ThankYouText\"</span>,\n          <span class=\"json-key\">\"type\":</span> <span class=\"json-string\">\"text\"</span>,\n          <span class=\"json-key\">\"text\":</span> <span class=\"json-string\">\"Thank You!\\n\\nThis study investigated the Stroop Effect.\\nInterference occurs between automatic reading and color naming.\\n\\nDo you have any questions?\"</span>,\n          <span class=\"json-key\">\"startTime\":</span> <span class=\"json-number\">0</span>,\n          <span class=\"json-key\">\"duration\":</span> <span class=\"json-number\">-1</span>,\n          <span class=\"json-key\">\"color\":</span> <span class=\"json-string\">\"black\"</span>,\n          <span class=\"json-key\">\"font\":</span> <span class=\"json-string\">\"Arial\"</span>,\n          <span class=\"json-key\">\"letterHeight\":</span> <span class=\"json-number\">0.05</span>,\n          <span class=\"json-key\">\"pos\":</span> [\n            <span class=\"json-number\">0</span>,\n            <span class=\"json-number\">0</span>\n          ],\n          <span class=\"json-key\">\"anchor\":</span> <span class=\"json-string\">\"center\"</span>,\n          <span class=\"json-key\">\"stopWithRoutine\":</span> <span class=\"json-boolean\">false</span>\n        },\n        {\n          <span class=\"json-key\">\"name\":</span> <span class=\"json-string\">\"EndKey\"</span>,\n          <span class=\"json-key\">\"type\":</span> <span class=\"json-string\">\"keyboard\"</span>,\n          <span class=\"json-key\">\"startTime\":</span> <span class=\"json-number\">0</span>,\n          <span class=\"json-key\">\"duration\":</span> <span class=\"json-number\">-1</span>,\n          <span class=\"json-key\">\"keys\":</span> <span class=\"json-string\">\"space\"</span>,\n          <span class=\"json-key\">\"forceEndRoutine\":</span> <span class=\"json-boolean\">true</span>,\n          <span class=\"json-key\">\"stopWithRoutine\":</span> <span class=\"json-boolean\">true</span>\n        }\n      ]\n    }\n  ]\n}</pre></div></div><div class=\"chat-message assistant\" style=\"display: none;\"></div></div></div><div class=\"message-wrapper\" style=\"display: flex; flex-direction: column; align-items: flex-start; width: 100%; margin-bottom: 16px;\"><div class=\"chat-message\" style=\"color: rgb(0, 0, 0); margin-left: 0px; margin-right: auto; font-family: &quot;DM Sans&quot;, sans-serif; font-size: 14px; line-height: 1.5; font-weight: 400; padding: 4px 0px; background: transparent; border: none; width: 100% !important; max-width: 100% !important;\">Flowchart generated successfully. You can now review and edit the experiment structure.</div></div>",
+      "conversationState": {
+        "stage": "idle",
+        "userRequirement": "",
+        "experimentDescription": "",
+        "messages": []
+      },
+      "flowchartData": {
+        "timestamp": "2026-04-22T04:52:03.328Z",
+        "routines": [
+          {
+            "id": 0,
+            "name": "Intro",
+            "duration": -1,
+            "avtpComponents": [
+              {
+                "name": "welcome_text",
+                "type": "text",
+                "text": "Welcome to the Reaction Time Study.\n\nIn this experiment, you will measure how quickly you can react to a visual change on the screen.\n\nPlease place your dominant index finger on the SPACEBAR.\n\nFocus on the center of the screen. When you see a black circle appear, press the spacebar as quickly as possible.",
+                "color": "black",
+                "font": "Arial",
+                "letterHeight": 0.05,
+                "pos": [
+                  0,
+                  0
+                ],
+                "startTime": 0,
+                "duration": -1,
+                "stopWithRoutine": true,
+                "units": "norm",
+                "anchor": "center",
+                "enabled": true
+              },
+              {
+                "name": "intro_resp",
+                "type": "keyboard",
+                "startTime": 0,
+                "duration": -1,
+                "stopWithRoutine": true,
+                "forceEndRoutine": true,
+                "keys": "space",
+                "registerOn": "press",
+                "enabled": true
+              }
+            ]
+          },
+          {
+            "id": 1,
+            "name": "Fixation",
+            "duration": -1,
+            "avtpComponents": [
+              {
+                "name": "fixation_cross",
+                "type": "text",
+                "text": "+",
+                "color": "black",
+                "font": "Arial",
+                "letterHeight": 0.1,
+                "pos": [
+                  0,
+                  0
+                ],
+                "startTime": 0,
+                "duration": 500,
+                "stopWithRoutine": true,
+                "units": "norm",
+                "anchor": "center",
+                "enabled": true
+              }
+            ]
+          },
+          {
+            "id": 2,
+            "name": "Foreperiod",
+            "duration": -1,
+            "avtpComponents": [
+              {
+                "name": "blank_screen",
+                "type": "text",
+                "text": "",
+                "color": "white",
+                "font": "Arial",
+                "letterHeight": 0.05,
+                "pos": [
+                  0,
+                  0
+                ],
+                "startTime": 0,
+                "duration": "$foreperiod",
+                "stopWithRoutine": true,
+                "units": "norm",
+                "anchor": "center",
+                "enabled": true
+              }
+            ]
+          },
+          {
+            "id": 3,
+            "name": "StimulusResponse",
+            "duration": -1,
+            "avtpComponents": [
+              {
+                "name": "target_circle",
+                "type": "text",
+                "text": "•",
+                "color": "black",
+                "font": "Arial",
+                "letterHeight": 0.2,
+                "pos": [
+                  0,
+                  0
+                ],
+                "startTime": 0,
+                "duration": 2000,
+                "stopWithRoutine": true,
+                "units": "norm",
+                "anchor": "center",
+                "enabled": true
+              },
+              {
+                "name": "practice_key",
+                "type": "keyboard",
+                "startTime": 0,
+                "duration": 2000,
+                "stopWithRoutine": true,
+                "forceEndRoutine": true,
+                "keys": "space",
+                "registerOn": "press",
+                "enabled": true
+              }
+            ]
+          },
+          {
+            "id": 4,
+            "name": "ITI",
+            "duration": -1,
+            "avtpComponents": [
+              {
+                "name": "iti_blank",
+                "type": "text",
+                "text": "",
+                "color": "white",
+                "font": "Arial",
+                "letterHeight": 0.05,
+                "pos": [
+                  0,
+                  0
+                ],
+                "startTime": 0,
+                "duration": 500,
+                "stopWithRoutine": true,
+                "units": "norm",
+                "anchor": "center",
+                "enabled": true
+              }
+            ]
+          },
+          {
+            "id": 5,
+            "name": "MainInstr",
+            "duration": -1,
+            "avtpComponents": [
+              {
+                "name": "main_instr_text",
+                "type": "text",
+                "text": "Now begins the main experiment.\n\nThere are 30 trials.\nNo feedback will be given.\n\nIgnore any distractions.\nPress the SPACEBAR the moment the circle appears.\n\nPress Space to begin.",
+                "color": "black",
+                "font": "Arial",
+                "letterHeight": 0.05,
+                "pos": [
+                  0,
+                  0
+                ],
+                "startTime": 0,
+                "duration": -1,
+                "stopWithRoutine": true,
+                "units": "norm",
+                "anchor": "center",
+                "enabled": true
+              },
+              {
+                "name": "main_instr_resp",
+                "type": "keyboard",
+                "startTime": 0,
+                "duration": -1,
+                "stopWithRoutine": true,
+                "forceEndRoutine": true,
+                "keys": "space",
+                "registerOn": "press",
+                "enabled": true
+              }
+            ]
+          },
+          {
+            "id": 6,
+            "name": "Fixation",
+            "duration": -1,
+            "avtpComponents": [
+              {
+                "name": "fixation_cross",
+                "type": "text",
+                "text": "+",
+                "color": "black",
+                "font": "Arial",
+                "letterHeight": 0.1,
+                "pos": [
+                  0,
+                  0
+                ],
+                "startTime": 0,
+                "duration": 500,
+                "stopWithRoutine": true,
+                "units": "norm",
+                "anchor": "center",
+                "enabled": true
+              }
+            ]
+          },
+          {
+            "id": 7,
+            "name": "Foreperiod",
+            "duration": -1,
+            "avtpComponents": [
+              {
+                "name": "blank_screen",
+                "type": "text",
+                "text": "",
+                "color": "white",
+                "font": "Arial",
+                "letterHeight": 0.05,
+                "pos": [
+                  0,
+                  0
+                ],
+                "startTime": 0,
+                "duration": "$foreperiod",
+                "stopWithRoutine": true,
+                "units": "norm",
+                "anchor": "center",
+                "enabled": true
+              }
+            ]
+          },
+          {
+            "id": 8,
+            "name": "StimulusResponse",
+            "duration": -1,
+            "avtpComponents": [
+              {
+                "name": "target_circle",
+                "type": "text",
+                "text": "•",
+                "color": "black",
+                "font": "Arial",
+                "letterHeight": 0.2,
+                "pos": [
+                  0,
+                  0
+                ],
+                "startTime": 0,
+                "duration": 2000,
+                "stopWithRoutine": true,
+                "units": "norm",
+                "anchor": "center",
+                "enabled": true
+              },
+              {
+                "name": "main_key",
+                "type": "keyboard",
+                "startTime": 0,
+                "duration": 2000,
+                "stopWithRoutine": true,
+                "forceEndRoutine": true,
+                "keys": "space",
+                "registerOn": "press",
+                "enabled": true
+              }
+            ]
+          },
+          {
+            "id": 9,
+            "name": "ITI",
+            "duration": -1,
+            "avtpComponents": [
+              {
+                "name": "iti_blank",
+                "type": "text",
+                "text": "",
+                "color": "white",
+                "font": "Arial",
+                "letterHeight": 0.05,
+                "pos": [
+                  0,
+                  0
+                ],
+                "startTime": 0,
+                "duration": 500,
+                "stopWithRoutine": true,
+                "units": "norm",
+                "anchor": "center",
+                "enabled": true
+              }
+            ]
+          },
+          {
+            "id": 10,
+            "name": "Debrief",
+            "duration": -1,
+            "avtpComponents": [
+              {
+                "name": "thank_you_text",
+                "type": "text",
+                "text": "Thank you for participating!\n\nThe session is now complete.\n\nThis study measured your baseline reaction time to visual stimuli.",
+                "color": "black",
+                "font": "Arial",
+                "letterHeight": 0.05,
+                "pos": [
+                  0,
+                  0
+                ],
+                "startTime": 0,
+                "duration": -1,
+                "stopWithRoutine": true,
+                "units": "norm",
+                "anchor": "center",
+                "enabled": true
+              },
+              {
+                "name": "end_resp",
+                "type": "keyboard",
+                "startTime": 0,
+                "duration": -1,
+                "stopWithRoutine": true,
+                "forceEndRoutine": true,
+                "keys": "space",
+                "registerOn": "press",
+                "enabled": true
+              }
+            ]
+          }
+        ],
+        "loops": [
+          {
+            "id": 0,
+            "name": "PracticeLoop",
+            "nRounds": 5,
+            "type": "sequential",
+            "conditions": "[{\"name\":\"Practice Trial\",\"weight\":1,\"values\":[1000,1200,1400,1600,1800,2000],\"_valueKeys\":[\"foreperiod\"]}]",
+            "conditionsFile": "",
+            "isTrials": true,
+            "list": [
+              {
+                "name": "Fixation",
+                "Point": 4
+              },
+              {
+                "name": "Foreperiod",
+                "Point": 6
+              },
+              {
+                "name": "StimulusResponse",
+                "Point": 8
+              },
+              {
+                "name": "ITI",
+                "Point": 10
+              }
+            ]
+          },
+          {
+            "id": 1,
+            "name": "MainLoop",
+            "nRounds": 30,
+            "type": "random",
+            "conditions": "[{\"name\":\"Main Trial\",\"weight\":1,\"values\":[1000,1100,1200,1300,1400,1500,1600,1700,1800,1900,2000],\"_valueKeys\":[\"foreperiod\"]}]",
+            "conditionsFile": "",
+            "isTrials": true,
+            "list": [
+              {
+                "name": "Fixation",
+                "Point": 14
+              },
+              {
+                "name": "Foreperiod",
+                "Point": 16
+              },
+              {
+                "name": "StimulusResponse",
+                "Point": 18
+              },
+              {
+                "name": "ITI",
+                "Point": 20
+              }
+            ]
+          }
+        ]
+      },
+      "flowchartState": null
+    }
+  ],
+  "currentTaskId": "task_1776760420163_aiu1yxvsj"
+}

@@ -1,4 +1,4 @@
-﻿﻿﻿<!DOCTYPE html>
+﻿﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
@@ -946,60 +946,6 @@
             box-shadow: 0 0 0 3px rgba(20, 86, 240, 0.1);
         }
 
-        .routine-controls {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            flex-direction: row;
-            gap: 8px;
-            z-index: 1000;
-            transition: left 0.5s cubic-bezier(0.4, 0, 0.2, 1), transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            background: var(--bg-white);
-            padding: 8px 12px;
-            border-radius: 9999px;
-            box-shadow: var(--shadow-brand);
-            align-items: center;
-        }
-
-        .routine-controls .action-button {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 36px;
-            height: 36px;
-            padding: 0;
-            background: var(--bg-light);
-            border: none;
-            border-radius: 9999px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            color: var(--text-secondary);
-        }
-
-        .routine-controls .action-button:hover {
-            background: var(--primary-200);
-            color: var(--brand-blue);
-            transform: translateY(-1px);
-        }
-
-        .routine-controls .action-button:active {
-            transform: scale(0.95);
-            background: var(--primary-100);
-        }
-
-        .routine-controls .action-button .action-icon {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .routine-controls .action-button .action-icon svg {
-            width: 18px;
-            height: 18px;
-        }
-
         .viewport-controls {
             position: fixed;
             bottom: 20px;
@@ -1881,6 +1827,94 @@
             display: block;
         }
 
+        .project-menu-dropdown-wrapper {
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .project-menu-import-dropdown {
+            position: fixed;
+            min-width: 260px;
+            max-height: 320px;
+            background: var(--bg-white);
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            box-shadow: var(--shadow-elevated);
+            display: none;
+            z-index: 1000000;
+            animation: dropdownFadeIn 0.15s ease;
+            overflow: hidden;
+        }
+
+        .project-menu-import-dropdown.open {
+            display: block;
+        }
+
+        .project-menu-import-header {
+            padding: 10px 14px 8px;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .project-menu-import-title {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .project-menu-import-list {
+            padding: 6px;
+            overflow-y: auto;
+            max-height: 260px;
+        }
+
+        .project-menu-import-empty {
+            padding: 16px 14px;
+            font-size: 13px;
+            color: var(--text-muted);
+            text-align: center;
+        }
+
+        .project-menu-import-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            padding: 8px 10px;
+            background: none;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-charcoal);
+            cursor: pointer;
+            transition: all 0.15s ease;
+            font-family: var(--font-ui);
+            text-align: left;
+        }
+
+        .project-menu-import-item:hover {
+            background: var(--bg-light);
+            color: var(--brand-blue);
+        }
+
+        .project-menu-import-item svg {
+            color: var(--text-muted);
+            flex-shrink: 0;
+        }
+
+        .project-menu-import-item:hover svg {
+            color: var(--brand-blue);
+        }
+
+        .project-menu-import-filename {
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
         @keyframes dropdownFadeIn {
             from {
                 opacity: 0;
@@ -1983,6 +2017,7 @@
                 opacity: 1;
             }
         }
+
         </style>
 </head>
 <body>
@@ -2030,6 +2065,18 @@
                     <label class="avtp-form-label">Letter Height</label>
                     <input type="text" class="avtp-form-input" id="formLetterHeight" step="0.01" placeholder="0.05">
                 </div>
+                <div class="project-menu-tools-divider"></div>
+                <button type="button" class="project-menu-tool-btn" id="addRoutine" title="Add Routine">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                </button>
+                <button type="button" class="project-menu-tool-btn" id="removeRoutine" title="Remove Routine">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                </button>
             </div>
             <div class="avtp-form-row form-row-margin">
                 <div>
@@ -2446,9 +2493,31 @@
                         <path d="M834.8 932.4H188.4c-25.4 0-49.1-9.9-66.9-27.8C103.8 886.7 94 863.1 94 838V185.7c0-52 42.3-94.3 94.4-94.3H353c19.3 0 35 15.7 35 35s-15.7 35-35 35H188.4c-13.5 0-24.4 10.9-24.4 24.3V838c0 6.4 2.6 12.7 7.3 17.4 4.5 4.5 10.6 7 17.1 7h646.4c6.4 0 12.6-2.6 17.2-7.1 4.5-4.5 7-10.7 7-17.2V674c0-19.3 15.7-35 35-35s35 15.7 35 35v164c0 25.3-9.8 49-27.5 66.7-17.6 17.6-41.9 27.7-66.7 27.7z"></path>
                     </svg>
                 </button>
-                <button type="button" class="project-menu-tool-btn" id="importButton" title="导入 (Import)">
-                    <svg width="16" height="16" viewBox="0 0 1024 1024" fill="currentColor">
-                        <path d="M557 567.36l83.18-83.18c17.574-17.574 46.066-17.574 63.64 0 17.574 17.574 17.574 46.066 0 63.64l-160 160c-17.534 17.534-45.95 17.58-63.54 0.1l-160-159c-17.628-17.52-17.718-46.012-0.2-63.64 17.52-17.628 46.012-17.718 63.64-0.2l83.28 82.76V510c0-135.31 109.69-245 245-245h150c24.852 0 45 20.148 45 45s-20.148 45-45 45h-150c-85.604 0-155 69.396-155 155v57.36z m196.546 105.64c-24.852 0-45-20.148-45-45s20.148-45 45-45H836c41.42 0 75 33.58 75 75v180c0 41.42-33.58 75-75 75H186c-41.42 0-75-33.58-75-75v-180c0-41.42 33.58-75 75-75h80.276c24.852 0 45 20.148 45 45s-20.148 45-45 45H201v150h620v-150h-67.454z"></path>
+                <div class="project-menu-dropdown-wrapper" id="importDropdownWrapper">
+                    <button type="button" class="project-menu-tool-btn" id="importButton" title="导入 (Import)">
+                        <svg width="16" height="16" viewBox="0 0 1024 1024" fill="currentColor">
+                            <path d="M557 567.36l83.18-83.18c17.574-17.574 46.066-17.574 63.64 0 17.574 17.574 17.574 46.066 0 63.64l-160 160c-17.534 17.534-45.95 17.58-63.54 0.1l-160-159c-17.628-17.52-17.718-46.012-0.2-63.64 17.52-17.628 46.012-17.718 63.64-0.2l83.28 82.76V510c0-135.31 109.69-245 245-245h150c24.852 0 45 20.148 45 45s-20.148 45-45 45h-150c-85.604 0-155 69.396-155 155v57.36z m196.546 105.64c-24.852 0-45-20.148-45-45s20.148-45 45-45H836c41.42 0 75 33.58 75 75v180c0 41.42-33.58 75-75 75H186c-41.42 0-75-33.58-75-75v-180c0-41.42 33.58-75 75-75h80.276c24.852 0 45 20.148 45 45s-20.148 45-45 45H201v150h620v-150h-67.454z"></path>
+                        </svg>
+                    </button>
+                    <div class="project-menu-import-dropdown" id="importDropdown">
+                        <div class="project-menu-import-header">
+                            <span class="project-menu-import-title">Import Project</span>
+                        </div>
+                        <div class="project-menu-import-list" id="importFileList">
+                            <div class="project-menu-import-empty">No .psyclaw files found</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="project-menu-tools-divider"></div>
+                <button type="button" class="project-menu-tool-btn" id="addRoutine" title="Add Routine">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                </button>
+                <button type="button" class="project-menu-tool-btn" id="removeRoutine" title="Remove Routine">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
                     </svg>
                 </button>
             </div>
@@ -2481,23 +2550,6 @@
                     </button>
                 </div>
             </div>
-        </div>
-        <div class="routine-controls">
-            <button type="button" class="action-button" id="addRoutine" title="Add Routine">
-                <span class="action-icon">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="12" y1="5" x2="12" y2="19"></line>
-                        <line x1="5" y1="12" x2="19" y2="12"></line>
-                    </svg>
-                </span>
-            </button>
-            <button type="button" class="action-button" id="removeRoutine" title="Remove Routine">
-                <span class="action-icon">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="5" y1="12" x2="19" y2="12"></line>
-                    </svg>
-                </span>
-            </button>
         </div>
 
         <div class="viewport-controls">
@@ -2750,7 +2802,6 @@
         const chatbotPanel = document.getElementById('chatbotPanel');
         const chatbotResizer = document.getElementById('chatbotResizer');
         const chatbotFrame = document.getElementById('chatbotFrame');
-        const routineControls = document.querySelector('.routine-controls');
         let isResizingChatbot = false;
         let startX = 0;
         let startWidth = 0;
@@ -2914,6 +2965,9 @@
         document.addEventListener('click', (e) => {
             if (!chatbotPanel.contains(e.target)) {
                 chatbotFrame.contentWindow.postMessage('closeAdvancedSettings', '*');
+            }
+            if (!importDropdownWrapper.contains(e.target)) {
+                closeImportDropdown();
             }
         });
          
@@ -3335,6 +3389,8 @@
                 projectFolderPath = handle.name;
                 await saveFolderHandle(handle, projectFolderPath);
 
+                refreshImportDropdown();
+
                 warningEl.style.display = 'none';
                 return true;
             } catch (e) {
@@ -3490,6 +3546,8 @@
                         projectFolderHandle = handle;
                         projectFolderPath = handle.name;
                         await saveFolderHandle(handle, projectFolderPath);
+
+                        refreshImportDropdown();
 
                         warningEl.style.display = 'none';
                         hideProjectFolderOverlay();
@@ -6743,7 +6801,6 @@
 
         // 保存和导入功能
         const saveButton = document.getElementById('saveButton');
-        const importButton = document.getElementById('importButton');
 
         // 保存项目
         saveButton.addEventListener('click', async () => {
@@ -6786,7 +6843,7 @@
             };
 
             const jsonData = JSON.stringify(projectData, null, 2);
-            const fileName = currentProjectFile || `deeppsych_project_${saveCounter++}.json`;
+            const fileName = currentProjectFile || `deeppsych_project_${saveCounter++}.psyclaw`;
             const timestamp = new Date().toISOString();
 
             // 如果已经有文件句柄，直接保存
@@ -6809,7 +6866,80 @@
                 }
             }
 
-            // 新文件或保存失败，使用传统方式
+            // 如果有项目文件夹，保存到项目文件夹
+            if (projectFolderHandle) {
+                try {
+                    const folderFileHandle = await projectFolderHandle.getFileHandle(fileName, { create: true });
+                    const writable = await folderFileHandle.createWritable();
+                    await writable.write(jsonData);
+                    await writable.close();
+
+                    // 更新 fileHandle 和 currentProjectFile
+                    fileHandle = folderFileHandle;
+                    currentProjectFile = folderFileHandle.name;
+
+                    // 发送成功响应消息（按照 protocol）
+                    window.parent.postMessage({
+                        type: 'project-saved',
+                        success: true,
+                        fileName: folderFileHandle.name,
+                        timestamp: timestamp
+                    }, '*');
+                    return;
+                } catch (error) {
+                    console.error('保存到项目文件夹失败:', error);
+                }
+            }
+
+            // 新文件，使用 showSaveFilePicker 让用户选择保存位置
+            if ('showSaveFilePicker' in window) {
+                try {
+                    const handle = await window.showSaveFilePicker({
+                        suggestedName: fileName,
+                        types: [
+                            {
+                                description: 'PsyClaw Project Files',
+                                accept: { 'application/json': ['.psyclaw'] }
+                            },
+                            {
+                                description: 'JSON Files',
+                                accept: { 'application/json': ['.json'] }
+                            }
+                        ]
+                    });
+
+                    const writable = await handle.createWritable();
+                    await writable.write(jsonData);
+                    await writable.close();
+
+                    // 更新 fileHandle 和 currentProjectFile
+                    fileHandle = handle;
+                    currentProjectFile = handle.name;
+
+                    // 发送成功响应消息（按照 protocol）
+                    window.parent.postMessage({
+                        type: 'project-saved',
+                        success: true,
+                        fileName: handle.name,
+                        timestamp: timestamp
+                    }, '*');
+                    return;
+                } catch (error) {
+                    // 用户取消或保存失败
+                    if (error.name === 'AbortError') {
+                        window.parent.postMessage({
+                            type: 'project-saved',
+                            success: false,
+                            error: 'User cancelled',
+                            timestamp: timestamp
+                        }, '*');
+                        return;
+                    }
+                    console.error('保存失败:', error);
+                }
+            }
+
+            // 降级方案：使用传统下载方式
             const blob = new Blob([jsonData], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
@@ -6829,305 +6959,276 @@
             }, '*');
         });
 
-        // 保存 XML 功能
+        // 导出 XML 功能
         const saveAsButton = document.getElementById('saveAsButton');
         saveAsButton.addEventListener('click', async () => {
-            if (routineRects.length === 0) {
-                alert('不能保存空的 flowchart，请先添加至少一个 routine！');
+            try {
+                if (!projectFolderHandle) {
+                    alert('请先选择项目文件夹！');
+                    return;
+                }
+
+                if (routineRects.length === 0) {
+                    alert('不能保存空的 flowchart，请先添加至少一个 routine！');
+                    return;
+                }
+
+                if (activeAvtp && activeDragRect) {
+                    saveFormChanges();
+                }
+                if (activeConnection) {
+                    saveLoopFormChanges();
+                }
+
+                // 构建 routines 数据
+                const routines = routineRects.map(rect => ({
+                    id: rect.id,
+                    name: rect.name,
+                    x: rect.x,
+                    y: rect.y,
+                    width: rect.width,
+                    height: rect.height,
+                    duration: rect.duration,
+                    avtpComponents: rect.avtpComponents || []
+                }));
+
+                // 将 connections 转换为 loops
+                const loops = connectionsToLoops(connections);
+
+                const projectData = {
+                    timestamp: new Date().toISOString(),
+                    routines: routines,
+                    loops: loops,
+                    currentRoutineCount: currentRoutineCount,
+                    routineIdCounter: routineIdCounter,
+                    loopIdCounter: loopIdCounter
+                };
+
+                if (typeof convertToPsyExpXML !== 'function') {
+                    console.error('convertToPsyExpXML function not loaded');
+                    alert('导出功能加载失败，请刷新页面重试！');
+                    return;
+                }
+
+                const xmlData = convertToPsyExpXML(projectData);
+                const fileName = (currentProjectFile || `deeppsych_project_${saveCounter++}.json`).replace('.json', '.psyexp').replace('.psyclaw', '.psyexp');
+
+                // 在项目文件夹中创建文件
+                try {
+                    const fileHandle = await projectFolderHandle.getFileHandle(fileName, { create: true });
+                    const writable = await fileHandle.createWritable();
+                    await writable.write(xmlData);
+                    await writable.close();
+
+                    // 发送成功响应消息
+                    window.parent.postMessage({
+                        type: 'project-exported',
+                        success: true,
+                        fileName: fileName,
+                        timestamp: new Date().toISOString()
+                    }, '*');
+
+                    alert('导出成功！');
+                } catch (error) {
+                    console.error('导出失败:', error);
+                    // 降级方案：使用传统下载方式
+                    const xmlBlob = new Blob([xmlData], { type: 'application/xml' });
+                    const xmlUrl = URL.createObjectURL(xmlBlob);
+                    const xmlLink = document.createElement('a');
+                    xmlLink.href = xmlUrl;
+                    xmlLink.download = fileName;
+                    document.body.appendChild(xmlLink);
+                    xmlLink.click();
+                    document.body.removeChild(xmlLink);
+                    URL.revokeObjectURL(xmlUrl);
+                }
+            } catch (error) {
+                console.error('Export error:', error);
+                alert('导出失败：' + error.message);
+            }
+        });
+
+        // 导入下拉栏逻辑
+        const importButton = document.getElementById('importButton');
+        const importDropdown = document.getElementById('importDropdown');
+        const importDropdownWrapper = document.getElementById('importDropdownWrapper');
+        const importFileListEl = document.getElementById('importFileList');
+        let importDropdownOpen = false;
+
+        async function refreshImportDropdown() {
+            if (!projectFolderHandle) {
+                importFileListEl.innerHTML = '<div class="project-menu-import-empty">No project folder selected</div>';
                 return;
             }
 
-            if (activeAvtp && activeDragRect) {
-                saveFormChanges();
-            }
-            if (activeConnection) {
-                saveLoopFormChanges();
-            }
-
-            // 构建 routines 数据
-            const routines = routineRects.map(rect => ({
-                id: rect.id,
-                name: rect.name,
-                x: rect.x,
-                y: rect.y,
-                width: rect.width,
-                height: rect.height,
-                duration: rect.duration,
-                avtpComponents: rect.avtpComponents || []
-            }));
-
-            // 将 connections 转换为 loops
-            const loops = connectionsToLoops(connections);
-
-            const projectData = {
-                timestamp: new Date().toISOString(),
-                routines: routines,
-                loops: loops,
-                currentRoutineCount: currentRoutineCount,
-                routineIdCounter: routineIdCounter,
-                loopIdCounter: loopIdCounter
-            };
-
-            const xmlData = convertToPsyExpXML(projectData);
-            const xmlBlob = new Blob([xmlData], { type: 'application/xml' });
-            const xmlUrl = URL.createObjectURL(xmlBlob);
-            const xmlLink = document.createElement('a');
-            xmlLink.href = xmlUrl;
-            xmlLink.download = (currentProjectFile || `deeppsych_project_${saveCounter}.json`).replace('.json', '.psyexp');
-            document.body.appendChild(xmlLink);
-            xmlLink.click();
-            document.body.removeChild(xmlLink);
-            URL.revokeObjectURL(xmlUrl);
-        });
-
-        // 导入项目
-        importButton.addEventListener('click', async () => {
-            // 使用File System Access API让用户选择文件
-            if ('showOpenFilePicker' in window) {
-                try {
-                    const [handle] = await window.showOpenFilePicker({
-                        types: [{
-                            description: 'JSON Files',
-                            accept: { 'application/json': ['.json'] }
-                        }],
-                        multiple: false
-                    });
-
-                    const file = await handle.getFile();
-                    const text = await file.text();
-                    const projectData = JSON.parse(text);
-
-                    // 验证数据格式
-                    const { routines, loops } = parseProjectData(projectData);
-                    if (routines.length === 0) {
-                        throw new Error('无效的项目文件格式：缺少 routines');
-                    }
-
-                    // 清空当前项目
-                    routineRects.length = 0;
-                    connections.length = 0;
-                    selectedRoutineIndex = -1;
-                    activeDragRect = null;  // 重置 activeDragRect，避免指向旧的无效对象
-
-                    // 导入数据
-                    routineRects.push(...routines);
-                    // 转换 loops 为 connections（新格式和旧格式都统一转换为 connections）
-                    connections.push(...loopsToConnections(loops));
-                    currentRoutineCount = routineRects.length;
-                    routineIdCounter = routineRects.length;
-                    loopIdCounter = 0;
-
-                    // 统一所有 routine 的宽度为 200（与创建时保持一致）
-                    routineRects.forEach(rect => {
-                        rect.width = 200;
-                    });
-
-                    // 重新计算所有 routine 的高度（根据 avtpComponents）
-                    updateAllRoutineHeights();
-
-                    // 重新计算所有 connection 的 depth（用于正确显示 loop）
-                    rebuildAllConnectionDepths();
-
-                    // 导入任务数据（如果文件中有）
-                    if (projectData.tasks && Array.isArray(projectData.tasks)) {
-                        tasks = projectData.tasks;
-                        currentTaskId = projectData.currentTaskId || (tasks.length > 0 ? tasks[0].id : null);
-                        
-                        // 构建当前导入的 flowchart 数据（使用 routines + loops 格式，与保存时一致）
-                        const routinesData = routineRects.map(rect => ({
-                            id: rect.id,
-                            name: rect.name,
-                            duration: rect.duration,
-                            avtpComponents: rect.avtpComponents || []
-                        }));
-                        const loopsData = connectionsToLoops(connections);
-                        
-                        const flowchartData = {
-                            timestamp: new Date().toISOString(),
-                            routines: routinesData,
-                            loops: loopsData
-                        };
-                        
-                        // 更新当前任务的 flowchartData
-                        const task = tasks.find(t => t.id === currentTaskId);
-                        if (task) {
-                            task.flowchartData = flowchartData;
-                            task.updatedAt = new Date().toISOString();
-                        }
-                        
-                        saveTasks();
-                        
-                        // 加载当前任务到 chatbot（包含 flowchart 数据）
-                        if (currentTaskId && chatbotFrame.contentWindow) {
-                            if (task) {
-                                chatbotFrame.contentWindow.postMessage({
-                                    type: 'load-task',
-                                    task: task
-                                }, '*');
-                            }
-                        }
-                    }
-
-                    // 保存导入的文件名和文件句柄
-                    currentProjectFile = handle.name;
-                    fileHandle = handle;
-
-                    // 更新界面
-                    updatePoints();
-                    updateRoutineCount();
-                    draw();
-
-                    // 保存初始状态并启用按钮
-                    saveState();
-
-                    // 更新当前任务的 flowchartData 并通知 chatbot
-                    updateCurrentTaskFlowchartAndNotify();
-
-                    // 发送成功响应消息（按照 protocol）
-                    window.parent.postMessage({
-                        type: 'project-imported',
-                        success: true,
-                        routinesCount: routineRects.length,
-                        loopsCount: loops.length,
-                        fileName: handle.name
-                    }, '*');
-                    return;
-                } catch (error) {
-                    if (error.name === 'AbortError') {
-                        return;
-                    }
-                    console.error('导入失败:', error);
-                    // 发送失败响应消息
-                    window.parent.postMessage({
-                        type: 'project-imported',
-                        success: false,
-                        error: error.message
-                    }, '*');
-                    // 回退到传统方式
+            const psyclawFiles = [];
+            for await (const entry of projectFolderHandle.values()) {
+                if (entry.kind === 'file' && entry.name.endsWith('.psyclaw')) {
+                    psyclawFiles.push(entry);
                 }
             }
 
-            // 回退到传统方式
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.accept = '.json';
-            input.onchange = (e) => {
-                const file = e.target.files[0];
-                if (!file) return;
+            importFileListEl.innerHTML = '';
 
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    try {
-                        const projectData = JSON.parse(event.target.result);
-                        
-                        // 验证数据格式
-                        const { routines, loops } = parseProjectData(projectData);
-                        if (routines.length === 0) {
-                            throw new Error('无效的项目文件格式：缺少 routines');
-                        }
+            if (psyclawFiles.length === 0) {
+                importFileListEl.innerHTML = '<div class="project-menu-import-empty">No .psyclaw files found</div>';
+                return;
+            }
 
-                        // 清空当前项目
-                        routineRects.length = 0;
-                        connections.length = 0;
-                        selectedRoutineIndex = -1;
-                        activeDragRect = null;  // 重置 activeDragRect，避免指向旧的无效对象
+            psyclawFiles.forEach((file) => {
+                const item = document.createElement('button');
+                item.className = 'project-menu-import-item';
+                item.innerHTML = `
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                    </svg>
+                    <span class="project-menu-import-filename">${file.name}</span>
+                `;
+                item.addEventListener('click', async () => {
+                    closeImportDropdown();
+                    await importProjectFile(file);
+                });
+                importFileListEl.appendChild(item);
+            });
+        }
 
-                        // 导入数据
-                        routineRects.push(...routines);
-                        // 转换 loops 为 connections（新格式和旧格式都统一转换为 connections）
-                        connections.push(...loopsToConnections(loops));
-                        currentRoutineCount = routineRects.length;
-                        routineIdCounter = routineRects.length;
-                        loopIdCounter = 0;
+        async function importProjectFile(fileHandle) {
+            try {
+                const file = await fileHandle.getFile();
+                const text = await file.text();
+                const projectData = JSON.parse(text);
 
-                        // 统一所有 routine 的宽度为 200（与创建时保持一致）
-                        routineRects.forEach(rect => {
-                            rect.width = 200;
-                        });
+                // 验证数据格式
+                const { routines, loops } = parseProjectData(projectData);
+                if (routines.length === 0) {
+                    throw new Error('无效的项目文件格式：缺少 routines');
+                }
 
-                        // 重新计算所有 routine 的高度（根据 avtpComponents）
-                        updateAllRoutineHeights();
+                // 清空当前项目
+                routineRects.length = 0;
+                connections.length = 0;
+                selectedRoutineIndex = -1;
+                activeDragRect = null;
 
-                        // 重新计算所有 connection 的 depth（用于正确显示 loop）
-                        rebuildAllConnectionDepths();
+                // 导入数据
+                routineRects.push(...routines);
+                connections.push(...loopsToConnections(loops));
+                currentRoutineCount = routineRects.length;
+                routineIdCounter = routineRects.length;
+                loopIdCounter = 0;
 
-                        // 导入任务数据（如果文件中有）
-                        if (projectData.tasks && Array.isArray(projectData.tasks)) {
-                            tasks = projectData.tasks;
-                            currentTaskId = projectData.currentTaskId || (tasks.length > 0 ? tasks[0].id : null);
-                            
-                            // 构建当前导入的 flowchart 数据（使用 routines + loops 格式，与保存时一致）
-                            const routinesData = routineRects.map(rect => ({
-                                id: rect.id,
-                                name: rect.name,
-                                duration: rect.duration,
-                                avtpComponents: rect.avtpComponents || []
-                            }));
-                            const loopsData = connectionsToLoops(connections);
-                            
-                            const flowchartData = {
-                                timestamp: new Date().toISOString(),
-                                routines: routinesData,
-                                loops: loopsData
-                            };
-                            
-                            // 更新当前任务的 flowchartData
-                            const task = tasks.find(t => t.id === currentTaskId);
-                            if (task) {
-                                task.flowchartData = flowchartData;
-                                task.updatedAt = new Date().toISOString();
-                            }
-                            
-                            saveTasks();
-                            
-                            // 加载当前任务到 chatbot（包含 flowchart 数据）
-                            if (currentTaskId && chatbotFrame.contentWindow) {
-                                if (task) {
-                                    chatbotFrame.contentWindow.postMessage({
-                                        type: 'load-task',
-                                        task: task
-                                    }, '*');
-                                }
-                            }
-                        }
+                // 统一所有 routine 的宽度为 200（与创建时保持一致）
+                routineRects.forEach(rect => {
+                    rect.width = 200;
+                });
 
-                        // 保存导入的文件名
-                        currentProjectFile = file.name;
-                        fileHandle = null;
+                // 重新计算所有 routine 的高度（根据 avtpComponents）
+                updateAllRoutineHeights();
 
-                        // 更新界面
-                        updatePoints();
-                        updateRoutineCount();
-                        draw();
+                // 重新计算所有 connection 的 depth（用于正确显示 loop）
+                rebuildAllConnectionDepths();
 
-                        // 保存初始状态并启用按钮
-                        saveState();
+                // 导入任务数据（如果文件中有）
+                if (projectData.tasks && Array.isArray(projectData.tasks)) {
+                    tasks = projectData.tasks;
+                    currentTaskId = projectData.currentTaskId || (tasks.length > 0 ? tasks[0].id : null);
 
-                        // 更新当前任务的 flowchartData 并通知 chatbot
-                        updateCurrentTaskFlowchartAndNotify();
+                    // 构建当前导入的 flowchart 数据
+                    const routinesData = routineRects.map(rect => ({
+                        id: rect.id,
+                        name: rect.name,
+                        duration: rect.duration,
+                        avtpComponents: rect.avtpComponents || []
+                    }));
+                    const loopsData = connectionsToLoops(connections);
 
-                        // 发送成功响应消息（按照 protocol）
-                        window.parent.postMessage({
-                            type: 'project-imported',
-                            success: true,
-                            routinesCount: routineRects.length,
-                            loopsCount: loops.length,
-                            fileName: file.name
-                        }, '*');
-                    } catch (error) {
-                        alert('导入失败：' + error.message);
+                    const flowchartData = {
+                        timestamp: new Date().toISOString(),
+                        routines: routinesData,
+                        loops: loopsData
+                    };
 
-                        // 发送失败响应消息
-                        window.parent.postMessage({
-                            type: 'project-imported',
-                            success: false,
-                            error: error.message
-                        }, '*');
+                    // 更新当前任务的 flowchartData
+                    const task = tasks.find(t => t.id === currentTaskId);
+                    if (task) {
+                        task.flowchartData = flowchartData;
+                        task.updatedAt = new Date().toISOString();
                     }
-                };
-                reader.readAsText(file);
-            };
-            input.click();
+
+                    saveTasks();
+
+                    // 加载当前任务到 chatbot（包含 flowchart 数据）
+                    if (currentTaskId && chatbotFrame.contentWindow) {
+                        if (task) {
+                            chatbotFrame.contentWindow.postMessage({
+                                type: 'load-task',
+                                task: task
+                            }, '*');
+                        }
+                    }
+                }
+
+                // 保存导入的文件名和文件句柄
+                currentProjectFile = fileHandle.name;
+
+                // 更新界面
+                updatePoints();
+                updateRoutineCount();
+                draw();
+
+                // 保存初始状态并启用按钮
+                saveState();
+
+                // 更新当前任务的 flowchartData 并通知 chatbot
+                updateCurrentTaskFlowchartAndNotify();
+
+                // 发送成功响应消息
+                window.parent.postMessage({
+                    type: 'project-imported',
+                    success: true,
+                    routinesCount: routineRects.length,
+                    loopsCount: loops.length,
+                    fileName: fileHandle.name
+                }, '*');
+            } catch (error) {
+                console.error('导入失败:', error);
+                alert('导入失败: ' + error.message);
+                window.parent.postMessage({
+                    type: 'project-imported',
+                    success: false,
+                    error: error.message
+                }, '*');
+            }
+        }
+
+        function openImportDropdown() {
+            if (importDropdownOpen) {
+                closeImportDropdown();
+                return;
+            }
+            refreshImportDropdown();
+            const rect = importDropdownWrapper.getBoundingClientRect();
+            importDropdown.style.top = (rect.bottom + 6) + 'px';
+            importDropdown.style.left = rect.left + 'px';
+            importDropdown.classList.add('open');
+            importDropdownOpen = true;
+        }
+
+        function closeImportDropdown() {
+            importDropdown.classList.remove('open');
+            importDropdownOpen = false;
+        }
+
+        importButton.addEventListener('click', (e) => {
+            e.stopPropagation();
+            openImportDropdown();
+        });
+
+        importDropdownWrapper.addEventListener('mouseenter', () => {
+            if (!importDropdownOpen) {
+                refreshImportDropdown();
+            }
         });
 
         // 监听来自 chatbot.html 的 flowchart 生成数据
@@ -7208,47 +7309,57 @@
                     }
                 }
                 
-                // 解析 flowchart 数组格式 (v2.0 schema)
-                // Routine: 有 Point 字段
-                // Loop: 有 startPoint/endPoint 字段，内部包含 list 数组
-                const flowchartData = projectData.flowchart;
+                // 解析 flowchart 数据（支持两种格式）
+                // 格式1: routines + loops 格式（保存时的格式）
+                // 格式2: flowchart 数组格式（v2.0 schema）
+                let allRoutines = [];
+                let loopsData = [];
 
-                if (!flowchartData || !Array.isArray(flowchartData) || flowchartData.length === 0) {
-                    console.error('Invalid flowchart data: missing or empty flowchart array');
-                    showNotification('❌ Invalid flowchart: no flowchart found');
+                if (projectData.routines && Array.isArray(projectData.routines)) {
+                    // 格式1: routines + loops 格式
+                    allRoutines = projectData.routines.map(r => ({
+                        ...r,
+                        Point: projectData.routines.indexOf(r) + 1
+                    }));
+                    loopsData = projectData.loops || [];
+                } else if (projectData.flowchart && Array.isArray(projectData.flowchart)) {
+                    // 格式2: flowchart 数组格式
+                    const flowchartData = projectData.flowchart;
+
+                    if (!flowchartData || !Array.isArray(flowchartData) || flowchartData.length === 0) {
+                        console.error('Invalid flowchart data: missing or empty flowchart array');
+                        showNotification('❌ Invalid flowchart: no flowchart found');
+                        return;
+                    }
+
+                    flowchartData.forEach(item => {
+                        if (item.Point !== undefined) {
+                            allRoutines.push(item);
+                        } else if (item.list !== undefined) {
+                            loopsData.push(item);
+                            if (Array.isArray(item.list)) {
+                                item.list.forEach(subItem => {
+                                    if (subItem.Point !== undefined) {
+                                        allRoutines.push(subItem);
+                                    }
+                                });
+                            }
+                        } else if (item.startPoint !== undefined) {
+                            loopsData.push(item);
+                            if (item.list && Array.isArray(item.list)) {
+                                item.list.forEach(subItem => {
+                                    if (subItem.Point !== undefined) {
+                                        allRoutines.push(subItem);
+                                    }
+                                });
+                            }
+                        }
+                    });
+                } else {
+                    console.error('Invalid flowchart data: unknown format');
+                    showNotification('❌ Invalid flowchart: unsupported format');
                     return;
                 }
-
-                // 展平 flowchart：提取所有 routines（包括 loop 内部的）
-                const allRoutines = [];
-                const loopsData = [];
-
-                flowchartData.forEach(item => {
-                    if (item.Point !== undefined) {
-                        // 顶层 routine
-                        allRoutines.push(item);
-                    } else if (item.list !== undefined) {
-                        // Loop：新格式，通过 list 字段识别，并提取内部的 routines
-                        loopsData.push(item);
-                        if (Array.isArray(item.list)) {
-                            item.list.forEach(subItem => {
-                                if (subItem.Point !== undefined) {
-                                    allRoutines.push(subItem);
-                                }
-                            });
-                        }
-                    } else if (item.startPoint !== undefined) {
-                        // Loop：旧格式兼容（有 startPoint 字段）
-                        loopsData.push(item);
-                        if (item.list && Array.isArray(item.list)) {
-                            item.list.forEach(subItem => {
-                                if (subItem.Point !== undefined) {
-                                    allRoutines.push(subItem);
-                                }
-                            });
-                        }
-                    }
-                });
 
                 // 按 Point 排序 routines
                 allRoutines.sort((a, b) => (a.Point || 0) - (b.Point || 0));
