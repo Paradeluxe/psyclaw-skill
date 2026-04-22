@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<!DOCTYPE html>
+﻿﻿﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
@@ -86,6 +86,7 @@
             position: relative;
             overflow: hidden;
             z-index: 1;
+            padding-top: 48px;
         }
 
         .container {
@@ -952,9 +953,51 @@
             transform: translateX(-50%);
             display: flex;
             flex-direction: row;
-            gap: 6px;
+            gap: 8px;
             z-index: 1000;
             transition: left 0.5s cubic-bezier(0.4, 0, 0.2, 1), transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            background: var(--bg-white);
+            padding: 8px 12px;
+            border-radius: 9999px;
+            box-shadow: var(--shadow-brand);
+            align-items: center;
+        }
+
+        .routine-controls .action-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            padding: 0;
+            background: var(--bg-light);
+            border: none;
+            border-radius: 9999px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: var(--text-secondary);
+        }
+
+        .routine-controls .action-button:hover {
+            background: var(--primary-200);
+            color: var(--brand-blue);
+            transform: translateY(-1px);
+        }
+
+        .routine-controls .action-button:active {
+            transform: scale(0.95);
+            background: var(--primary-100);
+        }
+
+        .routine-controls .action-button .action-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .routine-controls .action-button .action-icon svg {
+            width: 18px;
+            height: 18px;
         }
 
         .viewport-controls {
@@ -962,22 +1005,67 @@
             bottom: 20px;
             left: 20px;
             display: flex;
-            gap: 6px;
+            gap: 8px;
             z-index: 1000;
             width: auto;
             flex-shrink: 0;
             transition: left 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            align-items: center;
+            background: var(--bg-white);
+            padding: 8px 12px;
+            border-radius: 9999px;
+            box-shadow: var(--shadow-brand);
+        }
+
+        .viewport-controls .action-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            padding: 0;
+            background: var(--bg-light);
+            border: none;
+            border-radius: 9999px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: var(--text-secondary);
+        }
+
+        .viewport-controls .action-button:hover {
+            background: var(--primary-200);
+            color: var(--brand-blue);
+            transform: translateY(-1px);
+        }
+
+        .viewport-controls .action-button:active {
+            transform: scale(0.95);
+            background: var(--primary-100);
+        }
+
+        .viewport-controls .action-button .action-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .viewport-controls .action-button .action-icon svg {
+            width: 18px;
+            height: 18px;
         }
 
         .zoom-level {
             display: flex;
             align-items: center;
-            padding: 0 8px;
-            font-size: 14px;
-            font-weight: 500;
-            color: #333;
+            justify-content: center;
+            padding: 0 12px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-charcoal);
             min-width: 50px;
             text-align: center;
+            font-family: var(--font-ui);
+            letter-spacing: 0.3px;
         }
 
         .routine-btn {
@@ -1390,7 +1478,7 @@
         .chatbot-panel {
             position: fixed;
             right: 0;
-            top: 0;
+            top: 54px;
             transform: none;
             width: 38%;
             min-width: 25%;
@@ -1398,8 +1486,8 @@
             background: var(--bg-white);
             border-radius: 0;
             overflow: hidden;
-            height: 100vh;
-            z-index: 1000;
+            height: calc(100vh - 54px);
+            z-index: 999;
             box-shadow: none;
         }
 
@@ -1436,102 +1524,6 @@
             border: none;
         }
 
-        .undo-button-container {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            z-index: 2000;
-            display: flex;
-            gap: 6px;
-            transition: left 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        @keyframes slideIn {
-            from {
-                transform: translateX(400px);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-
-        @keyframes slideOut {
-            from {
-                transform: translateX(0);
-                opacity: 1;
-            }
-            to {
-                transform: translateX(400px);
-                opacity: 0;
-            }
-        }
-
-        .undo-button, .action-button {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            padding: 10px 16px;
-            background: var(--bg-white);
-            border: 1.5px solid var(--border-gray);
-            border-radius: 8px;
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--text-dark);
-            cursor: pointer;
-            transition: all 0.2s;
-            box-shadow: var(--shadow-standard);
-            font-family: var(--font-ui);
-        }
-
-        .undo-button:hover:not(:disabled), .action-button:hover {
-            background: var(--primary-200);
-            border-color: var(--brand-blue);
-            color: var(--brand-blue);
-            box-shadow: var(--shadow-elevated);
-            transform: translateY(-1px);
-        }
-
-        .undo-button:active:not(:disabled), .action-button:active {
-            background: var(--primary-200);
-            transform: scale(0.98);
-        }
-
-        .undo-button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            background: var(--bg-light);
-            border-color: var(--border-gray);
-            box-shadow: none;
-            color: var(--text-muted);
-        }
-
-        .undo-icon, .action-icon {
-            font-size: 14px;
-            font-weight: 600;
-            line-height: 1;
-            transition: transform 0.2s;
-            color: currentColor;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .undo-icon svg, .action-icon svg {
-            color: currentColor;
-        }
-
-        .undo-count {
-            font-size: 13px;
-            font-weight: 500;
-            line-height: 1;
-            min-width: 16px;
-            text-align: center;
-        }
-
-
-
         @keyframes slideIn {
             from {
                 transform: translateX(400px);
@@ -1561,6 +1553,7 @@
             right: 0;
             bottom: 0;
             background: linear-gradient(135deg, rgba(20, 86, 240, 0.05) 0%, rgba(234, 94, 193, 0.05) 100%);
+            -webkit-backdrop-filter: blur(8px);
             backdrop-filter: blur(8px);
             display: flex;
             align-items: center;
@@ -1674,35 +1667,175 @@
             border-radius: 8px;
             color: var(--text-secondary);
             font-size: 14px;
+        }
+
+        .project-folder-last {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            width: 100%;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .project-folder-last-info {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 16px;
+            background: var(--bg-light);
+            border-radius: 8px;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .project-folder-last-info span {
+            font-weight: 500;
+            color: var(--text-dark);
+        }
+
+        .project-folder-btn-secondary {
+            background: var(--bg-light);
+            color: var(--brand-blue);
+            border: 2px solid var(--brand-blue);
+            box-shadow: none;
+        }
+
+        .project-folder-btn-secondary:hover {
+            background: var(--brand-blue);
+            color: white;
+            box-shadow: var(--shadow-brand-offset);
+        }
+
+        .project-folder-divider {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            gap: 16px;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .project-folder-divider::before,
+        .project-folder-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border-color);
+        }
+
+        .project-folder-divider {
             margin-top: 12px;
         }
 
         .project-menu-bar {
-            position: absolute;
-            top: 16px;
-            right: 20px;
-            z-index: 1000;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 48px;
+            background: var(--bg-white);
+            border-bottom: 1px solid var(--border-light);
+            z-index: 999999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 20px;
+            box-shadow: var(--shadow-standard);
             pointer-events: auto;
+        }
+
+        .project-menu-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: fit-content;
+            margin: 0 auto;
+            position: relative;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .project-menu-logo {
+            font-family: var(--font-display);
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--brand-blue);
+            letter-spacing: -0.02em;
+            line-height: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+        }
+
+        .project-menu-center {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .project-menu-tool-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            padding: 0;
+            background: transparent;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: var(--text-secondary);
+        }
+
+        .project-menu-tool-btn:hover:not(:disabled) {
+            background: var(--bg-light);
+            color: var(--brand-blue);
+        }
+
+        .project-menu-tool-btn:active:not(:disabled) {
+            background: var(--primary-100);
+        }
+
+        .project-menu-tool-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            color: var(--text-muted);
+        }
+
+        .project-menu-tool-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .project-menu-tools-divider {
+            width: 1px;
+            height: 20px;
+            background: var(--border-light);
+            margin: auto 8px;
         }
 
         .project-menu-trigger {
             display: flex;
             align-items: center;
             gap: 8px;
-            padding: 8px 14px;
-            background: var(--bg-white);
+            padding: 0 12px;
+            height: 36px;
+            background: var(--bg-light);
             border: 1px solid var(--border-light);
-            border-radius: 8px;
+            border-radius: 6px;
             cursor: pointer;
             transition: all 0.2s ease;
-            box-shadow: var(--shadow-standard);
             font-family: var(--font-ui);
+            -webkit-user-select: none;
             user-select: none;
         }
 
         .project-menu-trigger:hover {
             border-color: var(--border-gray);
-            box-shadow: var(--shadow-elevated);
+            background: var(--bg-hover);
         }
 
         .project-menu-trigger svg:first-child {
@@ -1714,7 +1847,7 @@
             font-size: 13px;
             font-weight: 500;
             color: var(--text-charcoal);
-            max-width: 150px;
+            max-width: 200px;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
@@ -1731,17 +1864,20 @@
         }
 
         .project-menu-dropdown {
-            position: absolute;
-            top: calc(100% + 8px);
-            right: 0;
-            min-width: 220px;
+            position: fixed;
+            top: 52px;
+            left: 20px;
+            min-width: 240px;
             background: var(--bg-white);
             border: 1px solid var(--border-light);
             border-radius: 12px;
             box-shadow: var(--shadow-elevated);
             padding: 8px;
             display: none;
+            z-index: 999999;
             animation: dropdownFadeIn 0.15s ease;
+            flex: none;
+            height: 0;
         }
 
         .project-menu-dropdown.open {
@@ -1850,55 +1986,18 @@
                 opacity: 1;
             }
         }
-    </style>
+        </style>
 </head>
 <body>
-    <div class="undo-button-container">
-        <button class="undo-button" id="backwardButton" title="Backward" disabled>
-            <span class="undo-icon">
-                <svg width="18" height="18" viewBox="0 0 1241 1024" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M1155.12158 1022.906253a82.893312 82.893312 0 0 1-55.633095-22.809569l-436.163468-377.192387v313.770658a86.231298 86.231298 0 0 1-50.626117 78.998996A82.336981 82.336981 0 0 1 520.347962 1001.765677L29.664061 575.616166A87.34396 87.34396 0 0 1 28.551399 445.434723L521.460624 22.623198A82.336981 82.336981 0 0 1 612.6989 7.602262a86.231298 86.231298 0 0 1 51.182448 79.555327v311.545334L1098.932154 22.623198a82.336981 82.336981 0 0 1 89.569283-15.020936 86.231298 86.231298 0 0 1 51.182448 79.555327v848.961036a86.231298 86.231298 0 0 1-51.738778 79.555326 83.449643 83.449643 0 0 1-32.823527 7.232302z m-493.465556-514.049801l492.352894 428.931165V86.601258z m-85.118636-423.924187L84.184494 508.856452l492.352894 428.931165V86.601258z"></path>
-                </svg>
-            </span>
-        </button>
-        <button class="undo-button" id="forwardButton" title="Forward" disabled>
-            <span class="undo-icon">
-                <svg width="18" height="18" viewBox="0 0 1239 1024" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M662.929155 1023.027623a83.489741 83.489741 0 0 1-33.395896-7.235778 86.272732 86.272732 0 0 1-51.207041-79.593553v-311.695031L140.839976 1001.876889a82.376544 82.376544 0 0 1-89.612321 15.028153A86.272732 86.272732 0 0 1 0.020614 936.198292V86.82933A86.272732 86.272732 0 0 1 51.784253 7.235778a82.376544 82.376544 0 0 1 89.612322 15.584751l436.373044 377.373628V86.82933a86.272732 86.272732 0 0 1 51.76364-79.593552 82.376544 82.376544 0 0 1 90.16892 15.584751L1210.621854 445.278617a87.385929 87.385929 0 0 1 0 128.574201L718.588982 1001.876889a82.933142 82.933142 0 0 1-55.659827 21.150734z m-578.862202-87.385929l492.58947-424.127883-490.919675-426.910874v851.595355z m577.749005 0l492.589471-424.127883-490.919676-426.910874v851.595355z"></path>
-                </svg>
-            </span>
-        </button>
-        <button class="action-button" id="saveButton" title="Save">
-            <span class="action-icon">
-                <svg width="18" height="18" viewBox="0 0 1024 1024" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M925.248 356.928l-258.176-258.176a64 64 0 0 0-45.248-18.752H144a64 64 0 0 0-64 64v736a64 64 0 0 0 64 64h736a64 64 0 0 0 64-64V402.176a64 64 0 0 0-18.752-45.248zM288 144h192V256H288V144z m448 736H288V736h448v144z m144 0H800V704a32 32 0 0 0-32-32H256a32 32 0 0 0-32 32v176H144v-736H224V288a32 32 0 0 0 32 32h256a32 32 0 0 0 32-32V144h77.824l258.176 258.176V880z"></path>
-                </svg>
-            </span>
-        </button>
-        <button class="action-button" id="saveXMLButton" title="Export as PsychoPy .psyexp">
-            <span class="action-icon">
-                <svg width="18" height="18" viewBox="0 0 1024 1024" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M883.3 228.2l-96.4-86.8c-15.9-15.9-42-15.9-58 0v57.8c-37.6 4.3-98.9 16-160.6 47.7-88.8 45.7-194.7 141.4-203.4 339-0.8 11.2-0.9 18-0.9 19h0.4v2.5c-0.1 27.5 22 49.9 49.5 50.2 27.6 0.3 50.2-21.9 50.5-49.5 0-5.5 0.2-10.9 0.4-16.2 2.1-25.5 10.1-84 40.5-141 22.5-42.1 52.8-75.5 90.4-99.4 37-23.5 81.7-38.2 133.3-43.8v64.6c15.9 15.9 42 15.9 58 0l96.4-86.1c15.9-16 15.9-42.1-0.1-58z" fill="currentColor"></path>
-                    <path d="M834.8 932.4H188.4c-25.4 0-49.1-9.9-66.9-27.8C103.8 886.7 94 863.1 94 838V185.7c0-52 42.3-94.3 94.4-94.3H353c19.3 0 35 15.7 35 35s-15.7 35-35 35H188.4c-13.5 0-24.4 10.9-24.4 24.3V838c0 6.4 2.6 12.7 7.3 17.4 4.5 4.5 10.6 7 17.1 7h646.4c6.4 0 12.6-2.6 17.2-7.1 4.5-4.5 7-10.7 7-17.2V674c0-19.3 15.7-35 35-35s35 15.7 35 35v164c0 25.3-9.8 49-27.5 66.7-17.6 17.6-41.9 27.7-66.7 27.7z" fill="currentColor"></path>
-                </svg>
-            </span>
-        </button>
-        <button class="action-button" id="importButton" title="Load file">
-            <span class="action-icon">
-                <svg width="18" height="18" viewBox="0 0 1024 1024" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M557 567.36l83.18-83.18c17.574-17.574 46.066-17.574 63.64 0 17.574 17.574 17.574 46.066 0 63.64l-160 160c-17.534 17.534-45.95 17.58-63.54 0.1l-160-159c-17.628-17.52-17.718-46.012-0.2-63.64 17.52-17.628 46.012-17.718 63.64-0.2l83.28 82.76V510c0-135.31 109.69-245 245-245h150c24.852 0 45 20.148 45 45s-20.148 45-45 45h-150c-85.604 0-155 69.396-155 155v57.36z m196.546 105.64c-24.852 0-45-20.148-45-45s20.148-45 45-45H836c41.42 0 75 33.58 75 75v180c0 41.42-33.58 75-75 75H186c-41.42 0-75-33.58-75-75v-180c0-41.42 33.58-75 75-75h80.276c24.852 0 45 20.148 45 45s-20.148 45-45 45H201v150h620v-150h-67.454z"></path>
-                </svg>
-            </span>
-        </button>
-    </div>
+
     <div class="main-content">
         <div class="avtp-form" id="avtpForm">
         <div class="avtp-form-header">
-            <button class="avtp-form-back hidden" id="formBack">
+            <button type="button" class="avtp-form-back hidden" id="formBack">
                 <img src="icon/back.svg" alt="Back">
             </button>
             <div class="avtp-form-title" id="formTitle">Audio</div>
-            <button class="avtp-form-close" id="formClose">×</button>
+            <button type="button" class="avtp-form-close" id="formClose">×</button>
         </div>
 
         <div class="avtp-form-content">
@@ -2010,21 +2109,21 @@
             <div class="avtp-form-row">
                 <div>
                     <label class="avtp-form-label">Volume</label>
-                    <input type="text" class="avtp-form-input" id="formVolume" step="0.1" min="0" max="1" placeholder="1.0">
+                    <input type="text" class="avtp-form-input" id="formVolume" step="0.1" min="0" max="1" placeholder="1.0" title="Volume">
                 </div>
                 <div>
                     <label class="avtp-form-label">Size Width</label>
-                    <input type="text" class="avtp-form-input" id="formSizeW" step="1" placeholder="">
+                    <input type="text" class="avtp-form-input" id="formSizeW" step="1" placeholder="" title="Size Width">
                 </div>
             </div>
             <div class="avtp-form-row form-row-margin">
                 <div>
                     <label class="avtp-form-label">Size Height</label>
-                    <input type="text" class="avtp-form-input" id="formSizeH" step="1" placeholder="">
+                    <input type="text" class="avtp-form-input" id="formSizeH" step="1" placeholder="" title="Size Height">
                 </div>
                 <div>
                     <label class="avtp-form-label">Anchor</label>
-                    <select class="avtp-form-select" id="formAnchor">
+                    <select class="avtp-form-select" id="formAnchor" title="Anchor">
                         <option value="center">center</option>
                         <option value="top-center">top-center</option>
                         <option value="bottom-center">bottom-center</option>
@@ -2040,7 +2139,7 @@
             <div class="avtp-form-row form-row-margin">
                 <div>
                     <label class="avtp-form-label">Units</label>
-                    <select class="avtp-form-select" id="formVideoUnits">
+                    <select class="avtp-form-select" id="formVideoUnits" title="Video Units">
                         <option value="from exp settings">from exp settings</option>
                         <option value="norm">norm</option>
                         <option value="cm">cm</option>
@@ -2087,11 +2186,11 @@
             <div class="avtp-form-row">
                 <div>
                     <label class="avtp-form-label">Size Width</label>
-                    <input type="text" class="avtp-form-input" id="formImageSizeW" step="1" placeholder="">
+                    <input type="text" class="avtp-form-input" id="formImageSizeW" step="1" placeholder="" title="Image Size Width">
                 </div>
                 <div>
                     <label class="avtp-form-label">Size Height</label>
-                    <input type="text" class="avtp-form-input" id="formImageSizeH" step="1" placeholder="">
+                    <input type="text" class="avtp-form-input" id="formImageSizeH" step="1" placeholder="" title="Image Size Height">
                 </div>
             </div>
             <div class="avtp-form-row form-row-margin">
@@ -2127,7 +2226,7 @@
             <div class="avtp-form-row form-row-margin">
                 <div>
                     <label class="avtp-form-label">Color Space</label>
-                    <select class="avtp-form-select" id="formImageColorSpace">
+                    <select class="avtp-form-select" id="formImageColorSpace" title="Color Space">
                         <option value="rgb">rgb</option>
                         <option value="rgb255">rgb255</option>
                         <option value="hsv">hsv</option>
@@ -2137,7 +2236,7 @@
                 </div>
                 <div>
                     <label class="avtp-form-label">Flip</label>
-                    <select class="avtp-form-select" id="formImageFlip">
+                    <select class="avtp-form-select" id="formImageFlip" title="Flip">
                         <option value="None">None</option>
                         <option value="horiz">Horizontal</option>
                         <option value="vert">Vertical</option>
@@ -2147,14 +2246,14 @@
             <div class="avtp-form-row form-row-margin">
                 <div>
                     <label class="avtp-form-label">Interpolate</label>
-                    <select class="avtp-form-select" id="formImageInterpolate">
+                    <select class="avtp-form-select" id="formImageInterpolate" title="Interpolate">
                         <option value="linear">linear</option>
                         <option value="nearest">nearest</option>
                     </select>
                 </div>
                 <div>
                     <label class="avtp-form-label">Texture Resolution</label>
-                    <select class="avtp-form-select" id="formImageTextureRes">
+                    <select class="avtp-form-select" id="formImageTextureRes" title="Texture Resolution">
                         <option value="32">32</option>
                         <option value="64">64</option>
                         <option value="128">128</option>
@@ -2170,7 +2269,7 @@
             </div>
             <div class="avtp-form-group form-group-margin-top">
                 <label class="avtp-form-label">Units</label>
-                <select class="avtp-form-select" id="formImageUnits">
+                <select class="avtp-form-select" id="formImageUnits" title="Image Units">
                     <option value="from exp settings">from exp settings</option>
                     <option value="norm">norm</option>
                     <option value="cm">cm</option>
@@ -2218,7 +2317,7 @@
                 </div>
                 <div class="avtp-form-col-1">
                     <label class="avtp-form-label">Loop Type</label>
-                    <select class="avtp-form-select" id="formLoopType">
+                    <select class="avtp-form-select" id="formLoopType" title="Loop Type">
                         <option value="random">random</option>
                         <option value="sequential">sequential</option>
                         <option value="fullRandom">fullRandom</option>
@@ -2298,11 +2397,11 @@
                 <div class="avtp-components-list" id="avtpComponentsList">
                 </div>
                 <div class="avtp-add-buttons">
-                    <button class="avtp-add-btn" data-type="a">A</button>
-                    <button class="avtp-add-btn" data-type="v">V</button>
-                    <button class="avtp-add-btn" data-type="t">T</button>
-                    <button class="avtp-add-btn" data-type="p">P</button>
-                    <button class="avtp-add-btn" data-type="k">K</button>
+                    <button type="button" class="avtp-add-btn" data-type="a">A</button>
+                    <button type="button" class="avtp-add-btn" data-type="v">V</button>
+                    <button type="button" class="avtp-add-btn" data-type="t">T</button>
+                    <button type="button" class="avtp-add-btn" data-type="p">P</button>
+                    <button type="button" class="avtp-add-btn" data-type="k">K</button>
                 </div>
             </div>
         </div>
@@ -2316,14 +2415,45 @@
     <div class="canvas-container">
         <!-- Project Menu Bar -->
         <div class="project-menu-bar" id="projectMenuBar" style="display: none;">
-            <div class="project-menu-trigger" id="projectMenuTrigger">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
-                </svg>
-                <span class="project-menu-current" id="projectMenuCurrent">No Project</span>
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="6 9 12 15 18 9"></polyline>
-                </svg>
+            <div class="project-menu-left">
+                <div class="project-menu-logo">PsyClaw</div>
+                <div class="project-menu-trigger" id="projectMenuTrigger">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                    </svg>
+                    <span class="project-menu-current" id="projectMenuCurrent">No Project</span>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </div>
+                <!-- 工具按钮：倒回、前进、保存、另存为、导入 -->
+                <button type="button" class="project-menu-tool-btn" id="backwardButton" title="倒回 (Undo)" disabled>
+                    <svg width="16" height="16" viewBox="0 0 1241 1024" fill="currentColor">
+                        <path d="M1155.12158 1022.906253a82.893312 82.893312 0 0 1-55.633095-22.809569l-436.163468-377.192387v313.770658a86.231298 86.231298 0 0 1-50.626117 78.998996A82.336981 82.336981 0 0 1 520.347962 1001.765677L29.664061 575.616166A87.34396 87.34396 0 0 1 28.551399 445.434723L521.460624 22.623198A82.336981 82.336981 0 0 1 612.6989 7.602262a86.231298 86.231298 0 0 1 51.182448 79.555327v311.545334L1098.932154 22.623198a82.336981 82.336981 0 0 1 89.569283-15.020936 86.231298 86.231298 0 0 1 51.182448 79.555327v848.961036a86.231298 86.231298 0 0 1-51.738778 79.555326 83.449643 83.449643 0 0 1-32.823527 7.232302z m-493.465556-514.049801l492.352894 428.931165V86.601258z m-85.118636-423.924187L84.184494 508.856452l492.352894 428.931165V86.601258z"></path>
+                    </svg>
+                </button>
+                <button type="button" class="project-menu-tool-btn" id="forwardButton" title="前进 (Redo)" disabled>
+                    <svg width="16" height="16" viewBox="0 0 1239 1024" fill="currentColor">
+                        <path d="M662.929155 1023.027623a83.489741 83.489741 0 0 1-33.395896-7.235778 86.272732 86.272732 0 0 1-51.207041-79.593553v-311.695031L140.839976 1001.876889a82.376544 82.376544 0 0 1-89.612321 15.028153A86.272732 86.272732 0 0 1 0.020614 936.198292V86.82933A86.272732 86.272732 0 0 1 51.784253 7.235778a82.376544 82.376544 0 0 1 89.612322 15.584751l436.373044 377.373628V86.82933a86.272732 86.272732 0 0 1 51.76364-79.593552 82.376544 82.376544 0 0 1 90.16892 15.584751L1210.621854 445.278617a87.385929 87.385929 0 0 1 0 128.574201L718.588982 1001.876889a82.933142 82.933142 0 0 1-55.659827 21.150734z m-578.862202-87.385929l492.58947-424.127883-490.919675-426.910874v851.595355z m577.749005 0l492.589471-424.127883-490.919676-426.910874v851.595355z"></path>
+                    </svg>
+                </button>
+                <div class="project-menu-tools-divider"></div>
+                <button type="button" class="project-menu-tool-btn" id="saveButton" title="保存 (Save)">
+                    <svg width="16" height="16" viewBox="0 0 1024 1024" fill="currentColor">
+                        <path d="M925.248 356.928l-258.176-258.176a64 64 0 0 0-45.248-18.752H144a64 64 0 0 0-64 64v736a64 64 0 0 0 64 64h736a64 64 0 0 0 64-64V402.176a64 64 0 0 0-18.752-45.248zM288 144h192V256H288V144z m448 736H288V736h448v144z m144 0H800V704a32 32 0 0 0-32-32H256a32 32 0 0 0-32 32v176H144v-736H224V288a32 32 0 0 0 32 32h256a32 32 0 0 0 32-32V144h77.824l258.176 258.176V880z"></path>
+                    </svg>
+                </button>
+                <button type="button" class="project-menu-tool-btn" id="saveAsButton" title="另存为 (Save As)">
+                    <svg width="16" height="16" viewBox="0 0 1024 1024" fill="currentColor">
+                        <path d="M783.8 228.2l-96.4-86.8c-15.9-15.9-42-15.9-58 0v57.8c-37.6 4.3-98.9 16-160.6 47.7-88.8 45.7-194.7 141.4-203.4 339-0.8 11.2-0.9 18-0.9 19h0.4v2.5c-0.1 27.5 22 49.9 49.5 50.2 27.6 0.3 50.2-21.9 50.5-49.5 0-5.5 0.2-10.9 0.4-16.2 2.1-25.5 10.1-84 40.5-141 22.5-42.1 52.8-75.5 90.4-99.4 37-23.5 81.7-38.2 133.3-43.8v64.6c15.9 15.9 42 15.9 58 0l96.4-86.1c15.9-16 15.9-42.1-0.1-58z"></path>
+                        <path d="M834.8 932.4H188.4c-25.4 0-49.1-9.9-66.9-27.8C103.8 886.7 94 863.1 94 838V185.7c0-52 42.3-94.3 94.4-94.3H353c19.3 0 35 15.7 35 35s-15.7 35-35 35H188.4c-13.5 0-24.4 10.9-24.4 24.3V838c0 6.4 2.6 12.7 7.3 17.4 4.5 4.5 10.6 7 17.1 7h646.4c6.4 0 12.6-2.6 17.2-7.1 4.5-4.5 7-10.7 7-17.2V674c0-19.3 15.7-35 35-35s35 15.7 35 35v164c0 25.3-9.8 49-27.5 66.7-17.6 17.6-41.9 27.7-66.7 27.7z"></path>
+                    </svg>
+                </button>
+                <button type="button" class="project-menu-tool-btn" id="importButton" title="导入 (Import)">
+                    <svg width="16" height="16" viewBox="0 0 1024 1024" fill="currentColor">
+                        <path d="M557 567.36l83.18-83.18c17.574-17.574 46.066-17.574 63.64 0 17.574 17.574 17.574 46.066 0 63.64l-160 160c-17.534 17.534-45.95 17.58-63.54 0.1l-160-159c-17.628-17.52-17.718-46.012-0.2-63.64 17.52-17.628 46.012-17.718 63.64-0.2l83.28 82.76V510c0-135.31 109.69-245 245-245h150c24.852 0 45 20.148 45 45s-20.148 45-45 45h-150c-85.604 0-155 69.396-155 155v57.36z m196.546 105.64c-24.852 0-45-20.148-45-45s20.148-45 45-45H836c41.42 0 75 33.58 75 75v180c0 41.42-33.58 75-75 75H186c-41.42 0-75-33.58-75-75v-180c0-41.42 33.58-75 75-75h80.276c24.852 0 45 20.148 45 45s-20.148 45-45 45H201v150h620v-150h-67.454z"></path>
+                    </svg>
+                </button>
             </div>
             <div class="project-menu-dropdown" id="projectMenuDropdown">
                 <div class="project-menu-section">
@@ -2337,14 +2467,14 @@
                 </div>
                 <div class="project-menu-divider"></div>
                 <div class="project-menu-section">
-                    <button class="project-menu-action" id="newProjectBtn">
+                    <button type="button" class="project-menu-action" id="newProjectBtn">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <line x1="12" y1="5" x2="12" y2="19"></line>
                             <line x1="5" y1="12" x2="19" y2="12"></line>
                         </svg>
                         <span>New Project</span>
                     </button>
-                    <button class="project-menu-action" id="changeProjectBtn">
+                    <button type="button" class="project-menu-action" id="changeProjectBtn">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
                             <line x1="12" y1="11" x2="12" y2="17"></line>
@@ -2356,7 +2486,7 @@
             </div>
         </div>
         <div class="routine-controls">
-            <button class="action-button" id="addRoutine" title="Add Routine">
+            <button type="button" class="action-button" id="addRoutine" title="Add Routine">
                 <span class="action-icon">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <line x1="12" y1="5" x2="12" y2="19"></line>
@@ -2364,7 +2494,7 @@
                     </svg>
                 </span>
             </button>
-            <button class="action-button" id="removeRoutine" title="Remove Routine">
+            <button type="button" class="action-button" id="removeRoutine" title="Remove Routine">
                 <span class="action-icon">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -2374,7 +2504,7 @@
         </div>
 
         <div class="viewport-controls">
-            <button class="action-button" id="zoomIn" title="Zoom In">
+            <button type="button" class="action-button" id="zoomIn" title="Zoom In">
                 <span class="action-icon">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <circle cx="11" cy="11" r="8"></circle>
@@ -2384,7 +2514,7 @@
                     </svg>
                 </span>
             </button>
-            <button class="action-button" id="zoomOut" title="Zoom Out">
+            <button type="button" class="action-button" id="zoomOut" title="Zoom Out">
                 <span class="action-icon">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <circle cx="11" cy="11" r="8"></circle>
@@ -2393,7 +2523,7 @@
                     </svg>
                 </span>
             </button>
-            <button class="action-button" id="resetView" title="Reset View">
+            <button type="button" class="action-button" id="resetView" title="Reset View">
                 <span class="action-icon">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
@@ -2436,13 +2566,31 @@
                 </svg>
                 <span id="projectFolderWarningText"></span>
             </div>
-            <button class="project-folder-btn" id="selectProjectFolderBtn">
+            <!-- 上次选择的文件夹信息 -->
+            <div class="project-folder-last" id="lastFolderSection" style="display: none;">
+                <div class="project-folder-last-info">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                    </svg>
+                    <span id="lastFolderName"></span>
+                </div>
+                <button type="button" class="project-folder-btn project-folder-btn-secondary" id="useLastFolderBtn">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    <span>Use Last Folder</span>
+                </button>
+            </div>
+            <div class="project-folder-divider" id="folderDivider" style="display: none;">
+                <span>or</span>
+            </div>
+            <button type="button" class="project-folder-btn" id="selectProjectFolderBtn">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
                     <line x1="12" y1="11" x2="12" y2="17"></line>
                     <line x1="9" y1="14" x2="15" y2="14"></line>
                 </svg>
-                <span>Select Folder</span>
+                <span id="selectFolderBtnText">Select Folder</span>
             </button>
         </div>
     </div>
@@ -3100,14 +3248,38 @@
             });
         }
 
+        // 使用localStorage记住上次选择的文件夹路径
+        function saveLastFolderPath(path) {
+            try {
+                localStorage.setItem('psyclaw_last_folder_path', path);
+                localStorage.setItem('psyclaw_last_folder_time', Date.now().toString());
+            } catch (e) {
+                console.warn('Failed to save folder path:', e);
+            }
+        }
+
+        function getLastFolderPath() {
+            try {
+                return localStorage.getItem('psyclaw_last_folder_path');
+            } catch (e) {
+                console.warn('Failed to get folder path:', e);
+                return null;
+            }
+        }
+
         async function saveFolderHandle(handle, path) {
             try {
                 const db = await openDB();
                 const tx = db.transaction(STORE_NAME, 'readwrite');
                 const store = tx.objectStore(STORE_NAME);
-                await store.put({ id: 'currentProject', path, timestamp: Date.now() });
+                // 保存 handle 和 path 到 IndexedDB
+                await store.put({ id: 'currentProject', handle, path, timestamp: Date.now() });
+                // 同时保存到localStorage以便记住路径
+                saveLastFolderPath(path);
             } catch (e) {
                 console.warn('Failed to save folder handle:', e);
+                // 即使IndexedDB失败，也尝试保存到localStorage
+                saveLastFolderPath(path);
             }
         }
 
@@ -3205,15 +3377,35 @@
             document.getElementById('projectMenuBar').style.display = 'block';
         }
 
+        // 显示上次选择的文件夹信息
+        function showLastFolderInfo() {
+            const lastPath = getLastFolderPath();
+            const lastFolderSection = document.getElementById('lastFolderSection');
+            const folderDivider = document.getElementById('folderDivider');
+            const lastFolderName = document.getElementById('lastFolderName');
+            const selectFolderBtnText = document.getElementById('selectFolderBtnText');
+
+            if (lastPath && lastFolderSection && lastFolderName) {
+                lastFolderName.textContent = lastPath;
+                lastFolderSection.style.display = 'flex';
+                if (folderDivider) folderDivider.style.display = 'flex';
+                if (selectFolderBtnText) selectFolderBtnText.textContent = 'Select Different Folder';
+                return true;
+            }
+            return false;
+        }
+
         async function initializeProject() {
             const overlay = document.getElementById('projectFolderOverlay');
             const selectBtn = document.getElementById('selectProjectFolderBtn');
+            const useLastFolderBtn = document.getElementById('useLastFolderBtn');
 
             if (!selectBtn) {
                 console.error('Select project folder button not found');
                 return;
             }
 
+            // 首先尝试从IndexedDB恢复handle（完全自动恢复）
             const savedHandle = await loadFolderHandle();
             if (savedHandle && savedHandle.handle) {
                 try {
@@ -3229,14 +3421,94 @@
                 }
             }
 
+            // 如果没有自动恢复成功，但有上次的路径记录，显示"使用上次文件夹"选项
+            const hasLastFolder = showLastFolderInfo();
+
+            // 处理"选择文件夹"按钮点击
             const handleClick = async () => {
                 const success = await selectProjectFolder();
                 if (success) {
                     hideProjectFolderOverlay();
                 }
             };
-
             selectBtn.addEventListener('click', handleClick);
+
+            // 处理"使用上次文件夹"按钮点击
+            if (useLastFolderBtn && hasLastFolder) {
+                useLastFolderBtn.addEventListener('click', async () => {
+                    try {
+                        // 首先尝试从 IndexedDB 恢复上次的 handle
+                        const savedData = await loadFolderHandle();
+                        if (savedData && savedData.handle) {
+                            try {
+                                // 检查权限
+                                const permission = await savedData.handle.queryPermission({ mode: 'readwrite' });
+                                if (permission === 'granted') {
+                                    // 有权限，直接使用
+                                    projectFolderHandle = savedData.handle;
+                                    projectFolderPath = savedData.path || savedData.handle.name;
+                                    hideProjectFolderOverlay();
+                                    return;
+                                } else {
+                                    // 请求权限
+                                    const newPermission = await savedData.handle.requestPermission({ mode: 'readwrite' });
+                                    if (newPermission === 'granted') {
+                                        projectFolderHandle = savedData.handle;
+                                        projectFolderPath = savedData.path || savedData.handle.name;
+                                        hideProjectFolderOverlay();
+                                        return;
+                                    }
+                                }
+                            } catch (permError) {
+                                console.warn('Failed to restore saved handle, will open picker:', permError);
+                            }
+                        }
+
+                        // 无法自动恢复，打开文件选择器让用户重新选择
+                        const warningEl = document.getElementById('projectFolderWarning');
+                        const warningTextEl = document.getElementById('projectFolderWarningText');
+                        warningTextEl.textContent = 'Please re-select the folder to grant permission.';
+                        warningEl.style.display = 'flex';
+
+                        const handle = await window.showDirectoryPicker({
+                            mode: 'readwrite'
+                        });
+
+                        const isEmpty = await isFolderEmpty(handle);
+
+                        if (!isEmpty) {
+                            const confirm = await confirmAction('selectNonEmptyFolder', {
+                                title: 'Folder Not Empty',
+                                message: 'The selected folder is not empty. It is recommended to use an empty folder. Do you want to continue anyway?',
+                                confirmText: 'Continue',
+                                cancelText: 'Select Another',
+                                confirmClass: 'btn-primary'
+                            });
+
+                            if (!confirm) {
+                                return;
+                            }
+                        }
+
+                        projectFolderHandle = handle;
+                        projectFolderPath = handle.name;
+                        await saveFolderHandle(handle, projectFolderPath);
+
+                        warningEl.style.display = 'none';
+                        hideProjectFolderOverlay();
+                    } catch (e) {
+                        if (e.name === 'AbortError') {
+                            console.log('Folder selection cancelled');
+                            return;
+                        }
+                        console.error('Failed to select folder:', e);
+                        const warningEl = document.getElementById('projectFolderWarning');
+                        const warningTextEl = document.getElementById('projectFolderWarningText');
+                        warningTextEl.textContent = 'Failed to access folder. Please try again.';
+                        warningEl.style.display = 'flex';
+                    }
+                });
+            }
 
             console.log('Project folder initialization complete, button event bound');
 
@@ -6552,8 +6824,8 @@
         });
 
         // 保存 XML 功能
-        const saveXMLButton = document.getElementById('saveXMLButton');
-        saveXMLButton.addEventListener('click', async () => {
+        const saveAsButton = document.getElementById('saveAsButton');
+        saveAsButton.addEventListener('click', async () => {
             if (routineRects.length === 0) {
                 alert('不能保存空的 flowchart，请先添加至少一个 routine！');
                 return;
@@ -8014,12 +8286,12 @@
         <div class="confirm-modal-container">
             <div class="confirm-modal-header">
                 <span class="confirm-modal-title" id="confirmModalTitle">Confirm</span>
-                <button class="confirm-modal-close" id="confirmModalClose">×</button>
+                <button type="button" class="confirm-modal-close" id="confirmModalClose">×</button>
             </div>
             <div class="confirm-modal-message" id="confirmModalMessage">Are you sure?</div>
             <div class="confirm-modal-buttons">
-                <button class="confirm-modal-btn confirm-modal-btn-cancel" id="confirmModalCancel">Cancel</button>
-                <button class="confirm-modal-btn confirm-modal-btn-confirm" id="confirmModalConfirm">Confirm</button>
+                <button type="button" class="confirm-modal-btn confirm-modal-btn-cancel" id="confirmModalCancel">Cancel</button>
+                <button type="button" class="confirm-modal-btn confirm-modal-btn-confirm" id="confirmModalConfirm">Confirm</button>
             </div>
         </div>
     </div>
@@ -8027,7 +8299,7 @@
         <div class="avtp-keyboard-container">
             <div class="avtp-keyboard-header">
                 <span class="avtp-keyboard-title">Select Keys</span>
-                <button class="avtp-keyboard-close" id="closeKeyboardBtn">×</button>
+                <button type="button" class="avtp-keyboard-close" id="closeKeyboardBtn">×</button>
             </div>
             <div class="avtp-keyboard-grid" id="keyboardGrid"></div>
             <div class="avtp-keyboard-selected">
@@ -8035,8 +8307,8 @@
                 <div class="avtp-keyboard-selected-keys" id="selectedKeysDisplay"></div>
             </div>
             <div class="avtp-keyboard-actions">
-                <button class="avtp-keyboard-btn-secondary" id="clearKeyboardBtn">Clear</button>
-                <button class="avtp-keyboard-btn-primary" id="confirmKeyboardBtn">Confirm</button>
+                <button type="button" class="avtp-keyboard-btn-secondary" id="clearKeyboardBtn">Clear</button>
+                <button type="button" class="avtp-keyboard-btn-primary" id="confirmKeyboardBtn">Confirm</button>
             </div>
         </div>
     </div>
@@ -8044,7 +8316,7 @@
         <div class="preview-modal-container">
             <div class="preview-modal-header">
                 <span class="preview-modal-title" id="previewModalTitle">删除预览</span>
-                <button class="preview-modal-close" id="previewModalClose">×</button>
+                <button type="button" class="preview-modal-close" id="previewModalClose">×</button>
             </div>
             <div class="preview-modal-content">
                 <div class="preview-info" id="previewInfo"></div>
@@ -8053,11 +8325,10 @@
                 </div>
             </div>
             <div class="preview-modal-buttons">
-                <button class="preview-modal-btn preview-modal-btn-cancel" id="previewModalCancel">取消</button>
-                <button class="preview-modal-btn preview-modal-btn-confirm" id="previewModalConfirm">确认删除</button>
+                <button type="button" class="preview-modal-btn preview-modal-btn-cancel" id="previewModalCancel">取消</button>
+                <button type="button" class="preview-modal-btn preview-modal-btn-confirm" id="previewModalConfirm">确认删除</button>
             </div>
         </div>
     </div>
 </body>
 </html>
- 
