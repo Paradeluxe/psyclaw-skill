@@ -1865,8 +1865,6 @@
 
         .project-menu-dropdown {
             position: fixed;
-            top: 52px;
-            left: 20px;
             min-width: 240px;
             background: var(--bg-white);
             border: 1px solid var(--border-light);
@@ -1877,7 +1875,6 @@
             z-index: 999999;
             animation: dropdownFadeIn 0.15s ease;
             flex: none;
-            height: 0;
         }
 
         .project-menu-dropdown.open {
@@ -3519,11 +3516,20 @@
             const changeProjectBtn = document.getElementById('changeProjectBtn');
 
             if (menuTrigger && menuDropdown) {
+                function updateDropdownPosition() {
+                    const triggerRect = menuTrigger.getBoundingClientRect();
+                    menuDropdown.style.top = (triggerRect.bottom + 4) + 'px';
+                    menuDropdown.style.left = triggerRect.left + 'px';
+                }
+
                 menuTrigger.addEventListener('click', (e) => {
                     e.stopPropagation();
                     const isOpen = menuDropdown.classList.contains('open');
                     menuDropdown.classList.toggle('open');
                     menuTrigger.classList.toggle('open');
+                    if (menuDropdown.classList.contains('open')) {
+                        updateDropdownPosition();
+                    }
                 });
 
                 document.addEventListener('click', (e) => {
