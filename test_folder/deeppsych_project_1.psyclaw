@@ -1,19 +1,48 @@
 {
-  "timestamp": "2026-04-23T05:40:16.642Z",
+  "timestamp": "2026-04-23T05:44:38.668Z",
   "routines": [
     {
       "id": 0,
-      "name": "Practice_Loop",
+      "name": "GlobalInstructions",
       "x": 85,
       "y": 240,
       "width": 200,
-      "height": 140,
+      "height": 146,
       "duration": -1,
-      "avtpComponents": []
+      "avtpComponents": [
+        {
+          "name": "instruction_text",
+          "type": "text",
+          "text": "Welcome to the Stroop Interference Task.\n\nIn this experiment, you will see color words printed in different ink colors. Your task is to identify the INK COLOR of the word, not read the word itself.\n\nResponse Keys:\nF = Red\nJ = Blue\nK = Green\nL = Yellow\n\nPress SPACE to begin practice.",
+          "color": "#000000",
+          "font": "Arial",
+          "letterHeight": 0.05,
+          "pos": [
+            0,
+            0
+          ],
+          "startTime": 0,
+          "duration": -1,
+          "stopWithRoutine": true,
+          "units": "height",
+          "anchor": "center",
+          "enabled": true
+        },
+        {
+          "name": "practice_start_key",
+          "type": "keyboard",
+          "startTime": 0,
+          "duration": -1,
+          "keys": "space",
+          "forceEndRoutine": true,
+          "registerOn": "press",
+          "enabled": true
+        }
+      ]
     },
     {
       "id": 1,
-      "name": "Main_Loop",
+      "name": "PracticeLoop",
       "x": 335,
       "y": 240,
       "width": 200,
@@ -23,171 +52,8 @@
     },
     {
       "id": 2,
-      "name": "Instruction",
+      "name": "MainInstructions",
       "x": 585,
-      "y": 240,
-      "width": 200,
-      "height": 146,
-      "duration": -1,
-      "avtpComponents": [
-        {
-          "name": "instruction_text",
-          "type": "text",
-          "text": "Welcome to the Stroop Task.\n\nYour goal is to identify the COLOR of the text displayed on the screen.\nIgnore the meaning of the word itself.\n\nPress 'F' for Red\nPress 'J' for Blue\nPress 'K' for Green\nPress 'L' for Yellow\n\nPress SPACE to begin practice.",
-          "color": "black",
-          "font": "Arial",
-          "letterHeight": 0.05,
-          "pos": [
-            0,
-            0
-          ],
-          "startTime": 0,
-          "duration": -1,
-          "stopWithRoutine": true,
-          "units": "height",
-          "anchor": "center",
-          "enabled": true
-        },
-        {
-          "name": "practice_response",
-          "type": "keyboard",
-          "startTime": 0,
-          "duration": -1,
-          "keys": "space",
-          "forceEndRoutine": true,
-          "enabled": true
-        }
-      ]
-    },
-    {
-      "id": 3,
-      "name": "Practice_Fixation",
-      "x": 835,
-      "y": 240,
-      "width": 200,
-      "height": 140,
-      "duration": -1,
-      "avtpComponents": [
-        {
-          "name": "fixation",
-          "type": "text",
-          "text": "+",
-          "color": "black",
-          "font": "Arial",
-          "letterHeight": 0.1,
-          "pos": [
-            0,
-            0
-          ],
-          "startTime": 0,
-          "duration": 500,
-          "stopWithRoutine": true,
-          "units": "height",
-          "anchor": "center",
-          "enabled": true
-        }
-      ]
-    },
-    {
-      "id": 4,
-      "name": "Practice_Stimulus",
-      "x": 1085,
-      "y": 240,
-      "width": 200,
-      "height": 146,
-      "duration": -1,
-      "avtpComponents": [
-        {
-          "name": "stimulus_text",
-          "type": "text",
-          "text": "$word",
-          "color": "$ink_color",
-          "font": "Arial",
-          "letterHeight": 0.1,
-          "pos": [
-            0,
-            0
-          ],
-          "startTime": 0,
-          "duration": 2000,
-          "stopWithRoutine": false,
-          "units": "height",
-          "anchor": "center",
-          "enabled": true
-        },
-        {
-          "name": "response",
-          "type": "keyboard",
-          "startTime": 0,
-          "duration": 2000,
-          "keys": "f,j,k,l",
-          "forceEndRoutine": true,
-          "enabled": true
-        }
-      ]
-    },
-    {
-      "id": 5,
-      "name": "Practice_Feedback_Correct",
-      "x": 1335,
-      "y": 240,
-      "width": 200,
-      "height": 140,
-      "duration": -1,
-      "avtpComponents": [
-        {
-          "name": "feedback_correct",
-          "type": "text",
-          "text": "Correct!",
-          "color": "green",
-          "font": "Arial",
-          "letterHeight": 0.1,
-          "pos": [
-            0,
-            0
-          ],
-          "startTime": 0,
-          "duration": 500,
-          "stopWithRoutine": true,
-          "units": "height",
-          "anchor": "center",
-          "enabled": true
-        }
-      ]
-    },
-    {
-      "id": 6,
-      "name": "Practice_Feedback_Incorrect",
-      "x": 1585,
-      "y": 240,
-      "width": 200,
-      "height": 140,
-      "duration": -1,
-      "avtpComponents": [
-        {
-          "name": "feedback_incorrect",
-          "type": "text",
-          "text": "Wrong! Try Again.",
-          "color": "red",
-          "font": "Arial",
-          "letterHeight": 0.1,
-          "pos": [
-            0,
-            0
-          ],
-          "startTime": 0,
-          "duration": 500,
-          "stopWithRoutine": true,
-          "units": "height",
-          "anchor": "center",
-          "enabled": true
-        }
-      ]
-    },
-    {
-      "id": 7,
-      "name": "Main_Instruction",
-      "x": 1835,
       "y": 240,
       "width": 200,
       "height": 146,
@@ -196,8 +62,8 @@
         {
           "name": "main_instr_text",
           "type": "text",
-          "text": "Ready for the main experiment?\n\nRemember: Focus on the INK COLOR, not the word meaning.\n\nPress SPACE to start.",
-          "color": "black",
+          "text": "Great job! Now we begin the main experiment.\n\nRemember: Identify the INK COLOR as quickly and accurately as possible.\nThere will be NO feedback during this phase.\nPress SPACE to start Block 1.",
+          "color": "#000000",
           "font": "Arial",
           "letterHeight": 0.05,
           "pos": [
@@ -212,126 +78,41 @@
           "enabled": true
         },
         {
-          "name": "start_main_response",
+          "name": "block1_start_key",
           "type": "keyboard",
           "startTime": 0,
           "duration": -1,
           "keys": "space",
           "forceEndRoutine": true,
+          "registerOn": "press",
           "enabled": true
         }
       ]
     },
     {
-      "id": 8,
-      "name": "Main_Fixation",
-      "x": 2085,
+      "id": 3,
+      "name": "MainExperimentLoop",
+      "x": 835,
       "y": 240,
       "width": 200,
       "height": 140,
       "duration": -1,
-      "avtpComponents": [
-        {
-          "name": "fixation_main",
-          "type": "text",
-          "text": "+",
-          "color": "black",
-          "font": "Arial",
-          "letterHeight": 0.1,
-          "pos": [
-            0,
-            0
-          ],
-          "startTime": 0,
-          "duration": 500,
-          "stopWithRoutine": true,
-          "units": "height",
-          "anchor": "center",
-          "enabled": true
-        }
-      ]
+      "avtpComponents": []
     },
     {
-      "id": 9,
-      "name": "Main_Stimulus",
-      "x": 2335,
+      "id": 4,
+      "name": "EndingScreen",
+      "x": 1085,
       "y": 240,
       "width": 200,
       "height": 146,
       "duration": -1,
       "avtpComponents": [
         {
-          "name": "stimulus_main",
+          "name": "end_text",
           "type": "text",
-          "text": "$word",
-          "color": "$ink_color",
-          "font": "Arial",
-          "letterHeight": 0.1,
-          "pos": [
-            0,
-            0
-          ],
-          "startTime": 0,
-          "duration": 2000,
-          "stopWithRoutine": false,
-          "units": "height",
-          "anchor": "center",
-          "enabled": true
-        },
-        {
-          "name": "response_main",
-          "type": "keyboard",
-          "startTime": 0,
-          "duration": 2000,
-          "keys": "f,j,k,l",
-          "forceEndRoutine": true,
-          "enabled": true
-        }
-      ]
-    },
-    {
-      "id": 10,
-      "name": "ITI",
-      "x": 2585,
-      "y": 240,
-      "width": 200,
-      "height": 140,
-      "duration": -1,
-      "avtpComponents": [
-        {
-          "name": "blank_screen",
-          "type": "text",
-          "text": "",
-          "color": "white",
-          "font": "Arial",
-          "letterHeight": 0.1,
-          "pos": [
-            0,
-            0
-          ],
-          "startTime": 0,
-          "duration": 500,
-          "stopWithRoutine": true,
-          "units": "height",
-          "anchor": "center",
-          "enabled": true
-        }
-      ]
-    },
-    {
-      "id": 11,
-      "name": "Ending",
-      "x": 2835,
-      "y": 240,
-      "width": 200,
-      "height": 140,
-      "duration": -1,
-      "avtpComponents": [
-        {
-          "name": "thank_you",
-          "type": "text",
-          "text": "Thank you for participating in the Stroop Experiment.\n\nYou may now close this window.",
-          "color": "black",
+          "text": "Thank you for completing the Stroop Interference Task!\n\nYour data has been saved successfully.\nYou may now close this window or press ESC to exit.",
+          "color": "#000000",
           "font": "Arial",
           "letterHeight": 0.05,
           "pos": [
@@ -343,6 +124,16 @@
           "stopWithRoutine": true,
           "units": "height",
           "anchor": "center",
+          "enabled": true
+        },
+        {
+          "name": "exit_key",
+          "type": "keyboard",
+          "startTime": 0,
+          "duration": -1,
+          "keys": "escape",
+          "forceEndRoutine": true,
+          "registerOn": "press",
           "enabled": true
         }
       ]

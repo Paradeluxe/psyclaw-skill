@@ -1,4 +1,4 @@
-﻿﻿<!DOCTYPE html>
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
@@ -1615,65 +1615,6 @@
             font-size: 14px;
         }
 
-        .project-folder-last {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            width: 100%;
-            animation: fadeIn 0.3s ease;
-        }
-
-        .project-folder-last-info {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            padding: 12px 16px;
-            background: var(--bg-light);
-            border-radius: 8px;
-            color: var(--text-secondary);
-            font-size: 14px;
-        }
-
-        .project-folder-last-info span {
-            font-weight: 500;
-            color: var(--text-dark);
-        }
-
-        .project-folder-btn-secondary {
-            background: var(--bg-light);
-            color: var(--brand-blue);
-            border: 2px solid var(--brand-blue);
-            box-shadow: none;
-        }
-
-        .project-folder-btn-secondary:hover {
-            background: var(--brand-blue);
-            color: white;
-            box-shadow: var(--shadow-brand-offset);
-        }
-
-        .project-folder-divider {
-            display: flex;
-            align-items: center;
-            width: 100%;
-            gap: 16px;
-            color: var(--text-secondary);
-            font-size: 14px;
-        }
-
-        .project-folder-divider::before,
-        .project-folder-divider::after {
-            content: '';
-            flex: 1;
-            height: 1px;
-            background: var(--border-color);
-        }
-
-        .project-folder-divider {
-            margin-top: 12px;
-        }
-
         .project-menu-bar {
             position: fixed;
             top: 0;
@@ -2494,17 +2435,23 @@
                     </svg>
                 </button>
                 <div class="project-menu-dropdown-wrapper" id="importDropdownWrapper">
-                    <button type="button" class="project-menu-tool-btn" id="importButton" title="导入 (Import)">
+                    <div class="project-menu-trigger" id="importTrigger">
                         <svg width="16" height="16" viewBox="0 0 1024 1024" fill="currentColor">
                             <path d="M557 567.36l83.18-83.18c17.574-17.574 46.066-17.574 63.64 0 17.574 17.574 17.574 46.066 0 63.64l-160 160c-17.534 17.534-45.95 17.58-63.54 0.1l-160-159c-17.628-17.52-17.718-46.012-0.2-63.64 17.52-17.628 46.012-17.718 63.64-0.2l83.28 82.76V510c0-135.31 109.69-245 245-245h150c24.852 0 45 20.148 45 45s-20.148 45-45 45h-150c-85.604 0-155 69.396-155 155v57.36z m196.546 105.64c-24.852 0-45-20.148-45-45s20.148-45 45-45H836c41.42 0 75 33.58 75 75v180c0 41.42-33.58 75-75 75H186c-41.42 0-75-33.58-75-75v-180c0-41.42 33.58-75 75-75h80.276c24.852 0 45 20.148 45 45s-20.148 45-45 45H201v150h620v-150h-67.454z"></path>
                         </svg>
-                    </button>
-                    <div class="project-menu-import-dropdown" id="importDropdown">
-                        <div class="project-menu-import-header">
-                            <span class="project-menu-import-title">Import Project</span>
-                        </div>
-                        <div class="project-menu-import-list" id="importFileList">
-                            <div class="project-menu-import-empty">No .psyclaw files found</div>
+                        <span class="project-menu-current" id="importCurrent">Import</span>
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </div>
+                    <div class="project-menu-dropdown" id="importDropdown">
+                        <div class="project-menu-section">
+                            <div class="project-menu-section-title">Import Project</div>
+                            <div id="importFileList">
+                                <div class="project-menu-item">
+                                    <span>No .psyclaw files found</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -2615,24 +2562,6 @@
                 </svg>
                 <span id="projectFolderWarningText"></span>
             </div>
-            <!-- 上次选择的文件夹信息 -->
-            <div class="project-folder-last" id="lastFolderSection" style="display: none;">
-                <div class="project-folder-last-info">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
-                    </svg>
-                    <span id="lastFolderName"></span>
-                </div>
-                <button type="button" class="project-folder-btn project-folder-btn-secondary" id="useLastFolderBtn">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="20 6 9 17 4 12"></polyline>
-                    </svg>
-                    <span>Use Last Folder</span>
-                </button>
-            </div>
-            <div class="project-folder-divider" id="folderDivider" style="display: none;">
-                <span>or</span>
-            </div>
             <button type="button" class="project-folder-btn" id="selectProjectFolderBtn">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
@@ -2648,6 +2577,19 @@
     <script src="json2psyexp.js"></script>
     <script>
         console.log('Script starting');
+        
+        // 在控制台显示诊断功能帮助信息
+        console.info('=== PsyClaw Diagnostic Tools ===');
+        console.info('Available diagnostic functions:');
+        console.info('  diagnoseIds() - Run diagnostics and show report');
+        console.info('  fixActiveElementIdIssues() - Automatically fix ID issues');
+        console.info('  autoDiagnoseAfterOperation(operationName) - Diagnose after specific operation');
+        console.info('');
+        console.info('Example usage:');
+        console.info('  diagnoseIds() // Run diagnostics');
+        console.info('  fixActiveElementIdIssues() // Fix issues automatically');
+        console.info('===========================');
+        
         const DEBUG = false;
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
@@ -2677,7 +2619,7 @@
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                    z-index: 10000;
+                    z-index: 1000000;
                     animation: fadeIn 0.2s ease;
                     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
                     backdrop-filter: blur(4px);
@@ -2948,7 +2890,101 @@
                         flowchartData: flowchartData
                     }, '*');
                 }
+
+                // 自动保存到.psyclaw 文件
+                autoSaveProject();
             }
+        }
+
+        // 自动保存项目到.psyclaw 文件
+        let autoSaveTimer = null;
+        async function autoSaveProject() {
+            // 使用防抖，避免频繁保存
+            if (autoSaveTimer) {
+                clearTimeout(autoSaveTimer);
+            }
+            autoSaveTimer = setTimeout(async () => {
+                // 只有在有项目文件夹或已有文件句柄时才自动保存
+                if (!projectFolderHandle && !fileHandle) {
+                    return;
+                }
+
+                // 检查是否为空 flowchart
+                if (routineRects.length === 0) {
+                    return;
+                }
+
+                try {
+                    // 确保保存当前打开的表单值
+                    if (activeAvtp && activeDragRect) {
+                        saveFormChanges();
+                    }
+                    if (activeConnection) {
+                        saveLoopFormChanges();
+                    }
+
+                    // 构建 routines 数据
+                    const routines = routineRects.map(rect => ({
+                        id: rect.id,
+                        name: rect.name,
+                        x: rect.x,
+                        y: rect.y,
+                        width: rect.width,
+                        height: rect.height,
+                        duration: rect.duration,
+                        avtpComponents: rect.avtpComponents || []
+                    }));
+
+                    // 将 connections 转换为 loops
+                    const loops = connectionsToLoops(connections);
+
+                    const projectData = {
+                        timestamp: new Date().toISOString(),
+                        routines: routines,
+                        loops: loops,
+                        // 保存当前任务的消息数据
+                        tasks: tasks,
+                        currentTaskId: currentTaskId
+                    };
+
+                    const jsonData = JSON.stringify(projectData, null, 2);
+                    // 确保使用.psyclaw 扩展名
+                    let fileName = currentProjectFile;
+                    if (!fileName || fileName.endsWith('.json')) {
+                        fileName = `auto_save_${new Date().toISOString().replace(/[:.]/g, '-')}.psyclaw`;
+                    } else if (!fileName.endsWith('.psyclaw')) {
+                        fileName = fileName + '.psyclaw';
+                    }
+
+                    // 如果有项目文件夹，保存到项目文件夹
+                    if (projectFolderHandle) {
+                        try {
+                            const folderFileHandle = await projectFolderHandle.getFileHandle(fileName, { create: true });
+                            const writable = await folderFileHandle.createWritable();
+                            await writable.write(jsonData);
+                            await writable.close();
+                            fileHandle = folderFileHandle;
+                            currentProjectFile = folderFileHandle.name;
+                            console.log('Auto-saved project to:', fileName);
+                        } catch (error) {
+                            console.warn('Auto-save to project folder failed:', error);
+                        }
+                    }
+                    // 如果已经有文件句柄，直接保存
+                    else if (fileHandle) {
+                        try {
+                            const writable = await fileHandle.createWritable();
+                            await writable.write(jsonData);
+                            await writable.close();
+                            console.log('Auto-saved project to existing file');
+                        } catch (error) {
+                            console.warn('Auto-save to existing file failed:', error);
+                        }
+                    }
+                } catch (error) {
+                    console.warn('Auto-save failed:', error);
+                }
+            }, 1000); // 1 秒延迟
         }
 
         // Initialize tasks
@@ -3309,15 +3345,6 @@
             }
         }
 
-        function getLastFolderPath() {
-            try {
-                return localStorage.getItem('psyclaw_last_folder_path');
-            } catch (e) {
-                console.warn('Failed to get folder path:', e);
-                return null;
-            }
-        }
-
         async function saveFolderHandle(handle, path) {
             try {
                 const db = await openDB();
@@ -3362,16 +3389,21 @@
         }
 
         async function selectProjectFolder() {
+            console.log('selectProjectFolder: Function called');
             try {
+                console.log('selectProjectFolder: About to call showDirectoryPicker');
                 const handle = await window.showDirectoryPicker({
                     mode: 'readwrite'
                 });
+                console.log('selectProjectFolder: Directory selected:', handle.name);
 
+                console.log('selectProjectFolder: Checking if folder is empty');
                 const isEmpty = await isFolderEmpty(handle);
                 const warningEl = document.getElementById('projectFolderWarning');
                 const warningTextEl = document.getElementById('projectFolderWarningText');
 
                 if (!isEmpty) {
+                    console.log('selectProjectFolder: Folder is not empty, showing confirmation');
                     const confirm = await confirmAction('selectNonEmptyFolder', {
                         title: 'Folder Not Empty',
                         message: 'The selected folder is not empty. It is recommended to use an empty folder. Do you want to continue anyway?',
@@ -3381,19 +3413,39 @@
                     });
 
                     if (!confirm) {
+                        console.log('selectProjectFolder: User cancelled non-empty folder selection');
                         return false;
                     }
+                    console.log('selectProjectFolder: User confirmed to use non-empty folder');
+                } else {
+                    console.log('selectProjectFolder: Folder is empty');
                 }
 
                 projectFolderHandle = handle;
                 projectFolderPath = handle.name;
-                await saveFolderHandle(handle, projectFolderPath);
+                console.log('selectProjectFolder: Set projectFolderHandle and projectFolderPath');
+                
+                try {
+                    await saveFolderHandle(handle, projectFolderPath);
+                    console.log('Folder handle saved successfully');
+                } catch (e) {
+                    console.warn('Failed to save folder handle to IndexedDB:', e);
+                }
 
-                refreshImportDropdown();
+                try {
+                    refreshImportDropdown();
+                    console.log('Import dropdown refreshed');
+                } catch (e) {
+                    console.warn('Failed to refresh import dropdown:', e);
+                }
 
-                warningEl.style.display = 'none';
+                if (warningEl) {
+                    warningEl.style.display = 'none';
+                }
+                console.log('selectProjectFolder completed successfully, returning true');
                 return true;
             } catch (e) {
+                console.error('selectProjectFolder: Error caught:', e);
                 if (e.name === 'AbortError') {
                     console.log('Folder selection cancelled');
                     return false;
@@ -3408,9 +3460,18 @@
         }
 
         function hideProjectFolderOverlay() {
+            console.log('hideProjectFolderOverlay: Starting');
             const overlay = document.getElementById('projectFolderOverlay');
-            overlay.classList.add('hidden');
+            if (!overlay) {
+                console.error('hideProjectFolderOverlay: Overlay element not found');
+                return;
+            }
+            console.log('hideProjectFolderOverlay: Found overlay element, current display style:', overlay.style.display);
+            // 直接设置 display: none 确保完全隐藏
+            overlay.style.display = 'none';
+            console.log('hideProjectFolderOverlay: Set display to none');
             projectInitialized = true;
+            console.log('hideProjectFolderOverlay: Overlay hidden with style.display, projectInitialized set to true');
             updateProjectMenuUI();
 
             // Notify chatbot of project folder
@@ -3421,6 +3482,7 @@
                     folderHandle: projectFolderHandle
                 }, '*');
             }
+            console.log('hideProjectFolderOverlay: Completed');
         }
 
         function updateProjectMenuUI() {
@@ -3430,35 +3492,16 @@
             document.getElementById('projectMenuBar').style.display = 'block';
         }
 
-        // 显示上次选择的文件夹信息
-        function showLastFolderInfo() {
-            const lastPath = getLastFolderPath();
-            const lastFolderSection = document.getElementById('lastFolderSection');
-            const folderDivider = document.getElementById('folderDivider');
-            const lastFolderName = document.getElementById('lastFolderName');
-            const selectFolderBtnText = document.getElementById('selectFolderBtnText');
-
-            if (lastPath && lastFolderSection && lastFolderName) {
-                lastFolderName.textContent = lastPath;
-                lastFolderSection.style.display = 'flex';
-                if (folderDivider) folderDivider.style.display = 'flex';
-                if (selectFolderBtnText) selectFolderBtnText.textContent = 'Select Different Folder';
-                return true;
-            }
-            return false;
-        }
-
         async function initializeProject() {
             const overlay = document.getElementById('projectFolderOverlay');
             const selectBtn = document.getElementById('selectProjectFolderBtn');
-            const useLastFolderBtn = document.getElementById('useLastFolderBtn');
 
             if (!selectBtn) {
                 console.error('Select project folder button not found');
                 return;
             }
 
-            // 首先尝试从IndexedDB恢复handle（完全自动恢复）
+            // 首先尝试从 IndexedDB 恢复 handle（完全自动恢复）
             const savedHandle = await loadFolderHandle();
             if (savedHandle && savedHandle.handle) {
                 try {
@@ -3466,6 +3509,14 @@
                     if (permission === 'granted' || (await savedHandle.handle.requestPermission({ mode: 'readwrite' })) === 'granted') {
                         projectFolderHandle = savedHandle.handle;
                         projectFolderPath = savedHandle.path;
+                        console.log('Project folder restored from IndexedDB:', projectFolderPath);
+                        // 恢复成功后，刷新导入列表
+                        try {
+                            await refreshImportDropdown();
+                            console.log('Import dropdown refreshed from restored folder');
+                        } catch (e) {
+                            console.warn('Failed to refresh import dropdown:', e);
+                        }
                         hideProjectFolderOverlay();
                         return;
                     }
@@ -3474,97 +3525,34 @@
                 }
             }
 
-            // 如果没有自动恢复成功，但有上次的路径记录，显示"使用上次文件夹"选项
-            const hasLastFolder = showLastFolderInfo();
+            // 如果没有自动恢复成功，显示 overlay 让用户选择
+            console.log('No valid saved handle found, showing folder selection overlay');
+
+            // 检查是否已经绑定过事件
+            const existingBtn = document.getElementById('selectProjectFolderBtn');
+            if (existingBtn && existingBtn.dataset.bound === 'true') {
+                console.log('Button event already bound, skipping');
+                return;
+            }
 
             // 处理"选择文件夹"按钮点击
             const handleClick = async () => {
-                const success = await selectProjectFolder();
-                if (success) {
-                    hideProjectFolderOverlay();
+                try {
+                    console.log('handleClick: Starting folder selection');
+                    const success = await selectProjectFolder();
+                    console.log('handleClick: selectProjectFolder returned', success);
+                    if (success) {
+                        console.log('handleClick: Calling hideProjectFolderOverlay');
+                        hideProjectFolderOverlay();
+                    } else {
+                        console.log('handleClick: selectProjectFolder returned false, not hiding overlay');
+                    }
+                } catch (e) {
+                    console.error('handleClick: Error during folder selection:', e);
                 }
             };
             selectBtn.addEventListener('click', handleClick);
-
-            // 处理"使用上次文件夹"按钮点击
-            if (useLastFolderBtn && hasLastFolder) {
-                useLastFolderBtn.addEventListener('click', async () => {
-                    try {
-                        // 首先尝试从 IndexedDB 恢复上次的 handle
-                        const savedData = await loadFolderHandle();
-                        if (savedData && savedData.handle) {
-                            try {
-                                // 检查权限
-                                const permission = await savedData.handle.queryPermission({ mode: 'readwrite' });
-                                if (permission === 'granted') {
-                                    // 有权限，直接使用
-                                    projectFolderHandle = savedData.handle;
-                                    projectFolderPath = savedData.path || savedData.handle.name;
-                                    hideProjectFolderOverlay();
-                                    return;
-                                } else {
-                                    // 请求权限
-                                    const newPermission = await savedData.handle.requestPermission({ mode: 'readwrite' });
-                                    if (newPermission === 'granted') {
-                                        projectFolderHandle = savedData.handle;
-                                        projectFolderPath = savedData.path || savedData.handle.name;
-                                        hideProjectFolderOverlay();
-                                        return;
-                                    }
-                                }
-                            } catch (permError) {
-                                console.warn('Failed to restore saved handle, will open picker:', permError);
-                            }
-                        }
-
-                        // 无法自动恢复，打开文件选择器让用户重新选择
-                        const warningEl = document.getElementById('projectFolderWarning');
-                        const warningTextEl = document.getElementById('projectFolderWarningText');
-                        warningTextEl.textContent = 'Please re-select the folder to grant permission.';
-                        warningEl.style.display = 'flex';
-
-                        const handle = await window.showDirectoryPicker({
-                            mode: 'readwrite'
-                        });
-
-                        const isEmpty = await isFolderEmpty(handle);
-
-                        if (!isEmpty) {
-                            const confirm = await confirmAction('selectNonEmptyFolder', {
-                                title: 'Folder Not Empty',
-                                message: 'The selected folder is not empty. It is recommended to use an empty folder. Do you want to continue anyway?',
-                                confirmText: 'Continue',
-                                cancelText: 'Select Another',
-                                confirmClass: 'btn-primary'
-                            });
-
-                            if (!confirm) {
-                                return;
-                            }
-                        }
-
-                        projectFolderHandle = handle;
-                        projectFolderPath = handle.name;
-                        await saveFolderHandle(handle, projectFolderPath);
-
-                        refreshImportDropdown();
-
-                        warningEl.style.display = 'none';
-                        hideProjectFolderOverlay();
-                    } catch (e) {
-                        if (e.name === 'AbortError') {
-                            console.log('Folder selection cancelled');
-                            return;
-                        }
-                        console.error('Failed to select folder:', e);
-                        const warningEl = document.getElementById('projectFolderWarning');
-                        const warningTextEl = document.getElementById('projectFolderWarningText');
-                        warningTextEl.textContent = 'Failed to access folder. Please try again.';
-                        warningEl.style.display = 'flex';
-                    }
-                });
-            }
-
+            selectBtn.dataset.bound = 'true';
             console.log('Project folder initialization complete, button event bound');
 
             // Project menu bar interactions
@@ -3793,7 +3781,136 @@
         const lineSnapRadius = 80;
         const baseOffsetY = -150;
         const offsetYStep = -70;
-
+        
+        // 问题诊断功能：检测活动元素ID的问题
+        function diagnoseActiveElementIds() {
+            const issues = [];
+            
+            // 检查活动 routine rect 的 ID
+            if (activeDragRect) {
+                if (!activeDragRect.id || activeDragRect.id === undefined) {
+                    issues.push({
+                        type: 'activeRoutine',
+                        message: 'Active routine missing valid ID',
+                        element: activeDragRect,
+                        severity: 'error',
+                        fix: () => {
+                            activeDragRect.id = ++routineIdCounter;
+                            console.log('Fixed: Assigned ID', activeDragRect.id, 'to active routine');
+                        }
+                    });
+                }
+                
+                // 检查重复的 routine ID
+                const ids = routineRects.map(r => r.id).filter(id => id !== undefined && id !== null);
+                const duplicates = ids.filter((id, index) => ids.indexOf(id) !== index);
+                if (duplicates.length > 0) {
+                    const duplicateRect = routineRects.find(r => duplicates.includes(r.id) && r !== activeDragRect);
+                    if (duplicateRect) {
+                        issues.push({
+                            type: 'duplicateRoutineId',
+                            message: `Duplicate routine ID found: ${duplicateRect.id}`,
+                            element: duplicateRect,
+                            severity: 'warning',
+                            fix: () => {
+                                // 重新生成所有重复的 ID
+                                routineRects.forEach((rect, index) => {
+                                    if (duplicates.includes(rect.id)) {
+                                        rect.id = index + 1;
+                                    }
+                                });
+                                console.log('Fixed: Regenerated duplicate routine IDs');
+                            }
+                        });
+                    }
+                }
+                
+                // 检查 routine 的 avtpComponents 中的组件 ID
+                if (activeDragRect.avtpComponents && Array.isArray(activeDragRect.avtpComponents)) {
+                    activeDragRect.avtpComponents.forEach((comp, index) => {
+                        if (comp && !comp.id) {
+                            issues.push({
+                                type: 'activeComponent',
+                                message: `Active routine component at index ${index} missing ID`,
+                                element: comp,
+                                severity: 'warning',
+                                fix: () => {
+                                    comp.id = Date.now() + Math.random().toString(36).substr(2, 9);
+                                    console.log('Fixed: Assigned ID', comp.id, 'to component at index', index);
+                                }
+                            });
+                        }
+                    });
+                }
+            }
+            
+            // 检查活动连接线的 ID
+            if (activeConnection) {
+                if (!activeConnection.id || activeConnection.id === undefined) {
+                    issues.push({
+                        type: 'activeConnection',
+                        message: 'Active connection missing valid ID',
+                        element: activeConnection,
+                        severity: 'warning',
+                        fix: () => {
+                            activeConnection.id = Date.now() + Math.random().toString(36).substr(2, 9);
+                            console.log('Fixed: Assigned ID', activeConnection.id, 'to active connection');
+                        }
+                    });
+                }
+            }
+            
+            return issues;
+        }
+        
+        // 自动修复活动元素ID问题
+        function fixActiveElementIdIssues() {
+            const issues = diagnoseActiveElementIds();
+            let fixedCount = 0;
+            
+            issues.forEach(issue => {
+                if (issue.fix) {
+                    issue.fix();
+                    fixedCount++;
+                }
+            });
+            
+            if (fixedCount > 0) {
+                console.log(`Fixed ${fixedCount} ID issues in active elements`);
+                showNotification(`✅ Fixed ${fixedCount} ID issues`);
+                draw();
+            } else {
+                console.log('No ID issues found in active elements');
+                showNotification('✅ No ID issues found');
+            }
+            
+            return fixedCount;
+        }
+        
+        // 手动诊断函数，可以在控制台调用
+        function diagnoseIds() {
+            const issues = diagnoseActiveElementIds();
+            console.log('=== ID Diagnostic Report ===');
+            if (issues.length === 0) {
+                console.log('✅ No ID issues found');
+            } else {
+                issues.forEach((issue, index) => {
+                    console.log(`${index + 1}. [${issue.severity.toUpperCase()}] ${issue.message}`);
+                });
+            }
+            return issues;
+        }
+        
+        // 在关键操作后自动运行诊断
+        function autoDiagnoseAfterOperation(operationName) {
+            const issues = diagnoseActiveElementIds();
+            if (issues.length > 0) {
+                console.warn(`After ${operationName}: Found ${issues.length} ID issues`, issues);
+                return true;
+            }
+            return false;
+        }
+        
         function getMaxDepthForSameEndpoints(conn, allConnections) {
             const startLabel = conn.start.label;
             const endLabel = conn.end.label;
@@ -5924,6 +6041,7 @@
                         activeDragRect.avtpComponents.push(newComponent);
                         updateRoutineHeight(activeDragRect);
                         updateCanvasWidthForRoutines();
+                        autoDiagnoseAfterOperation('add component');
                         renderAvtpComponentsList(activeDragRect);
                         draw();
                     }
@@ -6107,6 +6225,15 @@
             activeConnection.loopReps = parseInt(formLoopReps.value) || 1;
             activeConnection.loopType = formLoopType.value || 'sequential';
             activeConnection.loopConditions = formLoopConditions.value || '';
+
+            // 验证循环是否符合规则
+            const loops = connectionsToLoops(connections);
+            const validationResult = validateLoops(loops);
+            if (!validationResult.valid) {
+                const errorMessage = validationResult.errors.join('\n');
+                alert('循环验证失败：\n' + errorMessage);
+                // 可以选择恢复到之前的状态
+            }
 
             draw();
         }
@@ -6670,6 +6797,63 @@
             });
         }
 
+        // 循环验证函数：检查循环是否符合规则（嵌套、顺序允许，交叉禁止）
+        function validateLoops(loops) {
+            const errors = [];
+            
+            // 为每个循环计算 startPoint 和 endPoint
+            const processedLoops = loops.map(loop => {
+                let startPoint, endPoint;
+                
+                if (loop.startPoint && loop.endPoint) {
+                    // 如果已有 startPoint 和 endPoint，直接使用
+                    startPoint = loop.startPoint;
+                    endPoint = loop.endPoint;
+                } else if (loop.list && loop.list.length > 0) {
+                    // 从 list 计算 startPoint 和 endPoint
+                    const routinePoints = loop.list
+                        .filter(item => item.Point !== undefined)
+                        .map(item => item.Point)
+                        .sort((a, b) => a - b);
+                    
+                    if (routinePoints.length > 0) {
+                        startPoint = routinePoints[0] - 1;
+                        endPoint = routinePoints[routinePoints.length - 1] + 1;
+                    } else {
+                        return null; // 跳过没有例程的循环
+                    }
+                } else {
+                    return null; // 跳过没有信息的循环
+                }
+                
+                return { ...loop, startPoint, endPoint };
+            }).filter(Boolean);
+            
+            // 检查每对循环之间的关系
+            for (let i = 0; i < processedLoops.length; i++) {
+                const loop1 = processedLoops[i];
+                
+                for (let j = i + 1; j < processedLoops.length; j++) {
+                    const loop2 = processedLoops[j];
+                    
+                    // 检查循环是否交叉
+                    if (
+                        (loop1.startPoint < loop2.startPoint && loop1.endPoint > loop2.startPoint && loop1.endPoint < loop2.endPoint) ||
+                        (loop2.startPoint < loop1.startPoint && loop2.endPoint > loop1.startPoint && loop2.endPoint < loop1.endPoint)
+                    ) {
+                        errors.push(`循环 "${loop1.name}" 和 "${loop2.name}" 交叉重叠，这是不允许的。`);
+                    }
+                }
+            }
+            
+            return {
+                valid: errors.length === 0,
+                errors: errors
+            };
+        }
+
+
+
         // 辅助函数：将AI格式的conditions转换为内部格式
         function convertConditionsToInternalFormat(conditions) {
             if (!conditions) return '';
@@ -6801,162 +6985,226 @@
 
         // 保存和导入功能
         const saveButton = document.getElementById('saveButton');
+        console.log('saveButton element:', saveButton);
 
         // 保存项目
         saveButton.addEventListener('click', async () => {
-            // 检查是否为空 flowchart
-            if (routineRects.length === 0) {
-                alert('不能保存空的 flowchart，请先添加至少一个 routine！');
-                return;
-            }
-
-            // 确保保存当前打开的表单值
-            if (activeAvtp && activeDragRect) {
-                saveFormChanges();
-            }
-            if (activeConnection) {
-                saveLoopFormChanges();
-            }
-
-            // 构建 routines 数据
-            const routines = routineRects.map(rect => ({
-                id: rect.id,
-                name: rect.name,
-                x: rect.x,
-                y: rect.y,
-                width: rect.width,
-                height: rect.height,
-                duration: rect.duration,
-                avtpComponents: rect.avtpComponents || []
-            }));
-
-            // 将 connections 转换为 loops
-            const loops = connectionsToLoops(connections);
-
-            const projectData = {
-                timestamp: new Date().toISOString(),
-                routines: routines,
-                loops: loops,
-                // 保存当前任务的消息数据
-                tasks: tasks,
-                currentTaskId: currentTaskId
-            };
-
-            const jsonData = JSON.stringify(projectData, null, 2);
-            const fileName = currentProjectFile || `deeppsych_project_${saveCounter++}.psyclaw`;
-            const timestamp = new Date().toISOString();
-
-            // 如果已经有文件句柄，直接保存
-            if (fileHandle) {
-                try {
-                    const writable = await fileHandle.createWritable();
-                    await writable.write(jsonData);
-                    await writable.close();
-
-                    // 发送成功响应消息（按照 protocol）
-                    window.parent.postMessage({
-                        type: 'project-saved',
-                        success: true,
-                        fileName: fileName,
-                        timestamp: timestamp
-                    }, '*');
+            console.log('=== Save Button Debug Start ===');
+            console.log('Save button clicked');
+            console.log('routineRects.length:', routineRects.length);
+            console.log('projectFolderHandle:', projectFolderHandle);
+            console.log('fileHandle:', fileHandle);
+            console.log('currentProjectFile:', currentProjectFile);
+            console.log('projectInitialized:', projectInitialized);
+            
+            try {
+                // 检查是否为空 flowchart
+                if (routineRects.length === 0) {
+                    console.log('Cannot save: empty flowchart');
+                    alert('不能保存空的 flowchart，请先添加至少一个 routine！');
                     return;
-                } catch (error) {
-                    console.error('保存失败:', error);
                 }
-            }
 
-            // 如果有项目文件夹，保存到项目文件夹
-            if (projectFolderHandle) {
-                try {
-                    const folderFileHandle = await projectFolderHandle.getFileHandle(fileName, { create: true });
-                    const writable = await folderFileHandle.createWritable();
-                    await writable.write(jsonData);
-                    await writable.close();
-
-                    // 更新 fileHandle 和 currentProjectFile
-                    fileHandle = folderFileHandle;
-                    currentProjectFile = folderFileHandle.name;
-
-                    // 发送成功响应消息（按照 protocol）
-                    window.parent.postMessage({
-                        type: 'project-saved',
-                        success: true,
-                        fileName: folderFileHandle.name,
-                        timestamp: timestamp
-                    }, '*');
-                    return;
-                } catch (error) {
-                    console.error('保存到项目文件夹失败:', error);
+                // 确保保存当前打开的表单值
+                if (activeAvtp && activeDragRect) {
+                    console.log('Saving active AVTP form changes');
+                    saveFormChanges();
                 }
-            }
+                if (activeConnection) {
+                    console.log('Saving active connection form changes');
+                    saveLoopFormChanges();
+                }
 
-            // 新文件，使用 showSaveFilePicker 让用户选择保存位置
-            if ('showSaveFilePicker' in window) {
-                try {
-                    const handle = await window.showSaveFilePicker({
-                        suggestedName: fileName,
-                        types: [
-                            {
-                                description: 'PsyClaw Project Files',
-                                accept: { 'application/json': ['.psyclaw'] }
-                            },
-                            {
-                                description: 'JSON Files',
-                                accept: { 'application/json': ['.json'] }
-                            }
-                        ]
-                    });
+                // 构建 routines 数据
+                console.log('Building routines data...');
+                const routines = routineRects.map(rect => ({
+                    id: rect.id,
+                    name: rect.name,
+                    x: rect.x,
+                    y: rect.y,
+                    width: rect.width,
+                    height: rect.height,
+                    duration: rect.duration,
+                    avtpComponents: rect.avtpComponents || []
+                }));
 
-                    const writable = await handle.createWritable();
-                    await writable.write(jsonData);
-                    await writable.close();
+                // 将 connections 转换为 loops
+                console.log('Converting connections to loops...');
+                const loops = connectionsToLoops(connections);
 
-                    // 更新 fileHandle 和 currentProjectFile
-                    fileHandle = handle;
-                    currentProjectFile = handle.name;
-
-                    // 发送成功响应消息（按照 protocol）
-                    window.parent.postMessage({
-                        type: 'project-saved',
-                        success: true,
-                        fileName: handle.name,
-                        timestamp: timestamp
-                    }, '*');
+                // 验证循环是否符合规则
+                console.log('Validating loops...');
+                const validationResult = validateLoops(loops);
+                if (!validationResult.valid) {
+                    console.log('Validation failed:', validationResult.errors);
+                    const errorMessage = validationResult.errors.join('\n');
+                    alert('循环验证失败：\n' + errorMessage);
                     return;
-                } catch (error) {
-                    // 用户取消或保存失败
-                    if (error.name === 'AbortError') {
+                }
+
+                const projectData = {
+                    timestamp: new Date().toISOString(),
+                    routines: routines,
+                    loops: loops,
+                    // 保存当前任务的消息数据
+                    tasks: tasks,
+                    currentTaskId: currentTaskId
+                };
+
+                const jsonData = JSON.stringify(projectData, null, 2);
+                // 确保使用.psyclaw 扩展名
+                let fileName = currentProjectFile;
+                if (!fileName || fileName.endsWith('.json')) {
+                    fileName = `deeppsych_project_${saveCounter++}.psyclaw`;
+                } else if (!fileName.endsWith('.psyclaw')) {
+                    fileName = fileName + '.psyclaw';
+                }
+                const timestamp = new Date().toISOString();
+
+                console.log('Saving to file:', fileName);
+                console.log('Original currentProjectFile:', currentProjectFile);
+                console.log('Has fileHandle:', !!fileHandle);
+                console.log('Has projectFolderHandle:', !!projectFolderHandle);
+
+                // 如果有项目文件夹，保存到项目文件夹
+                if (projectFolderHandle) {
+                    console.log('Saving to project folder...');
+                    try {
+                        console.log('Creating file handle with name:', fileName);
+                        const folderFileHandle = await projectFolderHandle.getFileHandle(fileName, { create: true });
+                        console.log('File handle created:', folderFileHandle.name);
+                        console.log('Creating writable stream...');
+                        const writable = await folderFileHandle.createWritable();
+                        console.log('Writing data...');
+                        await writable.write(jsonData);
+                        console.log('Closing writable stream...');
+                        await writable.close();
+                        console.log('File closed successfully');
+
+                        // 更新 fileHandle 和 currentProjectFile
+                        fileHandle = folderFileHandle;
+                        currentProjectFile = folderFileHandle.name;
+
+                        // 发送成功响应消息（按照 protocol）
                         window.parent.postMessage({
                             type: 'project-saved',
-                            success: false,
-                            error: 'User cancelled',
+                            success: true,
+                            fileName: folderFileHandle.name,
                             timestamp: timestamp
                         }, '*');
+                        console.log('=== Save Successful ===');
+                        console.log('Saved successfully to project folder:', folderFileHandle.name);
+                        alert('保存成功！文件已保存为：' + folderFileHandle.name);
                         return;
+                    } catch (error) {
+                        console.error('=== Save Error ===');
+                        console.error('保存到项目文件夹失败:', error);
+                        console.error('Error name:', error.name);
+                        console.error('Error message:', error.message);
+                        console.error('Error stack:', error.stack);
+                        alert('保存到项目文件夹失败：' + error.message);
                     }
-                    console.error('保存失败:', error);
                 }
+
+                // 如果已经有文件句柄，直接保存
+                if (fileHandle) {
+                    console.log('Saving to existing fileHandle...');
+                    try {
+                        const writable = await fileHandle.createWritable();
+                        await writable.write(jsonData);
+                        await writable.close();
+
+                        // 发送成功响应消息（按照 protocol）
+                        window.parent.postMessage({
+                            type: 'project-saved',
+                            success: true,
+                            fileName: fileName,
+                            timestamp: timestamp
+                        }, '*');
+                        console.log('Saved successfully to existing file');
+                        alert('保存成功！');
+                        return;
+                    } catch (error) {
+                        console.error('保存失败:', error);
+                        alert('保存失败：' + error.message);
+                    }
+                }
+
+                // 新文件，使用 showSaveFilePicker 让用户选择保存位置
+                if ('showSaveFilePicker' in window) {
+                    console.log('Using showSaveFilePicker...');
+                    try {
+                        const handle = await window.showSaveFilePicker({
+                            suggestedName: fileName,
+                            types: [
+                                {
+                                    description: 'PsyClaw Project Files',
+                                    accept: { 'application/json': ['.psyclaw'] }
+                                },
+                                {
+                                    description: 'JSON Files',
+                                    accept: { 'application/json': ['.json'] }
+                                }
+                            ]
+                        });
+
+                        const writable = await handle.createWritable();
+                        await writable.write(jsonData);
+                        await writable.close();
+
+                        // 更新 fileHandle 和 currentProjectFile
+                        fileHandle = handle;
+                        currentProjectFile = handle.name;
+
+                        // 发送成功响应消息（按照 protocol）
+                        window.parent.postMessage({
+                            type: 'project-saved',
+                            success: true,
+                            fileName: handle.name,
+                            timestamp: timestamp
+                        }, '*');
+                        console.log('Saved successfully via showSaveFilePicker:', handle.name);
+                        alert('保存成功！');
+                        return;
+                    } catch (error) {
+                        // 用户取消或保存失败
+                        if (error.name === 'AbortError') {
+                            console.log('User cancelled save dialog');
+                            window.parent.postMessage({
+                                type: 'project-saved',
+                                success: false,
+                                error: 'User cancelled',
+                                timestamp: timestamp
+                            }, '*');
+                            return;
+                        }
+                        console.error('保存失败:', error);
+                        alert('保存失败：' + error.message);
+                    }
+                }
+
+                // 降级方案：使用传统下载方式
+                const blob = new Blob([jsonData], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = fileName;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+
+                // 发送成功响应消息（按照 protocol）
+                window.parent.postMessage({
+                    type: 'project-saved',
+                    success: true,
+                    fileName: fileName,
+                    timestamp: timestamp
+                }, '*');
+            } catch (error) {
+                console.error('保存错误:', error);
+                alert('保存失败：' + error.message);
             }
-
-            // 降级方案：使用传统下载方式
-            const blob = new Blob([jsonData], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = fileName;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-
-            // 发送成功响应消息（按照 protocol）
-            window.parent.postMessage({
-                type: 'project-saved',
-                success: true,
-                fileName: fileName,
-                timestamp: timestamp
-            }, '*');
         });
 
         // 导出 XML 功能
@@ -7049,15 +7297,16 @@
         });
 
         // 导入下拉栏逻辑
-        const importButton = document.getElementById('importButton');
+        const importTrigger = document.getElementById('importTrigger');
         const importDropdown = document.getElementById('importDropdown');
         const importDropdownWrapper = document.getElementById('importDropdownWrapper');
         const importFileListEl = document.getElementById('importFileList');
-        let importDropdownOpen = false;
 
         async function refreshImportDropdown() {
+            console.log('refreshImportDropdown: Starting');
+            
             if (!projectFolderHandle) {
-                importFileListEl.innerHTML = '<div class="project-menu-import-empty">No project folder selected</div>';
+                importFileListEl.innerHTML = '<div class="project-menu-item"><span>No project folder selected</span></div>';
                 return;
             }
 
@@ -7071,20 +7320,14 @@
             importFileListEl.innerHTML = '';
 
             if (psyclawFiles.length === 0) {
-                importFileListEl.innerHTML = '<div class="project-menu-import-empty">No .psyclaw files found</div>';
+                importFileListEl.innerHTML = '<div class="project-menu-item"><span>No .psyclaw files found</span></div>';
                 return;
             }
 
             psyclawFiles.forEach((file) => {
-                const item = document.createElement('button');
-                item.className = 'project-menu-import-item';
-                item.innerHTML = `
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                        <polyline points="14 2 14 8 20 8"></polyline>
-                    </svg>
-                    <span class="project-menu-import-filename">${file.name}</span>
-                `;
+                const item = document.createElement('div');
+                item.className = 'project-menu-item';
+                item.innerHTML = `<span>${file.name}</span>`;
                 item.addEventListener('click', async () => {
                     closeImportDropdown();
                     await importProjectFile(file);
@@ -7175,8 +7418,9 @@
                 // 更新界面
                 updatePoints();
                 updateRoutineCount();
+                autoDiagnoseAfterOperation('load project');
                 draw();
-
+                
                 // 保存初始状态并启用按钮
                 saveState();
 
@@ -7203,31 +7447,26 @@
         }
 
         function openImportDropdown() {
-            if (importDropdownOpen) {
-                closeImportDropdown();
-                return;
-            }
             refreshImportDropdown();
             const rect = importDropdownWrapper.getBoundingClientRect();
-            importDropdown.style.top = (rect.bottom + 6) + 'px';
+            importDropdown.style.top = (rect.bottom + 4) + 'px';
             importDropdown.style.left = rect.left + 'px';
             importDropdown.classList.add('open');
-            importDropdownOpen = true;
+            importTrigger.classList.add('open');
         }
 
         function closeImportDropdown() {
             importDropdown.classList.remove('open');
-            importDropdownOpen = false;
+            importTrigger.classList.remove('open');
         }
 
-        importButton.addEventListener('click', (e) => {
+        importTrigger.addEventListener('click', (e) => {
             e.stopPropagation();
-            openImportDropdown();
-        });
-
-        importDropdownWrapper.addEventListener('mouseenter', () => {
-            if (!importDropdownOpen) {
-                refreshImportDropdown();
+            const isOpen = importDropdown.classList.contains('open');
+            if (isOpen) {
+                closeImportDropdown();
+            } else {
+                openImportDropdown();
             }
         });
 
@@ -7494,9 +7733,12 @@
                 
                 // 保存初始状态并启用按钮
                 saveState();
-
+                
                 console.log('Flowchart successfully loaded from chatbot');
-
+                
+                // 自动诊断导入的数据
+                autoDiagnoseAfterOperation('import flowchart');
+                
                 // 发送成功响应消息（按照 protocol）
                 window.parent.postMessage({
                     type: 'flowchart-rendered',
@@ -7658,6 +7900,7 @@
             
             selectedRoutineIndex = newIndex;
             updateRoutineCount();
+            autoDiagnoseAfterOperation('add routine');
             draw();
         });
         
