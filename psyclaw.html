@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
@@ -1498,9 +1498,9 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: linear-gradient(135deg, rgba(20, 86, 240, 0.05) 0%, rgba(234, 94, 193, 0.05) 100%);
-            -webkit-backdrop-filter: blur(8px);
-            backdrop-filter: blur(8px);
+            background: rgba(255, 255, 255, 0.85);
+            -webkit-backdrop-filter: blur(12px);
+            backdrop-filter: blur(12px);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -1514,12 +1514,12 @@
         }
 
         .project-folder-dialog {
-            background: var(--bg-white);
-            border-radius: 24px;
-            padding: 48px;
-            max-width: 500px;
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 400px;
             width: 90%;
-            box-shadow: var(--shadow-elevated), var(--shadow-brand);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05);
             animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
             text-align: center;
             position: relative;
@@ -1527,34 +1527,50 @@
         }
 
         .project-folder-header {
-            margin-bottom: 32px;
+            margin-bottom: 28px;
         }
 
         .project-folder-icon {
             margin-bottom: 20px;
-            color: var(--brand-blue);
+            color: #1456f0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, rgba(20, 86, 240, 0.1) 0%, rgba(234, 94, 193, 0.1) 100%);
+            border-radius: 16px;
+        }
+
+        .project-folder-icon svg {
+            width: 24px;
+            height: 24px;
+            stroke-width: 2;
         }
 
         .project-folder-title {
-            font-family: var(--font-display);
-            font-size: 28px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 24px;
             font-weight: 600;
-            color: var(--text-dark);
-            margin: 0 0 12px 0;
+            color: #18181b;
+            margin: 0 0 8px 0;
             letter-spacing: -0.02em;
+            line-height: 1.3;
         }
 
         .project-folder-subtitle {
-            font-size: 15px;
-            color: var(--text-secondary);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            color: #6b7280;
             margin: 0;
-            line-height: 1.6;
+            line-height: 1.5;
+            font-weight: 400;
         }
 
         .project-folder-content {
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 8px;
             align-items: center;
         }
 
@@ -1563,56 +1579,118 @@
             align-items: center;
             gap: 10px;
             padding: 12px 16px;
-            background: #fff3cd;
-            border-left: 4px solid #ffc107;
-            border-radius: 8px;
-            color: #856404;
-            font-size: 14px;
+            background: #fffbeb;
+            border-radius: 10px;
+            color: #92400e;
+            font-size: 13px;
             line-height: 1.5;
             width: 100%;
+            font-family: 'DM Sans', sans-serif;
+            margin-bottom: 8px;
         }
 
         .project-folder-btn {
-            display: flex;
+            display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 12px;
-            padding: 16px 32px;
-            background: var(--brand-blue);
+            gap: 8px;
+            padding: 12px 24px;
+            background: #1456f0;
             color: white;
             border: none;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 600;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 500;
             cursor: pointer;
-            transition: all 0.2s ease;
-            box-shadow: var(--shadow-brand-offset);
-            font-family: var(--font-ui);
-            min-width: 200px;
+            transition: all 0.15s ease;
+            font-family: 'DM Sans', sans-serif;
+            width: 100%;
             position: relative;
             z-index: 100002;
             pointer-events: auto;
+            box-shadow: 0 1px 2px rgba(20, 86, 240, 0.1);
+            line-height: 1;
+        }
+
+        .project-folder-btn svg {
+            flex-shrink: 0;
+            display: block;
+            width: 16px;
+            height: 16px;
+        }
+
+        .project-folder-btn span {
+            display: block;
+            line-height: 1;
         }
 
         .project-folder-btn:hover {
-            background: var(--brand-deep);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px var(--shadow-brand);
+            background: #2563eb;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(20, 86, 240, 0.25);
         }
 
         .project-folder-btn:active {
             transform: translateY(0);
+            box-shadow: 0 1px 2px rgba(20, 86, 240, 0.1);
+        }
+
+        .project-folder-btn-secondary {
+            background: #f3f4f6;
+            color: #374151;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        .project-folder-btn-secondary:hover {
+            background: #e5e7eb;
+            color: #1f2937;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .project-folder-actions {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            gap: 8px;
+        }
+
+        .project-folder-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 8px 16px;
+            background: transparent;
+            color: #6b7280;
+            border: none;
+            font-size: 13px;
+            font-weight: 400;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            font-family: 'DM Sans', sans-serif;
+            margin-top: 4px;
+        }
+
+        .project-folder-link:hover {
+            color: #1456f0;
+        }
+
+        .project-folder-link svg {
+            width: 14px;
+            height: 14px;
         }
 
         .project-folder-info {
             display: flex;
             align-items: center;
-            gap: 8px;
-            padding: 10px 16px;
-            background: var(--bg-light);
-            border-radius: 8px;
-            color: var(--text-secondary);
-            font-size: 14px;
+            gap: 6px;
+            padding: 6px 12px;
+            background: #f3f4f6;
+            border-radius: 6px;
+            color: #6b7280;
+            font-size: 12px;
+            font-family: 'DM Sans', sans-serif;
+            margin-bottom: 16px;
         }
 
         .project-menu-bar {
@@ -1773,83 +1851,92 @@
             flex-shrink: 0;
         }
 
-        .project-menu-import-dropdown {
-            position: fixed;
-            min-width: 260px;
-            max-height: 320px;
+        .project-menu-import-files {
+            display: flex;
+            flex-direction: column;
+            min-width: 160px;
+            max-width: 200px;
+            max-height: 200px;
             background: var(--bg-white);
             border: 1px solid var(--border-light);
-            border-radius: 12px;
-            box-shadow: var(--shadow-elevated);
-            display: none;
-            z-index: 1000000;
-            animation: dropdownFadeIn 0.15s ease;
+            border-radius: 10px;
             overflow: hidden;
         }
 
-        .project-menu-import-dropdown.open {
-            display: block;
-        }
-
-        .project-menu-import-header {
-            padding: 10px 14px 8px;
-            border-bottom: 1px solid var(--border-light);
-        }
-
-        .project-menu-import-title {
+        .project-menu-import-files-title {
+            padding: 8px 12px;
             font-size: 11px;
             font-weight: 600;
             color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 0.05em;
+            border-bottom: 1px solid var(--border-light);
+            background: var(--bg-light);
         }
 
-        .project-menu-import-list {
-            padding: 6px;
+        .project-menu-import-files-list {
+            flex: 1;
             overflow-y: auto;
-            max-height: 260px;
+            padding: 4px;
+            max-height: 160px;
         }
 
-        .project-menu-import-empty {
-            padding: 16px 14px;
-            font-size: 13px;
+        .project-menu-import-files-list::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .project-menu-import-files-list::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .project-menu-import-files-list::-webkit-scrollbar-thumb {
+            background: var(--border-gray);
+            border-radius: 2px;
+        }
+
+        .project-menu-import-files-empty {
+            padding: 12px;
+            font-size: 12px;
             color: var(--text-muted);
             text-align: center;
         }
 
-        .project-menu-import-item {
+        .project-menu-import-files-item {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             width: 100%;
-            padding: 8px 10px;
+            padding: 6px 8px;
             background: none;
             border: none;
-            border-radius: 8px;
-            font-size: 13px;
+            border-radius: 6px;
+            font-size: 12px;
             font-weight: 500;
             color: var(--text-charcoal);
             cursor: pointer;
             transition: all 0.15s ease;
             font-family: var(--font-ui);
             text-align: left;
+            overflow: hidden;
         }
 
-        .project-menu-import-item:hover {
-            background: var(--bg-light);
+        .project-menu-import-files-item:hover {
+            background: var(--primary-100);
             color: var(--brand-blue);
         }
 
-        .project-menu-import-item svg {
+        .project-menu-import-files-item svg {
+            width: 14px;
+            height: 14px;
             color: var(--text-muted);
             flex-shrink: 0;
         }
 
-        .project-menu-import-item:hover svg {
+        .project-menu-import-files-item:hover svg {
             color: var(--brand-blue);
         }
 
-        .project-menu-import-filename {
+        .project-menu-import-files-filename {
             flex: 1;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -2434,25 +2521,10 @@
                         <path d="M834.8 932.4H188.4c-25.4 0-49.1-9.9-66.9-27.8C103.8 886.7 94 863.1 94 838V185.7c0-52 42.3-94.3 94.4-94.3H353c19.3 0 35 15.7 35 35s-15.7 35-35 35H188.4c-13.5 0-24.4 10.9-24.4 24.3V838c0 6.4 2.6 12.7 7.3 17.4 4.5 4.5 10.6 7 17.1 7h646.4c6.4 0 12.6-2.6 17.2-7.1 4.5-4.5 7-10.7 7-17.2V674c0-19.3 15.7-35 35-35s35 15.7 35 35v164c0 25.3-9.8 49-27.5 66.7-17.6 17.6-41.9 27.7-66.7 27.7z"></path>
                     </svg>
                 </button>
-                <div class="project-menu-dropdown-wrapper" id="importDropdownWrapper">
-                    <div class="project-menu-trigger" id="importTrigger">
-                        <svg width="16" height="16" viewBox="0 0 1024 1024" fill="currentColor">
-                            <path d="M557 567.36l83.18-83.18c17.574-17.574 46.066-17.574 63.64 0 17.574 17.574 17.574 46.066 0 63.64l-160 160c-17.534 17.534-45.95 17.58-63.54 0.1l-160-159c-17.628-17.52-17.718-46.012-0.2-63.64 17.52-17.628 46.012-17.718 63.64-0.2l83.28 82.76V510c0-135.31 109.69-245 245-245h150c24.852 0 45 20.148 45 45s-20.148 45-45 45h-150c-85.604 0-155 69.396-155 155v57.36z m196.546 105.64c-24.852 0-45-20.148-45-45s20.148-45 45-45H836c41.42 0 75 33.58 75 75v180c0 41.42-33.58 75-75 75H186c-41.42 0-75-33.58-75-75v-180c0-41.42 33.58-75 75-75h80.276c24.852 0 45 20.148 45 45s-20.148 45-45 45H201v150h620v-150h-67.454z"></path>
-                        </svg>
-                        <span class="project-menu-current" id="importCurrent">Import</span>
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <polyline points="6 9 12 15 18 9"></polyline>
-                        </svg>
-                    </div>
-                    <div class="project-menu-dropdown" id="importDropdown">
-                        <div class="project-menu-section">
-                            <div class="project-menu-section-title">Import Project</div>
-                            <div id="importFileList">
-                                <div class="project-menu-item">
-                                    <span>No .psyclaw files found</span>
-                                </div>
-                            </div>
-                        </div>
+                <div class="project-menu-import-files" id="importFilesContainer">
+                    <div class="project-menu-import-files-title">Import</div>
+                    <div class="project-menu-import-files-list" id="importFileList">
+                        <div class="project-menu-import-files-empty">No .psyclaw files found</div>
                     </div>
                 </div>
                 <div class="project-menu-tools-divider"></div>
@@ -2562,23 +2634,39 @@
                 </svg>
                 <span id="projectFolderWarningText"></span>
             </div>
-            <div id="lastFolderSection" style="display: none; margin-bottom: 16px;">
-                <button type="button" class="project-folder-btn" id="useLastFolderBtn" style="background: var(--bg-light); color: var(--text-primary); border: 1px solid var(--border-color);">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <div id="lastFolderInfo" class="project-folder-info" style="display: none;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                </svg>
+                <span id="lastFolderPath">test_folder</span>
+            </div>
+            <div class="project-folder-actions" id="lastFolderSection" style="display: none;">
+                <button type="button" class="project-folder-btn" id="useLastFolderBtn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
                         <polyline points="9 22 9 12 15 12 15 22"></polyline>
                     </svg>
-                    <span id="useLastFolderBtnText">Use Last Folder</span>
+                    <span>Open Last Folder</span>
+                </button>
+                <button type="button" class="project-folder-link" id="selectProjectFolderBtn">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                        <line x1="12" y1="11" x2="12" y2="17"></line>
+                        <line x1="9" y1="14" x2="15" y2="14"></line>
+                    </svg>
+                    <span>Choose a different folder</span>
                 </button>
             </div>
-            <button type="button" class="project-folder-btn" id="selectProjectFolderBtn">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
-                    <line x1="12" y1="11" x2="12" y2="17"></line>
-                    <line x1="9" y1="14" x2="15" y2="14"></line>
-                </svg>
-                <span id="selectFolderBtnText">Select New Folder</span>
-            </button>
+            <div id="firstTimeSection" style="display: none; width: 100%;">
+                <button type="button" class="project-folder-btn" id="selectProjectFolderBtnFirst">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                        <line x1="12" y1="11" x2="12" y2="17"></line>
+                        <line x1="9" y1="14" x2="15" y2="14"></line>
+                    </svg>
+                    <span>Select Folder</span>
+                </button>
+            </div>
         </div>
     </div>
 </div>
@@ -2996,11 +3084,6 @@
             }, 1000); // 1 秒延迟
         }
 
-        // Initialize tasks
-        initializeProject().then(() => {
-            loadTasks();
-        });
-
         let isCanvasPanning = false;
         let canvasPanStartX = 0;
         let canvasPanStartY = 0;
@@ -3010,9 +3093,6 @@
         document.addEventListener('click', (e) => {
             if (!chatbotPanel.contains(e.target)) {
                 chatbotFrame.contentWindow.postMessage('closeAdvancedSettings', '*');
-            }
-            if (!importDropdownWrapper.contains(e.target)) {
-                closeImportDropdown();
             }
         });
          
@@ -3359,13 +3439,14 @@
                 const db = await openDB();
                 const tx = db.transaction(STORE_NAME, 'readwrite');
                 const store = tx.objectStore(STORE_NAME);
-                // 保存 handle 和 path 到 IndexedDB
-                await store.put({ id: 'currentProject', handle, path, timestamp: Date.now() });
-                // 同时保存到localStorage以便记住路径
+                store.put({ id: 'currentProject', handle, path, timestamp: Date.now() });
+                await new Promise((resolve, reject) => {
+                    tx.oncomplete = resolve;
+                    tx.onerror = () => reject(tx.error);
+                });
                 saveLastFolderPath(path);
             } catch (e) {
                 console.warn('Failed to save folder handle:', e);
-                // 即使IndexedDB失败，也尝试保存到localStorage
                 saveLastFolderPath(path);
             }
         }
@@ -3504,11 +3585,11 @@
             if (savedHandle && savedHandle.handle) {
                 try {
                     const permission = await savedHandle.handle.queryPermission({ mode: 'readwrite' });
-                    if (permission === 'granted' || (await savedHandle.handle.requestPermission({ mode: 'readwrite' })) === 'granted') {
+                    console.log('Auto-restore: queryPermission result:', permission);
+                    if (permission === 'granted') {
                         projectFolderHandle = savedHandle.handle;
                         projectFolderPath = savedHandle.path;
-                        console.log('Project folder restored from IndexedDB:', projectFolderPath);
-                        // 恢复成功后，刷新导入列表
+                        console.log('Project folder restored from IndexedDB (permission already granted):', projectFolderPath);
                         try {
                             await refreshImportDropdown();
                             console.log('Import dropdown refreshed from restored folder');
@@ -3518,6 +3599,8 @@
                         hideProjectFolderOverlay();
                         return;
                     }
+                    // 权限不是 granted，不自动弹窗请求，留给用户点击按钮时再请求
+                    console.log('Auto-restore: permission not granted, skipping automatic requestPermission to avoid popup on page load');
                 } catch (e) {
                     console.warn('Failed to restore saved handle:', e);
                 }
@@ -3526,71 +3609,147 @@
             // 如果没有自动恢复成功，显示 overlay 让用户选择
             console.log('No valid saved handle found, showing folder selection overlay');
 
-            // 检查是否有上次使用的文件夹
+            // 获取元素
             const lastFolderSection = document.getElementById('lastFolderSection');
+            const firstTimeSection = document.getElementById('firstTimeSection');
+            const lastFolderInfo = document.getElementById('lastFolderInfo');
+            const lastFolderPath = document.getElementById('lastFolderPath');
             const useLastFolderBtn = document.getElementById('useLastFolderBtn');
-            const useLastFolderBtnText = document.getElementById('useLastFolderBtnText');
-            const projectFolderSubtitle = document.getElementById('projectFolderSubtitle');
+            const selectProjectFolderBtn = document.getElementById('selectProjectFolderBtn');
+            const selectProjectFolderBtnFirst = document.getElementById('selectProjectFolderBtnFirst');
 
-            if (savedHandle && savedHandle.path) {
-                console.log('Found last used folder:', savedHandle.path);
-                lastFolderSection.style.display = 'block';
-                useLastFolderBtnText.textContent = `Use "${savedHandle.path}"`;
-                projectFolderSubtitle.textContent = `Last used: ${savedHandle.path}`;
+            // 从 localStorage 获取上次的路径作为备用
+            const lastFolderPathFromStorage = localStorage.getItem('psyclaw_last_folder_path');
+            const displayPath = (savedHandle && savedHandle.path) || lastFolderPathFromStorage;
 
+            if (displayPath) {
+                console.log('Found last used folder:', displayPath);
+                // 显示上次文件夹信息
+                lastFolderInfo.style.display = 'inline-flex';
+                lastFolderPath.textContent = displayPath;
+                // 显示上次文件夹操作区域
+                lastFolderSection.style.display = 'flex';
+
+                // 绑定"打开上次文件夹"按钮事件
                 useLastFolderBtn.addEventListener('click', async () => {
                     try {
                         console.log('User clicked use last folder');
-                        // 重新请求权限
-                        const permission = await savedHandle.handle.requestPermission({ mode: 'readwrite' });
-                        if (permission === 'granted') {
-                            projectFolderHandle = savedHandle.handle;
-                            projectFolderPath = savedHandle.path;
-                            console.log('Permission granted for last folder:', projectFolderPath);
+                        console.log('savedHandle exists:', !!savedHandle);
+                        console.log('savedHandle.handle exists:', !!(savedHandle && savedHandle.handle));
+
+                        if (savedHandle && savedHandle.handle) {
+                            console.log('savedHandle.handle type:', typeof savedHandle.handle);
+                            console.log('savedHandle.handle.name:', savedHandle.handle.name);
+                            console.log('savedHandle.path:', savedHandle.path);
+
+                            // 先检查当前权限状态
+                            let currentPermission = 'unknown';
                             try {
-                                await refreshImportDropdown();
-                                console.log('Import dropdown refreshed');
-                            } catch (e) {
-                                console.warn('Failed to refresh import dropdown:', e);
+                                currentPermission = await savedHandle.handle.queryPermission({ mode: 'readwrite' });
+                                console.log('Current permission state:', currentPermission);
+                            } catch (qErr) {
+                                console.warn('queryPermission failed:', qErr.name, qErr.message);
                             }
-                            hideProjectFolderOverlay();
+
+                            // 如果已经有权限，直接使用
+                            if (currentPermission === 'granted') {
+                                console.log('Permission already granted, reusing saved handle directly');
+                                projectFolderHandle = savedHandle.handle;
+                                projectFolderPath = savedHandle.path;
+                                await saveFolderHandle(savedHandle.handle, projectFolderPath);
+                                await refreshImportDropdown();
+                                hideProjectFolderOverlay();
+                                return;
+                            }
+
+                            // 尝试请求权限（这会弹出浏览器权限提示）
+                            try {
+                                console.log('About to call requestPermission...');
+                                const permission = await savedHandle.handle.requestPermission({ mode: 'readwrite' });
+                                console.log('requestPermission result:', permission);
+                                if (permission === 'granted') {
+                                    console.log('Permission granted for saved handle, reusing it directly');
+                                    projectFolderHandle = savedHandle.handle;
+                                    projectFolderPath = savedHandle.path;
+                                    await saveFolderHandle(savedHandle.handle, projectFolderPath);
+                                    await refreshImportDropdown();
+                                    hideProjectFolderOverlay();
+                                    return;
+                                }
+                                console.log('Permission not granted for saved handle, falling back to picker with startIn');
+                            } catch (permErr) {
+                                console.warn('requestPermission failed:', permErr.name, permErr.message);
+                            }
+
+                            // 使用 startIn 打开文件选择器，自动定位到上次文件夹
+                            try {
+                                const pickerOptions = {
+                                    id: 'psyclaw-project-folder',
+                                    mode: 'readwrite',
+                                    startIn: savedHandle.handle
+                                };
+                                console.log('Opening directory picker with startIn...');
+                                const newHandle = await window.showDirectoryPicker(pickerOptions);
+                                console.log('Directory picker returned new handle:', newHandle.name);
+                                projectFolderHandle = newHandle;
+                                projectFolderPath = newHandle.name;
+                                await saveFolderHandle(newHandle, projectFolderPath);
+                                await refreshImportDropdown();
+                                hideProjectFolderOverlay();
+                                return;
+                            } catch (pickerErr) {
+                                if (pickerErr.name === 'AbortError') {
+                                    console.log('User cancelled folder picker');
+                                    return;
+                                }
+                                console.warn('Picker with startIn failed:', pickerErr.name, pickerErr.message);
+                            }
                         } else {
-                            console.log('Permission denied for last folder');
-                            alert('Permission denied. Please select the folder again.');
+                            console.log('No saved handle available. savedHandle:', savedHandle);
+                        }
+
+                        console.log('All methods failed, showing warning');
+                        const warningEl = document.getElementById('projectFolderWarning');
+                        const warningTextEl = document.getElementById('projectFolderWarningText');
+                        if (warningEl && warningTextEl) {
+                            warningTextEl.textContent = 'Cannot automatically access the previous folder. Please select it again or choose a new folder.';
+                            warningEl.style.display = 'flex';
                         }
                     } catch (e) {
-                        console.error('Error requesting permission for last folder:', e);
-                        alert('Failed to access last folder. Please select a new folder.');
+                        console.error('Error during folder selection:', e);
+                        if (e.name !== 'AbortError') {
+                            alert('Failed to access folder. Please try again.');
+                        }
+                    }
+                });
+
+                // 绑定"选择其他文件夹"链接事件
+                selectProjectFolderBtn.addEventListener('click', async () => {
+                    try {
+                        const success = await selectProjectFolder();
+                        if (success) {
+                            hideProjectFolderOverlay();
+                        }
+                    } catch (e) {
+                        console.error('Error during folder selection:', e);
+                    }
+                });
+            } else {
+                // 没有上次使用的文件夹，显示首次使用界面
+                firstTimeSection.style.display = 'block';
+                selectProjectFolderBtnFirst.addEventListener('click', async () => {
+                    try {
+                        const success = await selectProjectFolder();
+                        if (success) {
+                            hideProjectFolderOverlay();
+                        }
+                    } catch (e) {
+                        console.error('Error during folder selection:', e);
                     }
                 });
             }
 
-            // 检查是否已经绑定过事件
-            const existingBtn = document.getElementById('selectProjectFolderBtn');
-            if (existingBtn && existingBtn.dataset.bound === 'true') {
-                console.log('Button event already bound, skipping');
-                return;
-            }
-
-            // 处理"选择文件夹"按钮点击
-            const handleClick = async () => {
-                try {
-                    console.log('handleClick: Starting folder selection');
-                    const success = await selectProjectFolder();
-                    console.log('handleClick: selectProjectFolder returned', success);
-                    if (success) {
-                        console.log('handleClick: Calling hideProjectFolderOverlay');
-                        hideProjectFolderOverlay();
-                    } else {
-                        console.log('handleClick: selectProjectFolder returned false, not hiding overlay');
-                    }
-                } catch (e) {
-                    console.error('handleClick: Error during folder selection:', e);
-                }
-            };
-            selectBtn.addEventListener('click', handleClick);
-            selectBtn.dataset.bound = 'true';
-            console.log('Project folder initialization complete, button event bound');
+            console.log('Project folder initialization complete');
 
             // Project menu bar interactions
             const menuTrigger = document.getElementById('projectMenuTrigger');
@@ -3659,6 +3818,11 @@
                 });
             }
         }
+
+        // Initialize project and tasks after all functions are defined
+        initializeProject().then(() => {
+            loadTasks();
+        });
 
         function createDefaultAvtpkData(type) {
             const defaults = {
@@ -4315,6 +4479,18 @@
             }
         }
 
+        /**
+         * 获取指定 routine 索引的连接点标签范围
+         * @param {number} routineIndex - routine 在数组中的索引
+         * @returns {Object} 包含 leftLabel 和 rightLabel 的对象
+         */
+        function getRoutineLabelRange(routineIndex) {
+            return {
+                leftLabel: routineIndex * 2 + 1,
+                rightLabel: routineIndex * 2 + 3
+            };
+        }
+
         // 获取 loop 包含的所有 routine 名称
         function getLoopRoutines(conn) {
             const startLabel = parseInt(conn.start.label);
@@ -4326,11 +4502,9 @@
             for (let i = 0; i < routineRects.length; i++) {
                 const rect = routineRects[i];
                 if (!rect) continue;
-                // routine i 占据的连接点范围：[i * 2 + 1, i * 2 + 3]
-                const routineLeftLabel = i * 2 + 1;
-                const routineRightLabel = i * 2 + 3;
+                const labelRange = getRoutineLabelRange(i);
                 // 如果 routine 在 loop 范围内
-                if (routineLeftLabel >= minLabel && routineRightLabel <= maxLabel) {
+                if (labelRange.leftLabel >= minLabel && labelRange.rightLabel <= maxLabel) {
                     routines.push(rect.name || `Routine ${i + 1}`);
                 }
             }
@@ -4372,15 +4546,14 @@
             for (let i = 0; i < routineRects.length; i++) {
                 const rect = routineRects[i];
                 if (!rect) continue;
-                const routineLeftLabel = i * 2 + 1;
-                const routineRightLabel = i * 2 + 3;
+                const labelRange = getRoutineLabelRange(i);
                 
                 // 检查 routine 是否在当前 loop 范围内
-                if (routineLeftLabel >= minLabel && routineRightLabel <= maxLabel) {
+                if (labelRange.leftLabel >= minLabel && labelRange.rightLabel <= maxLabel) {
                     // 检查 routine 是否被任何子 loop 包含
                     let isInChildLoop = false;
                     for (const childLoop of childLoops) {
-                        if (routineLeftLabel >= childLoop.minLabel && routineRightLabel <= childLoop.maxLabel) {
+                        if (labelRange.leftLabel >= childLoop.minLabel && labelRange.rightLabel <= childLoop.maxLabel) {
                             isInChildLoop = true;
                             break;
                         }
@@ -5160,12 +5333,10 @@
             const maxLabel = Math.max(startLabel, endLabel);
 
             // 检查每个 routine 是否在 loop 范围内
-            // routine i 占据的连接点范围：[i * 2 + 1, i * 2 + 3]
             for (let i = 0; i < routineRects.length; i++) {
-                const routineLeftLabel = i * 2 + 1;
-                const routineRightLabel = i * 2 + 3;
+                const labelRange = getRoutineLabelRange(i);
                 // 如果 routine 在 loop 范围内
-                if (routineLeftLabel >= minLabel && routineRightLabel <= maxLabel) {
+                if (labelRange.leftLabel >= minLabel && labelRange.rightLabel <= maxLabel) {
                     // 检查这个 routine 是否有 drag rect
                     const rect = routineRects[i];
                     if (rect && hasDragRectAtPoint({ x: rect.x + rect.width / 2, y: rect.y + rect.height / 2 })) {
@@ -7333,17 +7504,14 @@
             }
         });
 
-        // 导入下拉栏逻辑
-        const importTrigger = document.getElementById('importTrigger');
-        const importDropdown = document.getElementById('importDropdown');
-        const importDropdownWrapper = document.getElementById('importDropdownWrapper');
+        // 导入文件列表逻辑
         const importFileListEl = document.getElementById('importFileList');
 
         async function refreshImportDropdown() {
             console.log('refreshImportDropdown: Starting');
 
             if (!projectFolderHandle) {
-                importFileListEl.innerHTML = '<div class="project-menu-item"><span>No project folder selected</span></div>';
+                importFileListEl.innerHTML = '<div class="project-menu-import-files-empty">No project folder selected</div>';
                 return;
             }
 
@@ -7365,17 +7533,22 @@
             importFileListEl.innerHTML = '';
 
             if (psyclawFiles.length === 0) {
-                importFileListEl.innerHTML = '<div class="project-menu-item"><span>No .psyclaw files found</span></div>';
+                importFileListEl.innerHTML = '<div class="project-menu-import-files-empty">No .psyclaw files found</div>';
                 return;
             }
 
             psyclawFiles.forEach((file) => {
                 const item = document.createElement('div');
-                item.className = 'project-menu-item';
+                item.className = 'project-menu-import-files-item';
                 item.title = file.path;
-                item.innerHTML = `<span>${file.path}</span>`;
+                item.innerHTML = `
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                    </svg>
+                    <span class="project-menu-import-files-filename">${file.path}</span>
+                `;
                 item.addEventListener('click', async () => {
-                    closeImportDropdown();
                     await importProjectFile(file.handle);
                 });
                 importFileListEl.appendChild(item);
@@ -7492,29 +7665,7 @@
             }
         }
 
-        function openImportDropdown() {
-            refreshImportDropdown();
-            const rect = importDropdownWrapper.getBoundingClientRect();
-            importDropdown.style.top = (rect.bottom + 4) + 'px';
-            importDropdown.style.left = rect.left + 'px';
-            importDropdown.classList.add('open');
-            importTrigger.classList.add('open');
-        }
 
-        function closeImportDropdown() {
-            importDropdown.classList.remove('open');
-            importTrigger.classList.remove('open');
-        }
-
-        importTrigger.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const isOpen = importDropdown.classList.contains('open');
-            if (isOpen) {
-                closeImportDropdown();
-            } else {
-                openImportDropdown();
-            }
-        });
 
         // 监听来自 chatbot.html 的 flowchart 生成数据
         window.addEventListener('message', (e) => {
@@ -7981,11 +8132,9 @@
                 // 检查这个 loop 包含的所有 routine
                 let hasKeepRoutine = false;
                 for (let i = 0; i < routineRects.length; i++) {
-                    // routine i 占据的连接点范围：[i * 2 + 1, i * 2 + 3]
-                    const routineLeftLabel = i * 2 + 1;
-                    const routineRightLabel = i * 2 + 3;
+                    const labelRange = getRoutineLabelRange(i);
                     // 如果 routine 在 loop 范围内（loop 的连接点范围与 routine 的连接点范围有重叠）
-                    if (routineLeftLabel >= minLabel && routineRightLabel <= maxLabel) {
+                    if (labelRange.leftLabel >= minLabel && labelRange.rightLabel <= maxLabel) {
                         // 如果这个 routine 不是被删除的
                         if (i !== removedRoutineIndex) {
                             hasKeepRoutine = true;
@@ -8109,11 +8258,9 @@
                 // 检查这个 loop 包含的所有 routine
                 let hasKeepRoutine = false;
                 for (let i = 0; i < previewRoutines.length; i++) {
-                    // routine i 占据的连接点范围：[i * 2 + 1, i * 2 + 3]
-                    const routineLeftLabel = i * 2 + 1;
-                    const routineRightLabel = i * 2 + 3;
+                    const labelRange = getRoutineLabelRange(i);
                     // 如果 routine 在 loop 范围内（loop 的连接点范围与 routine 的连接点范围有重叠）
-                    if (routineLeftLabel >= minLabel && routineRightLabel <= maxLabel) {
+                    if (labelRange.leftLabel >= minLabel && labelRange.rightLabel <= maxLabel) {
                         // 如果这个 routine 不是被删除的
                         if (i !== removedRoutineIndex) {
                             hasKeepRoutine = true;
