@@ -6168,6 +6168,18 @@
                 }
             }
 
+            // 通知父窗口清除 flowchart
+            window.parent.postMessage({
+                type: 'clear-flowchart'
+            }, '*');
+            
+            // 清除当前 task 的 flowchartData
+            const currentTask = tasks.find(t => t.id === currentTaskId);
+            if (currentTask) {
+                currentTask.flowchartData = null;
+                saveTasks();
+            }
+
             showToast('Message deleted', 'success', 1500);
         };
 

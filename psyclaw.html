@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
@@ -398,6 +398,77 @@
 
         .avtp-form-input::placeholder {
             color: var(--text-muted);
+        }
+
+        .avtp-form-textarea {
+            resize: none;
+            min-height: 60px;
+            max-height: 300px;
+            font-family: var(--font-ui);
+            line-height: 1.5;
+            padding: 10px 12px;
+            overflow-x: hidden;
+            transition: none;
+        }
+
+        .avtp-form-textarea::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .avtp-form-textarea::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .avtp-form-textarea::-webkit-scrollbar-thumb {
+            background: var(--border-gray);
+            border-radius: 2px;
+        }
+
+        .avtp-form-textarea::-webkit-scrollbar-thumb:hover {
+            background: var(--text-muted);
+        }
+
+        .avtp-form-textarea::-webkit-resizer {
+            display: none;
+        }
+
+        .avtp-textarea-wrapper {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .avtp-resize-handle {
+            position: absolute;
+            bottom: 4px;
+            right: 4px;
+            width: 16px;
+            height: 16px;
+            cursor: ns-resize;
+            pointer-events: auto;
+            z-index: 1;
+        }
+
+        .avtp-resize-handle::before {
+            content: '';
+            position: absolute;
+            bottom: 4px;
+            right: 4px;
+            width: 10px;
+            height: 2px;
+            background: var(--text-muted);
+            border-radius: 1px;
+        }
+
+        .avtp-resize-handle::after {
+            content: '';
+            position: absolute;
+            bottom: 4px;
+            right: 4px;
+            width: 2px;
+            height: 10px;
+            background: var(--text-muted);
+            border-radius: 1px;
         }
 
         .avtp-form-checkbox {
@@ -1209,12 +1280,15 @@
 
         /* 隐藏 number 输入框的滚轮 */
         .loop-cond-weight-input::-webkit-outer-spin-button,
-        .loop-cond-weight-input::-webkit-inner-spin-button {
+        .loop-cond-weight-input::-webkit-inner-spin-button,
+        .avtp-form-input::-webkit-outer-spin-button,
+        .avtp-form-input::-webkit-inner-spin-button {
             -webkit-appearance: none;
             margin: 0;
         }
 
-        .loop-cond-weight-input[type=number] {
+        .loop-cond-weight-input[type=number],
+        .avtp-form-input[type=number] {
             -moz-appearance: textfield;
             appearance: textfield;
         }
@@ -1837,9 +1911,10 @@
             box-shadow: var(--shadow-elevated);
             padding: 8px;
             display: none;
-            z-index: 999999;
+            z-index: 1000000;
             animation: dropdownFadeIn 0.15s ease;
             flex: none;
+            pointer-events: auto;
         }
 
         .project-menu-dropdown.open {
@@ -1850,20 +1925,27 @@
             position: relative;
             flex-shrink: 0;
         }
-
-        .project-menu-import-files {
+        
+        .project-menu-import-wrapper {
             position: relative;
+            flex-shrink: 0;
+        }
+        
+        .project-menu-import-files {
+            position: fixed;
             flex-direction: column;
             min-width: 200px;
             max-width: 280px;
-            max-height: 300px;
+            max-height: 400px;
             background: var(--bg-white);
             border: 1px solid var(--border-light);
             border-radius: 10px;
             box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
             overflow: hidden;
-            z-index: 1000;
+            z-index: 1000001;
             flex-shrink: 0;
+            display: flex;
+            pointer-events: auto;
         }
 
         .project-menu-import-files-title {
@@ -1944,6 +2026,57 @@
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
+        }
+
+        /* File delete button - Refined Design */
+        .project-menu-file-delete {
+            width: 24px;
+            height: 24px;
+            border: none;
+            background: transparent;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ef4444;
+            opacity: 0;
+            transition: all 0.15s ease;
+            flex-shrink: 0;
+        }
+
+        .project-menu-import-files-item:hover .project-menu-file-delete {
+            opacity: 1;
+        }
+
+        .project-menu-file-delete:hover {
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .project-menu-file-delete svg {
+            width: 14px;
+            height: 14px;
+            color: #ef4444 !important;
+        }
+
+        /* Menu dropdown 中的 Auto Detect 列表样式 */
+        #menuImportFileList {
+            max-height: 150px;
+            overflow-y: auto;
+            padding: 4px;
+        }
+
+        #menuImportFileList::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        #menuImportFileList::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        #menuImportFileList::-webkit-scrollbar-thumb {
+            background: var(--border-gray);
+            border-radius: 2px;
         }
 
         @keyframes dropdownFadeIn {
@@ -2085,7 +2218,10 @@
         <div class="avtp-form-group" id="textOptions">
             <div class="avtp-form-group">
                 <label class="avtp-form-label">Text Content</label>
-                <input type="text" class="avtp-form-input" id="formText" placeholder="Enter text...">
+                <div class="avtp-textarea-wrapper">
+                    <textarea class="avtp-form-input avtp-form-textarea" id="formText" placeholder="Enter text..." rows="3"></textarea>
+                    <div class="avtp-resize-handle"></div>
+                </div>
             </div>
             <div class="avtp-form-row">
                 <div>
@@ -2096,18 +2232,6 @@
                     <label class="avtp-form-label">Letter Height</label>
                     <input type="text" class="avtp-form-input" id="formLetterHeight" step="0.01" placeholder="0.05">
                 </div>
-                <div class="project-menu-tools-divider"></div>
-                <button type="button" class="project-menu-tool-btn" id="addRoutine" title="Add Routine">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="12" y1="5" x2="12" y2="19"></line>
-                        <line x1="5" y1="12" x2="19" y2="12"></line>
-                    </svg>
-                </button>
-                <button type="button" class="project-menu-tool-btn" id="removeRoutine" title="Remove Routine">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="5" y1="12" x2="19" y2="12"></line>
-                    </svg>
-                </button>
             </div>
             <div class="avtp-form-row form-row-margin">
                 <div>
@@ -2524,12 +2648,6 @@
                         <path d="M834.8 932.4H188.4c-25.4 0-49.1-9.9-66.9-27.8C103.8 886.7 94 863.1 94 838V185.7c0-52 42.3-94.3 94.4-94.3H353c19.3 0 35 15.7 35 35s-15.7 35-35 35H188.4c-13.5 0-24.4 10.9-24.4 24.3V838c0 6.4 2.6 12.7 7.3 17.4 4.5 4.5 10.6 7 17.1 7h646.4c6.4 0 12.6-2.6 17.2-7.1 4.5-4.5 7-10.7 7-17.2V674c0-19.3 15.7-35 35-35s35 15.7 35 35v164c0 25.3-9.8 49-27.5 66.7-17.6 17.6-41.9 27.7-66.7 27.7z"></path>
                     </svg>
                 </button>
-                <div class="project-menu-import-files" id="importFilesContainer">
-                    <div class="project-menu-import-files-title">Auto Detect</div>
-                    <div class="project-menu-import-files-list" id="importFileList">
-                        <div class="project-menu-import-files-empty">No .psyclaw files found</div>
-                    </div>
-                </div>
                 <div class="project-menu-tools-divider"></div>
                 <button type="button" class="project-menu-tool-btn" id="addRoutine" title="Add Routine">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -2570,6 +2688,13 @@
                         </svg>
                         <span>Change Folder</span>
                     </button>
+                </div>
+                <div class="project-menu-divider"></div>
+                <div class="project-menu-section">
+                    <div class="project-menu-section-title">Auto Detect</div>
+                    <div class="project-menu-import-files-list" id="menuImportFileList">
+                        <div class="project-menu-import-files-empty">No .psyclaw files found</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -2692,7 +2817,15 @@
         
         const DEBUG = false;
         const canvas = document.getElementById('canvas');
-        const ctx = canvas.getContext('2d');
+        let ctx = canvas.getContext('2d');
+        
+        // 离屏缓存画布 - 用于优化拖动性能
+        const offscreenCanvas = document.createElement('canvas');
+        const offscreenCtx = offscreenCanvas.getContext('2d');
+        let offscreenCacheValid = false;
+        let offscreenScale = 1;
+        let offscreenViewportX = 0;
+        let offscreenViewportY = 0;
 
         // 标准化的操作确认对话框
         async function confirmAction(action, options = {}) {
@@ -2965,7 +3098,7 @@
                 id: rect.id,
                 name: rect.name,
                 duration: rect.duration,
-                avtpComponents: rect.avtpComponents || []
+                components: rect.components || []
             }));
 
             const loops = connectionsToLoops(connections);
@@ -3032,7 +3165,7 @@
                         width: rect.width,
                         height: rect.height,
                         duration: rect.duration,
-                        avtpComponents: rect.avtpComponents || []
+                        components: rect.components || []
                     }));
 
                     // 将 connections 转换为 loops
@@ -3048,29 +3181,22 @@
                     };
 
                     const jsonData = JSON.stringify(projectData, null, 2);
-                    // 确保使用.psyclaw 扩展名
-                    let fileName = currentProjectFile;
-                    if (!fileName || fileName.endsWith('.json')) {
-                        fileName = `auto_save_${new Date().toISOString().replace(/[:.]/g, '-')}.psyclaw`;
-                    } else if (!fileName.endsWith('.psyclaw')) {
-                        fileName = fileName + '.psyclaw';
-                    }
+                    // 自动保存使用带 ~ 前缀的临时文件名（类似 Office 的临时文件机制）
+                    const autoSaveFileName = '~$auto_save.psyclaw';
 
                     // 如果有项目文件夹，保存到项目文件夹
                     if (projectFolderHandle) {
                         try {
-                            const folderFileHandle = await projectFolderHandle.getFileHandle(fileName, { create: true });
+                            const folderFileHandle = await projectFolderHandle.getFileHandle(autoSaveFileName, { create: true });
                             const writable = await folderFileHandle.createWritable();
                             await writable.write(jsonData);
                             await writable.close();
-                            fileHandle = folderFileHandle;
-                            currentProjectFile = folderFileHandle.name;
-                            console.log('Auto-saved project to:', fileName);
+                            console.log('Auto-saved project to:', autoSaveFileName);
                         } catch (error) {
                             console.warn('Auto-save to project folder failed:', error);
                         }
                     }
-                    // 如果已经有文件句柄，直接保存
+                    // 如果已经有文件句柄，直接保存到原文件
                     else if (fileHandle) {
                         try {
                             const writable = await fileHandle.createWritable();
@@ -3203,6 +3329,7 @@
             viewportX = canvasCenterX / newScale - flowchartCenter.x;
             viewportY = canvasCenterY / newScale - flowchartCenter.y;
             scale = newScale;
+            offscreenCacheValid = false;
 
             draw();
             updateZoomLevelDisplay();
@@ -3223,6 +3350,7 @@
             viewportX = canvasCenterX / newScale - flowchartCenter.x;
             viewportY = canvasCenterY / newScale - flowchartCenter.y;
             scale = newScale;
+            offscreenCacheValid = false;
 
             draw();
             updateZoomLevelDisplay();
@@ -3242,6 +3370,7 @@
             // 将 flowchart 中心点置于画布中心（排除 chatbot）
             viewportX = canvasCenterX / scale - flowchartCenter.x;
             viewportY = canvasCenterY / scale - flowchartCenter.y;
+            offscreenCacheValid = false;
             
             draw();
             updateZoomLevelDisplay();
@@ -3295,6 +3424,7 @@
             updateRoutineCount();
             updateCanvasWidthForRoutines();
             renderAvtpComponentsList(activeDragRect);
+            offscreenCacheValid = false;
             draw();
             updateUndoButtons();
         }
@@ -3324,6 +3454,7 @@
             updateRoutineCount();
             updateCanvasWidthForRoutines();
             renderAvtpComponentsList(activeDragRect);
+            offscreenCacheValid = false;
             draw();
             updateUndoButtons();
         }
@@ -3346,6 +3477,7 @@
             canvas.width = window.innerWidth * dpr;
             canvas.height = window.innerHeight * dpr;
             ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            offscreenCacheValid = false;
             draw();
         });
 
@@ -3521,6 +3653,33 @@
                     console.warn('Failed to refresh import dropdown:', e);
                 }
 
+                // 自动导入：扫描并导入第一个合法的 .psyclaw 文件
+                try {
+                    const psyclawFiles = [];
+                    async function scanForImport(dirHandle, path = '') {
+                        for await (const entry of dirHandle.values()) {
+                            const entryPath = path ? `${path}/${entry.name}` : entry.name;
+                            if (entry.kind === 'file' && entry.name.endsWith('.psyclaw') && !entry.name.startsWith('~')) {
+                                psyclawFiles.push({ handle: entry, path: entryPath, name: entry.name });
+                            } else if (entry.kind === 'directory') {
+                                await scanForImport(entry, entryPath);
+                            }
+                        }
+                    }
+                    await scanForImport(projectFolderHandle);
+                    
+                    if (psyclawFiles.length > 0) {
+                        // 按文件名排序
+                        psyclawFiles.sort((a, b) => a.name.localeCompare(b.name));
+                        const firstFile = psyclawFiles[0];
+                        console.log('Auto-importing first .psyclaw file:', firstFile.path);
+                        await importProjectFile(firstFile.handle);
+                        showNotification(`📂 Auto-imported: ${firstFile.path}`);
+                    }
+                } catch (e) {
+                    console.warn('Auto-import failed:', e);
+                }
+
                 if (warningEl) {
                     warningEl.style.display = 'none';
                 }
@@ -3564,7 +3723,80 @@
                     folderHandle: projectFolderHandle
                 }, '*');
             }
+            
+            // 检查是否存在临时文件，提示恢复
+            checkAndOfferRecovery();
+            
             console.log('hideProjectFolderOverlay: Completed');
+        }
+        
+        // 检查并提示恢复临时文件
+        async function checkAndOfferRecovery() {
+            if (!projectFolderHandle) return;
+            
+            console.log('Checking for temp files to recover...');
+            const tempFiles = [];
+            
+            async function scanForTempFiles(dirHandle, path = '') {
+                for await (const entry of dirHandle.values()) {
+                    const entryPath = path ? `${path}/${entry.name}` : entry.name;
+                    if (entry.kind === 'file' && entry.name.startsWith('~') && entry.name.endsWith('.psyclaw')) {
+                        tempFiles.push({ handle: entry, path: entryPath, name: entry.name });
+                    } else if (entry.kind === 'directory') {
+                        await scanForTempFiles(entry, entryPath);
+                    }
+                }
+            }
+            
+            try {
+                await scanForTempFiles(projectFolderHandle);
+                
+                if (tempFiles.length > 0) {
+                    console.log('Found temp files for recovery:', tempFiles);
+                    
+                    // 获取最新的临时文件
+                    const latestTempFile = tempFiles[0];
+                    
+                    // 显示恢复提示
+                    const shouldRecover = confirm(
+                        `检测到未保存的自动备份文件：\n${latestTempFile.name}\n\n` +
+                        `上次编辑可能未正常保存。\n` +
+                        `是否恢复此文件？\n\n` +
+                        `点击"确定"恢复备份文件\n` +
+                        `点击"取消"删除备份文件并继续`
+                    );
+                    
+                    if (shouldRecover) {
+                        // 恢复文件
+                        await importProjectFile(latestTempFile.handle);
+                        console.log('Recovered from temp file:', latestTempFile.path);
+                        
+                        // 清理其他临时文件
+                        for (const tempFile of tempFiles) {
+                            if (tempFile.path !== latestTempFile.path) {
+                                try {
+                                    await projectFolderHandle.removeEntry(tempFile.path);
+                                    console.log('Deleted old temp file:', tempFile.path);
+                                } catch (err) {
+                                    console.warn('Failed to delete old temp file:', tempFile.path);
+                                }
+                            }
+                        }
+                    } else {
+                        // 用户选择不恢复，删除所有临时文件
+                        for (const tempFile of tempFiles) {
+                            try {
+                                await projectFolderHandle.removeEntry(tempFile.path);
+                                console.log('Deleted temp file:', tempFile.path);
+                            } catch (err) {
+                                console.warn('Failed to delete temp file:', tempFile.path);
+                            }
+                        }
+                    }
+                }
+            } catch (error) {
+                console.warn('Error checking for temp files:', error);
+            }
         }
 
         function updateProjectMenuUI() {
@@ -3585,6 +3817,7 @@
 
             // 首先尝试从 IndexedDB 恢复 handle（完全自动恢复）
             const savedHandle = await loadFolderHandle();
+            let folderRestored = false;
             if (savedHandle && savedHandle.handle) {
                 try {
                     const permission = await savedHandle.handle.queryPermission({ mode: 'readwrite' });
@@ -3592,6 +3825,7 @@
                     if (permission === 'granted') {
                         projectFolderHandle = savedHandle.handle;
                         projectFolderPath = savedHandle.path;
+                        folderRestored = true;
                         console.log('Project folder restored from IndexedDB (permission already granted):', projectFolderPath);
                         try {
                             await refreshImportDropdown();
@@ -3599,8 +3833,35 @@
                         } catch (e) {
                             console.warn('Failed to refresh import dropdown:', e);
                         }
+                        
+                        // 自动导入：扫描并导入第一个合法的 .psyclaw 文件
+                        try {
+                            const psyclawFiles = [];
+                            async function scanForImport(dirHandle, path = '') {
+                                for await (const entry of dirHandle.values()) {
+                                    const entryPath = path ? `${path}/${entry.name}` : entry.name;
+                                    if (entry.kind === 'file' && entry.name.endsWith('.psyclaw') && !entry.name.startsWith('~')) {
+                                        psyclawFiles.push({ handle: entry, path: entryPath, name: entry.name });
+                                    } else if (entry.kind === 'directory') {
+                                        await scanForImport(entry, entryPath);
+                                    }
+                                }
+                            }
+                            await scanForImport(projectFolderHandle);
+                            
+                            if (psyclawFiles.length > 0) {
+                                // 按文件名排序
+                                psyclawFiles.sort((a, b) => a.name.localeCompare(b.name));
+                                const firstFile = psyclawFiles[0];
+                                console.log('Auto-importing first .psyclaw file:', firstFile.path);
+                                await importProjectFile(firstFile.handle);
+                                showNotification(`📂 Auto-imported: ${firstFile.path}`);
+                            }
+                        } catch (e) {
+                            console.warn('Auto-import failed:', e);
+                        }
+                        
                         hideProjectFolderOverlay();
-                        return;
                     }
                     // 权限不是 granted，不自动弹窗请求，留给用户点击按钮时再请求
                     console.log('Auto-restore: permission not granted, skipping automatic requestPermission to avoid popup on page load');
@@ -3610,22 +3871,23 @@
             }
 
             // 如果没有自动恢复成功，显示 overlay 让用户选择
-            console.log('No valid saved handle found, showing folder selection overlay');
+            if (!folderRestored) {
+                console.log('No valid saved handle found, showing folder selection overlay');
 
-            // 获取元素
-            const lastFolderSection = document.getElementById('lastFolderSection');
-            const firstTimeSection = document.getElementById('firstTimeSection');
-            const lastFolderInfo = document.getElementById('lastFolderInfo');
-            const lastFolderPath = document.getElementById('lastFolderPath');
-            const useLastFolderBtn = document.getElementById('useLastFolderBtn');
-            const selectProjectFolderBtn = document.getElementById('selectProjectFolderBtn');
-            const selectProjectFolderBtnFirst = document.getElementById('selectProjectFolderBtnFirst');
+                // 获取元素
+                const lastFolderSection = document.getElementById('lastFolderSection');
+                const firstTimeSection = document.getElementById('firstTimeSection');
+                const lastFolderInfo = document.getElementById('lastFolderInfo');
+                const lastFolderPath = document.getElementById('lastFolderPath');
+                const useLastFolderBtn = document.getElementById('useLastFolderBtn');
+                const selectProjectFolderBtn = document.getElementById('selectProjectFolderBtn');
+                const selectProjectFolderBtnFirst = document.getElementById('selectProjectFolderBtnFirst');
 
-            // 从 localStorage 获取上次的路径作为备用
-            const lastFolderPathFromStorage = localStorage.getItem('psyclaw_last_folder_path');
-            const displayPath = (savedHandle && savedHandle.path) || lastFolderPathFromStorage;
+                // 从 localStorage 获取上次的路径作为备用
+                const lastFolderPathFromStorage = localStorage.getItem('psyclaw_last_folder_path');
+                const displayPath = (savedHandle && savedHandle.path) || lastFolderPathFromStorage;
 
-            if (displayPath) {
+                if (displayPath) {
                 console.log('Found last used folder:', displayPath);
                 // 显示上次文件夹信息
                 lastFolderInfo.style.display = 'inline-flex';
@@ -3661,6 +3923,33 @@
                                 projectFolderPath = savedHandle.path;
                                 await saveFolderHandle(savedHandle.handle, projectFolderPath);
                                 await refreshImportDropdown();
+                                
+                                // 自动导入：扫描并导入第一个合法的 .psyclaw 文件
+                                try {
+                                    const psyclawFiles = [];
+                                    async function scanForImport(dirHandle, path = '') {
+                                        for await (const entry of dirHandle.values()) {
+                                            const entryPath = path ? `${path}/${entry.name}` : entry.name;
+                                            if (entry.kind === 'file' && entry.name.endsWith('.psyclaw') && !entry.name.startsWith('~')) {
+                                                psyclawFiles.push({ handle: entry, path: entryPath, name: entry.name });
+                                            } else if (entry.kind === 'directory') {
+                                                await scanForImport(entry, entryPath);
+                                            }
+                                        }
+                                    }
+                                    await scanForImport(projectFolderHandle);
+                                    
+                                    if (psyclawFiles.length > 0) {
+                                        psyclawFiles.sort((a, b) => a.name.localeCompare(b.name));
+                                        const firstFile = psyclawFiles[0];
+                                        console.log('Auto-importing first .psyclaw file:', firstFile.path);
+                                        await importProjectFile(firstFile.handle);
+                                        showNotification(`📂 Auto-imported: ${firstFile.path}`);
+                                    }
+                                } catch (e) {
+                                    console.warn('Auto-import failed:', e);
+                                }
+                                
                                 hideProjectFolderOverlay();
                                 return;
                             }
@@ -3676,6 +3965,33 @@
                                     projectFolderPath = savedHandle.path;
                                     await saveFolderHandle(savedHandle.handle, projectFolderPath);
                                     await refreshImportDropdown();
+                                    
+                                    // 自动导入：扫描并导入第一个合法的 .psyclaw 文件
+                                    try {
+                                        const psyclawFiles = [];
+                                        async function scanForImport(dirHandle, path = '') {
+                                            for await (const entry of dirHandle.values()) {
+                                                const entryPath = path ? `${path}/${entry.name}` : entry.name;
+                                                if (entry.kind === 'file' && entry.name.endsWith('.psyclaw') && !entry.name.startsWith('~')) {
+                                                    psyclawFiles.push({ handle: entry, path: entryPath, name: entry.name });
+                                                } else if (entry.kind === 'directory') {
+                                                    await scanForImport(entry, entryPath);
+                                                }
+                                            }
+                                        }
+                                        await scanForImport(projectFolderHandle);
+                                        
+                                        if (psyclawFiles.length > 0) {
+                                            psyclawFiles.sort((a, b) => a.name.localeCompare(b.name));
+                                            const firstFile = psyclawFiles[0];
+                                            console.log('Auto-importing first .psyclaw file:', firstFile.path);
+                                            await importProjectFile(firstFile.handle);
+                                            showNotification(`📂 Auto-imported: ${firstFile.path}`);
+                                        }
+                                    } catch (e) {
+                                        console.warn('Auto-import failed:', e);
+                                    }
+                                    
                                     hideProjectFolderOverlay();
                                     return;
                                 }
@@ -3698,6 +4014,33 @@
                                 projectFolderPath = newHandle.name;
                                 await saveFolderHandle(newHandle, projectFolderPath);
                                 await refreshImportDropdown();
+                                
+                                // 自动导入：扫描并导入第一个合法的 .psyclaw 文件
+                                try {
+                                    const psyclawFiles = [];
+                                    async function scanForImport(dirHandle, path = '') {
+                                        for await (const entry of dirHandle.values()) {
+                                            const entryPath = path ? `${path}/${entry.name}` : entry.name;
+                                            if (entry.kind === 'file' && entry.name.endsWith('.psyclaw') && !entry.name.startsWith('~')) {
+                                                psyclawFiles.push({ handle: entry, path: entryPath, name: entry.name });
+                                            } else if (entry.kind === 'directory') {
+                                                await scanForImport(entry, entryPath);
+                                            }
+                                        }
+                                    }
+                                    await scanForImport(projectFolderHandle);
+                                    
+                                    if (psyclawFiles.length > 0) {
+                                        psyclawFiles.sort((a, b) => a.name.localeCompare(b.name));
+                                        const firstFile = psyclawFiles[0];
+                                        console.log('Auto-importing first .psyclaw file:', firstFile.path);
+                                        await importProjectFile(firstFile.handle);
+                                        showNotification(`📂 Auto-imported: ${firstFile.path}`);
+                                    }
+                                } catch (e) {
+                                    console.warn('Auto-import failed:', e);
+                                }
+                                
                                 hideProjectFolderOverlay();
                                 return;
                             } catch (pickerErr) {
@@ -3750,6 +4093,7 @@
                         console.error('Error during folder selection:', e);
                     }
                 });
+                }
             }
 
             console.log('Project folder initialization complete');
@@ -3763,7 +4107,16 @@
             if (menuTrigger && menuDropdown) {
                 function updateDropdownPosition() {
                     const triggerRect = menuTrigger.getBoundingClientRect();
-                    menuDropdown.style.top = (triggerRect.bottom + 4) + 'px';
+                    const dropdownRect = menuDropdown.getBoundingClientRect();
+                    const viewportHeight = window.innerHeight;
+                    
+                    let top = triggerRect.bottom + 4;
+                    
+                    if (top + dropdownRect.height > viewportHeight - 10) {
+                        top = Math.max(10, triggerRect.top - dropdownRect.height - 4);
+                    }
+                    
+                    menuDropdown.style.top = top + 'px';
                     menuDropdown.style.left = triggerRect.left + 'px';
                 }
 
@@ -3783,6 +4136,18 @@
                         menuTrigger.classList.remove('open');
                     }
                 });
+                
+                window.addEventListener('scroll', () => {
+                    if (menuDropdown.classList.contains('open')) {
+                        updateDropdownPosition();
+                    }
+                }, { passive: true });
+                
+                window.addEventListener('resize', () => {
+                    if (menuDropdown.classList.contains('open')) {
+                        updateDropdownPosition();
+                    }
+                }, { passive: true });
             }
 
             if (newProjectBtn) {
@@ -3922,7 +4287,7 @@
                 offsetY: 0,
                 keys: 'Space, F, J',
                 duration: 3000,
-                avtpComponents: [
+                components: [
                     createAvtpkComponent('k')
                 ]
             };
@@ -3940,8 +4305,8 @@
             
             let requiredHeight = padding + headerHeight + extraPadding;
             
-            const avtpComponents = rect.avtpComponents || [];
-            const enabledComponents = avtpComponents.filter(c => c && c.enabled);
+            const components = rect.components || [];
+            const enabledComponents = components.filter(c => c && c.enabled);
             
             // 所有 AVTPK 组件都使用 timeline 样式显示，统一使用 timelineLineHeight
             const allAvtpkComponents = enabledComponents.filter(c => 
@@ -3979,6 +4344,20 @@
         let activeAvtpComponent = null;
         let activeDragRect = null;
         let activeConnection = null;
+
+        let drawScheduled = false;
+        let lastMouseX = 0;
+        let lastMouseY = 0;
+
+        function scheduleDraw() {
+            if (!drawScheduled) {
+                drawScheduled = true;
+                requestAnimationFrame(() => {
+                    drawScheduled = false;
+                    draw();
+                });
+            }
+        }
 
         const snapDistance = 80;
         const pointClickRadius = 20;
@@ -4029,9 +4408,9 @@
                     }
                 }
                 
-                // 检查 routine 的 avtpComponents 中的组件 ID
-                if (activeDragRect.avtpComponents && Array.isArray(activeDragRect.avtpComponents)) {
-                    activeDragRect.avtpComponents.forEach((comp, index) => {
+                // 检查 routine 的 components 中的组件 ID
+                if (activeDragRect.components && Array.isArray(activeDragRect.components)) {
+                    activeDragRect.components.forEach((comp, index) => {
                         if (comp && !comp.id) {
                             issues.push({
                                 type: 'activeComponent',
@@ -4814,6 +5193,35 @@
             });
         }
 
+        // 缓存 loop 内容，避免每次绘制都重新计算
+        let loopContentsCache = null;
+        let loopContentsCacheKey = null;
+        
+        function getLoopContentsCached(conn, allConnections) {
+            // 使用 connections 数组长度和 routineRects 长度作为缓存键的一部分
+            const cacheKey = `${allConnections.length}-${routineRects.length}-${connections.indexOf(conn)}`;
+            
+            if (loopContentsCacheKey !== cacheKey) {
+                loopContentsCache = new Map();
+                loopContentsCacheKey = cacheKey;
+            }
+            
+            const connIndex = allConnections.indexOf(conn);
+            if (loopContentsCache.has(connIndex)) {
+                return loopContentsCache.get(connIndex);
+            }
+            
+            const contents = getLoopContents(conn, allConnections);
+            loopContentsCache.set(connIndex, contents);
+            return contents;
+        }
+        
+        // 清除 loop 内容缓存
+        function clearLoopContentsCache() {
+            loopContentsCache = null;
+            loopContentsCacheKey = null;
+        }
+
         function drawConnectionLines() {
             let previewConn = null;
             let allConns = connections;
@@ -4828,6 +5236,8 @@
                 const allConnsWithPreview = [...connections, previewConn];
                 rebuildAllConnectionDepthsForPreview(allConnsWithPreview, previewConn);
                 allConns = allConnsWithPreview;
+                // 拖拽时清除缓存
+                clearLoopContentsCache();
             }
 
             const sortedConnections = [...connections].sort((a, b) => {
@@ -4839,6 +5249,11 @@
                 }
                 return a.depth - b.depth;
             });
+
+            // 批量设置字体，避免频繁切换
+            ctx.font = '600 14px DM Sans, Outfit, sans-serif';
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
 
             sortedConnections.forEach(conn => {
                 // 端点拖拽时，隐藏正在拖拽的原始连线（预览线会显示）
@@ -4857,8 +5272,6 @@
                     ctx.strokeStyle = '#808080';
                     ctx.lineWidth = 1.5;
                 }
-                ctx.lineCap = 'round';
-                ctx.lineJoin = 'round';
                 ctx.setLineDash([]);
 
                 const offsetY = getConnectionOffsetY(conn, allConns);
@@ -4909,7 +5322,6 @@
 
                 const middleX = (conn.start.x + conn.end.x) / 2;
                 const loopName = conn.loopName || 'trials';
-                ctx.font = '600 14px DM Sans, Outfit, sans-serif';
                 // 根据文字宽度计算矩形宽度，最小60，两边各留12px边距
                 const textWidth = ctx.measureText(loopName).width;
                 const followRectWidth = Math.max(60, textWidth + 24);
@@ -4938,7 +5350,7 @@
 
                 // 绘制 loop 包含的 routines 和 nested loops label
                 if (!isPreview) {
-                    const loopContents = getLoopContents(conn, allConns);
+                    const loopContents = getLoopContentsCached(conn, allConns);
                     const allItems = [
                         ...loopContents.routines.map(r => r.name),
                         ...loopContents.loops.map(l => l.name)
@@ -4953,23 +5365,156 @@
                         let labelText = allItems.join(', ');
                         const maxWidth = Math.abs(endX - startX) - 20; // 最大宽度为 loop 宽度减去边距
                         
-                        // 如果文本太长，截断并添加省略号
+                        // 使用二分查找优化文本截断
                         let displayText = labelText;
-                        while (ctx.measureText(displayText + '...').width > maxWidth && displayText.length > 0) {
-                            displayText = displayText.slice(0, -1);
-                        }
-                        if (displayText !== labelText) {
-                            displayText = displayText + '...';
+                        if (ctx.measureText(labelText).width > maxWidth) {
+                            let left = 0;
+                            let right = labelText.length;
+                            while (left < right) {
+                                const mid = Math.floor((left + right + 1) / 2);
+                                if (ctx.measureText(labelText.slice(0, mid) + '...').width <= maxWidth) {
+                                    left = mid;
+                                } else {
+                                    right = mid - 1;
+                                }
+                            }
+                            displayText = labelText.slice(0, left) + '...';
                         }
                         
                         // 在 loop 上方绘制
                         ctx.fillText(displayText, middleX, cornerY - followRectHeight / 2 - 5);
+                        
+                        // 恢复字体设置
+                        ctx.font = '600 14px DM Sans, Outfit, sans-serif';
                     }
                 }
             });
         }
 
+        // 检查是否需要重新渲染离屏缓存
+        function needsOffscreenRedraw() {
+            return !offscreenCacheValid || 
+                   offscreenScale !== scale ||
+                   offscreenViewportX !== viewportX ||
+                   offscreenViewportY !== viewportY;
+        }
+        
+        // 渲染到离屏画布
+        function renderToOffscreen() {
+            // 调整离屏画布大小（考虑 DPR）
+            if (offscreenCanvas.width !== canvas.width || offscreenCanvas.height !== canvas.height) {
+                offscreenCanvas.width = canvas.width;
+                offscreenCanvas.height = canvas.height;
+            }
+            
+            offscreenCtx.save();
+            offscreenCtx.setTransform(1, 0, 0, 1, 0, 0);
+            offscreenCtx.clearRect(0, 0, offscreenCanvas.width, offscreenCanvas.height);
+            offscreenCtx.restore();
+            
+            // 应用 DPR 变换，与主 canvas 保持一致
+            offscreenCtx.save();
+            offscreenCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            
+            offscreenCtx.save();
+            offscreenCtx.translate(viewportX * scale, viewportY * scale);
+            offscreenCtx.scale(scale, scale);
+            
+            // 绘制基础线条
+            offscreenCtx.strokeStyle = 'rgba(0, 0, 0, 0.12)';
+            offscreenCtx.lineWidth = 1;
+            offscreenCtx.lineCap = 'round';
+            offscreenCtx.beginPath();
+            offscreenCtx.moveTo(flowStartX, lineY);
+            offscreenCtx.lineTo(flowEndX, lineY);
+            offscreenCtx.stroke();
+            
+            // 使用 offscreenCtx 绘制连接线和预览线
+            const savedCtx = ctx;
+            ctx = offscreenCtx;
+            
+            drawConnectionLines();
+            drawPreviewLine();
+            
+            // 恢复 ctx
+            ctx = savedCtx;
+            
+            // 绘制 linePoints
+            const connectedLabels = new Set();
+            for (const conn of connections) {
+                connectedLabels.add(conn.start.label);
+                connectedLabels.add(conn.end.label);
+            }
+            
+            linePoints.forEach(point => {
+                const isConnected = connectedLabels.has(point.label);
+                
+                let radius = 4;
+                let fillColor = '#ffffff';
+                let strokeColor = '#000000';
+                
+                if (isConnected) {
+                    radius = 5;
+                    fillColor = '#000000';
+                    strokeColor = '#000000';
+                }
+                
+                offscreenCtx.beginPath();
+                offscreenCtx.arc(point.x, point.y, radius, 0, Math.PI * 2);
+                offscreenCtx.fillStyle = fillColor;
+                offscreenCtx.fill();
+                offscreenCtx.strokeStyle = strokeColor;
+                offscreenCtx.lineWidth = 1.5;
+                offscreenCtx.stroke();
+            });
+            
+            // 绘制 routineRects
+            routineRects.forEach((rect, index) => {
+                if (rect) {
+                    drawDragRectToContext(rect, index, offscreenCtx);
+                }
+            });
+            
+            offscreenCtx.restore();
+            offscreenCtx.restore();
+            
+            // 更新缓存状态
+            offscreenCacheValid = true;
+            offscreenScale = scale;
+            offscreenViewportX = viewportX;
+            offscreenViewportY = viewportY;
+        }
+        
+        // 辅助函数：绘制 routine rect 到指定 context
+        function drawDragRectToContext(dragRect, index, targetCtx) {
+            const savedCtx = ctx;
+            ctx = targetCtx;
+            drawDragRect(dragRect, index);
+            ctx = savedCtx;
+        }
+
         function draw() {
+            // 如果是平移操作且缓存有效，直接绘制缓存
+            if (isCanvasPanning && offscreenCacheValid && offscreenScale === scale) {
+                ctx.save();
+                ctx.setTransform(1, 0, 0, 1, 0, 0);
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // 应用 DPR 变换
+                ctx.save();
+                ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+                
+                // 计算平移偏移量（考虑 DPR）
+                const deltaX = (viewportX - offscreenViewportX) * scale;
+                const deltaY = (viewportY - offscreenViewportY) * scale;
+                
+                ctx.drawImage(offscreenCanvas, deltaX, deltaY);
+                ctx.restore();
+                ctx.restore();
+                return;
+            }
+            
+            // 正常绘制流程
             ctx.save();
             ctx.setTransform(1, 0, 0, 1, 0, 0);
             ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -4990,18 +5535,33 @@
             drawConnectionLines();
             drawPreviewLine();
 
+            // 预计算已连接的 labels，避免在循环中重复遍历 connections
+            const connectedLabels = new Set();
+            for (const conn of connections) {
+                connectedLabels.add(conn.start.label);
+                connectedLabels.add(conn.end.label);
+            }
+            
+            // 预计算拖拽端点的 labels
+            let draggedStartLabel = null;
+            let draggedEndLabel = null;
+            if (isDraggingConnectionEndpoint && draggedConnection) {
+                draggedStartLabel = draggedConnection.start.label;
+                draggedEndLabel = draggedConnection.end.label;
+            }
+
             linePoints.forEach(point => {
                 const isStart = startPoint && point.label === startPoint.label;
-                const isConnected = connections.some(c => c.start.label === point.label || c.end.label === point.label);
+                const isConnected = connectedLabels.has(point.label);
                 const isNearest = nearestValidPoint && point.label === nearestValidPoint.label;
                 // 检查是否是被拖拽的loop连线的被抓取端点（只高亮被抓取的那个点）
-                const isDraggedEndpoint = isDraggingConnectionEndpoint && draggedConnection && 
-                    ((draggedEndpoint === 'start' && draggedConnection.start.label === point.label) ||
-                     (draggedEndpoint === 'end' && draggedConnection.end.label === point.label));
+                const isDraggedEndpoint = isDraggingConnectionEndpoint && 
+                    ((draggedEndpoint === 'start' && draggedStartLabel === point.label) ||
+                     (draggedEndpoint === 'end' && draggedEndLabel === point.label));
                 // 检查是否是该loop的另一个端点（保持实心）
-                const isOtherEndpoint = isDraggingConnectionEndpoint && draggedConnection && 
-                    ((draggedEndpoint === 'start' && draggedConnection.end.label === point.label) ||
-                     (draggedEndpoint === 'end' && draggedConnection.start.label === point.label));
+                const isOtherEndpoint = isDraggingConnectionEndpoint && 
+                    ((draggedEndpoint === 'start' && draggedEndLabel === point.label) ||
+                     (draggedEndpoint === 'end' && draggedStartLabel === point.label));
 
                 let radius = 4;
                 let fillColor = '#ffffff';
@@ -5072,8 +5632,8 @@
             drawRoundedRect(dragRect.x, dragRect.y, dragRect.width, dragRect.height, dragRect.borderRadius);
             ctx.fill();
 
-            const avtpComponents = dragRect.avtpComponents || [];
-            const enabledComponents = avtpComponents.filter(c => c && c.enabled);
+            const components = dragRect.components || [];
+            const enabledComponents = components.filter(c => c && c.enabled);
             
             const padding = 16;
             const lineHeight = 14;
@@ -5433,6 +5993,7 @@
             viewportX = canvasCenterX / newScale - flowchartCenter.x;
             viewportY = canvasCenterY / newScale - flowchartCenter.y;
             scale = newScale;
+            offscreenCacheValid = false;
 
             draw();
             updateZoomLevelDisplay();
@@ -5505,6 +6066,9 @@
                 canvasPanStartViewportX = viewportX;
                 canvasPanStartViewportY = viewportY;
                 canvas.style.cursor = 'grabbing';
+                
+                // 开始平移前，渲染当前状态到离屏缓存
+                renderToOffscreen();
                 return;
             }
 
@@ -5517,40 +6081,64 @@
             const pos = getMousePos(e);
             currentMousePos = pos;
 
+            // 检查鼠标位置是否有显著变化（避免微小的鼠标抖动导致重绘）
+            const mouseDeltaX = Math.abs(e.clientX - lastMouseX);
+            const mouseDeltaY = Math.abs(e.clientY - lastMouseY);
+            const hasSignificantMovement = mouseDeltaX > 1 || mouseDeltaY > 1;
+
             if (isCanvasPanning) {
                 const deltaX = (e.clientX - canvasPanStartX) / scale;
                 const deltaY = (e.clientY - canvasPanStartY) / scale;
                 viewportX = canvasPanStartViewportX + deltaX;
                 viewportY = canvasPanStartViewportY + deltaY;
-                draw();
+                lastMouseX = e.clientX;
+                lastMouseY = e.clientY;
+                scheduleDraw();
                 return;
             }
 
             if (activeDragRect && activeDragRect.isDragging) {
                 activeDragRect.x = pos.x - activeDragRect.offsetX;
                 activeDragRect.y = pos.y - activeDragRect.offsetY;
-                draw();
+                if (hasSignificantMovement) {
+                    lastMouseX = e.clientX;
+                    lastMouseY = e.clientY;
+                    scheduleDraw();
+                }
             } else if (isDraggingConnectionEndpoint && draggedConnection) {
                 // 端点拖拽时，查找最近的合法 linePoint
                 nearestValidPoint = findNearestValidPoint(pos);
-                draw();
+                if (hasSignificantMovement) {
+                    lastMouseX = e.clientX;
+                    lastMouseY = e.clientY;
+                    scheduleDraw();
+                }
             } else if (isDraggingLine) {
                 nearestValidPoint = findNearestValidPoint(pos);
-                draw();
-            } else {
-                let isOverLoopBlock = false;
-                for (const conn of connections) {
-                    if (isInsideLoopBlock(pos, conn, connections)) {
-                        isOverLoopBlock = true;
-                        break;
-                    }
+                if (hasSignificantMovement) {
+                    lastMouseX = e.clientX;
+                    lastMouseY = e.clientY;
+                    scheduleDraw();
                 }
-                if (isOverLoopBlock) {
-                    canvas.style.cursor = 'pointer';
-                } else if (getDragRectAtPos(pos.x, pos.y)) {
-                    canvas.style.cursor = 'pointer';
-                } else {
-                    canvas.style.cursor = 'grab';
+            } else {
+                // 非拖拽状态下，只在鼠标有显著移动时检测碰撞
+                if (hasSignificantMovement) {
+                    lastMouseX = e.clientX;
+                    lastMouseY = e.clientY;
+                    let isOverLoopBlock = false;
+                    for (const conn of connections) {
+                        if (isInsideLoopBlock(pos, conn, connections)) {
+                            isOverLoopBlock = true;
+                            break;
+                        }
+                    }
+                    if (isOverLoopBlock) {
+                        canvas.style.cursor = 'pointer';
+                    } else if (getDragRectAtPos(pos.x, pos.y)) {
+                        canvas.style.cursor = 'pointer';
+                    } else {
+                        canvas.style.cursor = 'grab';
+                    }
                 }
             }
         });
@@ -5561,6 +6149,8 @@
             if (isCanvasPanning) {
                 isCanvasPanning = false;
                 canvas.style.cursor = 'grab';
+                // 平移结束，清除缓存（可选：也可以保留缓存以优化后续平移）
+                offscreenCacheValid = false;
                 return;
             }
 
@@ -6180,15 +6770,15 @@
                 return;
             }
             
-            const enabledCount = rect.avtpComponents ? rect.avtpComponents.filter(c => c && c.enabled).length : 0;
+            const enabledCount = rect.components ? rect.components.filter(c => c && c.enabled).length : 0;
             countSpan.textContent = `(${enabledCount})`;
-            
-            if (!rect.avtpComponents || rect.avtpComponents.length === 0) {
-                listContainer.innerHTML = '<div style="text-align: center; color: #999; padding: 12px;">No AVTP components added</div>';
+
+            if (!rect.components || rect.components.length === 0) {
+                listContainer.innerHTML = '<div style="text-align: center; color: #999; padding: 12px;">No components added</div>';
                 return;
             }
-            
-            rect.avtpComponents.forEach((component, index) => {
+
+            rect.components.forEach((component, index) => {
                 if (!component || !component.enabled) return;
                 
                 const componentDiv = document.createElement('div');
@@ -6249,7 +6839,7 @@
                 if (activeDragRect && type) {
                     const newComponent = createAvtpkComponent(type);
                     if (newComponent) {
-                        activeDragRect.avtpComponents.push(newComponent);
+                        activeDragRect.components.push(newComponent);
                         updateRoutineHeight(activeDragRect);
                         updateCanvasWidthForRoutines();
                         autoDiagnoseAfterOperation('add component');
@@ -6494,11 +7084,11 @@
                 ? routineIndices.map(i => routineRects[i]).filter(r => r)
                 : routineRects;
             
-            // 从指定 routine 的 avtpComponents 中检测以 $ 开头的变量
+            // 从指定 routine 的 components 中检测以 $ 开头的变量
             routinesToCheck.forEach(rect => {
-                if (!rect || !rect.avtpComponents) return;
-                
-                rect.avtpComponents.forEach(component => {
+                if (!rect || !rect.components) return;
+
+                rect.components.forEach(component => {
                     if (!component || typeof component !== 'object') return;
                     
                     Object.values(component).forEach(value => {
@@ -7134,10 +7724,21 @@
         function parseProjectData(projectData) {
             const routines = [];
             const loops = [];
-            
+
             // 解析 routines + loops 格式
             if (projectData.routines && Array.isArray(projectData.routines)) {
                 projectData.routines.forEach(r => {
+                    // 处理 components，确保每个组件都有 enabled 属性
+                    const rawComponents = r.components || [];
+                    const processedComponents = rawComponents.map(comp => {
+                        if (!comp) return null;
+                        return {
+                            ...comp,
+                            enabled: comp.enabled !== false, // 默认为 true
+                            id: comp.id || (Date.now() + Math.random().toString(36).substr(2, 9))
+                        };
+                    }).filter(comp => comp !== null);
+
                     routines.push({
                         id: r.id,
                         name: r.name,
@@ -7146,7 +7747,7 @@
                         width: r.width || 200,
                         height: r.height,
                         duration: r.duration,
-                        avtpComponents: r.avtpComponents || [],
+                        components: processedComponents,
                         borderRadius: 10,
                         isDragging: false,
                         offsetX: 0,
@@ -7236,7 +7837,7 @@
                     width: rect.width,
                     height: rect.height,
                     duration: rect.duration,
-                    avtpComponents: rect.avtpComponents || []
+                    components: rect.components || []
                 }));
 
                 // 将 connections 转换为 loops
@@ -7305,6 +7906,10 @@
                         }, '*');
                         console.log('=== Save Successful ===');
                         console.log('Saved successfully to project folder:', folderFileHandle.name);
+                        
+                        // 保存成功后清理临时文件
+                        await cleanupTempFiles();
+                        
                         alert('保存成功！文件已保存为：' + folderFileHandle.name);
                         return;
                     } catch (error) {
@@ -7333,6 +7938,10 @@
                             timestamp: timestamp
                         }, '*');
                         console.log('Saved successfully to existing file');
+                        
+                        // 保存成功后清理临时文件
+                        await cleanupTempFiles();
+                        
                         alert('保存成功！');
                         return;
                     } catch (error) {
@@ -7375,6 +7984,9 @@
                             timestamp: timestamp
                         }, '*');
                         console.log('Saved successfully via showSaveFilePicker:', handle.name);
+                        
+                        // 保存成功后清理临时文件
+                        await cleanupTempFiles();
                         alert('保存成功！');
                         return;
                     } catch (error) {
@@ -7448,7 +8060,7 @@
                     width: rect.width,
                     height: rect.height,
                     duration: rect.duration,
-                    avtpComponents: rect.avtpComponents || []
+                    components: rect.components || []
                 }));
 
                 // 将 connections 转换为 loops
@@ -7508,7 +8120,44 @@
         });
 
         // 导入文件列表逻辑
-        const importFileListEl = document.getElementById('importFileList');
+        const importFileListEl = document.getElementById('menuImportFileList');
+
+        // 清理临时文件函数
+        async function cleanupTempFiles() {
+            if (!projectFolderHandle) return;
+            
+            console.log('Cleaning up temp files...');
+            const tempFiles = [];
+            
+            async function scanForTempFiles(dirHandle, path = '') {
+                for await (const entry of dirHandle.values()) {
+                    const entryPath = path ? `${path}/${entry.name}` : entry.name;
+                    if (entry.kind === 'file' && entry.name.startsWith('~') && entry.name.endsWith('.psyclaw')) {
+                        tempFiles.push({ handle: entry, path: entryPath });
+                    } else if (entry.kind === 'directory') {
+                        await scanForTempFiles(entry, entryPath);
+                    }
+                }
+            }
+            
+            try {
+                await scanForTempFiles(projectFolderHandle);
+                
+                for (const tempFile of tempFiles) {
+                    try {
+                        // 尝试删除临时文件
+                        await projectFolderHandle.removeEntry(tempFile.path);
+                        console.log('Deleted temp file:', tempFile.path);
+                    } catch (err) {
+                        console.warn('Failed to delete temp file:', tempFile.path, err);
+                    }
+                }
+                
+                console.log('Temp files cleanup completed. Deleted', tempFiles.length, 'files');
+            } catch (error) {
+                console.warn('Error during temp files cleanup:', error);
+            }
+        }
 
         async function refreshImportDropdown() {
             console.log('refreshImportDropdown: Starting');
@@ -7523,7 +8172,8 @@
             async function scanDirectory(dirHandle, path = '') {
                 for await (const entry of dirHandle.values()) {
                     const entryPath = path ? `${path}/${entry.name}` : entry.name;
-                    if (entry.kind === 'file' && entry.name.endsWith('.psyclaw')) {
+                    // 跳过临时文件（以 ~ 开头的文件）
+                    if (entry.kind === 'file' && entry.name.endsWith('.psyclaw') && !entry.name.startsWith('~')) {
                         psyclawFiles.push({ handle: entry, path: entryPath });
                     } else if (entry.kind === 'directory') {
                         await scanDirectory(entry, entryPath);
@@ -7545,17 +8195,50 @@
                 item.className = 'project-menu-import-files-item';
                 item.title = file.path;
                 item.innerHTML = `
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <svg class="file-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
                         <polyline points="14 2 14 8 20 8"></polyline>
                     </svg>
                     <span class="project-menu-import-files-filename">${file.path}</span>
+                    <button class="project-menu-file-delete" title="Delete file">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="3 6 5 6 21 6"></polyline>
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                        </svg>
+                    </button>
                 `;
-                item.addEventListener('click', async () => {
+                
+                // 点击文件项导入文件
+                item.addEventListener('click', async (e) => {
+                    if (e.target.closest('.project-menu-file-delete')) return;
                     await importProjectFile(file.handle);
                 });
+                
+                // 点击删除按钮删除文件
+                const deleteBtn = item.querySelector('.project-menu-file-delete');
+                deleteBtn.addEventListener('click', async (e) => {
+                    e.stopPropagation();
+                    await deleteProjectFile(file.path);
+                });
+                
                 importFileListEl.appendChild(item);
             });
+        }
+        
+        // 删除项目文件
+        async function deleteProjectFile(filePath) {
+            const confirmed = confirm(`Are you sure you want to delete "${filePath}"?`);
+            if (!confirmed) return;
+            
+            try {
+                await projectFolderHandle.removeEntry(filePath);
+                console.log('Deleted file:', filePath);
+                showNotification(`🗑️ Deleted: ${filePath}`);
+                refreshImportDropdown();
+            } catch (error) {
+                console.error('Failed to delete file:', error);
+                showNotification('❌ Failed to delete file');
+            }
         }
 
         async function importProjectFile(fileHandle) {
@@ -7588,7 +8271,7 @@
                     rect.width = 200;
                 });
 
-                // 重新计算所有 routine 的高度（根据 avtpComponents）
+                // 重新计算所有 routine 的高度（根据 components）
                 updateAllRoutineHeights();
 
                 // 重新计算所有 connection 的 depth（用于正确显示 loop）
@@ -7604,7 +8287,7 @@
                         id: rect.id,
                         name: rect.name,
                         duration: rect.duration,
-                        avtpComponents: rect.avtpComponents || []
+                        components: rect.components || []
                     }));
                     const loopsData = connectionsToLoops(connections);
 
@@ -7827,7 +8510,7 @@
                         id: routine.id ?? index,
                         name: routine.name ?? `routine_${index}`,
                         duration: routine.duration ?? -1,
-                        avtpComponents: (routine.components || []).map(comp => ({
+                        components: (routine.components || []).map(comp => ({
                             ...comp,
                             enabled: true
                         })),
@@ -7902,7 +8585,7 @@
                     rect.width = 200;
                 });
 
-                // 重新计算所有 routine 的高度（根据 avtpComponents）
+                // 重新计算所有 routine 的高度（根据 components）
                 updateAllRoutineHeights();
                 
                 // 重新计算所有 connection 的 depth（用于正确显示 loop）
@@ -7961,7 +8644,7 @@
                         width: rect.width,
                         height: rect.height,
                         duration: rect.duration,
-                        avtpComponents: rect.avtpComponents || [],
+                        components: rect.components || [],
                         Point: (index + 1) * 2
                     })),
                     loops: connectionsToLoops(connections)
@@ -7999,6 +8682,17 @@
                 
                 // 恢复 routines
                 state.routines.forEach((r) => {
+                    // 处理 components，确保每个组件都有 enabled 属性
+                    const rawComponents = r.components || [];
+                    const processedComponents = rawComponents.map(comp => {
+                        if (!comp) return null;
+                        return {
+                            ...comp,
+                            enabled: comp.enabled !== false, // 默认为 true
+                            id: comp.id || (Date.now() + Math.random().toString(36).substr(2, 9))
+                        };
+                    }).filter(comp => comp !== null);
+
                     routineRects.push({
                         id: r.id,
                         name: r.name,
@@ -8007,7 +8701,7 @@
                         width: r.width || 200,
                         height: r.height || 150,
                         duration: r.duration,
-                        avtpComponents: r.avtpComponents || [],
+                        components: processedComponents,
                         borderRadius: 10,
                         isDragging: false,
                         offsetX: 0,
@@ -8043,6 +8737,48 @@
                     loopsCount: connections.length,
                     timestamp: new Date().toISOString()
                 }, '*');
+            } else if (e.data && e.data.type === 'clear-flowchart') {
+                // 清除 flowchart（当 chatbot 中删除消息时调用）
+                console.log('Clearing flowchart due to message deletion');
+                
+                // 清空所有 flowchart 数据
+                routineRects.length = 0;
+                connections.length = 0;
+                selectedRoutineIndex = -1;
+                activeDragRect = null;
+                currentRoutineCount = 0;
+                routineIdCounter = 0;
+                loopIdCounter = 0;
+                
+                // 清除当前 task 的 flowchartData
+                if (currentTaskId) {
+                    const task = tasks.find(t => t.id === currentTaskId);
+                    if (task) {
+                        task.flowchartData = null;
+                        saveTasks();
+                    }
+                }
+                
+                // 重置文件句柄
+                currentProjectFile = null;
+                fileHandle = null;
+                
+                // 更新画布
+                updatePoints();
+                updateRoutineCount();
+                draw();
+                saveState();
+                
+                // 显示通知
+                showNotification('🗑️ Flowchart cleared');
+                
+                // 通知 chatbot flowchart 已清除
+                if (chatbotFrame && chatbotFrame.contentWindow) {
+                    chatbotFrame.contentWindow.postMessage({
+                        type: 'flowchart-cleared',
+                        timestamp: new Date().toISOString()
+                    }, '*');
+                }
             }
         });
 
@@ -8836,6 +9572,45 @@
             });
 
             initKeyboard();
+
+            // Custom textarea resize handle
+            const textareaWrapper = document.querySelector('.avtp-textarea-wrapper');
+            const textarea = document.getElementById('formText');
+            const resizeHandle = document.querySelector('.avtp-resize-handle');
+
+            if (textareaWrapper && textarea && resizeHandle) {
+                let isResizing = false;
+                let startY = 0;
+                let startHeight = 0;
+
+                resizeHandle.addEventListener('mousedown', function(e) {
+                    isResizing = true;
+                    startY = e.clientY;
+                    startHeight = parseInt(document.defaultView.getComputedStyle(textarea).height, 10);
+                    document.body.style.cursor = 'ns-resize';
+                    document.body.style.userSelect = 'none';
+                    e.preventDefault();
+                    e.stopPropagation();
+                });
+
+                document.addEventListener('mousemove', function(e) {
+                    if (!isResizing) return;
+                    e.preventDefault();
+                    const deltaY = e.clientY - startY;
+                    const newHeight = startHeight + deltaY;
+                    const minHeight = 60;
+                    const maxHeight = 300;
+                    textarea.style.height = Math.min(Math.max(newHeight, minHeight), maxHeight) + 'px';
+                }, { capture: true });
+
+                document.addEventListener('mouseup', function() {
+                    if (isResizing) {
+                        isResizing = false;
+                        document.body.style.cursor = '';
+                        document.body.style.userSelect = '';
+                    }
+                }, { capture: true });
+            }
         });
     </script>
     <div class="confirm-modal" id="confirmModal">

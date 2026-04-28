@@ -46,9 +46,10 @@ function collectRandomPatterns(routineRect) {
         }
     }
     
-    // 检查 avtpComponents 数组方式
-    if (routineRect.avtpComponents && Array.isArray(routineRect.avtpComponents)) {
-        routineRect.avtpComponents.forEach(component => {
+    // 检查 components 数组方式
+    const components = routineRect.components;
+    if (components && Array.isArray(components)) {
+        components.forEach(component => {
             if (component && typeof component === 'object') {
                 Object.keys(component).forEach(dataKey => {
                     checkValue(component[dataKey]);
@@ -262,8 +263,8 @@ function convertToPsyExpXML(projectData) {
 function collectRandomPatternsFromRoutine(routine) {
     const patterns = [];
     
-    // 支持 components 和 avtpComponents 两种格式
-    const components = routine.components || routine.avtpComponents || [];
+    // 使用 components 字段
+    const components = routine.components || [];
     
     if (Array.isArray(components)) {
         components.forEach(component => {
@@ -419,8 +420,8 @@ function generateRoutine(routine, index, allRandomPatterns) {
         xml += generateRoutineRandomCodeComponent(routinePatterns, index);
     }
     
-    // 处理 components 数组（支持 components 和 avtpComponents 两种格式）
-    const components = routine.components || routine.avtpComponents || [];
+    // 处理 components 数组
+    const components = routine.components || [];
     if (Array.isArray(components)) {
         for (const component of components) {
             if (component && component.enabled !== false) {
@@ -696,8 +697,10 @@ function detectVariablesFromRoutines(routines, startIndex, endIndex) {
 
     for (let i = startIndex; i <= endIndex && i < routines.length; i++) {
         const routine = routines[i];
-        if (routine && routine.avtpComponents) {
-            routine.avtpComponents.forEach(component => {
+        // 使用 components 字段
+        const components = routine.components || [];
+        if (Array.isArray(components)) {
+            components.forEach(component => {
                 if (component && typeof component === 'object') {
                     Object.values(component).forEach(value => {
                         if (typeof value === 'string') {
