@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<!DOCTYPE html>
+﻿﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
@@ -2826,6 +2826,8 @@
         let offscreenScale = 1;
         let offscreenViewportX = 0;
         let offscreenViewportY = 0;
+        // 缓存画布扩展倍数（3倍 = 向四周各扩展1个屏幕大小）
+        const OFFSCREEN_EXTEND_FACTOR = 3;
 
         // 标准化的操作确认对话框
         async function confirmAction(action, options = {}) {
@@ -5401,10 +5403,14 @@
         
         // 渲染到离屏画布
         function renderToOffscreen() {
+            // 计算扩展后的画布大小（3倍屏幕大小）
+            const extendedWidth = canvas.width * OFFSCREEN_EXTEND_FACTOR;
+            const extendedHeight = canvas.height * OFFSCREEN_EXTEND_FACTOR;
+            
             // 调整离屏画布大小（考虑 DPR）
-            if (offscreenCanvas.width !== canvas.width || offscreenCanvas.height !== canvas.height) {
-                offscreenCanvas.width = canvas.width;
-                offscreenCanvas.height = canvas.height;
+            if (offscreenCanvas.width !== extendedWidth || offscreenCanvas.height !== extendedHeight) {
+                offscreenCanvas.width = extendedWidth;
+                offscreenCanvas.height = extendedHeight;
             }
             
             offscreenCtx.save();
@@ -5416,7 +5422,14 @@
             offscreenCtx.save();
             offscreenCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
             
+            // 计算偏移量，使当前 viewport 位于缓存画布中心
+            // 缓存画布是屏幕的3倍，所以偏移量是屏幕大小的1倍（即向四周各扩展1屏）
+            const offsetX = canvas.width / dpr;
+            const offsetY = canvas.height / dpr;
+            
             offscreenCtx.save();
+            // 先偏移到缓存画布中心区域，再应用 viewport 变换
+            offscreenCtx.translate(offsetX, offsetY);
             offscreenCtx.translate(viewportX * scale, viewportY * scale);
             offscreenCtx.scale(scale, scale);
             
@@ -5478,7 +5491,7 @@
             offscreenCtx.restore();
             offscreenCtx.restore();
             
-            // 更新缓存状态
+            // 更新缓存状态（记录的是中心区域的 viewport 位置）
             offscreenCacheValid = true;
             offscreenScale = scale;
             offscreenViewportX = viewportX;
@@ -5504,11 +5517,15 @@
                 ctx.save();
                 ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
                 
-                // 计算平移偏移量（考虑 DPR）
-                const deltaX = (viewportX - offscreenViewportX) * scale;
-                const deltaY = (viewportY - offscreenViewportY) * scale;
+                // 计算平移偏移量
+                // 缓存画布是3倍大小，当前 viewport 位于缓存画布中心（偏移1屏位置）
+                // 所以绘制时需要减去1屏的偏移量，再加上 viewport 的变化量
+                const viewportDeltaX = (viewportX - offscreenViewportX) * scale;
+                const viewportDeltaY = (viewportY - offscreenViewportY) * scale;
+                const drawX = -canvas.width / dpr + viewportDeltaX;
+                const drawY = -canvas.height / dpr + viewportDeltaY;
                 
-                ctx.drawImage(offscreenCanvas, deltaX, deltaY);
+                ctx.drawImage(offscreenCanvas, drawX, drawY);
                 ctx.restore();
                 ctx.restore();
                 return;
