@@ -207,7 +207,7 @@ function replaceRandomPatternsInValue(value) {
  */
 function convertToPsyExpXML(projectData) {
     const { routines, loops } = projectData;
-    
+
     // 收集所有routine中的随机数表达式
     const allRandomPatterns = [];
     routines.forEach(routine => {
@@ -218,41 +218,42 @@ function convertToPsyExpXML(projectData) {
             }
         });
     });
-    
-    // 创建 XML 文档
-    let xml = '<?xml version="1.0" ?>\n';
-    xml += '<PsychoPy2experiment encoding="utf-8" version="2026.1.1">\n';
-    
+
+    // 使用数组收集 XML 片段，最后 join（比字符串拼接更高效）
+    const xmlParts = [];
+    xmlParts.push('<?xml version="1.0" ?>\n');
+    xmlParts.push('<PsychoPy2experiment encoding="utf-8" version="2026.1.1">\n');
+
     // 添加 Settings
-    xml += generateSettings();
-    
+    xmlParts.push(generateSettings());
+
     // 添加全局随机数初始化Code组件（如果存在随机数表达式）
     if (allRandomPatterns.length > 0) {
-        xml += '  <Routines>\n';
-        xml += '    <Routine name="__init__">\n';
-        xml += generateRandomInitCodeComponent(allRandomPatterns);
-        xml += '    </Routine>\n';
-        xml += '  </Routines>\n';
+        xmlParts.push('  <Routines>\n');
+        xmlParts.push('    <Routine name="__init__">\n');
+        xmlParts.push(generateRandomInitCodeComponent(allRandomPatterns));
+        xmlParts.push('    </Routine>\n');
+        xmlParts.push('  </Routines>\n');
     }
-    
+
     // 添加 Routines
-    xml += '  <Routines>\n';
+    xmlParts.push('  <Routines>\n');
     for (let i = 0; i < routines.length; i++) {
-        xml += generateRoutine(routines[i], i, allRandomPatterns);
+        xmlParts.push(generateRoutine(routines[i], i, allRandomPatterns));
     }
-    xml += '  </Routines>\n';
-    
+    xmlParts.push('  </Routines>\n');
+
     // 添加 Flow
-    xml += '  <Flow>\n';
+    xmlParts.push('  <Flow>\n');
     if (allRandomPatterns.length > 0) {
-        xml += '    <Routine name="__init__"/>\n';
+        xmlParts.push('    <Routine name="__init__"/>\n');
     }
-    xml += generateFlow(routines, loops);
-    xml += '  </Flow>\n';
-    
-    xml += '</PsychoPy2experiment>';
-    
-    return xml;
+    xmlParts.push(generateFlow(routines, loops));
+    xmlParts.push('  </Flow>\n');
+
+    xmlParts.push('</PsychoPy2experiment>');
+
+    return xmlParts.join('');
 }
 
 /**
@@ -391,11 +392,12 @@ function generateSettings() {
  */
 function generateRoutine(routine, index, allRandomPatterns) {
     const routineName = routine.name || `Routine_${index + 1}`;
-    
-    let xml = `    <Routine name="${routineName}">\n`;
-    
+
+    const parts = [];
+    parts.push(`    <Routine name="${routineName}">\n`);
+
     // 添加 RoutineSettingsComponent
-    xml += `      <RoutineSettingsComponent name="${routineName}" plugin="None">
+    parts.push(`      <RoutineSettingsComponent name="${routineName}" plugin="None">
         <Param val="none" valType="str" updates="None" name="backgroundFit"/>
         <Param val="" valType="str" updates="None" name="backgroundImg"/>
         <Param val="$[0,0,0]" valType="color" updates="None" name="color"/>
@@ -410,38 +412,38 @@ function generateRoutine(routine, index, allRandomPatterns) {
         <Param val="duration (s)" valType="str" updates="None" name="stopType"/>
         <Param val="" valType="code" updates="constant" name="stopVal"/>
         <Param val="False" valType="bool" updates="None" name="useWindowParams"/>
-      </RoutineSettingsComponent>\n`;
-    
+      </RoutineSettingsComponent>\n`);
+
     // 收集当前routine中的随机数表达式
     const routinePatterns = collectRandomPatternsFromRoutine(routine);
-    
+
     // 添加routine级别的随机数处理Code组件（如果存在）
     if (routinePatterns.length > 0) {
-        xml += generateRoutineRandomCodeComponent(routinePatterns, index);
+        parts.push(generateRoutineRandomCodeComponent(routinePatterns, index));
     }
-    
+
     // 处理 components 数组
     const components = routine.components || [];
     if (Array.isArray(components)) {
         for (const component of components) {
             if (component && component.enabled !== false) {
                 if (component.type === 'audio') {
-                    xml += generateAudioComponentFromSchema(component, routineName);
+                    parts.push(generateAudioComponentFromSchema(component, routineName));
                 } else if (component.type === 'video') {
-                    xml += generateVideoComponentFromSchema(component, routineName);
+                    parts.push(generateVideoComponentFromSchema(component, routineName));
                 } else if (component.type === 'text') {
-                    xml += generateTextComponentFromSchema(component, routineName);
+                    parts.push(generateTextComponentFromSchema(component, routineName));
                 } else if (component.type === 'image') {
-                    xml += generateImageComponentFromSchema(component, routineName);
+                    parts.push(generateImageComponentFromSchema(component, routineName));
                 } else if (component.type === 'keyboard') {
-                    xml += generateKeyboardComponentFromSchema(component, routineName);
+                    parts.push(generateKeyboardComponentFromSchema(component, routineName));
                 }
             }
         }
     }
-    
-    xml += `    </Routine>\n`;
-    return xml;
+
+    parts.push(`    </Routine>\n`);
+    return parts.join('');
 }
 
 /**
@@ -722,7 +724,7 @@ function detectVariablesFromRoutines(routines, startIndex, endIndex) {
  * 生成 Flow 部分（支持新旧格式的 loops）
  */
 function generateFlow(routines, loops) {
-    let xml = '';
+    const parts = [];
 
     const routineNames = routines.map((rect, index) => rect.name || `Routine_${index + 1}`);
 
@@ -822,27 +824,27 @@ function generateFlow(routines, loops) {
     
     for (let i = 0; i < routines.length; i++) {
         // 找出在这个 routine 处开始的循环（深度小的先开始）
-        const loopsStartingHere = processedLoops.filter(l => 
+        const loopsStartingHere = processedLoops.filter(l =>
             l.startRoutineIndex === i && !activeLoops.has(l.name)
         ).sort((a, b) => a.depth - b.depth);
         loopsStartingHere.forEach(loop => {
-            xml += generateLoopInitiator(loop);
+            parts.push(generateLoopInitiator(loop));
             activeLoops.add(loop.name);
         });
-        
-        xml += `    <Routine name="${routineNames[i]}"/>\n`;
-        
+
+        parts.push(`    <Routine name="${routineNames[i]}"/>\n`);
+
         // 找出在这个 routine 处结束的循环（深度大的先结束）
-        const loopsEndingHere = processedLoops.filter(l => 
+        const loopsEndingHere = processedLoops.filter(l =>
             l.endRoutineIndex === i && activeLoops.has(l.name)
         ).sort((a, b) => b.depth - a.depth);
         loopsEndingHere.forEach(loop => {
-            xml += generateLoopTerminator(loop);
+            parts.push(generateLoopTerminator(loop));
             activeLoops.delete(loop.name);
         });
     }
-    
-    return xml;
+
+    return parts.join('');
 }
 
 /**

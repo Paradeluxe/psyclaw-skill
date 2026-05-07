@@ -1,4 +1,4 @@
-﻿﻿<!DOCTYPE html>
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
@@ -2039,27 +2039,29 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #ef4444;
-            opacity: 0;
+            color: #9ca3af;
+            opacity: 1;
             transition: all 0.15s ease;
             flex-shrink: 0;
         }
 
         .project-menu-import-files-item:hover .project-menu-file-delete {
-            opacity: 1;
+            color: #ef4444;
         }
 
         .project-menu-file-delete:hover {
             background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
         }
 
         .project-menu-file-delete svg {
             width: 14px;
             height: 14px;
             color: #ef4444 !important;
+            pointer-events: none;
         }
 
-        /* Menu dropdown 中的 Auto Detect 列表样式 */
+        /* Menu dropdown 中的 Project Files 列表样式 */
         #menuImportFileList {
             max-height: 150px;
             overflow-y: auto;
@@ -2101,6 +2103,38 @@
             text-transform: uppercase;
             letter-spacing: 0.05em;
             padding: 4px 10px 8px;
+        }
+
+        .project-menu-section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-right: 6px;
+        }
+
+        .project-menu-section-header .project-menu-section-title {
+            flex: 1;
+            padding-bottom: 4px;
+        }
+
+        .project-menu-add-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 22px;
+            height: 22px;
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+            margin-bottom: 4px;
+        }
+
+        .project-menu-add-btn:hover {
+            background: var(--border-light);
+            color: var(--brand-blue);
         }
 
         .project-menu-item {
@@ -2182,9 +2216,108 @@
             }
         }
 
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000000;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            pointer-events: none;
+        }
+
+        .toast {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 16px 20px;
+            box-shadow: rgba(44, 30, 116, 0.15) 0px 8px 24px, rgba(0, 0, 0, 0.08) 0px 4px 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 280px;
+            max-width: 400px;
+            transform: translateX(120%);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            pointer-events: auto;
+            border-left: 4px solid #1456f0;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .toast.hide {
+            transform: translateX(120%);
+            opacity: 0;
+        }
+
+        .toast-icon {
+            width: 24px;
+            height: 24px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        .toast-icon.warning {
+            background: #fef3c7;
+            color: #f59e0b;
+        }
+
+        .toast-icon.error {
+            background: #fee2e2;
+            color: #ef4444;
+        }
+
+        .toast-icon.success {
+            background: #d1fae5;
+            color: #10b981;
+        }
+
+        .toast-icon.info {
+            background: #dbeafe;
+            color: #1456f0;
+        }
+
+        .toast-content {
+            flex: 1;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            color: #222222;
+            line-height: 1.5;
+        }
+
+        .toast-close {
+            width: 20px;
+            height: 20px;
+            border: none;
+            background: transparent;
+            color: #8e8e93;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .toast-close:hover {
+            background: #f2f3f5;
+            color: #45515e;
+        }
+
         </style>
 </head>
 <body>
+
+    <div class="toast-container" id="toastContainer"></div>
 
     <div class="main-content">
         <div class="avtp-form" id="avtpForm">
@@ -2691,7 +2824,15 @@
                 </div>
                 <div class="project-menu-divider"></div>
                 <div class="project-menu-section">
-                    <div class="project-menu-section-title">Auto Detect</div>
+                    <div class="project-menu-section-header">
+                        <div class="project-menu-section-title">Project Files</div>
+                        <button type="button" class="project-menu-add-btn" id="addNewProjectFileBtn" title="Create new file">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="12" y1="5" x2="12" y2="19"></line>
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                            </svg>
+                        </button>
+                    </div>
                     <div class="project-menu-import-files-list" id="menuImportFileList">
                         <div class="project-menu-import-files-empty">No .psyclaw files found</div>
                     </div>
@@ -2800,6 +2941,7 @@
 </div>
 
     <script src="json2psyexp.js"></script>
+    <script src="js/project-fs.js"></script>
     <script>
         console.log('Script starting');
         
@@ -2979,6 +3121,9 @@
         const chatbotPanel = document.getElementById('chatbotPanel');
         const chatbotResizer = document.getElementById('chatbotResizer');
         const chatbotFrame = document.getElementById('chatbotFrame');
+        // File system utilities from project-fs.js module
+        const { safePostMessage, FileErrorTypes, handleFileError, MAX_FILE_SIZE, PathUtils, scanDirectory, ALLOWED_ORIGIN } = window.PsyClawFS || {};
+
         let isResizingChatbot = false;
         let startX = 0;
         let startWidth = 0;
@@ -3063,10 +3208,10 @@
                 if (currentTaskId) {
                     const task = tasks.find(t => t.id === currentTaskId);
                     if (task && chatbotFrame.contentWindow) {
-                        chatbotFrame.contentWindow.postMessage({
+                        safePostMessage(chatbotFrame.contentWindow, {
                             type: 'load-task',
                             task: task
-                        }, '*');
+                        });
                     }
                 }
             } catch (e) {
@@ -3120,10 +3265,10 @@
 
                 // Notify chatbot to update
                 if (chatbotFrame.contentWindow) {
-                    chatbotFrame.contentWindow.postMessage({
+                    safePostMessage(chatbotFrame.contentWindow, {
                         type: 'flowchart-updated',
                         flowchartData: flowchartData
-                    }, '*');
+                    });
                 }
 
                 // 自动保存到.psyclaw 文件
@@ -3223,7 +3368,7 @@
 
         document.addEventListener('click', (e) => {
             if (!chatbotPanel.contains(e.target)) {
-                chatbotFrame.contentWindow.postMessage('closeAdvancedSettings', '*');
+                safePostMessage(chatbotFrame.contentWindow, 'closeAdvancedSettings');
             }
         });
          
@@ -3258,34 +3403,53 @@
             };
         }
         
-        // 显示通知消息
-        function showNotification(message, duration = 3000) {
-            // 创建通知元素
-            const notification = document.createElement('div');
-            notification.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                background: #4CAF50;
-                color: white;
-                padding: 12px 24px;
-                border-radius: 4px;
-                box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-                z-index: 10000;
-                animation: slideIn 0.3s ease-out;
-            `;
-            notification.textContent = message;
-            document.body.appendChild(notification);
+        // Toast notification system
+        function showToast(message, type = 'info', duration = 3000) {
+            const container = document.getElementById('toastContainer');
             
-            // 自动消失
-            setTimeout(() => {
-                notification.style.animation = 'slideOut 0.3s ease-out';
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            
+            const iconSvg = {
+                warning: '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>',
+                error: '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>',
+                success: '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>',
+                info: '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>'
+            };
+            
+            toast.innerHTML = `
+                <div class="toast-icon ${type}">${iconSvg[type] || iconSvg.info}</div>
+                <div class="toast-content">${message}</div>
+                <button class="toast-close" onclick="this.parentElement.remove()">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                </button>
+            `;
+            
+            container.appendChild(toast);
+            
+            // Trigger animation
+            requestAnimationFrame(() => {
+                toast.classList.add('show');
+            });
+            
+            // Auto remove
+            if (duration > 0) {
                 setTimeout(() => {
-                    document.body.removeChild(notification);
-                }, 300);
-            }, duration);
+                    toast.classList.add('hide');
+                    setTimeout(() => toast.remove(), 400);
+                }, duration);
+            }
+            
+            return toast;
         }
         
+        // Backward compatibility alias
+        function showNotification(message, duration = 3000) {
+            showToast(message, 'info', duration);
+        }
+
+        // File system utilities loaded from js/project-fs.js
+
         let currentRoutineCount = 0;
         let canvasWidth = calculateCanvasWidth(currentRoutineCount);
 
@@ -3657,21 +3821,13 @@
 
                 // 自动导入：扫描并导入第一个合法的 .psyclaw 文件
                 try {
-                    const psyclawFiles = [];
-                    async function scanForImport(dirHandle, path = '') {
-                        for await (const entry of dirHandle.values()) {
-                            const entryPath = path ? `${path}/${entry.name}` : entry.name;
-                            if (entry.kind === 'file' && entry.name.endsWith('.psyclaw') && !entry.name.startsWith('~')) {
-                                psyclawFiles.push({ handle: entry, path: entryPath, name: entry.name });
-                            } else if (entry.kind === 'directory') {
-                                await scanForImport(entry, entryPath);
-                            }
-                        }
-                    }
-                    await scanForImport(projectFolderHandle);
-                    
+                    const psyclawFiles = await scanDirectory(projectFolderHandle, {
+                        filterFn: (name) => PathUtils.isProjectFile(name),
+                        maxDepth: 10,
+                        cacheKey: 'import'
+                    });
+
                     if (psyclawFiles.length > 0) {
-                        // 按文件名排序
                         psyclawFiles.sort((a, b) => a.name.localeCompare(b.name));
                         const firstFile = psyclawFiles[0];
                         console.log('Auto-importing first .psyclaw file:', firstFile.path);
@@ -3719,11 +3875,11 @@
 
             // Notify chatbot of project folder
             if (chatbotFrame && chatbotFrame.contentWindow) {
-                chatbotFrame.contentWindow.postMessage({
+                safePostMessage(chatbotFrame.contentWindow, {
                     type: 'project-folder-selected',
                     folderPath: projectFolderPath,
                     folderHandle: projectFolderHandle
-                }, '*');
+                });
             }
             
             // 检查是否存在临时文件，提示恢复
@@ -3737,22 +3893,14 @@
             if (!projectFolderHandle) return;
             
             console.log('Checking for temp files to recover...');
-            const tempFiles = [];
-            
-            async function scanForTempFiles(dirHandle, path = '') {
-                for await (const entry of dirHandle.values()) {
-                    const entryPath = path ? `${path}/${entry.name}` : entry.name;
-                    if (entry.kind === 'file' && entry.name.startsWith('~') && entry.name.endsWith('.psyclaw')) {
-                        tempFiles.push({ handle: entry, path: entryPath, name: entry.name });
-                    } else if (entry.kind === 'directory') {
-                        await scanForTempFiles(entry, entryPath);
-                    }
-                }
-            }
-            
+
             try {
-                await scanForTempFiles(projectFolderHandle);
-                
+                const tempFiles = await scanDirectory(projectFolderHandle, {
+                    filterFn: (name) => PathUtils.isTempFile(name),
+                    maxDepth: 10,
+                    cacheKey: 'temp'
+                });
+
                 if (tempFiles.length > 0) {
                     console.log('Found temp files for recovery:', tempFiles);
                     
@@ -3838,21 +3986,13 @@
                         
                         // 自动导入：扫描并导入第一个合法的 .psyclaw 文件
                         try {
-                            const psyclawFiles = [];
-                            async function scanForImport(dirHandle, path = '') {
-                                for await (const entry of dirHandle.values()) {
-                                    const entryPath = path ? `${path}/${entry.name}` : entry.name;
-                                    if (entry.kind === 'file' && entry.name.endsWith('.psyclaw') && !entry.name.startsWith('~')) {
-                                        psyclawFiles.push({ handle: entry, path: entryPath, name: entry.name });
-                                    } else if (entry.kind === 'directory') {
-                                        await scanForImport(entry, entryPath);
-                                    }
-                                }
-                            }
-                            await scanForImport(projectFolderHandle);
-                            
+                            const psyclawFiles = await scanDirectory(projectFolderHandle, {
+                                filterFn: (name) => PathUtils.isProjectFile(name),
+                                maxDepth: 10,
+                                cacheKey: 'import'
+                            });
+
                             if (psyclawFiles.length > 0) {
-                                // 按文件名排序
                                 psyclawFiles.sort((a, b) => a.name.localeCompare(b.name));
                                 const firstFile = psyclawFiles[0];
                                 console.log('Auto-importing first .psyclaw file:', firstFile.path);
@@ -3928,19 +4068,12 @@
                                 
                                 // 自动导入：扫描并导入第一个合法的 .psyclaw 文件
                                 try {
-                                    const psyclawFiles = [];
-                                    async function scanForImport(dirHandle, path = '') {
-                                        for await (const entry of dirHandle.values()) {
-                                            const entryPath = path ? `${path}/${entry.name}` : entry.name;
-                                            if (entry.kind === 'file' && entry.name.endsWith('.psyclaw') && !entry.name.startsWith('~')) {
-                                                psyclawFiles.push({ handle: entry, path: entryPath, name: entry.name });
-                                            } else if (entry.kind === 'directory') {
-                                                await scanForImport(entry, entryPath);
-                                            }
-                                        }
-                                    }
-                                    await scanForImport(projectFolderHandle);
-                                    
+                                    const psyclawFiles = await scanDirectory(projectFolderHandle, {
+                                        filterFn: (name) => PathUtils.isProjectFile(name),
+                                        maxDepth: 10,
+                                        cacheKey: 'import'
+                                    });
+
                                     if (psyclawFiles.length > 0) {
                                         psyclawFiles.sort((a, b) => a.name.localeCompare(b.name));
                                         const firstFile = psyclawFiles[0];
@@ -3951,7 +4084,7 @@
                                 } catch (e) {
                                     console.warn('Auto-import failed:', e);
                                 }
-                                
+
                                 hideProjectFolderOverlay();
                                 return;
                             }
@@ -3967,22 +4100,15 @@
                                     projectFolderPath = savedHandle.path;
                                     await saveFolderHandle(savedHandle.handle, projectFolderPath);
                                     await refreshImportDropdown();
-                                    
+
                                     // 自动导入：扫描并导入第一个合法的 .psyclaw 文件
                                     try {
-                                        const psyclawFiles = [];
-                                        async function scanForImport(dirHandle, path = '') {
-                                            for await (const entry of dirHandle.values()) {
-                                                const entryPath = path ? `${path}/${entry.name}` : entry.name;
-                                                if (entry.kind === 'file' && entry.name.endsWith('.psyclaw') && !entry.name.startsWith('~')) {
-                                                    psyclawFiles.push({ handle: entry, path: entryPath, name: entry.name });
-                                                } else if (entry.kind === 'directory') {
-                                                    await scanForImport(entry, entryPath);
-                                                }
-                                            }
-                                        }
-                                        await scanForImport(projectFolderHandle);
-                                        
+                                        const psyclawFiles = await scanDirectory(projectFolderHandle, {
+                                            filterFn: (name) => PathUtils.isProjectFile(name),
+                                            maxDepth: 10,
+                                            cacheKey: 'import'
+                                        });
+
                                         if (psyclawFiles.length > 0) {
                                             psyclawFiles.sort((a, b) => a.name.localeCompare(b.name));
                                             const firstFile = psyclawFiles[0];
@@ -3993,7 +4119,7 @@
                                     } catch (e) {
                                         console.warn('Auto-import failed:', e);
                                     }
-                                    
+
                                     hideProjectFolderOverlay();
                                     return;
                                 }
@@ -4016,22 +4142,15 @@
                                 projectFolderPath = newHandle.name;
                                 await saveFolderHandle(newHandle, projectFolderPath);
                                 await refreshImportDropdown();
-                                
+
                                 // 自动导入：扫描并导入第一个合法的 .psyclaw 文件
                                 try {
-                                    const psyclawFiles = [];
-                                    async function scanForImport(dirHandle, path = '') {
-                                        for await (const entry of dirHandle.values()) {
-                                            const entryPath = path ? `${path}/${entry.name}` : entry.name;
-                                            if (entry.kind === 'file' && entry.name.endsWith('.psyclaw') && !entry.name.startsWith('~')) {
-                                                psyclawFiles.push({ handle: entry, path: entryPath, name: entry.name });
-                                            } else if (entry.kind === 'directory') {
-                                                await scanForImport(entry, entryPath);
-                                            }
-                                        }
-                                    }
-                                    await scanForImport(projectFolderHandle);
-                                    
+                                    const psyclawFiles = await scanDirectory(projectFolderHandle, {
+                                        filterFn: (name) => PathUtils.isProjectFile(name),
+                                        maxDepth: 10,
+                                        cacheKey: 'import'
+                                    });
+
                                     if (psyclawFiles.length > 0) {
                                         psyclawFiles.sort((a, b) => a.name.localeCompare(b.name));
                                         const firstFile = psyclawFiles[0];
@@ -4042,7 +4161,7 @@
                                 } catch (e) {
                                     console.warn('Auto-import failed:', e);
                                 }
-                                
+
                                 hideProjectFolderOverlay();
                                 return;
                             } catch (pickerErr) {
@@ -4064,9 +4183,8 @@
                             warningEl.style.display = 'flex';
                         }
                     } catch (e) {
-                        console.error('Error during folder selection:', e);
                         if (e.name !== 'AbortError') {
-                            alert('Failed to access folder. Please try again.');
+                            handleFileError(e, 'Folder Selection');
                         }
                     }
                 });
@@ -4107,6 +4225,9 @@
             const changeProjectBtn = document.getElementById('changeProjectBtn');
 
             if (menuTrigger && menuDropdown) {
+                let scrollHandler;
+                let resizeHandler;
+
                 function updateDropdownPosition() {
                     const triggerRect = menuTrigger.getBoundingClientRect();
                     const dropdownRect = menuDropdown.getBoundingClientRect();
@@ -4122,70 +4243,138 @@
                     menuDropdown.style.left = triggerRect.left + 'px';
                 }
 
+                function closeDropdown() {
+                    menuDropdown.classList.remove('open');
+                    menuTrigger.classList.remove('open');
+                }
+
+                function toggleDropdown() {
+                    const isOpen = menuDropdown.classList.contains('open');
+                    if (isOpen) {
+                        closeDropdown();
+                    } else {
+                        menuDropdown.classList.add('open');
+                        menuTrigger.classList.add('open');
+                        updateDropdownPosition();
+                        setupEventListeners();
+                    }
+                }
+
+                function setupEventListeners() {
+                    if (scrollHandler || resizeHandler) return;
+
+                    scrollHandler = () => {
+                        if (!menuDropdown.classList.contains('open')) {
+                            cleanupEventListeners();
+                            return;
+                        }
+                        updateDropdownPosition();
+                    };
+
+                    resizeHandler = () => {
+                        if (!menuDropdown.classList.contains('open')) {
+                            cleanupEventListeners();
+                            return;
+                        }
+                        updateDropdownPosition();
+                    };
+
+                    window.addEventListener('scroll', scrollHandler, { passive: true });
+                    window.addEventListener('resize', resizeHandler, { passive: true });
+                }
+
+                function cleanupEventListeners() {
+                    if (scrollHandler) {
+                        window.removeEventListener('scroll', scrollHandler);
+                        scrollHandler = null;
+                    }
+                    if (resizeHandler) {
+                        window.removeEventListener('resize', resizeHandler);
+                        resizeHandler = null;
+                    }
+                }
+
                 menuTrigger.addEventListener('click', (e) => {
                     e.stopPropagation();
-                    const isOpen = menuDropdown.classList.contains('open');
-                    menuDropdown.classList.toggle('open');
-                    menuTrigger.classList.toggle('open');
-                    if (menuDropdown.classList.contains('open')) {
-                        updateDropdownPosition();
-                    }
+                    toggleDropdown();
                 });
 
                 document.addEventListener('click', (e) => {
                     if (!menuTrigger.contains(e.target) && !menuDropdown.contains(e.target)) {
-                        menuDropdown.classList.remove('open');
-                        menuTrigger.classList.remove('open');
+                        closeDropdown();
+                        cleanupEventListeners();
                     }
                 });
-                
-                window.addEventListener('scroll', () => {
-                    if (menuDropdown.classList.contains('open')) {
-                        updateDropdownPosition();
-                    }
-                }, { passive: true });
-                
-                window.addEventListener('resize', () => {
-                    if (menuDropdown.classList.contains('open')) {
-                        updateDropdownPosition();
-                    }
-                }, { passive: true });
+            }
+
+            function handleProjectFolderSelection() {
+                if (menuDropdown) {
+                    menuDropdown.classList.remove('open');
+                }
+                if (menuTrigger) {
+                    menuTrigger.classList.remove('open');
+                }
+                updateProjectMenuUI();
+                if (chatbotFrame && chatbotFrame.contentWindow) {
+                    safePostMessage(chatbotFrame.contentWindow, {
+                        type: 'project-folder-selected',
+                        folderPath: projectFolderPath,
+                        folderHandle: projectFolderHandle
+                    });
+                }
             }
 
             if (newProjectBtn) {
                 newProjectBtn.addEventListener('click', async () => {
-                    menuDropdown.classList.remove('open');
-                    menuTrigger.classList.remove('open');
                     const success = await selectProjectFolder();
                     if (success) {
-                        updateProjectMenuUI();
-                        if (chatbotFrame && chatbotFrame.contentWindow) {
-                            chatbotFrame.contentWindow.postMessage({
-                                type: 'project-folder-selected',
-                                folderPath: projectFolderPath,
-                                folderHandle: projectFolderHandle
-                            }, '*');
-                        }
+                        handleProjectFolderSelection();
                     }
                 });
             }
 
             if (changeProjectBtn) {
                 changeProjectBtn.addEventListener('click', async () => {
-                    menuDropdown.classList.remove('open');
-                    menuTrigger.classList.remove('open');
                     const success = await selectProjectFolder();
                     if (success) {
-                        updateProjectMenuUI();
-                        if (chatbotFrame && chatbotFrame.contentWindow) {
-                            chatbotFrame.contentWindow.postMessage({
-                                type: 'project-folder-selected',
-                                folderPath: projectFolderPath,
-                                folderHandle: projectFolderHandle
-                            }, '*');
-                        }
+                        handleProjectFolderSelection();
                     }
                 });
+            }
+
+            // Add new project file button handler
+            const addNewProjectFileBtn = document.getElementById('addNewProjectFileBtn');
+            console.log('addNewProjectFileBtn element:', addNewProjectFileBtn);
+            if (addNewProjectFileBtn) {
+                addNewProjectFileBtn.addEventListener('click', async (e) => {
+                    e.stopPropagation();
+                    console.log('addNewProjectFileBtn clicked, projectFolderHandle:', projectFolderHandle);
+                    // Prevent creating multiple files simultaneously
+                    if (addNewProjectFileBtn.disabled) {
+                        console.log('Button is disabled, ignoring click');
+                        return;
+                    }
+                    if (!projectFolderHandle) {
+                        console.log('No project folder selected');
+                        showToast('请先选择项目文件夹！', 'warning', 3000);
+                        return;
+                    }
+                    addNewProjectFileBtn.disabled = true;
+                    addNewProjectFileBtn.style.opacity = '0.5';
+                    try {
+                        // Create a new empty project file (keep dropdown open)
+                        console.log('Calling createNewProjectFile...');
+                        await createNewProjectFile();
+                    } catch (error) {
+                        console.error('Error in addNewProjectFileBtn click handler:', error);
+                    } finally {
+                        addNewProjectFileBtn.disabled = false;
+                        addNewProjectFileBtn.style.opacity = '1';
+                    }
+                });
+                console.log('addNewProjectFileBtn event listener attached');
+            } else {
+                console.error('addNewProjectFileBtn element not found');
             }
         }
 
@@ -7049,7 +7238,7 @@
             const validationResult = validateLoops(loops);
             if (!validationResult.valid) {
                 const errorMessage = validationResult.errors.join('\n');
-                alert('循环验证失败：\n' + errorMessage);
+                showToast('循环验证失败：' + errorMessage, 'error', 5000);
                 // 可以选择恢复到之前的状态
             }
 
@@ -7816,6 +8005,100 @@
         const saveButton = document.getElementById('saveButton');
         console.log('saveButton element:', saveButton);
 
+        // 创建新的项目文件
+        async function createNewProjectFile() {
+            console.log('Creating new project file...');
+            
+            if (!projectFolderHandle) {
+                showToast('请先选择项目文件夹！', 'warning', 3000);
+                return;
+            }
+            
+            // 生成新文件名
+            const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+            const newFileName = `project_${timestamp}.psyclaw`;
+            
+            // 创建空的项目数据
+            const emptyProjectData = {
+                timestamp: new Date().toISOString(),
+                routines: [],
+                loops: [],
+                tasks: [{
+                    id: generateTaskId(),
+                    name: 'New',
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString(),
+                    messages: [],
+                    conversationState: {
+                        stage: 'idle',
+                        userRequirement: '',
+                        experimentDescription: '',
+                        messages: []
+                    },
+                    flowchartData: null
+                }],
+                currentTaskId: null
+            };
+            
+            try {
+                // 创建新文件
+                const newFileHandle = await projectFolderHandle.getFileHandle(newFileName, { create: true });
+                const writable = await newFileHandle.createWritable();
+                await writable.write(JSON.stringify(emptyProjectData, null, 2));
+                await writable.close();
+                
+                console.log('New project file created:', newFileName);
+                
+                // 清除目录缓存，确保文件列表立即更新
+                if (window.PsyClawFS && window.PsyClawFS.dirCache) {
+                    window.PsyClawFS.dirCache.clear();
+                }
+                
+                // 清空当前 flowchart
+                routineRects.length = 0;
+                connections.length = 0;
+                selectedRoutineIndex = -1;
+                activeDragRect = null;
+                currentRoutineCount = 0;
+                routineIdCounter = 0;
+                loopIdCounter = 0;
+                
+                // 更新任务
+                tasks = emptyProjectData.tasks;
+                currentTaskId = tasks[0].id;
+                saveTasks();
+                
+                // 更新文件句柄
+                currentProjectFile = newFileName;
+                fileHandle = newFileHandle;
+                
+                // 更新界面
+                updatePoints();
+                updateRoutineCount();
+                draw();
+                saveState();
+                
+                // 刷新文件列表
+                refreshImportDropdown();
+                
+                // 通知 chatbot 加载新任务
+                if (chatbotFrame && chatbotFrame.contentWindow) {
+                    const task = tasks.find(t => t.id === currentTaskId);
+                    if (task) {
+                        safePostMessage(chatbotFrame.contentWindow, {
+                            type: 'load-task',
+                            task: task
+                        });
+                    }
+                }
+                
+                showNotification(`✅ Created new file: ${newFileName}`);
+                
+            } catch (error) {
+                handleFileError(error, 'Create File');
+            }
+        }
+
         // 保存项目
         saveButton.addEventListener('click', async () => {
             console.log('=== Save Button Debug Start ===');
@@ -7829,8 +8112,7 @@
             try {
                 // 检查是否为空 flowchart
                 if (routineRects.length === 0) {
-                    console.log('Cannot save: empty flowchart');
-                    alert('不能保存空的 flowchart，请先添加至少一个 routine！');
+                    showToast('不能保存空的 flowchart，请先添加至少一个 routine！', 'warning', 3000);
                     return;
                 }
 
@@ -7865,9 +8147,8 @@
                 console.log('Validating loops...');
                 const validationResult = validateLoops(loops);
                 if (!validationResult.valid) {
-                    console.log('Validation failed:', validationResult.errors);
                     const errorMessage = validationResult.errors.join('\n');
-                    alert('循环验证失败：\n' + errorMessage);
+                    showToast('循环验证失败：' + errorMessage, 'error', 5000);
                     return;
                 }
 
@@ -7915,27 +8196,22 @@
                         currentProjectFile = folderFileHandle.name;
 
                         // 发送成功响应消息（按照 protocol）
-                        window.parent.postMessage({
+                        safePostMessage(window.parent, {
                             type: 'project-saved',
                             success: true,
                             fileName: folderFileHandle.name,
                             timestamp: timestamp
-                        }, '*');
+                        });
                         console.log('=== Save Successful ===');
                         console.log('Saved successfully to project folder:', folderFileHandle.name);
                         
                         // 保存成功后清理临时文件
                         await cleanupTempFiles();
                         
-                        alert('保存成功！文件已保存为：' + folderFileHandle.name);
+                        showToast('保存成功！文件已保存为：' + folderFileHandle.name, 'success', 3000);
                         return;
                     } catch (error) {
-                        console.error('=== Save Error ===');
-                        console.error('保存到项目文件夹失败:', error);
-                        console.error('Error name:', error.name);
-                        console.error('Error message:', error.message);
-                        console.error('Error stack:', error.stack);
-                        alert('保存到项目文件夹失败：' + error.message);
+                        handleFileError(error, 'Save to Folder');
                     }
                 }
 
@@ -7948,22 +8224,21 @@
                         await writable.close();
 
                         // 发送成功响应消息（按照 protocol）
-                        window.parent.postMessage({
+                        safePostMessage(window.parent, {
                             type: 'project-saved',
                             success: true,
                             fileName: fileName,
                             timestamp: timestamp
-                        }, '*');
+                        });
                         console.log('Saved successfully to existing file');
                         
                         // 保存成功后清理临时文件
                         await cleanupTempFiles();
                         
-                        alert('保存成功！');
+                        showToast('保存成功！', 'success', 3000);
                         return;
                     } catch (error) {
-                        console.error('保存失败:', error);
-                        alert('保存失败：' + error.message);
+                        handleFileError(error, 'Save');
                     }
                 }
 
@@ -7994,32 +8269,31 @@
                         currentProjectFile = handle.name;
 
                         // 发送成功响应消息（按照 protocol）
-                        window.parent.postMessage({
+                        safePostMessage(window.parent, {
                             type: 'project-saved',
                             success: true,
                             fileName: handle.name,
                             timestamp: timestamp
-                        }, '*');
+                        });
                         console.log('Saved successfully via showSaveFilePicker:', handle.name);
                         
                         // 保存成功后清理临时文件
                         await cleanupTempFiles();
-                        alert('保存成功！');
+                        showToast('保存成功！', 'success', 3000);
                         return;
                     } catch (error) {
                         // 用户取消或保存失败
                         if (error.name === 'AbortError') {
                             console.log('User cancelled save dialog');
-                            window.parent.postMessage({
+                            safePostMessage(window.parent, {
                                 type: 'project-saved',
                                 success: false,
                                 error: 'User cancelled',
                                 timestamp: timestamp
-                            }, '*');
+                            });
                             return;
                         }
-                        console.error('保存失败:', error);
-                        alert('保存失败：' + error.message);
+                        handleFileError(error, 'Save');
                     }
                 }
 
@@ -8035,15 +8309,14 @@
                 URL.revokeObjectURL(url);
 
                 // 发送成功响应消息（按照 protocol）
-                window.parent.postMessage({
+                safePostMessage(window.parent, {
                     type: 'project-saved',
                     success: true,
                     fileName: fileName,
                     timestamp: timestamp
-                }, '*');
+                });
             } catch (error) {
-                console.error('保存错误:', error);
-                alert('保存失败：' + error.message);
+                handleFileError(error, 'Save');
             }
         });
 
@@ -8052,12 +8325,12 @@
         saveAsButton.addEventListener('click', async () => {
             try {
                 if (!projectFolderHandle) {
-                    alert('请先选择项目文件夹！');
+                    showToast('请先选择项目文件夹！', 'warning', 3000);
                     return;
                 }
 
                 if (routineRects.length === 0) {
-                    alert('不能保存空的 flowchart，请先添加至少一个 routine！');
+                    showToast('不能保存空的 flowchart，请先添加至少一个 routine！', 'warning', 3000);
                     return;
                 }
 
@@ -8093,8 +8366,7 @@
                 };
 
                 if (typeof convertToPsyExpXML !== 'function') {
-                    console.error('convertToPsyExpXML function not loaded');
-                    alert('导出功能加载失败，请刷新页面重试！');
+                    showToast('导出功能加载失败，请刷新页面重试！', 'error', 5000);
                     return;
                 }
 
@@ -8109,16 +8381,15 @@
                     await writable.close();
 
                     // 发送成功响应消息
-                    window.parent.postMessage({
+                    safePostMessage(window.parent, {
                         type: 'project-exported',
                         success: true,
                         fileName: fileName,
                         timestamp: new Date().toISOString()
-                    }, '*');
+                    });
 
-                    alert('导出成功！');
+                    showToast('导出成功！', 'success', 3000);
                 } catch (error) {
-                    console.error('导出失败:', error);
                     // 降级方案：使用传统下载方式
                     const xmlBlob = new Blob([xmlData], { type: 'application/xml' });
                     const xmlUrl = URL.createObjectURL(xmlBlob);
@@ -8131,8 +8402,7 @@
                     URL.revokeObjectURL(xmlUrl);
                 }
             } catch (error) {
-                console.error('Export error:', error);
-                alert('导出失败：' + error.message);
+                handleFileError(error, 'Export');
             }
         });
 
@@ -8142,63 +8412,51 @@
         // 清理临时文件函数
         async function cleanupTempFiles() {
             if (!projectFolderHandle) return;
-            
+
             console.log('Cleaning up temp files...');
-            const tempFiles = [];
-            
-            async function scanForTempFiles(dirHandle, path = '') {
-                for await (const entry of dirHandle.values()) {
-                    const entryPath = path ? `${path}/${entry.name}` : entry.name;
-                    if (entry.kind === 'file' && entry.name.startsWith('~') && entry.name.endsWith('.psyclaw')) {
-                        tempFiles.push({ handle: entry, path: entryPath });
-                    } else if (entry.kind === 'directory') {
-                        await scanForTempFiles(entry, entryPath);
-                    }
-                }
-            }
-            
+
             try {
-                await scanForTempFiles(projectFolderHandle);
-                
+                const tempFiles = await scanDirectory(projectFolderHandle, {
+                    filterFn: (name) => PathUtils.isTempFile(name),
+                    maxDepth: 10,
+                    cacheKey: 'temp'
+                });
+
                 for (const tempFile of tempFiles) {
                     try {
-                        // 尝试删除临时文件
                         await projectFolderHandle.removeEntry(tempFile.path);
                         console.log('Deleted temp file:', tempFile.path);
                     } catch (err) {
                         console.warn('Failed to delete temp file:', tempFile.path, err);
                     }
                 }
-                
+
                 console.log('Temp files cleanup completed. Deleted', tempFiles.length, 'files');
             } catch (error) {
                 console.warn('Error during temp files cleanup:', error);
             }
         }
 
+        // 存储当前文件列表数据，用于事件委托
+        let currentPsyclawFiles = [];
+
         async function refreshImportDropdown() {
             console.log('refreshImportDropdown: Starting');
 
             if (!projectFolderHandle) {
                 importFileListEl.innerHTML = '<div class="project-menu-import-files-empty">No project folder selected</div>';
+                currentPsyclawFiles = [];
                 return;
             }
 
-            const psyclawFiles = [];
+            const psyclawFiles = await scanDirectory(projectFolderHandle, {
+                filterFn: (name) => PathUtils.isProjectFile(name),
+                maxDepth: 10,
+                cacheKey: 'import'
+            });
 
-            async function scanDirectory(dirHandle, path = '') {
-                for await (const entry of dirHandle.values()) {
-                    const entryPath = path ? `${path}/${entry.name}` : entry.name;
-                    // 跳过临时文件（以 ~ 开头的文件）
-                    if (entry.kind === 'file' && entry.name.endsWith('.psyclaw') && !entry.name.startsWith('~')) {
-                        psyclawFiles.push({ handle: entry, path: entryPath });
-                    } else if (entry.kind === 'directory') {
-                        await scanDirectory(entry, entryPath);
-                    }
-                }
-            }
-
-            await scanDirectory(projectFolderHandle);
+            // 保存当前文件列表数据
+            currentPsyclawFiles = psyclawFiles;
 
             importFileListEl.innerHTML = '';
 
@@ -8207,17 +8465,18 @@
                 return;
             }
 
-            psyclawFiles.forEach((file) => {
+            psyclawFiles.forEach((file, index) => {
                 const item = document.createElement('div');
                 item.className = 'project-menu-import-files-item';
                 item.title = file.path;
+                item.dataset.fileIndex = index;
                 item.innerHTML = `
                     <svg class="file-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
                         <polyline points="14 2 14 8 20 8"></polyline>
                     </svg>
                     <span class="project-menu-import-files-filename">${file.path}</span>
-                    <button class="project-menu-file-delete" title="Delete file">
+                    <button class="project-menu-file-delete" title="Delete file" data-file-index="${index}">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <polyline points="3 6 5 6 21 6"></polyline>
                             <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
@@ -8225,50 +8484,108 @@
                     </button>
                 `;
                 
-                // 点击文件项导入文件
-                item.addEventListener('click', async (e) => {
-                    if (e.target.closest('.project-menu-file-delete')) return;
-                    await importProjectFile(file.handle);
-                });
-                
-                // 点击删除按钮删除文件
-                const deleteBtn = item.querySelector('.project-menu-file-delete');
-                deleteBtn.addEventListener('click', async (e) => {
-                    e.stopPropagation();
-                    await deleteProjectFile(file.path);
-                });
-                
                 importFileListEl.appendChild(item);
             });
         }
+
+        // 使用事件委托处理文件列表点击事件
+        importFileListEl.addEventListener('click', async (e) => {
+            const deleteBtn = e.target.closest('.project-menu-file-delete');
+            if (deleteBtn) {
+                e.stopPropagation();
+                e.preventDefault();
+                const fileIndex = deleteBtn.dataset.fileIndex;
+                const file = currentPsyclawFiles[fileIndex];
+                if (!file) {
+                    console.warn('Delete button clicked but file not found at index:', fileIndex);
+                    return;
+                }
+                
+                // 合并确认弹窗：检查是否正在删除当前打开的文件
+                let confirmMessage = `Are you sure you want to delete "${file.path}"?`;
+                if (currentProjectFile === file.path || fileHandle?.name === file.path) {
+                    confirmMessage = `You are deleting the currently open file. Any unsaved changes will be lost.\n\nAre you sure you want to delete "${file.path}"?`;
+                }
+                
+                const confirmed = confirm(confirmMessage);
+                if (!confirmed) return;
+                
+                await deleteProjectFile(file.path);
+                return;
+            }
+
+            const fileItem = e.target.closest('.project-menu-import-files-item');
+            if (fileItem) {
+                const fileIndex = fileItem.dataset.fileIndex;
+                const file = currentPsyclawFiles[fileIndex];
+                if (file) {
+                    await importProjectFile(file.handle);
+                }
+            }
+        });
         
-        // 删除项目文件
+        // 删除项目文件（注意：调用前需先确认）
         async function deleteProjectFile(filePath) {
-            const confirmed = confirm(`Are you sure you want to delete "${filePath}"?`);
-            if (!confirmed) return;
-            
             try {
-                await projectFolderHandle.removeEntry(filePath);
+                // 解析路径，处理子目录中的文件
+                const parts = filePath.split('/').filter(p => p);
+                const fileName = parts.pop();
+                let dirHandle = projectFolderHandle;
+                
+                // 递归获取父目录
+                for (const part of parts) {
+                    dirHandle = await dirHandle.getDirectoryHandle(part);
+                }
+                
+                // 删除文件
+                await dirHandle.removeEntry(fileName);
+                
                 console.log('Deleted file:', filePath);
                 showNotification(`🗑️ Deleted: ${filePath}`);
-                refreshImportDropdown();
+                
+                // 清除目录缓存，确保文件列表立即更新
+                if (window.PsyClawFS && window.PsyClawFS.dirCache) {
+                    window.PsyClawFS.dirCache.clear();
+                }
+                
+                // 刷新列表
+                await refreshImportDropdown();
             } catch (error) {
                 console.error('Failed to delete file:', error);
-                showNotification('❌ Failed to delete file');
+                let message = 'Failed to delete file';
+                if (error.name === 'NotAllowedError') {
+                    message = 'Permission denied. Cannot delete this file.';
+                } else if (error.name === 'TypeMismatchError') {
+                    message = 'Path is not a file.';
+                } else if (error.name === 'NotFoundError') {
+                    message = 'File not found.';
+                }
+                showNotification(`❌ ${message}`);
             }
         }
 
         async function importProjectFile(fileHandle) {
             try {
                 const file = await fileHandle.getFile();
+
+                // 文件大小限制
+                if (file.size > MAX_FILE_SIZE) {
+                    const sizeMB = (file.size / (1024 * 1024)).toFixed(1);
+                    throw { type: FileErrorTypes.SIZE_EXCEEDED, message: `File too large (${sizeMB} MB). Maximum allowed is ${MAX_FILE_SIZE / (1024 * 1024)} MB.` };
+                }
+
+                // 文件类型校验：检查扩展名
+                const fileName = file.name || '';
+                const ext = fileName.slice(fileName.lastIndexOf('.') + 1).toLowerCase();
+                if (!['psyclaw', 'json'].includes(ext)) {
+                    throw { type: FileErrorTypes.INVALID_FORMAT, message: `Unsupported file type: .${ext}. Only .psyclaw and .json files are allowed.` };
+                }
+
                 const text = await file.text();
                 const projectData = JSON.parse(text);
 
                 // 验证数据格式
                 const { routines, loops } = parseProjectData(projectData);
-                if (routines.length === 0) {
-                    throw new Error('无效的项目文件格式：缺少 routines');
-                }
 
                 // 清空当前项目
                 routineRects.length = 0;
@@ -8326,11 +8643,29 @@
                     // 加载当前任务到 chatbot（包含 flowchart 数据）
                     if (currentTaskId && chatbotFrame.contentWindow) {
                         if (task) {
-                            chatbotFrame.contentWindow.postMessage({
+                            safePostMessage(chatbotFrame.contentWindow, {
                                 type: 'load-task',
                                 task: task
-                            }, '*');
+                            });
                         }
+                    }
+                } else {
+                    // 文件中没有 tasks 数据，直接发送 flowchart 数据给 chatbot
+                    if (chatbotFrame.contentWindow) {
+                        const flowchartData = {
+                            timestamp: new Date().toISOString(),
+                            routines: routineRects.map(rect => ({
+                                id: rect.id,
+                                name: rect.name,
+                                duration: rect.duration,
+                                components: rect.components || []
+                            })),
+                            loops: connectionsToLoops(connections)
+                        };
+                        safePostMessage(chatbotFrame.contentWindow, {
+                            type: 'flowchart-updated',
+                            flowchartData: flowchartData
+                        });
                     }
                 }
 
@@ -8350,28 +8685,40 @@
                 updateCurrentTaskFlowchartAndNotify();
 
                 // 发送成功响应消息
-                window.parent.postMessage({
+                safePostMessage(window.parent, {
                     type: 'project-imported',
                     success: true,
                     routinesCount: routineRects.length,
                     loopsCount: loops.length,
                     fileName: fileHandle.name
-                }, '*');
+                });
             } catch (error) {
-                console.error('导入失败:', error);
-                alert('导入失败: ' + error.message);
-                window.parent.postMessage({
+                handleFileError(error, 'Import');
+                safePostMessage(window.parent, {
                     type: 'project-imported',
                     success: false,
                     error: error.message
-                }, '*');
+                });
             }
         }
 
 
 
-        // 监听来自 chatbot.html 的 flowchart 生成数据
+        // 监听来自 chatbot.html 的消息
         window.addEventListener('message', (e) => {
+            // Origin 校验：只接受同源消息
+            if (e.origin !== ALLOWED_ORIGIN) {
+                console.warn('Blocked message from unexpected origin:', e.origin);
+                return;
+            }
+
+            // 处理 toast 消息
+            if (e.data && e.data.type === 'show-toast') {
+                showToast(e.data.message, e.data.toastType || 'info', e.data.duration || 3000);
+                return;
+            }
+
+            // 监听来自 chatbot.html 的 flowchart 生成数据
             if (e.data && e.data.type === 'flowchart-generated') {
                 const fileName = e.data.fileName || 'generated_flowchart.json';
                 let content = e.data.content;
@@ -8505,12 +8852,6 @@
 
                 const routinesData = allRoutines;
 
-                if (!routinesData || routinesData.length === 0) {
-                    console.error('Invalid flowchart data: no routines found');
-                    showNotification('❌ Invalid flowchart: no routines found');
-                    return;
-                }
-
                 // 清空当前项目
                 routineRects.length = 0;
                 connections.length = 0;
@@ -8640,13 +8981,13 @@
                 autoDiagnoseAfterOperation('import flowchart');
                 
                 // 发送成功响应消息（按照 protocol）
-                window.parent.postMessage({
+                safePostMessage(window.parent, {
                     type: 'flowchart-rendered',
                     success: true,
                     routinesCount: routineRects.length,
                     loopsCount: connections.length,
                     timestamp: new Date().toISOString()
-                }, '*');
+                });
 
                 // 显示通知
                 showNotification('✅ Flowchart loaded: ' + fileName);
@@ -8667,12 +9008,12 @@
                     loops: connectionsToLoops(connections)
                 };
                 
-                window.parent.postMessage({
+                safePostMessage(window.parent, {
                     type: 'flowchart-state-response',
                     requestId: e.data.requestId,
                     state: flowchartState,
                     timestamp: new Date().toISOString()
-                }, '*');
+                });
             } else if (e.data && e.data.type === 'restore-flowchart-state') {
                 // 恢复 flowchart 状态
                 const state = e.data.state;
@@ -8747,13 +9088,26 @@
                 draw();
                 saveState();
                 
-                window.parent.postMessage({
+                safePostMessage(window.parent, {
                     type: 'flowchart-state-restored',
                     success: true,
                     routinesCount: routineRects.length,
                     loopsCount: connections.length,
                     timestamp: new Date().toISOString()
-                }, '*');
+                });
+            } else if (e.data && e.data.type === 'chatbot-ready') {
+                // Chatbot 已准备好，发送当前 tasks 数据
+                console.log('Chatbot is ready, sending tasks data');
+                if (chatbotFrame && chatbotFrame.contentWindow) {
+                    const task = tasks.find(t => t.id === currentTaskId);
+                    if (task) {
+                        safePostMessage(chatbotFrame.contentWindow, {
+                            type: 'load-task',
+                            task: task
+                        });
+                        console.log('Sent current task to chatbot:', task.id);
+                    }
+                }
             } else if (e.data && e.data.type === 'clear-flowchart') {
                 // 清除 flowchart（当 chatbot 中删除消息时调用）
                 console.log('Clearing flowchart due to message deletion');
@@ -8791,10 +9145,10 @@
                 
                 // 通知 chatbot flowchart 已清除
                 if (chatbotFrame && chatbotFrame.contentWindow) {
-                    chatbotFrame.contentWindow.postMessage({
+                    safePostMessage(chatbotFrame.contentWindow, {
                         type: 'flowchart-cleared',
                         timestamp: new Date().toISOString()
-                    }, '*');
+                    });
                 }
             }
         });

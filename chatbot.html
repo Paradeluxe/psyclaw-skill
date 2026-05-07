@@ -1950,99 +1950,6 @@
             font-family: 'DM Sans', sans-serif;
         }
 
-        /* Toast Notification System */
-        .toast-container {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 10000;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            pointer-events: none;
-        }
-
-        .toast {
-            background: #ffffff;
-            border-radius: 12px;
-            padding: 16px 20px;
-            box-shadow: rgba(44, 30, 116, 0.15) 0px 8px 24px, rgba(0, 0, 0, 0.08) 0px 4px 12px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            min-width: 280px;
-            max-width: 400px;
-            transform: translateX(120%);
-            opacity: 0;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            pointer-events: auto;
-            border-left: 4px solid #1456f0;
-        }
-
-        .toast.show {
-            transform: translateX(0);
-            opacity: 1;
-        }
-
-        .toast.hide {
-            transform: translateX(120%);
-            opacity: 0;
-        }
-
-        .toast-icon {
-            width: 24px;
-            height: 24px;
-            flex-shrink: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-        }
-
-        .toast-icon.warning {
-            background: #fef3c7;
-            color: #f59e0b;
-        }
-
-        .toast-icon.error {
-            background: #fee2e2;
-            color: #ef4444;
-        }
-
-        .toast-icon.success {
-            background: #d1fae5;
-            color: #10b981;
-        }
-
-        .toast-content {
-            flex: 1;
-            font-family: 'DM Sans', sans-serif;
-            font-size: 14px;
-            font-weight: 500;
-            color: #222222;
-            line-height: 1.5;
-        }
-
-        .toast-close {
-            width: 20px;
-            height: 20px;
-            border: none;
-            background: transparent;
-            color: #8e8e93;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 4px;
-            transition: all 0.2s;
-            flex-shrink: 0;
-        }
-
-        .toast-close:hover {
-            background: #f2f3f5;
-            color: #45515e;
-        }
-
         /* Markdown 内容样式 */
         .chat-message .markdown-body {
             font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -2198,7 +2105,6 @@
     </style>
 </head>
 <body>
-    <div class="toast-container" id="toastContainer"></div>
     <div class="chatbot-container">
         <!-- Main Content Area -->
         <div class="chatbot-main">
@@ -2354,6 +2260,13 @@
 
     <script>
         console.log('PsyClaw Chatbot starting');
+
+        const ALLOWED_ORIGIN = window.location.origin;
+
+        function safePostMessage(target, message, targetOrigin) {
+            if (!target || typeof target.postMessage !== 'function') return;
+            target.postMessage(message, targetOrigin || ALLOWED_ORIGIN);
+        }
 
         // 配置 marked.js
         if (typeof marked !== 'undefined') {
@@ -2787,6 +2700,8 @@
                 }, 1000);
                 
                 function handler(e) {
+                    // Origin 校验
+                    if (e.origin !== ALLOWED_ORIGIN) return;
                     if (e.data && e.data.type === 'flowchart-state-response' && e.data.requestId === requestId) {
                         clearTimeout(timeout);
                         window.removeEventListener('message', handler);
@@ -2795,11 +2710,11 @@
                 }
                 
                 window.addEventListener('message', handler);
-                window.parent.postMessage({
+                safePostMessage(window.parent, {
                     type: 'request-flowchart-state',
                     requestId: requestId,
                     timestamp: new Date().toISOString()
-                }, '*');
+                });
             });
         }
         
@@ -2892,26 +2807,26 @@
             
             // Restore flowchart state if exists (priority over flowchartData)
             if (task.flowchartState && task.flowchartState.routines && task.flowchartState.routines.length > 0) {
-                window.parent.postMessage({
+                safePostMessage(window.parent, {
                     type: 'restore-flowchart-state',
                     state: task.flowchartState,
                     timestamp: new Date().toISOString()
-                }, '*');
+                });
             } else if (task.flowchartData) {
                 // Fallback to old flowchartData if no flowchartState exists
-                window.parent.postMessage({
+                safePostMessage(window.parent, {
                     type: 'flowchart-generated',
                     content: task.flowchartData,
                     fileName: 'temp_generated_flowchart.json',
                     timestamp: new Date().toISOString()
-                }, '*');
+                });
             } else {
                 // No flowchart data, clear the flowchart
-                window.parent.postMessage({
+                safePostMessage(window.parent, {
                     type: 'restore-flowchart-state',
                     state: null,
                     timestamp: new Date().toISOString()
-                }, '*');
+                });
             }
             
             currentTaskId = taskId;
@@ -3012,11 +2927,11 @@
             };
             
             // Clear flowchart for new task
-            window.parent.postMessage({
+            safePostMessage(window.parent, {
                 type: 'restore-flowchart-state',
                 state: null,
                 timestamp: new Date().toISOString()
-            }, '*');
+            });
             
             currentTaskId = newTask.id;
             saveTasks();
@@ -3073,11 +2988,11 @@
                         messages: []
                     };
                     // Clear flowchart
-                    window.parent.postMessage({
+                    safePostMessage(window.parent, {
                         type: 'restore-flowchart-state',
                         state: null,
                         timestamp: new Date().toISOString()
-                    }, '*');
+                    });
                 }
             }
             
@@ -3161,10 +3076,10 @@
         // Load tasks from parent (psyclaw.html is the single source of truth)
         function loadTasks() {
             // Request tasks from parent
-            window.parent.postMessage({
+            safePostMessage(window.parent, {
                 type: 'request-tasks',
                 timestamp: new Date().toISOString()
-            }, '*');
+            });
         }
         
         // Handle receiving tasks from parent
@@ -3197,12 +3112,12 @@
         
         // Save tasks - send to parent for storage
         function saveTasks() {
-            window.parent.postMessage({
+            safePostMessage(window.parent, {
                 type: 'save-tasks',
                 tasks: tasks,
                 currentTaskId: currentTaskId,
                 timestamp: new Date().toISOString()
-            }, '*');
+            });
         }
         
         // Update task UI
@@ -3376,15 +3291,34 @@
             messages: []
         };
 
-        // 从 flowchart.schema.json 加载 schema
+        // 从 flowchart.schema.json 加载 schema（带 sessionStorage 缓存）
         async function loadFlowchartSchema() {
             try {
+                // 先尝试从 sessionStorage 读取缓存
+                const cached = sessionStorage.getItem('flowchartSchema');
+                if (cached) {
+                    try {
+                        flowchartSchema = JSON.parse(cached);
+                        flowchartSchemaLoaded = true;
+                        console.log('Flowchart schema loaded from sessionStorage cache');
+                        return;
+                    } catch (e) {
+                        sessionStorage.removeItem('flowchartSchema');
+                    }
+                }
+
                 const response = await fetch('flowchart.schema.json');
                 if (!response.ok) {
                     throw new Error(`Failed to load schema: ${response.status} ${response.statusText}`);
                 }
                 flowchartSchema = await response.json();
                 flowchartSchemaLoaded = true;
+                // 缓存到 sessionStorage
+                try {
+                    sessionStorage.setItem('flowchartSchema', JSON.stringify(flowchartSchema));
+                } catch (e) {
+                    // 忽略存储失败（如存储空间不足）
+                }
                 console.log('Flowchart schema loaded successfully');
             } catch (error) {
                 console.error('Failed to load flowchart.schema.json:', error);
@@ -4689,43 +4623,16 @@
             }
         });
 
-        // Toast notification function
+        // Toast notification function - delegate to parent window
         function showToast(message, type = 'warning', duration = 3000) {
-            const container = document.getElementById('toastContainer');
-            
-            const toast = document.createElement('div');
-            toast.className = 'toast';
-            
-            const iconSvg = {
-                warning: '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>',
-                error: '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>',
-                success: '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>'
-            };
-            
-            toast.innerHTML = `
-                <div class="toast-icon ${type}">${iconSvg[type] || iconSvg.warning}</div>
-                <div class="toast-content">${message}</div>
-                <button class="toast-close" onclick="this.parentElement.remove()">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
-                </button>
-            `;
-            
-            container.appendChild(toast);
-            
-            // Trigger animation
-            requestAnimationFrame(() => {
-                toast.classList.add('show');
-            });
-            
-            // Auto remove
-            if (duration > 0) {
-                setTimeout(() => {
-                    toast.classList.add('hide');
-                    setTimeout(() => toast.remove(), 400);
-                }, duration);
+            if (window.parent && window.parent !== window) {
+                safePostMessage(window.parent, {
+                    type: 'show-toast',
+                    message: message,
+                    toastType: type,
+                    duration: duration
+                });
             }
-            
-            return toast;
         }
 
         function addMessage(content, role) {
@@ -5201,11 +5108,18 @@
             chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
         }
 
+        const MAX_ATTACHMENT_SIZE = 5 * 1024 * 1024; // 5MB for chatbot attachments
+
         async function readFile(file) {
+            if (!file) throw new Error('No file provided');
+            if (file.size > MAX_ATTACHMENT_SIZE) {
+                const sizeMB = (file.size / (1024 * 1024)).toFixed(1);
+                throw new Error(`File too large (${sizeMB} MB). Maximum attachment size is ${MAX_ATTACHMENT_SIZE / (1024 * 1024)} MB.`);
+            }
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
                 reader.onload = () => resolve(reader.result);
-                reader.onerror = reject;
+                reader.onerror = () => reject(new Error('Failed to read file'));
                 reader.readAsText(file);
             });
         }
@@ -5314,7 +5228,8 @@
                     const fileContent = await readFile(currentFile);
                     extraParams.userRequirement += `\n\n[Attached File: ${currentFile.name}]\n${fileContent}`;
                 } catch (e) {
-                    console.warn('Failed to read file:', e);
+                    showToast('Failed to read file: ' + e.message, 'error', 4000);
+                    clearFile();
                 }
             }
 
@@ -5536,10 +5451,10 @@
                 if (pendingTaskDeletion) {
                     console.log('Processing pending task deletion after generation');
                     // Request fresh tasks data from parent to sync state
-                    window.parent.postMessage({
+                    safePostMessage(window.parent, {
                         type: 'request-tasks-sync',
                         timestamp: new Date().toISOString()
-                    }, '*');
+                    });
                     pendingTaskDeletion = false;
                 }
             }
@@ -5778,12 +5693,12 @@
 
                 // Send to parent window
                 const tempFileName = 'temp_generated_flowchart.json';
-                window.parent.postMessage({
+                safePostMessage(window.parent, {
                     type: 'flowchart-generated',
                     content: cleanContent,
                     fileName: tempFileName,
                     timestamp: new Date().toISOString()
-                }, '*');
+                });
 
                 // Save flowchart data to current task
                 if (currentTaskId) {
@@ -5866,10 +5781,10 @@
                 if (pendingTaskDeletion) {
                     console.log('Processing pending task deletion after generation');
                     // Request fresh tasks data from parent to sync state
-                    window.parent.postMessage({
+                    safePostMessage(window.parent, {
                         type: 'request-tasks-sync',
                         timestamp: new Date().toISOString()
-                    }, '*');
+                    });
                     pendingTaskDeletion = false;
                 }
             }
@@ -6169,9 +6084,9 @@
             }
 
             // 通知父窗口清除 flowchart
-            window.parent.postMessage({
+            safePostMessage(window.parent, {
                 type: 'clear-flowchart'
-            }, '*');
+            });
             
             // 清除当前 task 的 flowchartData
             const currentTask = tasks.find(t => t.id === currentTaskId);
@@ -6476,7 +6391,19 @@
             }
         });
 
+        // Notify parent that chatbot is ready to receive messages
+        safePostMessage(window.parent, {
+            type: 'chatbot-ready'
+        });
+        console.log('Chatbot: Sent ready signal to parent');
+
         window.addEventListener('message', (e) => {
+            // Origin 校验：只接受同源消息
+            if (e.origin !== ALLOWED_ORIGIN) {
+                console.warn('Blocked message from unexpected origin:', e.origin);
+                return;
+            }
+
             if (e.data === 'closeAdvancedSettings') {
                 advancedSettingsHeader.classList.remove('active');
                 advancedSettingsContent.classList.remove('open');
@@ -6549,11 +6476,11 @@
             };
             
             // Clear flowchart
-            window.parent.postMessage({
+            safePostMessage(window.parent, {
                 type: 'restore-flowchart-state',
                 state: null,
                 timestamp: new Date().toISOString()
-            }, '*');
+            });
             
             saveTasks();
             updateTaskUI();
