@@ -13,6 +13,7 @@
     "temperature": 0,
     "top_p": 0,
     "stream": true,
+    "tool_choice": "none",
     "extra_body": {
         "enable_search": true
     }

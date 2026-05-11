@@ -13,5 +13,6 @@
     "temperature": 0,
     "top_p": 0,
     "max_tokens": 16000,
-    "stream": true
+    "stream": true,
+    "tool_choice": "none"
 }
