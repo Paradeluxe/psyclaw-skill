@@ -14,12 +14,8 @@
       "minItems": 1,
       "items": {
         "oneOf": [
-          {
-            "$ref": "#/definitions/Routine"
-          },
-          {
-            "$ref": "#/definitions/Loop"
-          }
+          { "$ref": "#/definitions/Routine" },
+          { "$ref": "#/definitions/Loop" }
         ]
       }
     }
@@ -98,6 +94,11 @@
           "description": "Whether to stop when routine ends",
           "default": true
         },
+        "forceEndRoutine": {
+          "type": "boolean",
+          "description": "Force the routine to end when the sound finishes",
+          "default": false
+        },
         "volume": {
           "type": "number",
           "description": "Volume for audio (0.0 to 1.0)",
@@ -118,6 +119,11 @@
         "deviceLabel": {
           "type": "string",
           "description": "Audio device label"
+        },
+        "syncScreenRefresh": {
+          "type": "boolean",
+          "description": "Sync timing to screen refresh",
+          "default": true
         }
       }
     },
@@ -139,6 +145,28 @@
         "path": {
           "type": "string",
           "description": "File path for video file"
+        },
+        "startTime": {
+          "type": "number",
+          "description": "Start time in milliseconds",
+          "minimum": 0,
+          "default": 0
+        },
+        "duration": {
+          "type": "number",
+          "description": "Duration in milliseconds (-1 for indefinite)",
+          "minimum": -1,
+          "default": -1
+        },
+        "stopWithRoutine": {
+          "type": "boolean",
+          "description": "Whether to stop when routine ends",
+          "default": true
+        },
+        "forceEndRoutine": {
+          "type": "boolean",
+          "description": "Force the routine to end when the video finishes",
+          "default": false
         },
         "pos": {
           "type": "array",
@@ -167,23 +195,6 @@
           "maximum": 1,
           "default": 1
         },
-        "startTime": {
-          "type": "number",
-          "description": "Start time in milliseconds",
-          "minimum": 0,
-          "default": 0
-        },
-        "duration": {
-          "type": "number",
-          "description": "Duration in milliseconds (-1 for indefinite)",
-          "minimum": -1,
-          "default": -1
-        },
-        "stopWithRoutine": {
-          "type": "boolean",
-          "description": "Whether to stop when routine ends",
-          "default": true
-        },
         "volume": {
           "type": "number",
           "description": "Volume for video (0.0 to 1.0)",
@@ -196,11 +207,22 @@
           "description": "Whether to loop video",
           "default": false
         },
-        "flip": {
+        "backend": {
           "type": "string",
-          "description": "Flip mode",
-          "enum": ["None", "Horizontal", "Vertical", "Both"],
-          "default": "None"
+          "description": "Video backend to use",
+          "enum": ["ffpyplayer", "moviepy", "opencv", "vlc"],
+          "default": "ffpyplayer"
+        },
+        "No audio": {
+          "type": "boolean",
+          "description": "Disable audio playback",
+          "default": false
+        },
+        "anchor": {
+          "type": "string",
+          "description": "Anchor point for positioning",
+          "enum": ["center", "top-center", "bottom-center", "left-center", "right-center", "top-left", "top-right", "bottom-left", "bottom-right"],
+          "default": "center"
         },
         "units": {
           "type": "string",
@@ -228,6 +250,18 @@
         "text": {
           "type": "string",
           "description": "Text content"
+        },
+        "startTime": {
+          "type": "number",
+          "description": "Start time in milliseconds",
+          "minimum": 0,
+          "default": 0
+        },
+        "duration": {
+          "type": "number",
+          "description": "Duration in milliseconds (-1 for indefinite)",
+          "minimum": -1,
+          "default": -1
         },
         "color": {
           "type": "string",
@@ -269,50 +303,33 @@
           "maximum": 1,
           "default": 1
         },
-        "startTime": {
-          "type": "number",
-          "description": "Start time in milliseconds",
-          "minimum": 0,
-          "default": 0
-        },
-        "duration": {
-          "type": "number",
-          "description": "Duration in milliseconds (-1 for indefinite)",
-          "minimum": -1,
-          "default": -1
-        },
-        "stopWithRoutine": {
-          "type": "boolean",
-          "description": "Whether to stop when routine ends",
-          "default": true
-        },
-        "units": {
-          "type": "string",
-          "description": "Units for positioning",
-          "enum": ["from exp settings", "height", "norm", "pix", "cm", "deg"],
-          "default": "from exp settings"
-        },
         "languageStyle": {
           "type": "string",
-          "description": "Language direction",
-          "enum": ["LTR", "RTL"],
+          "description": "Language direction and style",
+          "enum": ["LTR", "RTL", "Arabic"],
           "default": "LTR"
         },
         "wrapWidth": {
           "type": "number",
           "description": "Text wrap width"
         },
-        "anchor": {
+        "flip": {
           "type": "string",
-          "description": "Anchor point for positioning",
-          "enum": ["center", "top-center", "bottom-center", "left-center", "right-center", "top-left", "top-right", "bottom-left", "bottom-right"],
-          "default": "center"
+          "description": "Flip (mirror) the stimulus",
+          "enum": ["None", "horiz", "vert"],
+          "default": "None"
         },
         "colorSpace": {
           "type": "string",
           "description": "Color space",
           "enum": ["rgb", "dkl", "hsv", "hex"],
           "default": "rgb"
+        },
+        "units": {
+          "type": "string",
+          "description": "Units for positioning",
+          "enum": ["from exp settings", "height", "norm", "pix", "cm", "deg"],
+          "default": "from exp settings"
         }
       }
     },
@@ -334,6 +351,18 @@
         "path": {
           "type": "string",
           "description": "File path for image file"
+        },
+        "startTime": {
+          "type": "number",
+          "description": "Start time in milliseconds",
+          "minimum": 0,
+          "default": 0
+        },
+        "duration": {
+          "type": "number",
+          "description": "Duration in milliseconds (-1 for indefinite)",
+          "minimum": -1,
+          "default": -1
         },
         "pos": {
           "type": "array",
@@ -362,23 +391,6 @@
           "maximum": 1,
           "default": 1
         },
-        "startTime": {
-          "type": "number",
-          "description": "Start time in milliseconds",
-          "minimum": 0,
-          "default": 0
-        },
-        "duration": {
-          "type": "number",
-          "description": "Duration in milliseconds (-1 for indefinite)",
-          "minimum": -1,
-          "default": -1
-        },
-        "stopWithRoutine": {
-          "type": "boolean",
-          "description": "Whether to stop when routine ends",
-          "default": true
-        },
         "contrast": {
           "type": "number",
           "description": "Contrast value (0.0 to 1.0)",
@@ -386,11 +398,21 @@
           "maximum": 1,
           "default": 1
         },
-        "flip": {
+        "flipVert": {
+          "type": "boolean",
+          "description": "Flip vertically (up-down)",
+          "default": false
+        },
+        "flipHoriz": {
+          "type": "boolean",
+          "description": "Flip horizontally (left-right)",
+          "default": false
+        },
+        "anchor": {
           "type": "string",
-          "description": "Flip mode",
-          "enum": ["None", "Horizontal", "Vertical", "Both"],
-          "default": "None"
+          "description": "Anchor point for positioning",
+          "enum": ["center", "top-center", "bottom-center", "left-center", "right-center", "top-left", "top-right", "bottom-left", "bottom-right"],
+          "default": "center"
         },
         "units": {
           "type": "string",
@@ -438,6 +460,10 @@
           "type": "string",
           "enum": ["keyboard"]
         },
+        "keys": {
+          "type": "string",
+          "description": "Comma-separated keyboard keys (e.g., 'space,return,escape')"
+        },
         "startTime": {
           "type": "number",
           "description": "Start time in milliseconds",
@@ -450,25 +476,41 @@
           "minimum": -1,
           "default": -1
         },
-        "stopWithRoutine": {
-          "type": "boolean",
-          "description": "Whether to stop when routine ends",
-          "default": true
-        },
         "forceEndRoutine": {
           "type": "boolean",
           "description": "Whether to force end routine on response",
           "default": false
-        },
-        "keys": {
-          "type": "string",
-          "description": "Comma-separated keyboard keys (e.g., 'space,return,escape')"
         },
         "registerOn": {
           "type": "string",
           "description": "When to register key press",
           "enum": ["press", "release"],
           "default": "press"
+        },
+        "discard previous": {
+          "type": "boolean",
+          "description": "Discard all responses occurring before this keypress",
+          "default": true
+        },
+        "store": {
+          "type": "string",
+          "description": "Which responses to store",
+          "enum": ["last key", "first key", "all keys", "nothing"],
+          "default": "last key"
+        },
+        "storeCorrect": {
+          "type": "boolean",
+          "description": "Store whether the response was correct",
+          "default": false
+        },
+        "correctAns": {
+          "type": "string",
+          "description": "The correct answer for scoring (e.g., 'space')"
+        },
+        "syncScreenRefresh": {
+          "type": "boolean",
+          "description": "Sync timing to screen refresh",
+          "default": true
         }
       }
     },
@@ -540,15 +582,10 @@
         "list": {
           "type": "array",
           "description": "Array of nested loops and/or routines to be executed within this loop. Allows nested loop structures and routine references. The loop's startPoint and endPoint are calculated from this list: startPoint = first routine's Point - 1, endPoint = last routine's Point + 1.",
-          "minItems": 1,
           "items": {
             "oneOf": [
-              {
-                "$ref": "#/definitions/Loop"
-              },
-              {
-                "$ref": "#/definitions/Routine"
-              }
+              { "$ref": "#/definitions/Routine" },
+              { "$ref": "#/definitions/Loop" }
             ]
           }
         }

@@ -9348,8 +9348,6 @@
                 removeBtn.onclick = (e) => {
                     e.stopPropagation();
                     saveState();
-                    currentProjectFile = null;
-                    fileHandle = null;
                     component.enabled = false;
                     updateRoutineHeight(rect);
                     updateCanvasWidthForRoutines();
