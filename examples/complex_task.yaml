@@ -1,0 +1,223 @@
+name: complex_task
+version: "1.0"
+description: Complex paradigm — practice + main with images, audio feedback, and nested loop
+
+display:
+  fullscreen: true
+  size: [1024, 768]
+  background_color: [0.3, 0.3, 0.3]
+  units: height
+
+routines:
+  # === Welcome ===
+  - name: welcome
+    duration: null
+    components:
+      - type: text
+        text: |
+          Welcome to the experiment.
+          You will see faces. Press 1 if happy, 2 if sad, 3 if neutral.
+          Press SPACE to begin.
+        height: 0.04
+      - type: keyboard
+        keys: space
+        duration: -1
+        force_end: true
+
+  # === Practice block (5 trials) ===
+  - name: practice_fixation
+    duration: 0.5
+    components:
+      - type: text
+        text: "+"
+        height: 0.08
+        color: white
+
+  - name: practice_trial
+    duration: 3.0
+    components:
+      - type: image
+        path: $face_image
+        size: [0.4, 0.5]
+        pos: [0, 0.1]
+      - type: text
+        text: "1=happy  2=sad  3=neutral"
+        height: 0.04
+        pos: [0, -0.4]
+        color: white
+      - type: keyboard
+        keys: "1, 2, 3"
+        duration: 3.0
+        correct_ans: $correct_resp
+        store: response
+
+  - name: practice_feedback
+    duration: 1.0
+    components:
+      - type: text
+        text: $feedback_text
+        height: 0.06
+        color: $feedback_color
+        pos: [0, 0]
+      - type: audio
+        path: $feedback_audio
+        volume: 0.8
+      - type: text
+        text: ""
+        height: 0.04
+
+  # === Main block (50 trials) ===
+  - name: main_fixation
+    duration: 0.5
+    components:
+      - type: text
+        text: "+"
+        height: 0.08
+        color: white
+
+  - name: main_trial
+    duration: 3.0
+    components:
+      - type: image
+        path: $face_image
+        size: [0.4, 0.5]
+        pos: [0, 0.1]
+      - type: keyboard
+        keys: "1, 2, 3"
+        duration: 3.0
+        correct_ans: $correct_resp
+        store: response
+
+  - name: main_break
+    duration: null
+    components:
+      - type: text
+        text: "Take a break. Press SPACE to continue."
+        height: 0.05
+        color: yellow
+      - type: keyboard
+        keys: space
+        duration: -1
+        force_end: true
+
+  - name: thanks
+    duration: 3.0
+    components:
+      - type: text
+        text: "Thank you for participating!"
+        height: 0.05
+        color: white
+
+loops:
+  - name: practice_loop
+    start_routine: practice_fixation
+    end_routine: practice_feedback
+    n_rounds: 5
+    order: sequential
+    is_trials: true
+    spreadsheet:
+      file: practice_conditions.xlsx
+      columns:
+        - name: face_image
+          type: str
+        - name: correct_resp
+          type: str
+        - name: feedback_text
+          type: str
+        - name: feedback_color
+          type: str
+        - name: feedback_audio
+          type: str
+      rows:
+        - face_image: "faces/happy1.png"
+          correct_resp: "1"
+          feedback_text: "Correct!"
+          feedback_color: green
+          feedback_audio: "audio/correct.wav"
+        - face_image: "faces/sad1.png"
+          correct_resp: "2"
+          feedback_text: "Correct!"
+          feedback_color: green
+          feedback_audio: "audio/correct.wav"
+        - face_image: "faces/neutral1.png"
+          correct_resp: "3"
+          feedback_text: "Correct!"
+          feedback_color: green
+          feedback_audio: "audio/correct.wav"
+        - face_image: "faces/happy2.png"
+          correct_resp: "1"
+          feedback_text: "Correct!"
+          feedback_color: green
+          feedback_audio: "audio/correct.wav"
+        - face_image: "faces/sad2.png"
+          correct_resp: "2"
+          feedback_text: "Correct!"
+          feedback_color: green
+          feedback_audio: "audio/correct.wav"
+
+  - name: main_loop
+    start_routine: main_fixation
+    end_routine: main_trial
+    n_rounds: 50
+    order: fullRandom
+    is_trials: true
+    spreadsheet:
+      file: main_conditions.xlsx
+      columns:
+        - name: face_image
+          type: str
+        - name: correct_resp
+          type: str
+      rows:
+        - face_image: "faces/happy1.png"
+          correct_resp: "1"
+        - face_image: "faces/sad1.png"
+          correct_resp: "2"
+        - face_image: "faces/neutral1.png"
+          correct_resp: "3"
+        - face_image: "faces/happy2.png"
+          correct_resp: "1"
+        - face_image: "faces/sad2.png"
+          correct_resp: "2"
+
+stimuli:
+  # === Pre-made / reference assets ===
+  - id: placeholder_face
+    kind: image
+    format: png
+    size: [200, 200]
+    background: [0.5, 0.5, 0.5]
+    generator: shape
+    shape: circle
+    color: [0.8, 0.6, 0.4]
+    radius: 80
+    output: assets/placeholder_face.png
+
+  - id: correct_tone
+    kind: audio
+    format: wav
+    duration: 0.3
+    generator: tone
+    frequency: 880
+    output: assets/correct_tone.wav
+
+  - id: error_tone
+    kind: audio
+    format: wav
+    duration: 0.3
+    generator: tone
+    frequency: 220
+    output: assets/error_tone.wav
+
+  # === External IAPS-style images (user must supply) ===
+  - id: iaps_001
+    kind: image
+    format: jpg
+    external: assets/iaps/001.jpg
+    description: "IAPS image #001, positive valence"
+
+  - id: iaps_002
+    kind: image
+    format: jpg
+    external: assets/iaps/002.jpg
+    description: "IAPS image #002, negative valence"

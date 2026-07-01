@@ -1,0 +1,121 @@
+name: stroop_experiment
+version: "1.0"
+description: Color-word Stroop task — {n_trials} trials
+
+routines:
+  - name: instructions
+    duration: null
+    components:
+      - type: text
+        text: |
+          Welcome to the Stroop task.
+          You will see color words (RED, BLUE, GREEN) printed in colored ink.
+          Press the key matching the INK COLOR (not the word).
+          R=red, B=blue, G=green.
+          Press SPACE to begin.
+        height: 0.04
+      - type: keyboard
+        keys: space
+        duration: -1
+        force_end: true
+
+  - name: fixation
+    duration: 0.5
+    components:
+      - type: text
+        text: "+"
+        height: 0.08
+        color: white
+
+  - name: trial
+    duration: 2.0
+    components:
+      - type: text
+        text: $stim_word
+        color: $stim_color
+        height: 0.1
+        pos: [0, 0]
+      - type: keyboard
+        keys: r, b, g
+        duration: 2.0
+        correct_ans: $correct_resp
+        store: response
+
+  - name: thanks
+    duration: 3.0
+    components:
+      - type: text
+        text: "Thank you!"
+        height: 0.05
+
+loops:
+  - name: main_loop
+    start_routine: fixation
+    end_routine: trial
+    n_rounds: {n_trials}
+    order: fullRandom
+    is_trials: true
+    spreadsheet:
+      file: stroop_conditions.xlsx
+      columns:
+        - name: stim_word
+          type: str
+        - name: stim_color
+          type: str
+        - name: congruent
+          type: bool
+        - name: correct_resp
+          type: str
+      rows:
+        # 6 congruent × 1 + 6 incongruent × 1 = 12 conditions, equal weighting (6:6)
+        - stim_word: RED
+          stim_color: red
+          congruent: true
+          correct_resp: r
+        - stim_word: BLUE
+          stim_color: blue
+          congruent: true
+          correct_resp: b
+        - stim_word: GREEN
+          stim_color: green
+          congruent: true
+          correct_resp: g
+        # repeat congruent rows so 6:6 weighting (1:1 congruent:incongruent probability)
+        - stim_word: RED
+          stim_color: red
+          congruent: true
+          correct_resp: r
+        - stim_word: BLUE
+          stim_color: blue
+          congruent: true
+          correct_resp: b
+        - stim_word: GREEN
+          stim_color: green
+          congruent: true
+          correct_resp: g
+        - stim_word: RED
+          stim_color: blue
+          congruent: false
+          correct_resp: b
+        - stim_word: RED
+          stim_color: green
+          congruent: false
+          correct_resp: g
+        - stim_word: BLUE
+          stim_color: red
+          congruent: false
+          correct_resp: r
+        - stim_word: BLUE
+          stim_color: green
+          congruent: false
+          correct_resp: g
+        - stim_word: GREEN
+          stim_color: red
+          congruent: false
+          correct_resp: r
+        - stim_word: GREEN
+          stim_color: blue
+          congruent: false
+          correct_resp: b
+
+stimuli: []

@@ -1,0 +1,36 @@
+# PsyClaw skill — gitignore
+# Local-only git repo; no remote.
+
+# Harness output directories (generated .psyexp, xlsx, assets)
+examples/*_out/
+examples/parallel_loops_out/
+examples/code_probe_out/
+
+# Regression output
+.regression_out/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+
+# Screenshot artifacts (debug captures)
+examples/*.png
+examples/*.jpg
+
+# Temp files
+*.tmp
+*.log
+*.bak
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Node (if any)
+node_modules/
+
+# IDE
+.vscode/
+.idea/

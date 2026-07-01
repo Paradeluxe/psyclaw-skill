@@ -1,0 +1,114 @@
+name: posner_cueing
+version: "1.0"
+description: Posner cueing task — {n_trials} trials
+
+routines:
+  - name: instructions
+    duration: null
+    components:
+      - type: text
+        text: |
+          Posner cueing task.
+          A cue (arrow) will appear pointing left or right.
+          A target (asterisk) will then appear at the cued location
+          (valid), the opposite location (invalid), or both (neutral).
+          Press SPACE if the target appears on the LEFT.
+          Press ENTER if the target appears on the RIGHT.
+          Press SPACE to begin.
+        height: 0.04
+      - type: keyboard
+        keys: space
+        duration: -1
+        force_end: true
+
+  - name: fixation
+    duration: 1.0
+    components:
+      - type: text
+        text: "+"
+        height: 0.1
+        color: white
+
+  - name: cue
+    duration: 0.3
+    components:
+      - type: text
+        text: $cue
+        height: 0.1
+        pos: [0, 0]
+        color: white
+
+  - name: isi
+    duration: 0.5
+    components:
+      - type: text
+        text: "+"
+        height: 0.1
+        color: white
+
+  - name: target
+    duration: 2.0
+    components:
+      - type: text
+        text: $target
+        height: 0.1
+        pos: [0, 0]
+        color: yellow
+      - type: keyboard
+        keys: space, return
+        duration: 2.0
+        correct_ans: $correct_resp
+        store: response
+
+  - name: thanks
+    duration: 3.0
+    components:
+      - type: text
+        text: "Thanks!"
+        height: 0.05
+
+loops:
+  - name: main_loop
+    start_routine: fixation
+    end_routine: target
+    n_rounds: {n_trials}
+    order: fullRandom
+    is_trials: true
+    spreadsheet:
+      file: posner_conditions.xlsx
+      columns:
+        - name: cue
+          type: str
+        - name: target
+          type: str
+        - name: cue_type
+          type: str
+        - name: correct_resp
+          type: str
+      rows:
+        - cue: "->"
+          target: "*"
+          cue_type: valid
+          correct_resp: return
+        - cue: "<-"
+          target: "*"
+          cue_type: valid
+          correct_resp: space
+        - cue: "->"
+          target: "*"
+          cue_type: invalid
+          correct_resp: space
+        - cue: "<-"
+          target: "*"
+          cue_type: invalid
+          correct_resp: return
+        - cue: "-"
+          target: "*"
+          cue_type: neutral
+          correct_resp: space
+        - cue: "-"
+          target: "*"
+          cue_type: neutral
+          correct_resp: return
+
+stimuli: []

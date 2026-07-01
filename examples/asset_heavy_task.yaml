@@ -1,0 +1,120 @@
+name: asset_heavy_task
+version: "1.0"
+description: Asset-heavy test — TTS audio, animated video, complex images
+
+routines:
+  - name: instructions
+    duration: null
+    components:
+      - type: text
+        text: "Welcome. Press SPACE to begin."
+        height: 0.05
+      - type: audio
+        path: "assets/instruction_voice.wav"
+        volume: 1.0
+      - type: keyboard
+        keys: space
+        duration: -1
+        force_end: true
+
+  - name: shape_show
+    duration: 3.0
+    components:
+      - type: image
+        path: "assets/fixation_cross.png"
+        size: [0.05, 0.05]
+        pos: [0, 0]
+      - type: image
+        path: "assets/blue_circle.png"
+        size: [0.2, 0.2]
+        pos: [0, 0]
+      - type: video
+        path: "assets/expanding_circle.mp4"
+        size: [0.3, 0.3]
+        pos: [0.4, 0]
+        loop: true
+        no_audio: true
+
+  - name: thanks
+    duration: 3.0
+    components:
+      - type: text
+        text: "Done!"
+        height: 0.05
+
+loops: []
+
+stimuli:
+  # Audio: TTS
+  - id: instruction_voice
+    kind: audio
+    format: wav
+    generator: tts
+    text: "Welcome to the experiment. Please follow the instructions on screen."
+    voice: en-US-AriaNeural
+    output: assets/instruction_voice.wav
+
+  # Image: text-based fixation cross (via generator)
+  - id: fixation_cross
+    kind: image
+    format: png
+    size: [100, 100]
+    background: [0, 0, 0]
+    foreground: [1, 1, 1]
+    generator: text
+    text: "+"
+    output: assets/fixation_cross.png
+
+  # Image: shape (circle)
+  - id: blue_circle
+    kind: image
+    format: png
+    size: [200, 200]
+    background: [0.3, 0.3, 0.3]
+    color: [0, 0, 1]
+    shape: circle
+    radius: 80
+    generator: shape
+    output: assets/blue_circle.png
+
+  # Image: shape (rect)
+  - id: red_rect
+    kind: image
+    format: png
+    size: [200, 200]
+    background: [0.3, 0.3, 0.3]
+    color: [1, 0, 0]
+    shape: rect
+    radius: 80
+    generator: shape
+    output: assets/red_rect.png
+
+  # Video: animated expanding circle
+  - id: expanding_circle
+    kind: video
+    format: mp4
+    duration: 2.0
+    fps: 24
+    size: [300, 300]
+    generator: animated_shape
+    shape: circle
+    start_radius: 10
+    end_radius: 100
+    color: [1, 0, 0]
+    output: assets/expanding_circle.mp4
+
+  # External: user must supply
+  - id: iaps_001
+    kind: image
+    format: jpg
+    external: assets/iaps/001.jpg
+    description: "IAPS image — user must provide"
+
+  # Audio: pure tone
+  - id: correct_tone
+    kind: audio
+    format: wav
+    duration: 0.2
+    generator: tone
+    frequency: 1000
+    output: assets/correct_tone.wav

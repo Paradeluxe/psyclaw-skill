@@ -1,0 +1,81 @@
+name: nested_loops_test
+version: "1.0"
+description: |
+  Outer block-level loop wrapping an inner trial loop.
+  Used to verify that json2psyexp.js correctly:
+    - wires `isTrials` (must differ between outer=False and inner=True)
+    - emits nested <LoopInitiator>/<LoopTerminator> pairs in correct order
+    - passes `loadFromXML` with zero warnings
+
+  Reference: references/json2psyexp-emit-bugs.md
+
+routines:
+  - name: instruction
+    duration: 2.0
+    components:
+      - type: text
+        text: "Press SPACE to begin"
+        height: 0.05
+      - type: keyboard
+        keys: space
+        duration: -1
+        force_end: true
+
+  - name: outer_setup
+    duration: 1.0
+    components:
+      - type: text
+        text: "+"
+        height: 0.08
+
+  - name: trial
+    duration: 1.5
+    components:
+      - type: text
+        text: $stim_word
+        color: $stim_color
+        height: 0.1
+      - type: keyboard
+        keys: r, b, g
+        duration: 1.5
+        correct_ans: $correct_resp
+        store: response
+
+  - name: break_routine
+    duration: 3.0
+    components:
+      - type: text
+        text: "Take a break"
+        height: 0.05
+
+loops:
+  # Inner trial loop — must emit isTrials=True and conditionsFile
+  - name: inner_loop
+    start_routine: outer_setup
+    end_routine: trial
+    n_rounds: 10
+    order: fullRandom
+    is_trials: true
+    spreadsheet:
+      file: nested_conditions_inner.xlsx
+      columns:
+        - name: stim_word
+          type: str
+        - name: stim_color
+          type: str
+        - name: correct_resp
+          type: str
+      rows:
+        - {stim_word: RED, stim_color: red, correct_resp: r}
+        - {stim_word: BLUE, stim_color: blue, correct_resp: b}
+        - {stim_word: GREEN, stim_color: green, correct_resp: g}
+
+  # Outer block loop — must emit isTrials=False, no conditionsFile needed
+  - name: outer_loop
+    start_routine: outer_setup
+    end_routine: break_routine
+    n_rounds: 3
+    order: sequential
+    is_trials: false
+
+stimuli: []

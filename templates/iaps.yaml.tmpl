@@ -1,0 +1,82 @@
+name: iaps_emotion_task
+version: "1.0"
+description: IAPS emotion task — {n_trials} trials
+
+routines:
+  - name: instructions
+    duration: null
+    components:
+      - type: text
+        text: |
+          Emotion task.
+          You will see emotional images.
+          After each, rate your emotional response from 1 (neutral) to 9 (strong).
+          Press SPACE to begin.
+        height: 0.04
+      - type: keyboard
+        keys: space
+        duration: -1
+        force_end: true
+
+  - name: fixation
+    duration: 1.0
+    components:
+      - type: text
+        text: "+"
+        height: 0.08
+
+  - name: trial_image
+    duration: 6.0
+    components:
+      - type: image
+        path: $image_path
+        size: [0.6, 0.6]
+        pos: [0, 0.1]
+
+  - name: rating
+    duration: 5.0
+    components:
+      - type: text
+        text: "How did this image make you feel? (1-9)"
+        height: 0.04
+        pos: [0, 0.3]
+      - type: keyboard
+        keys: "1, 2, 3, 4, 5, 6, 7, 8, 9"
+        duration: 5.0
+        store: rating
+
+  - name: thanks
+    duration: 3.0
+    components:
+      - type: text
+        text: "Thank you!"
+        height: 0.05
+
+loops:
+  - name: main_loop
+    start_routine: fixation
+    end_routine: rating
+    n_rounds: {n_trials}
+    order: sequential
+    is_trials: true
+    spreadsheet:
+      file: iaps_conditions.xlsx
+      columns:
+        - name: image_path
+          type: str
+        - name: valence
+          type: str
+        - name: arousal
+          type: str
+      rows:
+        - image_path: "iaps/001.jpg"
+          valence: positive
+          arousal: high
+        - image_path: "iaps/002.jpg"
+          valence: negative
+          arousal: high
+        - image_path: "iaps/003.jpg"
+          valence: neutral
+          arousal: low
+
+stimuli: []

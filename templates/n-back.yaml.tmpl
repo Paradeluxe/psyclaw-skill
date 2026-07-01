@@ -1,0 +1,81 @@
+name: nback_task
+version: "1.0"
+description: {n_back}-back working memory task — {n_trials} trials
+
+routines:
+  - name: instructions
+    duration: null
+    components:
+      - type: text
+        text: |
+          {n_back}-back task.
+          You will see letters one at a time.
+          Press SPACE if the current letter matches the one
+          from {n_back} trials ago.
+          Press SPACE to begin.
+        height: 0.04
+      - type: keyboard
+        keys: space
+        duration: -1
+        force_end: true
+
+  - name: fixation
+    duration: 0.5
+    components:
+      - type: text
+        text: "+"
+        height: 0.08
+
+  - name: trial
+    duration: 2.5
+    components:
+      - type: text
+        text: $letter
+        height: 0.2
+        pos: [0, 0]
+      - type: keyboard
+        keys: space
+        duration: 2.0
+        correct_ans: $correct_resp
+        store: response
+
+  - name: thanks
+    duration: 3.0
+    components:
+      - type: text
+        text: "Thanks!"
+        height: 0.05
+
+loops:
+  - name: main_loop
+    start_routine: fixation
+    end_routine: trial
+    n_rounds: {n_trials}
+    order: fullRandom
+    is_trials: true
+    spreadsheet:
+      file: nback_conditions.xlsx
+      columns:
+        - name: letter
+          type: str
+        - name: correct_resp
+          type: str
+      rows:
+        - letter: A
+          correct_resp: ""
+        - letter: B
+          correct_resp: ""
+        - letter: C
+          correct_resp: ""
+        - letter: A
+          correct_resp: space
+        - letter: X
+          correct_resp: ""
+        - letter: Y
+          correct_resp: ""
+        - letter: Z
+          correct_resp: ""
+        - letter: Y
+          correct_resp: space
+
+stimuli: []

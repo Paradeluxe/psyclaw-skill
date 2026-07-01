@@ -1,0 +1,79 @@
+name: flanker_task
+version: "1.0"
+description: Eriksen Flanker task — {n_trials} trials
+
+routines:
+  - name: instructions
+    duration: null
+    components:
+      - type: text
+        text: |
+          Flanker task.
+          You will see 5 arrows. Focus on the MIDDLE one.
+          Press LEFT arrow if middle points left.
+          Press RIGHT arrow if middle points right.
+          Press SPACE to begin.
+        height: 0.04
+      - type: keyboard
+        keys: space
+        duration: -1
+        force_end: true
+
+  - name: fixation
+    duration: 0.5
+    components:
+      - type: text
+        text: "+"
+        height: 0.08
+
+  - name: trial
+    duration: 2.0
+    components:
+      - type: text
+        text: $flanker_display
+        height: 0.1
+        pos: [0, 0]
+      - type: keyboard
+        keys: left, right
+        duration: 2.0
+        correct_ans: $correct_resp
+        store: response
+
+  - name: thanks
+    duration: 3.0
+    components:
+      - type: text
+        text: "Thanks!"
+        height: 0.05
+
+loops:
+  - name: main_loop
+    start_routine: fixation
+    end_routine: trial
+    n_rounds: {n_trials}
+    order: fullRandom
+    is_trials: true
+    spreadsheet:
+      file: flanker_conditions.xlsx
+      columns:
+        - name: flanker_display
+          type: str
+        - name: congruent
+          type: bool
+        - name: correct_resp
+          type: str
+      rows:
+        - flanker_display: ">> >>> >>"
+          congruent: true
+          correct_resp: right
+        - flanker_display: "<< <<< <<"
+          congruent: true
+          correct_resp: left
+        - flanker_display: "<< >>> <<"
+          congruent: false
+          correct_resp: right
+        - flanker_display: ">> <<< >>"
+          congruent: false
+          correct_resp: left
+
+stimuli: []
