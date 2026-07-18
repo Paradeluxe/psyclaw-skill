@@ -26,19 +26,19 @@ and means the .psyexp will fail at runtime when PsychoPy reads the param.
 
 ## The script
 
-Run from Windows `D:\Software\P\python.exe` (PsychoPy's own Python):
+Run from Windows `<psychopy-python>` (PsychoPy's own Python):
 
 ```python
-# C:\Users\<user>\Desktop\check_psyexp.py
+# ./samples/check_psyexp.py
 import sys
-sys.path.insert(0, r"D:\Software\P\Lib\site-packages")
+sys.path.insert(0, r"<psychopy-install>\Lib\site-packages")
 # Do NOT set os.add_dll_directory — see "os.add_dll_directory trap" below
 from psychopy.experiment import Experiment
 import warnings
 warnings.filterwarnings("error", message=".*not known.*")
 for fn in ["test_stroop.psyexp", "test_go-no-go.psyexp", "test_n-back.psyexp",
            "test_iaps.psyexp", "test_flanker.psyexp"]:
-    p = r"C:\Users\<user>\Desktop\\" + fn
+    p = r"./samples/\" + fn
     try:
         exp = Experiment()
         exp.loadFromXML(p)
@@ -123,13 +123,13 @@ dropped silently during emit.
 
 ### Bug 5: `PYTHONPATH` contamination when launching PsychoPy from hermes git-bash (2026-07-01)
 
-**Symptom:** Running `D:\Software\P\python.exe -m psychopy.app` from
+**Symptom:** Running `<psychopy-python> -m psychopy.app` from
 hermes git-bash produces:
 ```
 ImportError: DLL load failed while importing _rust: 找不到指定的程序。
 ```
 Traceback shows `cryptography` imported from
-`C:\Users\User\AppData\Local\hermes\hermes-agent\venv\Lib\site-packages`
+`~/.hermes\hermes-agent\venv\Lib\site-packages`
 — the hermes venv, not PsychoPy's site-packages.
 
 **Why:** Python's `sys.path[0:2]` get hermes-agent's launch directory
@@ -139,10 +139,10 @@ fails on Windows.
 
 **Fix:** Launch with environment cleared:
 ```
-cd /d/Software/P && PYTHONPATH= PYTHONHOME= ./pythonw.exe -m psychopy.app <file.psyexp>
+PYTHONPATH= PYTHONHOME= <psychopy-pythonw> -m psychopy.app <file.psyexp>
 ```
 For `loadFromXML()` validation only (CLI, no GUI), the import path
-doesn't conflict — plain `D:\Software\P\python.exe -c "..."` works fine.
+doesn't conflict — plain `<psychopy-python> -c "..."` works fine.
 Only the GUI launch (which imports `psychopy.projects.sshkeys` →
 `cryptography`) is affected.
 
@@ -150,16 +150,16 @@ Only the GUI launch (which imports `psychopy.projects.sshkeys` →
 
 There are at least 3 Python candidates for loading a .psyexp:
 
-1. **`D:\Software\P\python.exe`** ✅ — PsychoPy's own Python (3.10.11).
+1. **`<psychopy-python>`** ✅ — PsychoPy's own Python (3.10.11).
    Has the full site-packages, no venv shebang issues. **Use this.**
 2. **`E:\ProjLegacy\DeepPsych\.venv\Scripts\python.exe`** ❌ — Venv launcher.
    Shebang points to `D:\Pythons\Python312\python.exe` (doesn't exist).
    Error: `No Python at '"D:\Pythons\Python312\python.exe"'`
-3. **`D:\Software\Miniconda\pkgs\python-3.13...\python.exe`** ❌ — conda
+3. **`<psychopy-install>/Miniconda\pkgs\python-3.13...\python.exe`** ❌ — conda
    env, may not have psychopy.
 
-**Detection heuristic:** check `D:\Software\P\Lib\site-packages\psychopy`
-exists, then use `D:\Software\P\python.exe`. Alternative: invoke via
+**Detection heuristic:** check `<psychopy-install>\Lib\site-packages\psychopy`
+exists, then use `<psychopy-python>`. Alternative: invoke via
 `py.exe -3.10` only if the user has set up the Windows Python launcher
 to point to that version.
 
@@ -186,7 +186,7 @@ from psychopy.experiment import Experiment
 ```
 
 But in practice, you don't need `os.add_dll_directory` at all when
-calling `D:\Software\P\python.exe` from WSL — the env is set up correctly.
+calling `<psychopy-python>` from WSL — the env is set up correctly.
 
 ## The `psychopy.exe` launcher trap
 
@@ -199,11 +199,11 @@ exist** on most systems. Symptom:
 No Python at '"D:\Pythons\Python312\python.exe"'
 ```
 
-**Workaround:** use `D:\Software\P\python.exe` (PsychoPy's own Python) and
+**Workaround:** use `<psychopy-python>` (PsychoPy's own Python) and
 invoke the module directly:
 
 ```bash
-D:\Software\P\python.exe -m psychopy.app.psychopyApp --builder C:\path\file.psyexp
+<psychopy-python> -m psychopy.app.psychopyApp --builder C:\path\file.psyexp
 ```
 
 ## The WMI Win32_Process.Create trick for Session 1 GUI
@@ -214,7 +214,7 @@ spawn in the **user's interactive desktop session** (Session 1), use
 WMI:
 
 ```powershell
-$arg = '"D:\Software\P\python.exe" "-m" "psychopy.app.psychopyApp" "--builder" "C:\Users\User\Desktop\test_flanker.psyexp"'
+$arg = '"<psychopy-python>" "-m" "psychopy.app.psychopyApp" "--builder" "./samples/test_flanker.psyexp"'
 $pid = (Invoke-WmiMethod -Class Win32_Process -Name Create -ArgumentList $arg).ProcessId
 Start-Sleep -Seconds 35  # wxPython init time
 Get-Process -Id $pid | Select-Object Id, SessionId, MainWindowTitle, Responding
@@ -234,26 +234,26 @@ ls /tmp/test_flanker/_work/out/flanker_task/flanker_task.psyexp
 
 # 2. Copy to Windows desktop (WMI will need an absolute path)
 cp /tmp/test_flanker/_work/out/flanker_task/flanker_task.psyexp \
-   /mnt/c/Users/User/Desktop/test_flanker.psyexp
+   /mnt./samples/test_flanker.psyexp
 
 # 3. Validate with real PsychoPy (lxml + loadFromXML)
-powershell.exe -Command "& 'D:\\Software\\P\\python.exe' 'C:\\Users\\User\\Desktop\\check_psyexp.py'"
+powershell.exe -Command "& '<psychopy-python>' './samples/check_psyexp.py'"
 
 # 4. Open in real PsychoPy Builder GUI (for visual verification)
-powershell.exe -Command "Invoke-WmiMethod -Class Win32_Process -Name Create -ArgumentList '\"D:\\Software\\P\\python.exe\" \"-m\" \"psychopy.app.psychopyApp\" \"--builder\" \"C:\\Users\\User\\Desktop\\test_flanker.psyexp\"' | Select-Object -ExpandProperty ProcessId"
+powershell.exe -Command "Invoke-WmiMethod -Class Win32_Process -Name Create -ArgumentList '\"<psychopy-python>\" \"-m\" \"psychopy.app.psychopyApp\" \"--builder\" \"./samples/test_flanker.psyexp\"' | Select-Object -ExpandProperty ProcessId"
 # wait 35s, then verify
 powershell.exe -Command "Get-Process python -ErrorAction SilentlyContinue | Select-Object Id, SessionId, MainWindowTitle, Responding | Format-Table"
 
 # 5. Screenshot the desktop to send back to the user
-powershell.exe -Command "Add-Type -AssemblyName System.Windows.Forms; Add-Type -AssemblyName System.Drawing; \$bmp = New-Object Drawing.Bitmap([System.Windows.Forms.Screen]::PrimaryScreen.Bounds.Width, [System.Windows.Forms.Screen]::PrimaryScreen.Bounds.Height); \$g = [Drawing.Graphics]::FromImage(\$bmp); \$g.CopyFromScreen(0, 0, 0, 0, \$bmp.Size); \$bmp.Save('C:\\Users\\User\\Desktop\\psychoPy_real.png')"
-# Then: MEDIA:/mnt/c/Users/User/Desktop/psychoPy_real.png
+powershell.exe -Command "Add-Type -AssemblyName System.Windows.Forms; Add-Type -AssemblyName System.Drawing; \$bmp = New-Object Drawing.Bitmap([System.Windows.Forms.Screen]::PrimaryScreen.Bounds.Width, [System.Windows.Forms.Screen]::PrimaryScreen.Bounds.Height); \$g = [Drawing.Graphics]::FromImage(\$bmp); \$g.CopyFromScreen(0, 0, 0, 0, \$bmp.Size); \$bmp.Save('./samples/psychopy_real.png')"
+# Then: MEDIA:/mnt./samples/psychopy_real.png
 ```
 
 ## When you should rerun this
 
 - After any change to `scripts/json2psyexp.js` (different PsychoPy
   version may add/remove params)
-- After upgrading PsychoPy (`D:\\Software\\P`)
+- After upgrading PsychoPy (`<psychopy-install>`)
 - After adding a new paradigm template that exercises new component types
 - After changing the WMI launch script (verify GUI actually shows in
   the user's session)
@@ -266,8 +266,8 @@ opens correctly in Builder:
 
 ```bash
 # 1. Launch PsychoPy Builder directly with the .psyexp
-cd /d/Software/P && PYTHONPATH= PYTHONHOME= ./pythonw.exe -m psychopy.app \
-  "C:\Users\User\AppData\Local\hermes\skills\research\psyclaw\examples\stroop\stroop_experiment.psyexp"
+PYTHONPATH= PYTHONHOME= <psychopy-pythonw> -m psychopy.app \
+  "~/.hermes/skills/research/psyclaw\examples\stroop\stroop_experiment.psyexp"
 
 # 2. Wait for process to appear (~10-15s, PsychoPy splash + wxPython init)
 sleep 10
@@ -283,7 +283,7 @@ computer_use(action='capture', app='pythonw.exe', mode='som')
 # Verify Components panel renders Image/Keyboard/Mouse/Slider/Sound/Text
 
 # 5. Also run loadFromXML for warnings that visual capture can't see
-"D:/Software/P/python.exe" -c "
+"<psychopy-python>" -c "
 from psychopy.experiment import Experiment
 exp = Experiment()
 exp.loadFromXML(r'<path>.psyexp')

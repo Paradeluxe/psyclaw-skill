@@ -137,7 +137,7 @@
 - ❌ **NEVER** `taskkill /PID <pid>` without cross-checking against background session — risky
 - ✅ **Use** `process.kill(session_id)` for background Python processes
 - ❌ **Use** `computer_use` close button for GUI apps — PostMessage is silently swallowed by wxPython modals, use close_psychopy.ps1 instead
-- ✅ **Launch PsychoPy with** `cd /d/Software/P && PYTHONPATH= PYTHONHOME= ./pythonw.exe -m psychopy.app` (clears hermes-agent path pollution)
-- ✅ **Validate with** `D:\Software\P\python.exe -c "from psychopy.experiment import Experiment; Experiment().loadFromXML(path)"` (no GUI needed)
+- ✅ **Launch PsychoPy with** `PYTHONPATH= PYTHONHOME= <psychopy-pythonw> -m psychopy.app` (clears hermes-agent path pollution)
+- ✅ **Validate with** `<psychopy-python> -c "from psychopy.experiment import Experiment; Experiment().loadFromXML(path)"` (no GUI needed)
 - ❌ **computer_use PostMessage click** on `关闭 (X)` button does NOT dismiss wxPython modals in this Builder build — Save? dialog blocks silently, no AX nodes surfaced. Visual GUI verification NOT reliable. **Trust `loadFromXML` 0 warnings as ground truth instead.**
 - ✅ **Closing Builder reliably**: `powershell -ExecutionPolicy Bypass -File scripts/close_psychopy.ps1` (sends `WM_CLOSE` to main window + all child windows; works even when "Save?" modal is up)

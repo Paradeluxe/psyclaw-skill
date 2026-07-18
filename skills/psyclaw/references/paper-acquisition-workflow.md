@@ -32,7 +32,7 @@ PsyClaw实验文章分三类：
 ```bash
 "/c/Program Files/Google/Chrome/Application/chrome.exe" \
   --remote-debugging-port=9222 \
-  --user-data-dir="C:/Users/User/AppData/Local/chrome-debug-profile" \
+  --user-data-dir="<chrome-debug-profile-dir>" \
   --no-first-run --no-default-browser-check "about:blank"
 ```
 Verify: `curl -s http://127.0.0.1:9222/json/version`

@@ -1,6 +1,6 @@
 # Classic Paper Index — 29 canonical cognitive psychology experiments
 
-Full index: `E:\hermes_playground\psyclaw\papers\classics\index.json`
+Full index: `<psyclaw-workspace>\papers\classics\index.json`
 
 ## Source tiers (empirical distribution from 2026-07-04 crawl)
 
@@ -71,7 +71,7 @@ Full index: `E:\hermes_playground\psyclaw\papers\classics\index.json`
 ## Directory layout
 
 ```
-E:\hermes_playground\psyclaw\papers\classics\
+<psyclaw-workspace>\papers\classics\
 ├── index.json                 # Full machine-readable index (29 entries)
 ├── psytoolkit/               # 10 HTML pages from psytoolkit.org
 ├── scholarpedia/             # 3 Scholarpedia + 15 Wikipedia HTML pages

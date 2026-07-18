@@ -103,7 +103,7 @@
 | "feedback 加个红色" | edit YAML (color: red) → 从 stage 2 重跑 | 2-8 |
 | "在 trial 前加 fixation" | edit YAML (routine reorder) → 从 stage 2 重跑 | 2-8 |
 | "为什么 PsychoPy 报错" | 读 .psyexp → 跑 stage 5 + 真实 load | 5 + L6 |
-| "用真实 PsychoPy 验" | 调 D:\Software\P\python.exe 跑 loadFromXML | L6 |
+| "用真实 PsychoPy 验" | 调 <psychopy-python> 跑 loadFromXML | L6 |
 | "看 README" | cat experiments/<name>/README.md | 无 stage |
 | "做 N-back 但 paradigm 词是 working memory" | AI 手写 YAML (不走模板) → 跳过 1 | 2-8 |
 
@@ -285,11 +285,11 @@ Step 7: 确认 → 跑 stage 1-8
 | NL → 完整项目目录 | **OK** | smoke test: `--nl "做一个 Stroop 实验 30 trials"` → `/tmp/psyclaw-smoke/stroop_experiment/` 含 7 文件 |
 | 6 paradigm 模板 → .psyexp | **OK** (Stroop/GoNoGo/Flanker/N-back/IAPS/Posner) | 实测 5/5 PASS in lxml + real PsychoPy loadFromXML |
 | 复杂自定义 YAML | **OK** (8 routines + 2 loops) | 实测 .psyexp 46KB, 332 params |
-| 真实 PsychoPy 加载验证 | **OK** | D:\Software\P\python.exe loadFromXML, 0 warnings |
+| 真实 PsychoPy 加载验证 | **OK** | <psychopy-python> loadFromXML, 0 warnings |
 | Project scaffold (README/run.sh/run.bat) | **OK** | smoke test 验过 |
 | 中文 NL 输入 | **OK** | "色词" / "go-nogo" / "n-back" 都识别 |
 | Mixed/nested 设计 (eg N-back 的 probe + filler) | **未直接验证** | 代码层支持 (Procedure.trials 字段), 但 end-to-end smoke test 没跑过 |
 | Schema 升级 (Design/Procedure/Stimuli/Response) | **未实现** | 只有 `references/experiment-schema.md` 设计稿, 没有代码落地 |
 | Intent discovery 7-step 引导 (产品需求 §6) | **未实现** | 设计稿有, 没代码 |
 | Level 2 / Level 3 升降级 (产品需求 §4) | **未实现** | harness_cli 始终 Level 1, 升降级靠对话触发 |
-| Real PsychoPy 2026.1.1 loadFromXML (Windows D:\Software\P\python.exe) | **OK for Stroop 30-trial** | `routines=4, flow=6, stderr=空 (0 warnings)`. 其他 5 paradigm 端到端 Windows 验没跑过, 但 emit 层 lxml validator 都过 |
+| Real PsychoPy 2026.1.1 loadFromXML (Windows <psychopy-python>) | **OK for Stroop 30-trial** | `routines=4, flow=6, stderr=空 (0 warnings)`. 其他 5 paradigm 端到端 Windows 验没跑过, 但 emit 层 lxml validator 都过 |

@@ -9,10 +9,10 @@ Verified: **50/50 Category 1** specs pass `builder.py` + `loadFromXML` on Psycho
 import subprocess, sys
 from pathlib import Path
 
-PSYCLAW = Path(r"E:\hermes_playground\psyclaw")
+PSYCLAW = Path(r"<psyclaw-workspace>")
 REPLICATIONS = PSYCLAW / "replications"
 BUILDER = PSYCLAW / "builder.py"
-PSYCHOPY = r"D:\Software\P\python.exe"
+PSYCHOPY = r"<psychopy-python>"
 
 results = []
 for d in sorted(REPLICATIONS.glob("cat1_*")):
@@ -45,7 +45,7 @@ print(f"{ok}/{len(results)} OK")
 Success = **G0 compile + G1 finished + G2 project CSV correct**.
 
 ```bash
-cd /e/hermes_playground/psyclaw
+cd <psyclaw-workspace>
 # ensure webui up: curl -s http://127.0.0.1:8876/api/health
 python scripts/spec_to_design_batch.py      # G0 all cat1/2/3
 python scripts/headless_webui_sample.py     # G1 stratified sample

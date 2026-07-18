@@ -1,35 +1,27 @@
-# PsyClaw Workspace Layout
+# Workspace layout (generic)
 
-Date: 2026-07-02. The PsyClaw project uses a two-location split.
+Skill package and experiment workspace are **separate**.
 
-## Locations
+| Role | Typical location | Contents |
+|------|------------------|----------|
+| **Skill package** | Hermes skills dir after install (`~/.hermes/skills/.../psyclaw` or profile equivalent) | `SKILL.md`, `scripts/`, `references/`, `templates/` |
+| **GitHub skill source** | Clone of `Paradeluxe/psyclaw-skill` (path `skills/psyclaw/`) | Same tree; edit here to publish |
+| **Experiment workspace** | Any project folder you choose | Papers, `replications/`, generated `.psyclaw` / `.psyexp`, data |
+| **WebUI product** | Separate repo `psyclaw-webui` (not bundled in this skill) | GUI + runner |
 
-| Purpose | Path | Git | Contents |
-|---------|------|-----|----------|
-| **Skill source** | `C:\Users\User\AppData\Local\hermes\skills\research\psyclaw\` | `origin`: `https://github.com/Paradeluxe/PsyClaw.git` (master) | `SKILL.md`, `scripts/`, `templates/`, `references/`, `examples/` |
-| **Project workspace** | `E:\hermes_playground\psyclaw\` | Local only (`git init` 2026-07-02) | `papers/`, `specs/`, `output/`, `references/` |
+## Rules
 
-## Why the split
+1. Do **not** put large PDFs or participant data inside the skill package.
+2. Do **not** hardcode one lab's absolute drive letters in docs or scripts — use env vars / discovery:
+   - `PSYCLAW_PSYCHOPY_PYTHON` → PsychoPy's Python
+   - project path from user / CLI `--out-dir`
+3. Marker handoff: `<projectFolder>/<folderName>.psyclaw` next to the experiment, not under the skill tree.
 
-- The skill source must live under `~/.hermes/skills/` for Hermes to load it.
-  Moving it to E: breaks skill discovery.
-- E: has more space and is the user's working drive (`hermes_playground` is
-  the general sandbox).
-- Workspace contains large files (PDFs, generated experiments) that don't
-  belong in the skill repo (`.gitignore` in skill repo already excludes them).
+## PsychoPy binary
 
-## Workspace directory structure
-
-```
-E:\hermes_playground\psyclaw\
-├── papers/            # Downloaded papers for reference
-│   └── classics/      # Classic experiment papers (see references/classic-paper-acquisition.md)
-├── specs/             # Experiment YAML specs
-├── output/            # Generated .psyexp + xlsx + assets
-├── references/        # Project-specific references
-└── .gitignore         # Excludes output/ and *.pdf
+```bash
+export PSYCLAW_PSYCHOPY_PYTHON=/path/to/psychopy/python
+"$PSYCLAW_PSYCHOPY_PYTHON" -c "from psychopy.experiment import Experiment; print('ok')"
 ```
 
-## Skill source directory structure
-
-See `SKILL.md` §Files for full tree. Key: `scripts/`, `templates/`, `references/`, `examples/`, `SKILL.md`.
+Or discover a local PsychoPy install; never assume a single machine path.

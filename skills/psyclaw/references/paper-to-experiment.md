@@ -11,8 +11,8 @@
 curl -sL -o paper.pdf -H "User-Agent: Mozilla/5.0" \
   "https://www.frontiersin.org/journals/psychology/articles/<DOI>/pdf"
 
-# Extract Method section (pymupdf is in D:\Software\P python, NOT hermes venv)
-/d/Software/P/python.exe -c "
+# Extract Method section (pymupdf is in <psychopy-install> python, NOT hermes venv)
+<psychopy-python> -c "
 import pymupdf
 doc = pymupdf.open('paper.pdf')
 text = ''.join(p.get_text() for p in doc)
@@ -49,17 +49,17 @@ Save as `specs/<paper_shortname>_exp<n>.yaml`. See worked examples below for tem
 
 ```bash
 # Generate
-/c/Users/User/AppData/Local/hermes/skills/research/psyclaw/.venv/Scripts/python.exe \
-  /c/Users/User/AppData/Local/hermes/skills/research/psyclaw/scripts/harness_cli.py \
+~/.hermes/skills/research/psyclaw/.venv/Scripts/python.exe \
+  ~/.hermes/skills/research/psyclaw/scripts/harness_cli.py \
   --spec specs/<name>.yaml --out-dir output/
 
 # Load validation (psychoPy 2026.1.1)
-/d/Software/P/python.exe \
-  /c/Users/User/AppData/Local/hermes/skills/research/psyclaw/scripts/validate_load_from_xml.py \
+<psychopy-python> \
+  ~/.hermes/skills/research/psyclaw/scripts/validate_load_from_xml.py \
   output/<name>/<name>.psyexp
 
 # Runtime validation (auto-advance script — see runtime-validation.md)
-PYTHONPATH= PYTHONHOME= /d/Software/P/python.exe _auto_run.py
+PYTHONPATH= PYTHONHOME= <psychopy-python> _auto_run.py
 ```
 
 ## 5. Report side-by-side comparison
@@ -93,7 +93,7 @@ Always produce a table showing which paper parameters are faithfully reproduced 
 | Sheet-grids × 100 items | 30 sequential trials | ≈ approximation (PsychoPy limit) |
 | Oral RT timed by experimenter | Keyboard response | ≈ approximation |
 
-See `E:\hermes_playground\psyclaw\specs\stroop_1935_exp2.yaml` for the YAML.
+See `<psyclaw-workspace>\specs\stroop_1935_exp2.yaml` for the YAML.
 
 **Runtime test** (auto-advance):
 ```

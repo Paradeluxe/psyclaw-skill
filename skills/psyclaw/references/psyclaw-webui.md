@@ -1,7 +1,7 @@
 # psyclaw-webui — Path C architecture (2026-07-13)
 
 Web-based experiment builder. Skips `.psyexp` XML entirely. Flask SPA +
-paradigm-agnostic backend. Lives at `E:\hermes_playground\psyclaw-webui\`,
+paradigm-agnostic backend. Lives at `<psyclaw-webui-repo>\`,
 git `https://github.com/Paradeluxe/psyclaw-webui` (private).
 
 ## Why this exists
@@ -29,7 +29,7 @@ dropping a yaml in `examples/`. Platform never references paradigm names.
 ## Layout
 
 ```
-E:\hermes_playground\psyclaw-webui\
+<psyclaw-webui-repo>\
 ├── docs/CONTRACT.md            # contract for subagent fan-outs (READ FIRST)
 ├── backend/
 │   ├── app.py                  # factory + /api/health + serves frontend/
@@ -72,7 +72,7 @@ Each transition appended to `runs/<id>/events.jsonl`. Current state in
 `runs/<id>/state.json`. Process writes CSV to `runs/<id>/data/`.
 
 `MockProcess` in `runner/process.py` simulates the lifecycle in ~3 seconds.
-Replace with real `subprocess.Popen([D:\Software\P\python.exe, ...])` to
+Replace with real `subprocess.Popen([<psychopy-python>, ...])` to
 launch actual PsychoPy experiments — interface is already drop-in.
 
 ## Paradigm yaml schema
@@ -137,13 +137,13 @@ text/number/checkbox/textarea/select — handle the others if you need them).
 
 **Replace MockProcess with real PsychoPy:** edit `runner/process.py`. The
 interface (`start()`, `join()`, `returncode`) is stable; just Popen a
-subprocess running a compiled Python script with `D:\Software\P\python.exe`.
+subprocess running a compiled Python script with `<psychopy-python>`.
 
-**Connect to dFC paper data:** the CSV format (`runs/<id>/data/trials.csv`)
+**Connect to example-study paper data:** the CSV format (`runs/<id>/data/trials.csv`)
 matches what your existing analysis scripts expect. Add a "Upload to
-project" button that copies the file to your Telegram-bot or paper folder.
+project" button that copies the file to your chat-bot or paper folder.
 
 ## Status
 
 MVP+ committed. Next: real PsychoPy subprocess (replace MockProcess),
-then real experiment data flows to dFC paper pipeline.
+then real experiment data flows to example-study paper pipeline.

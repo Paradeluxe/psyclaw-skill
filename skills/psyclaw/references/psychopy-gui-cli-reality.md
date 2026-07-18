@@ -55,7 +55,7 @@ declaring a paradigm shippable.
 ## 3. .psyexp XML is internal representation, not a public API
 
 There is no XSD, no schema doc, no public CI gate. The "spec" lives in
-`D:\Software\P\Lib\site-packages\psychopy\experiment\components\<type>\
+`<psychopy-install>\Lib\site-packages\psychopy\experiment\components\<type>\
 __init__.py` — each Component's `self.params['<name>'] = Param(...)` lines are
 the only authoritative source. To know what params a `<TextComponent>` supports
 in 2026.1.1, grep that file. Vendored generators drift.

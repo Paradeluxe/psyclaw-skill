@@ -7,7 +7,7 @@
 #
 # Exits 0 iff all .psyexp files load clean (zero warnings).
 #
-# Run with PsychoPy's python (D:\\Software\\P\\python.exe), NOT hermes python.
+# Run with PsychoPy's python (<psychopy-python>), NOT hermes python.
 
 set -e
 
@@ -16,7 +16,7 @@ SKILL_DIR="$(dirname "$SCRIPT_DIR")"
 EXAMPLES_DIR="$SKILL_DIR/examples"
 OUT_DIR="$SKILL_DIR/.regression_out"
 
-PY="D:/Software/P/python.exe"
+PY="<psychopy-python>"
 [ -x "$PY" ] || { echo "PsychoPy python not at $PY"; exit 2; }
 
 mkdir -p "$OUT_DIR"

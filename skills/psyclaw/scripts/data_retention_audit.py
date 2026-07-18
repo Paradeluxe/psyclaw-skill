@@ -6,8 +6,8 @@ import json
 from collections import Counter
 from pathlib import Path
 
-REPS = Path(r"E:/hermes_playground/psyclaw/replications")
-OUT = Path(r"E:/hermes_playground/psyclaw/output/webui_batch_validate")
+REPS = Path(r"<psyclaw-workspace>/replications")
+OUT = Path(r"<psyclaw-workspace>/output/webui_batch_validate")
 hs = json.loads((OUT / "headless_sample.json").read_text(encoding="utf-8"))
 
 REQUIRED_SESSION = {

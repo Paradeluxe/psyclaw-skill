@@ -15,12 +15,12 @@ Flask 127.0.0.1:8876
 design_compiler.compile_any → pure PsychoPy .py
         │
         ▼
-PsychoPyProcess (D:\Software\P\python.exe)
+PsychoPyProcess (<psychopy-python>)
   • runs/<id>/data/*.csv                 (internal harvest)
   • <project_path>/data/{id}_s{sess}_{ts}.csv   (REQUIRED mirror)
 ```
 
-- Repo: `E:\hermes_playground\psyclaw-webui` · GitHub `Paradeluxe/psyclaw-webui`
+- Repo: `<psyclaw-webui-repo>` · GitHub `Paradeluxe/psyclaw-webui`
 - Port **8876** only (never 8765 / Mentor)
 - SPA contract skill: **`psyclaw-webui`** (Builder / System / Run / Settings / Guide)
 - Open duration canonical value: **`-1`**
@@ -99,8 +99,8 @@ Component types used in compiler path: `text`, `keyboard`, `image`, `sound`/`aud
 | 2 Downloadable materials | 50 | **50** (`cat2_*`) | +3 scaffolded 2026-07-18 for pipeline completeness |
 | 3 Manual materials | 50 | **50** (`cat3_*`) | framework OK; stimuli user-supplied |
 
-PDFs: `E:\hermes_playground\psyclaw\papers\category{1,2,3}\`
-Replications: `E:\hermes_playground\psyclaw\replications\cat{1,2,3}_*`
+PDFs: `<psyclaw-workspace>\papers\category{1,2,3}\`
+Replications: `<psyclaw-workspace>\replications\cat{1,2,3}_*`
 
 ### Conversion + batch scripts
 
@@ -111,11 +111,11 @@ Replications: `E:\hermes_playground\psyclaw\replications\cat{1,2,3}_*`
 | `scripts/data_retention_audit.py` | G2 project CSV column/path audit |
 
 Skill copy of converter: `~/.hermes/skills/research/psyclaw/scripts/spec_to_design_batch.py`
-Workspace copies: `E:\hermes_playground\psyclaw\scripts\`
+Workspace copies: `<psyclaw-workspace>\scripts\`
 
 ### Benchmark results (2026-07-18)
 
-**Full battery (paper gate):** evidence `E:\hermes_playground\psyclaw\output\webui_batch_validate_150\`
+**Full battery (paper gate):** evidence `<psyclaw-workspace>\output\webui_batch_validate_150\`
 
 | Gate | N | Result | Artifact |
 |------|---|--------|----------|
@@ -137,7 +137,7 @@ Earlier stratified smoke (15/15) remains under `output/webui_batch_validate/` as
 {
   "design": { "...": "design.json object" },
   "headless": true,
-  "project_path": "E:\\\\hermes_playground\\\\psyclaw\\\\replications\\\\cat1_flanker",
+  "project_path": "E:\\\\<workspace>\\\\psyclaw\\\\replications\\\\cat1_flanker",
   "session": {
     "participant_id": "P_autopilot",
     "session": "1",

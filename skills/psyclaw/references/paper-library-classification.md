@@ -1,6 +1,6 @@
 # Paper Library Classification (2026-07-11)
 
-150 papers across 3 categories at `E:\hermes_playground\psyclaw\papers\`.
+150 papers across 3 categories at `<psyclaw-workspace>\papers\`.
 
 ## Three-category system
 

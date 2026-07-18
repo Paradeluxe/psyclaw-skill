@@ -7,7 +7,7 @@
 | Role | Write experiment “说明书” for agents | Lab software: draw / run / CSV |
 | Slash | **`/psyclaw`** (Hermes skill id; keep this name) | `/psyclaw-webui` |
 | GitHub | `Paradeluxe/psyclaw-skill` (renamed from PsyClaw) | `Paradeluxe/psyclaw-webui` (private) |
-| Disk | Hermes `skills/research/psyclaw` + workspace `psyclaw-skill` | `E:\hermes_playground\psyclaw-webui` |
+| Disk | Hermes `skills/research/psyclaw` + workspace `psyclaw-skill` | `<psyclaw-webui-repo>` |
 
 ## Shared IR (single track)
 
@@ -20,7 +20,7 @@ MyStroop/
 
 - Content = design JSON (routines + flow), **not** Builder XML.
 - Skill goal: **produce / edit this file**.
-- Do **not** lead with Path A/B/C jargon when talking to this user — use kitchen/recipe language if needed.
+- Do **not** lead with Path A/B/C jargon in operator-facing chat — use kitchen/recipe language if needed.
 
 ## Five steps
 
@@ -41,11 +41,11 @@ Run/CSV only when user asks 「能跑吗 / 帮我跑」.
 | 改… | open existing marker → edit → 3→4 |
 | 能跑吗 / 跑一下 | handoff webui (load `psyclaw-webui`) |
 
-## Explain preference (this user)
+## Explain preference
 
-- User: “太多东西了 / 用幼儿园语言”
-- Prefer: short lists, concrete file names, **no** multi-path architecture dumps
-- Still keep technical truth in skill refs for agents
+- Prefer short lists and concrete file names when the operator is confused
+- No multi-path architecture dumps in chat; keep technical detail in `references/`
+- Kitchen/recipe metaphors OK; Path A/B/C jargon only if asked
 
 ## Cross-CLI later
 

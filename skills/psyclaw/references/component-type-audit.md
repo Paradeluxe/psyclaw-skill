@@ -1,6 +1,6 @@
 # Component type coverage audit (PsychoPy 2026.1.1)
 
-Generated 2026-07-01 by emitting a YAML containing one of every supported type, running `node scripts/emit.js`, and reading the resulting `.psyexp` against `D:\Software\P\lib\site-packages\psychopy\experiment\components\<type>\__init__.py`.
+Generated 2026-07-01 by emitting a YAML containing one of every supported type, running `node scripts/emit.js`, and reading the resulting `.psyexp` against `<psychopy-site-packages>\psychopy\experiment\components\<type>\__init__.py`.
 
 ## Coverage matrix (PsychoPy 2026.1.1)
 
@@ -18,7 +18,7 @@ Generated 2026-07-01 by emitting a YAML containing one of every supported type, 
 All 8 component types have working dispatch + emit. The dispatcher is in
 `scripts/json2psyexp.js` `generateComponents()` (~L428-446). Param lists
 were verified against
-`D:\Software\P\lib\site-packages\psychopy\experiment\components\<type>\__init__.py`
+`<psychopy-site-packages>\psychopy\experiment\components\<type>\__init__.py`
 on 2026-07-01; any time PsychoPy ships a new release, re-grep and
 re-validate.
 
@@ -35,7 +35,7 @@ re-validate.
 | TextComponent    | `anchor`               | ❌                           | already removed (see bug catalog) |
 | KeyboardComponent| `stopWithRoutine`      | ❌                           | already removed (see bug catalog) |
 
-Verified by grepping `D:\Software\P\lib\site-packages\psychopy\experiment\components\<type>\__init__.py` for `self.params['<name>'] = Param(` — `name="loop"` does not appear in `sound/__init__.py`; `name="flip"` does not appear in `movie/__init__.py`.
+Verified by grepping `<psychopy-site-packages>\psychopy\experiment\components\<type>\__init__.py` for `self.params['<name>'] = Param(` — `name="loop"` does not appear in `sound/__init__.py`; `name="flip"` does not appear in `movie/__init__.py`.
 
 ## How to add a new component type
 
@@ -58,7 +58,7 @@ Verified by grepping `D:\Software\P\lib\site-packages\psychopy\experiment\compon
 ### Extracting golden XML reference (recipe)
 
 ```python
-# D:/Software/P/python.exe -c "..." (strip hermes-agent sys.path first)
+# <psychopy-python> -c "..." (strip hermes-agent sys.path first)
 from psychopy.experiment import Experiment
 from psychopy.experiment.routines import Routine
 from psychopy.experiment.components.code import CodeComponent  # or any type
@@ -95,12 +95,12 @@ for t in TextComponent ImageComponent SoundComponent MovieComponent \
 done
 
 # 2. loadFromXML zero warnings
-D:/Software/P/python.exe -c "
+<psychopy-python> -c "
 import logging
 logging.basicConfig(level=logging.WARNING)
 from psychopy.experiment import Experiment
 exp = Experiment()
-exp.loadFromXML(r'C:\Users\User\AppData\Local\Temp\component_test.psyexp')
+exp.loadFromXML(r'<temp>/component_test.psyexp')
 print('OK')
 " 2>&1 | grep -iE 'warning|error|OK'
 

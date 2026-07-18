@@ -1,6 +1,6 @@
 # Multi-Routine Architecture (2026-07-12)
 
-User explicitly rejected cram-everything-into-one-timeline pattern. Standard PsychoPy Builder design: each phase gets its own routine.
+Prefer not to cram-everything-into-one-timeline pattern. Standard PsychoPy Builder design: each phase gets its own routine.
 
 ## Correct Flow
 

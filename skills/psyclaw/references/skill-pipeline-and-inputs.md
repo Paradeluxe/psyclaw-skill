@@ -1,6 +1,6 @@
 # /psyclaw pipeline + inputs (2026-07-18+)
 
-User wants **simple** explanations first (幼儿园 when stuck); A/B/C paths are implementation detail.
+User wants **simple** explanations first (plain language when stuck); A/B/C paths are implementation detail.
 
 ## Two products (one line each)
 
@@ -64,7 +64,7 @@ Like `nature-figure`: skills install = light cookbook; large runtime external; m
 | Slash / skill id | **`/psyclaw`** / `psyclaw` |
 | GitHub skill repo | **`Paradeluxe/psyclaw-skill`** (edit this package) |
 | Hermes local | `~/.hermes/skills/research/psyclaw` |
-| `E:\hermes_playground\psyclaw-skill` | **Papers/replications workspace** — NOT skill package |
+| `<psyclaw-workspace>` | **Papers/replications workspace** — NOT skill package |
 
 Do **not** rename slash to `/psyclaw-skill` unless user asks.
 

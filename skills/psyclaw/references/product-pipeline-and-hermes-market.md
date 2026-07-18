@@ -2,7 +2,7 @@
 
 ## User communication
 
-When user is non-expert or says 没理解 / 幼儿园: **short sentences, almost no jargon tables overload**.  
+When user is non-expert or says 没理解 / plain language: **short sentences, almost no jargon tables overload**.  
 Product talk = 菜谱(skill) vs 厨房(webui); 装全部 = 总开关.
 
 ## Pipeline (skill)

@@ -7,9 +7,9 @@ emitted XML has params PsychoPy doesn't recognize, or when you want
 the gold-standard "would PsychoPy actually load this?" answer.
 
 Usage:
-    D:\\Software\\P\\python.exe scripts/validate_load_from_xml.py <file.psyexp>
-    D:\\Software\\P\\python.exe scripts/validate_load_from_xml.py <file.psyexp> --strict
-    D:\\Software\\P\\python.exe scripts/validate_load_from_xml.py <file1> <file2> ...
+    <psychopy-python> scripts/validate_load_from_xml.py <file.psyexp>
+    <psychopy-python> scripts/validate_load_from_xml.py <file.psyexp> --strict
+    <psychopy-python> scripts/validate_load_from_xml.py <file1> <file2> ...
 
 Exit codes:
     0  — all files loaded clean (zero "Parameters not known" warnings)

@@ -151,7 +151,7 @@ Note: The OSF repo had 26 files (not the full 180 claimed in the paper). The pap
 
 ## PyMuPDF / pdfplumber for PDF extraction
 
-`D:\Software\P\python\Lib\site-packages\pymupdf` is already installed with PsychoPy. Use:
+`<psychopy-install>\python\Lib\site-packages\pymupdf` is already installed with PsychoPy. Use:
 
 ```python
 from pymupdf import open as pdfopen   # PsychoPy 2026.1.1 uses 'pymupdf' not 'fitz'
@@ -159,7 +159,7 @@ doc = pdfopen('paper.pdf')
 text = ''.join(p.get_text() for p in doc)
 ```
 
-If running from hermes venv, `pip install pymupdf` first or use `D:\Software\P\python.exe` directly which already has it.
+If running from hermes venv, `pip install pymupdf` first or use `<psychopy-python>` directly which already has it.
 
 ## See also
 

@@ -55,7 +55,7 @@ Use a tiered approach to maximize what we can get locally.
 ## Directory layout
 
 ```
-E:\hermes_playground\psyclaw\papers\classics\
+<psyclaw-workspace>\papers\classics\
 ├── stroop\
 │   ├── paper.pdf           # L1 full text / L2 substitute
 │   ├── paper.json          # {doi, title, authors, year, journal, tier, pdf_path, key_params}

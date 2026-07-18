@@ -17,11 +17,11 @@ except ImportError:
     subprocess.check_call([sys.executable, "-m", "pip", "install", "pyyaml", "-q"])
     import yaml
 
-PSYCLAW = Path(r"E:/hermes_playground/psyclaw")
+PSYCLAW = Path(r"<psyclaw-workspace>")
 REPS = PSYCLAW / "replications"
 OUT = PSYCLAW / "output" / "webui_batch_validate"
 OUT.mkdir(parents=True, exist_ok=True)
-WEBUI = Path(r"E:/hermes_playground/psyclaw-webui")
+WEBUI = Path(r"<psyclaw-webui-repo>")
 sys.path.insert(0, str(WEBUI / "backend"))
 from design_compiler import compile_design  # noqa: E402
 

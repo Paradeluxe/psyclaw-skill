@@ -9,8 +9,8 @@ much as the boundaries.
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │  L1  Interface  (人接触的层)                                       │
-│      ├── Claude/Web chat, CLI, Slack/Telegram bot, GUI           │
-│      ├── 你现在用的 Telegram DM (The Machine)                    │
+│      ├── Claude/Web chat, CLI, Slack/chat bot, GUI           │
+│      ├── 你现在用的 chat DM (the agent)                    │
 │      └── 在 PsyClaw 语境里: nl_intake.py + 你的自然语言描述        │
 ├─────────────────────────────────────────────────────────────────┤
 │  L2  Harness    (orchestration, glue)                            │
@@ -55,7 +55,7 @@ risks 1-2 `loadFromXML` warnings. See pitfall #17a / #17b / #17e for the
   IO, zero scheduling, zero UI.
 - `harness_cli.py` / `harness_main.py` are **the harness** (L2). They
   call into the emitter and other stages.
-- The Telegram bot you're typing into right now is **the interface** (L1).
+- The chat bot you're typing into right now is **the interface** (L1).
 
 If someone says "the harness is broken", they probably mean the harness
 failed to detect that json2psyexp.js emitted warnings. The emitter is

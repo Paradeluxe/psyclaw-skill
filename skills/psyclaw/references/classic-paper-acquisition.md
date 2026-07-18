@@ -10,7 +10,7 @@ Date: 2026-07-02. Updated 2026-07-11 with Sci-Hub CDP batch results.
 # 1. Start Chrome with debug port (must use temp profile to avoid conflicts)
 "/c/Program Files/Google/Chrome/Application/chrome.exe" \
   --remote-debugging-port=9222 \
-  --user-data-dir="C:/Users/User/AppData/Local/chrome-debug-profile" \
+  --user-data-dir="<chrome-debug-profile-dir>" \
   --no-first-run --no-default-browser-check "about:blank" &
 
 # 2. Single paper (~5s first, ~3s subsequent)
@@ -51,7 +51,7 @@ paywall, 0 body returned).
 | **xlzhanglab.scnu.edu.cn** | ✅ PDF | Posner 1980 (671KB) — educational mirror |
 | **facultypsy.hope.edu direct PDF** | ✅ PDF | Treisman & Gelade 1980 (2.8MB, genuine publisher PDF) |
 
-## Successfully acquired (in E:\hermes_playground\psyclaw\papers\classics\)
+## Successfully acquired (in <psyclaw-workspace>\papers\classics\)
 
 | File | Format | Size | Quality | Source |
 |------|--------|------|---------|--------|
@@ -63,7 +63,7 @@ paywall, 0 body returned).
 | `Stroop_1935.txt` | Plain text | 38KB | Full paper | psychclassics.yorku.ca |
 | `Sternberg_1966.txt` | Plain text | 17KB | Full paper | sas.upenn.edu/~saul |
 
-Full catalog: `E:\hermes_playground\psyclaw\papers\classics\CATALOG.md`
+Full catalog: `<psyclaw-workspace>\papers\classics\CATALOG.md`
 
 ## Missing (paywall-blocked)
 

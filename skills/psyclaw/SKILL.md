@@ -23,7 +23,7 @@ merged_skills: [psyclaw-setup]
 
 **Two products. Never merge repos, install deps, or release narratives.**
 
-**Session canon (2026-07-18) — read these first:**
+**Read first (product canon):**
 
 - `references/skill-pipeline-and-inputs.md` — `/psyclaw` inputs, `<folderName>.psyclaw`, browser as related-only, slash vs GitHub name
 - `references/skill-pipeline.md` — five steps; step 2 = clarify + norms
@@ -32,18 +32,18 @@ merged_skills: [psyclaw-setup]
 - GitHub skill repo: `Paradeluxe/psyclaw-skill` (package path `skills/psyclaw/`); Hermes slash stays **`/psyclaw`**
 - Install: `hermes skills install psyclaw -y` (short) or `Paradeluxe/psyclaw-skill/skills/psyclaw` (full)
 - Marker handoff to webui: **`<folderName>.psyclaw`** (not fixed `design.psyclaw`)
-- User product talk: kindergarten-simple when they ask (skill=写说明书, webui=跑实验)
+- Prefer plain language when the operator is confused (skill=写说明书, webui=跑实验)
 
 
 | Product | Repo (disk) | Hermes skill | Who |
 |---------|-------------|--------------|-----|
 | **psyclaw-skill** (this side) | GitHub `Paradeluxe/psyclaw-skill`; Hermes `skills/research/psyclaw` | **`psyclaw`** (slash **`/psyclaw`** — do **not** rename slash to `/psyclaw-skill`) | Agents: write `<folderName>.psyclaw` |
-| **psyclaw-webui** | `E:\hermes_playground\psyclaw-webui` | `psyclaw-webui` | Humans: GUI → run → CSV |
+| **psyclaw-webui** | `<psyclaw-webui-repo>` | `psyclaw-webui` | Humans: GUI → run → CSV |
 
 - Shared on-disk IR: **`<folderName>.psyclaw`** (same as webui marker; legacy `design.psyclaw` migrates in webui).
 - Skill pipeline (simple): hear → **clarify + design norms** (Design/几×几/被试内间 first, one Q per turn; `experiment-design-norms.md`) → write marker → validate → optional webui handoff. Detail: **`references/skill-pipeline.md`**.
-- User: product talk in **short plain language** when confused; avoid Path A/B/C walls.
-- **No public / tag / push** without explicit user ok.
+- Product talk: **short plain language** when confused; avoid Path A/B/C walls in chat.
+- **No public release / tag / push** without explicit operator approval.
 - Cross-CLI ready? → schema + installable CLI (+ optional MCP); Hermes `SKILL.md` alone is **not** enough.
 
 **Product goal (paper-facing):** turn natural-language or paper Method text into a
@@ -108,7 +108,7 @@ design.json → POST /api/runs (:8876) → design_compiler → PsychoPy
   → runs/<id>/data/*.csv  AND  <project_path>/data/*.csv  (required mirror)
 ```
 
-- Repo: `E:\hermes_playground\psyclaw-webui` · port **8876** · skill `psyclaw-webui`
+- Repo: `<psyclaw-webui-repo>` · port **8876** · skill `psyclaw-webui`
 - Full recipe + design schema + 50+50+50 benchmark: **`references/path-c-webui-validation.md`**
 - Batch scripts: `scripts/spec_to_design_batch.py` (G0), `headless_webui_sample.py` (G1), `data_retention_audit.py` (G2)
 
@@ -139,7 +139,7 @@ Full breakdown in `references/pipeline-architecture.md`.
 
 | Layer | Role | In PsyClaw |
 |-------|------|------------|
-| L1 Interface | User-facing entry (chat, CLI, bot, GUI) | Telegram/CLI → you (The Machine) |
+| L1 Interface | User-facing entry (chat, CLI, bot, GUI) | chat/CLI → you (the agent) |
 | L2 Harness | Orchestration, glue, state machine | `harness_cli.py` / `harness_main.py` |
 | L3 Emitter | Pure translation, no IO/UI | `json2psyexp.js` |
 | L4 Schema | Data contract, validation | `spec_validator.py` + YAML/JSON/XML specs |
@@ -167,25 +167,25 @@ L4 = new YAML field. Most patching happens at L3 — see pitfall #17a.
 | **DIAGNOSE** | "为什么 .psyexp 报错" | Stages 5 + real PsychoPy load |
 | **VERIFY** | "用 PsychoPy 验一下" | Real PsychoPy `loadFromXML()` |
 
-**CREATE intent with vague description (no paradigm / no key params)** → **launch intent discovery (`references/interaction-flow.md` §6) before any stage**. Don't dump a 6-paradigm menu on the user; the discovery flow is variable-driven (IV count → IV type → IV levels → DV → paradigm match → trial structure → confirm). **User explicitly rejected domain-based categorization** — see §6 for the lesson and the full 7-step script.
+**CREATE intent with vague description (no paradigm / no key params)** → **launch intent discovery (`references/interaction-flow.md` §6) before any stage**. Don't dump a 6-paradigm menu on the user; the discovery flow is variable-driven (IV count → IV type → IV levels → DV → paradigm match → trial structure → confirm). **Prefer not to domain-based categorization** — see §6 for the lesson and the full 7-step script.
 
-### Asking the user: one question at a time, plain language (2026-06-24 user prefs)
+### Asking the user: one question at a time, plain language (2026-06-24 operator prefs)
 
 Two user preferences that must be honored whenever you ask anything in PsyClaw:
 
 1. **"一个一个问呢"** — when you need user input, ask **one** question per turn. Don't stack 2-3 questions in one message. If the topic has multiple sub-decisions (e.g. IV count, IV type, IV levels), treat each as its own turn with a clear next step. The user can always say "我都知道" / "按 X 做" to skip ahead.
-2. **"简单易懂的语言"** — avoid jargon when explaining design choices. Default to plain Chinese (since this user is Chinese-speaking). Use technical terms only when they are exactly the PsychoPy / psychology term (e.g. "DV", "IV", "Likert"). When the user themselves used a jargon term, mirror it; when introducing a concept, explain it in one short sentence first.
+2. **"简单易懂的语言"** — avoid jargon when explaining design choices. Default to plain Chinese (since operators is Chinese-speaking). Use technical terms only when they are exactly the PsychoPy / psychology term (e.g. "DV", "IV", "Likert"). When the user themselves used a jargon term, mirror it; when introducing a concept, explain it in one short sentence first.
 
 Both preferences are also captured in `references/interaction-flow.md` §10.
 
-### Other user prefs (2026-07-01)
+### Other operator prefs (2026-07-01)
 
 3. **"你自己验证吧"** — when the user delegates verification, **do it end-to-end** and report a real result (process PID, `loadFromXML` 0-warnings, screenshot path). Don't ask "do you want me to verify?" or list verification steps — that's dodging the delegation. If a verification step fails, report the failure concretely and pivot to the next approach; don't punt back to the user with a question.
 4. **"不要对比。我想你继续使用它这个名字"** — there is a separate `Paradeluxe/PsyClaw` repo on GitHub that is a *web app / chatbot* version of PsyClaw (HTML + JS, different scope). Do NOT cross-reference, contrast, or compare this skill with that repo. They share the name only. When asked about "psyclaw" or "the psyclaw project", assume the local skill (this directory). If the user explicitly says "对比一下 GitHub 那只", then do the cross-comparison; otherwise stay local.
-5. **Path-B user prefs (2026-07-11, updated)**:
+5. **Path-B operator prefs (2026-07-11, updated)**:
    - **No stub, no statistical validation at build time.** "你不需要模拟被试的反应" — do not simulate subjects, do not analyze data. Verification = `loadFromXML` 0 warnings + headless smoke test.
    - **Don't duplicate spec.** spec.yaml → builder.py → conditions.xlsx + .psyexp. README.md is human-readable companion, not duplicate.
-   - **Output goes in paradigm dir.** `replications/<slug>/output/`, not `E:/hermes_playground/psyclaw/output/`.
+   - **Output goes in paradigm dir.** `replications/<slug>/output/`, not `<psyclaw-workspace>/output/`.
    - **Keyboard = native KeyboardComponent.** Never put key detection in CodeComponent. "让各个component各司其职". CodeComponent reserved for marker/trigger only.
    - **builder.py is the engine.** No runner.py. See `add-paradigm` skill for the full contract.
    - **Proactive fixes, not auto-rename.** "还有类似问题就修复" — when warnings like duplicate component names appear, fix the root cause (unique names) rather than relying on PsychoPy's auto-rename. Multi-routine paradigms: prefix component names with routine (`fix_enc`, `fix_probe`, `key_trial`, `isi_trial`).
@@ -212,7 +212,7 @@ python ~/.hermes/skills/research/psyclaw/scripts/harness_cli.py \
 ### Run the full regression suite (after any json2psyexp.js change)
 
 ```bash
-# Uses D:\Software\P\python.exe, strips hermes sys.path, runs all examples-glob/*.yaml
+# Uses <psychopy-python>, strips hermes sys.path, runs all examples-glob/*.yaml
 # Exit 0 iff all produced .psyexp load with zero warnings
 bash ~/.hermes/skills/research/psyclaw/scripts/regression_suite.sh
 ```
@@ -273,14 +273,14 @@ Full contract for each stage is in `references/interaction-flow.md` §2. Invento
 # 1. Write spec.yaml in replications/<paradigm>/
 # 2. Add condition generator to builder.py (if new paradigm)
 # 3. Build .psyexp + conditions.xlsx
-cd /e/hermes_playground/psyclaw
+cd <psyclaw-workspace>
 python builder.py replications/<paradigm>/spec.yaml
 
 # 4. Verify
-cd /d/Software/P && PYTHONPATH= PYTHONHOME= ./python.exe -c "
+PYTHONPATH= PYTHONHOME= <psychopy-python> -c "
 from psychopy.experiment import Experiment
 exp = Experiment()
-exp.loadFromXML(r'E:\hermes_playground\psyclaw\replications\<paradigm>\<paradigm>.psyexp')
+exp.loadFromXML(r'<psyclaw-workspace>\replications\<paradigm>\<paradigm>.psyexp')
 print('loadFromXML: OK')
 "
 ```
@@ -465,7 +465,7 @@ Plus custom complex test (8 routines + 2 loops + image+audio+video, 332 params, 
 **Real PsychoPy 2026.1.1 verification (2026-07-03, all post-fix):** the five
 paradigm samples (Stroop/GoNoGo/Flanker/N-back/IAPS) plus three custom
 golden samples and two paper-replication cases load via `psychopy.experiment.Experiment().loadFromXML()`
-in `D:\\Software\\P\\python.exe` on Windows with **zero "Parameters not
+in `<psychopy-python>` on Windows with **zero "Parameters not
 known" warnings**:
 
 | sample | size | components exercised | result |
@@ -480,7 +480,7 @@ known" warnings**:
 | `specs/kfs_rating.yaml` → .psyexp | 110,812 bytes | audio + slider (9 rating routines, 26 external WAV stimuli, MP4→WAV pre-converted) | 0 warnings |
 
 **How to re-verify after any change to json2psyexp.js**:
-`D:\\Software\\P\\python.exe scripts/validate_load_from_xml.py <file.psyexp>`
+`<psychopy-python> scripts/validate_load_from_xml.py <file.psyexp>`
 (see `scripts/validate_load_from_xml.py`). Captures the "Parameters not
 known to this version" warning via logging handler and exits non-zero on
 any warning.
@@ -490,7 +490,7 @@ type is added, don't trust a single check — run all 4:
 
 1. **XML text check** — `grep <ComponentName out.psyexp` confirms the emit
    function emitted tags in the right place.
-2. **loadFromXML** — `D:\\Software\\P\\python.exe -c "from psychopy.experiment import Experiment; Experiment().loadFromXML(path)"` — exits 0 iff PsychoPy accepts the file.
+2. **loadFromXML** — `<psychopy-python> -c "from psychopy.experiment import Experiment; Experiment().loadFromXML(path)"` — exits 0 iff PsychoPy accepts the file.
 3. **API roundtrip** — open the file with `Experiment().loadFromXML()`, then
    read `exp.routines['<r>'].children[i].params['<field>'].val` — verify
    the Python-side parse matches what we emitted (HTML-escape roundtrip
@@ -502,15 +502,15 @@ Layers 1-3 are required; layer 4 is gold-standard visual confirmation.
 
 **Computer-use GUI verification (2026-07-01):** the canonical workflow for visually
 confirming a .psyexp opens in Builder:
-1. Launch PsychoPy: `cd /d/Software/P && PYTHONPATH= PYTHONHOME= ./pythonw.exe -m psychopy.app <path.psyexp>`
+1. Launch PsychoPy: `PYTHONPATH= PYTHONHOME= <psychopy-pythonw> -m psychopy.app <path.psyexp>`
 2. Poll `tasklist //FI "IMAGENAME eq pythonw.exe"` until ~300MB+ PID appears
 3. `computer_use(action='capture', app='pythonw.exe', mode='som')` — check TitleBar label for
    `.psyexp - PsychoPy Builder (v2026.1.1)`, count Routine tabs, inspect Flow diagram.
    **If capture returns 0x0** (cua-driver can't see the window — usually because
-   another app like Telegram holds foreground focus), fall back to
+   another app like chat holds foreground focus), fall back to
    `powershell -ExecutionPolicy Bypass -File scripts/screenshot_window.ps1 -TitlePattern "*<file>*"`
    to PrintWindow the Builder hwnd directly. See pitfall #24.
-4. For full verification, also run `D:\\Software\\P\\python.exe -c "from psychopy.experiment import Experiment; ..."`
+4. For full verification, also run `<psychopy-python> -c "from psychopy.experiment import Experiment; ..."`
    to catch `loadFromXML` warnings the visual capture can't see.
 5. When done, `powershell -ExecutionPolicy Bypass -File scripts/close_psychopy.ps1` — sends
    WM_CLOSE to Builder (reliable, doesn't kill Hermes). See pitfall #23.
@@ -581,7 +581,7 @@ uv venv --python 3.11 .venv
 │   ├── complex_task.yaml
 │   └── asset_heavy_task.yaml
 ├── references/
-│   ├── interaction-flow.md           # product spec: intents, stages, ops, intent discovery, working prefs
+│   ├── interaction-flow.md           # product spec: intents, stages, ops, intent discovery, working preferences
 │   ├── pipeline-architecture.md      # 4-layer model: interface/harness/emitter/schema (NEW 2026-07-01)
 │   ├── scripts-inventory.md          # 10-script audit: keep/merge/drop
 │   ├── experiment-schema.md          # proposed Design/Procedure/Stimuli/Response block split (in flux, not binding)
@@ -594,7 +594,7 @@ uv venv --python 3.11 .venv
 │   ├── json2psyexp-emit-bugs.md      # 4 known emit-layer hardcode bugs + fix recipes
 │   ├── xlsx-bool-and-weighting.md    # bool→int coercion + equal cell-weighting recipe (Stroop case study)
 │   ├── yaml-driven-runner.md         # (NEW 2026-07-05) Path B YAML-driven generic runner.py for replications/; schema sketch + decision rule (1-3 paradigms → hand-written, ≥4 → YAML)
-│   └── output-directory-conventions.md # (NEW 2026-07-05) `replications/<slug>/output/` per-paradigm layout vs old `E:/hermes_playground/psyclaw/output/<slug>/`
+│   └── output-directory-conventions.md # (NEW 2026-07-05) `replications/<slug>/output/` per-paradigm layout vs old `<psyclaw-workspace>/output/<slug>/`
 └── .venv/                            # uv venv (system Python lacks pip/lxml/etc.)
 ```
 
@@ -604,15 +604,15 @@ uv venv --python 3.11 .venv
 2. **Loop Point convention** — `Point = (routineIndex + 1) * 2`, must be in `loop.list[i].Point`. See json2psyexp.js line 754.
 3. **YAML in templates** — use block-style (one key per line) NOT inline `{name: x, type: y}`. PyYAML chokes on double braces.
 4. **Unescaped `<` in text** — PsychoPy itself is lenient but lxml strict mode rejects. Validator uses recover=True; templates avoid literal `<` characters.
-5. **WSL CAN validate with real PsychoPy** — use `D:\Software\P\python.exe` (PsychoPy's own Python, NOT the `psychopy.exe` launcher in any venv). The venv launcher reads a shebang that points to a Python path that may not exist (e.g. `D:\Pythons\Python312\python.exe`). The `D:\Software\P` install has the full site-packages and works directly. `python -c "from psychopy.experiment import Experiment; exp = Experiment(); exp.loadFromXML('file.psyexp')"` is a complete load-test that catches schema mismatches the lxml validator misses.
+5. **WSL CAN validate with real PsychoPy** — use `<psychopy-python>` (PsychoPy's own Python, NOT the `psychopy.exe` launcher in any venv). The venv launcher reads a shebang that points to a Python path that may not exist (e.g. `D:\Pythons\Python312\python.exe`). The `<psychopy-install>` install has the full site-packages and works directly. `python -c "from psychopy.experiment import Experiment; exp = Experiment(); exp.loadFromXML('file.psyexp')"` is a complete load-test that catches schema mismatches the lxml validator misses.
 6. **Three PsychoPy 2026.1.1 params that json2psyexp.js once emitted but should not** — `anchor` on TextComponent/MovieComponent, `stopWithRoutine` on KeyboardComponent. **FIXED in current code** — `generateTextComponentFromSchema` (L553), `generateImageComponentFromSchema` (L585), and `generateKeyboardComponentFromSchema` (L660) no longer emit these. The old `examples/stroop/stroop_experiment.psyexp` (generated before the fix) still had them and produced 6 `loadFromXML` warnings. Regenerated 2026-07-01 with fixed emit: **zero warnings**. Always regenerate examples after patching json2psyexp.js.
 7. **Fixation cross** — never use PIL default font for `+`; it renders as a thick block. Use two thin rectangles.
 8. **Complex multi-routine paradigms** — build YAML directly, don't try to template everything.
 9. **YAML `JS reserved word` trap in JS** — never name a destructured variable `in` (it's a reserved word in JavaScript). In `emit.js` use `inp`/`outp` not `in`/`out`. Symptom: `SyntaxError: Unexpected token 'in'` at runtime.
-10. **OS.add_dll_directory breaks numpy on Linux** — when calling Windows `D:\Software\P\python.exe` from WSL Python, do NOT do `import os; os.add_dll_directory = lambda x: None` before numpy import. This attribute addition corrupts numpy's `os` module lookup. Clean env works fine without it.
+10. **OS.add_dll_directory breaks numpy on Linux** — when calling Windows `<psychopy-python>` from WSL Python, do NOT do `import os; os.add_dll_directory = lambda x: None` before numpy import. This attribute addition corrupts numpy's `os` module lookup. Clean env works fine without it.
 11. **Use the real PsychoPy to validate .psyexp, not just lxml** — `lxml` strict-parse passes files that PsychoPy 2026.1.1 still rejects. The `validate_psyexp.py` here uses lxml in `recover=True` mode (forgiving) but the gold standard is `psychopy.experiment.Experiment().loadFromXML(path)`. Five paradigms (Stroop/GoNoGo/Flanker/N-back/IAPS) all pass with **zero "not known" warnings** on the vendored json2psyexp.js after the schema fix.
 12. **No GUI = no FileSystemDirectoryHandle hell** — the old GUI was crippled by `showDirectoryPicker()` being a native OS dialog that no automation can click. Dropping GUI means we use plain fs paths and don't need IndexedDB or permission handles. See `references/legacy-gui-history.md`.
-13. **Intent discovery is variable-driven, not domain-driven** — user explicitly rejected the "按领域分类 (注意/记忆/情绪/社会...)" approach. Default to IV/DV/levels decomposition. See `references/interaction-flow.md` §6 for the 7-step script.
+13. **Intent discovery is variable-driven, not domain-driven** — prefer not to the "按领域分类 (注意/记忆/情绪/社会...)" approach. Default to IV/DV/levels decomposition. See `references/interaction-flow.md` §6 for the 7-step script.
 14. **Don't hardcode `python3` in subprocess orchestrators when the skill ships its own venv** — use `sys.executable` so the subprocess inherits the venv's site-packages. Symptom: `ModuleNotFoundError: No module named 'lxml'` even though `pip show lxml` says it's installed. The pip-installed location and the `python3` PATH location are different on this machine (pip → ~/.local/lib/python3.11, `python3` → /usr/bin/python3 with no site-packages).
 15. **PsyClaw = generate flow scripts, not match paradigms** — when the user describes an experiment, the default response is a runnable flow, not a list of "would you like Stroop, GoNoGo, Flanker, N-back, IAPS, Posner?" Asking this question treats the 6 templates as the product. They aren't — they're convenience starting points for the 20% of cases where the user genuinely wants a stock paradigm. For the other 80%, build a flow from the variables in their description. (See `references/experiment-schema.md` for the Design/Procedure/Stimuli/Response block split that backs this.)
 16. **`harness_main.step()` output path bug** — old signature was `step(spec_path, work, verbose)` and wrote the project under `work/out/<name>/` while also leaving `_work/` artifacts at the user's out_dir. User-visible symptom: ran `harness_cli.py --out-dir ./experiments/` and saw a stray `_work/` folder, with the actual project buried at `./experiments/_work/out/<name>/`. Fixed by changing step() to `step(spec_path, out_dir, verbose)`, writing directly to `out_dir/<name>/`, and `shutil.rmtree(work)` after scaffold succeeds.
@@ -628,10 +628,10 @@ uv venv --python 3.11 .venv
 4. `json2psyexp.js generateLoopInitiator()` reads the field → grep `<field>` in the function body; if hardcoded `''` or `True`, **change to read `loop.<field>`**
 
 For component-level fields (e.g. `correctAns` on KeyboardComponent), the recipe collapses to: check the generate function's local `const` initializers — hardcoded defaults like `''` and `True` and `'center'` are the prime suspects.
-17a. **Component type dispatcher coverage (2026-07-01)** — All 8 component types now have working dispatch + emit in `generateComponents()` (~L428-446): audio / video / text / image / keyboard / **mouse / slider / code**. Param lists verified against `D:\Software\P\lib\site-packages\psychopy\experiment\components\<type>\__init__.py` for PsychoPy 2026.1.1. Recipe for adding a new type: 1) look up param list from PsychoPy's own `__init__.py`; 2) write `generate<Type>ComponentFromSchema(component, routineName)` matching those params + valType + updates; 3) add `else if (component.type === '<type>')` branch to the dispatcher; 4) add `<type>` to `VALID_COMPONENT_TYPES` in `spec_validator.py` (often already there if it was in the validator's allowed set ahead of the dispatcher); 5) write a YAML with one of the new type and add to regression suite. **Gotcha: CodeComponent uses `extendedCode` valType, NOT `str` — body text must be HTML-escaped (e.g. `"` → `&quot;` or `&apos;`, `<` → `&lt;`, `>` → `&gt;`, `&` → `&amp;`) so user Python strings survive XML roundtrip. **See `references/component-type-audit.md` for the coverage matrix.**
-17b. **SoundComponent.loop and MovieComponent.flip/anchor are 2026.1.1-incompatible (2026-07-01)** — Even with dispatcher working, the audio and video generators emit params that PsychoPy 2026.1.1 does not understand: `name="loop"` on `<SoundComponent>` (psychoPy source has no such param on Sound — only `hamming` and `stopWithRoutine`), and `name="flip"` / `name="anchor"` on `<MovieComponent>` (MovieComponent's BaseVisualComponent in 2026.1.1 only inherits `anchor` from text/image, NOT video; `flip` was removed). `loadFromXML` warns: "Parameters not known to this version: loop, flip". **Fix to implement**: in `generateAudioComponentFromSchema`, drop the `loop` const and the `<Param val="${loop}" name="loop"/>` line. In `generateVideoComponentFromSchema`, drop the `flip` const and the `<Param val="${flip}" name="flip"/>` line, and drop the `anchor` const. **General rule** when adding or fixing a component generator: grep `D:\Software\P\lib\site-packages\psychopy\experiment\components\<type>\__init__.py` for `self.params['<name>'] = Param(` to see the actual supported param list — don't trust the vendored generator to be in sync. See `references/component-type-audit.md`.
+17a. **Component type dispatcher coverage (2026-07-01)** — All 8 component types now have working dispatch + emit in `generateComponents()` (~L428-446): audio / video / text / image / keyboard / **mouse / slider / code**. Param lists verified against `<psychopy-site-packages>\psychopy\experiment\components\<type>\__init__.py` for PsychoPy 2026.1.1. Recipe for adding a new type: 1) look up param list from PsychoPy's own `__init__.py`; 2) write `generate<Type>ComponentFromSchema(component, routineName)` matching those params + valType + updates; 3) add `else if (component.type === '<type>')` branch to the dispatcher; 4) add `<type>` to `VALID_COMPONENT_TYPES` in `spec_validator.py` (often already there if it was in the validator's allowed set ahead of the dispatcher); 5) write a YAML with one of the new type and add to regression suite. **Gotcha: CodeComponent uses `extendedCode` valType, NOT `str` — body text must be HTML-escaped (e.g. `"` → `&quot;` or `&apos;`, `<` → `&lt;`, `>` → `&gt;`, `&` → `&amp;`) so user Python strings survive XML roundtrip. **See `references/component-type-audit.md` for the coverage matrix.**
+17b. **SoundComponent.loop and MovieComponent.flip/anchor are 2026.1.1-incompatible (2026-07-01)** — Even with dispatcher working, the audio and video generators emit params that PsychoPy 2026.1.1 does not understand: `name="loop"` on `<SoundComponent>` (psychoPy source has no such param on Sound — only `hamming` and `stopWithRoutine`), and `name="flip"` / `name="anchor"` on `<MovieComponent>` (MovieComponent's BaseVisualComponent in 2026.1.1 only inherits `anchor` from text/image, NOT video; `flip` was removed). `loadFromXML` warns: "Parameters not known to this version: loop, flip". **Fix to implement**: in `generateAudioComponentFromSchema`, drop the `loop` const and the `<Param val="${loop}" name="loop"/>` line. In `generateVideoComponentFromSchema`, drop the `flip` const and the `<Param val="${flip}" name="flip"/>` line, and drop the `anchor` const. **General rule** when adding or fixing a component generator: grep `<psychopy-site-packages>\psychopy\experiment\components\<type>\__init__.py` for `self.params['<name>'] = Param(` to see the actual supported param list — don't trust the vendored generator to be in sync. See `references/component-type-audit.md`.
 18. **NEVER use `taskkill /F /IM pythonw.exe` to kill PsychoPy** — kills ALL pythonw processes including Hermes's own gateway/worker, causing a silent disconnect. Use `process.kill(session_id)` for background processes, or `computer_use` close button for GUI apps. `taskkill /F /PID <pid>` also risky — the PID may belong to Hermes. Cross-check the PID against the known background session ID. This rule applies to ANY process name Hermes itself uses (pythonw, python3, etc.) — when in doubt, use `process.kill(session_id)`.
-19. **Launching PsychoPy from Hermes terminal: PYTHONPATH pollution** — Hermes sets `sys.path[0]` to its own venv, and PsychoPy picks up `hermes-agent/venv/Lib/site-packages/cryptography` which is a Linux wheel (.so) → `ImportError: DLL load failed` on Windows. Fix: `cd /d/Software/P && PYTHONPATH= PYTHONHOME= ./pythonw.exe -m psychopy.app` (clears both variables). Do NOT use `psychopy.exe` launcher — its shebang may point to a non-existent Python. Use `pythonw.exe` directly. **First sign of "DLL load failed" when launching any Windows-installed Python from a Hermes terminal: clear PYTHONPATH and PYTHONHOME before re-running.**
+19. **Launching PsychoPy from Hermes terminal: PYTHONPATH pollution** — Hermes sets `sys.path[0]` to its own venv, and PsychoPy picks up `hermes-agent/venv/Lib/site-packages/cryptography` which is a Linux wheel (.so) → `ImportError: DLL load failed` on Windows. Fix: `PYTHONPATH= PYTHONHOME= <psychopy-pythonw> -m psychopy.app` (clears both variables). Do NOT use `psychopy.exe` launcher — its shebang may point to a non-existent Python. Use `pythonw.exe` directly. **First sign of "DLL load failed" when launching any Windows-installed Python from a Hermes terminal: clear PYTHONPATH and PYTHONHOME before re-running.**
 20. **xlsx `bool` column type bug (Stroop)** — old `xlsx_generator.py` wrote Python `bool` (`True`/`False`) into `type: bool` spreadsheet columns. Pavlovia + some PsychoPy versions reject `bool` cells in CSV-converted data files (codec error on upload). **Fix**: coerce `bool` columns to `1`/`0` int. Verified with `openpyxl`: `ws.cell(2,3).value` is `<class 'int'>`, not `bool`. Also fixed a Stroop-specific equal-weighting bug — original template listed 6 congruent rows duplicated (RED/red×2, BLUE/blue×2, GREEN/green×2) and 6 incongruent rows once, giving a 2:1 congruent:incongruent ratio instead of 1:1. Now both conditions get 6 rows each for equal sampling probability under `fullRandom` loop. When writing new paradigm templates, always sanity-check that row counts reflect the design's intended cell weighting — a 6:6 factorial with `n_rounds: 30` will produce ~15 trials per cell, but a 6:12 split will produce ~10 vs ~20. See `references/xlsx-bool-and-weighting.md` for the full recipe.
 21. **`computer_use` PostMessage click is UNRELIABLE on wxPython modals (2026-07-01)** — Earlier docs claimed the canonical GUI verification workflow is `computer_use(action='capture', app='pythonw.exe', mode='som')` after launching PsychoPy with `pythonw.exe -m psychopy.app`. **This is NOT reliable for the wxPython modal lifecycle**: PostMessage clicks on the `关闭 (X)` button, `Open...` menu item, and `Ctrl+O` accelerator all silently fail to dismiss the modal "Save before quitting?" dialog (or the file-picker dialog). Symptoms: capture still shows the same Builder window, no new dialog, no AX nodes surfaced for the missing dialog. **Trust `loadFromXML()` 0 warnings as the ground truth for "would PsychoPy accept this file"** — the GUI capture is fine for title-bar / routine-tab / Flow visual sanity checks AFTER load, but don't rely on it for click-driven interactions. If you must drive wxPython, use `scripts/load_psyexp_in_builder.py` (loads + shows the Builder programmatically in the same Python process — no separate file-picker step needed). **Caveat: load_psyexp_in_builder.py fails when a second Builder instance is started — the first instance owns wx.App.dpi, and the second fails with `'NoneType' object has no attribute 'dpi'`. Close any existing Builder first with `close_psychopy.ps1`, then start a new one.**
 22. **One regression suite per project (2026-07-01)** — `scripts/regression_suite.sh` runs every `examples-glob/*.yaml` (and `examples-glob/*/*.yaml`) through `harness_cli.py` + `validate_load_from_xml.py` and asserts all pass with 0 warnings. After ANY change to `json2psyexp.js`, `flow_gen_transform.py`, `spec_validator.py`, or `xlsx_generator.py`: run the suite first, before the next feature. Currently 8/8 pass (asset_heavy_task, code_probe, code_test, complex_task, parallel_loops, rich_components, stimgen_test, stroop_experiment_spec). Exit code 0 iff all pass.
@@ -648,7 +648,7 @@ Start-Sleep -Milliseconds 300
 
 Verified: builder (PID 9428) cleanly exited without any "Save?" dialog hanging. `Get-Process pythonw` shows only the child worker (no MainWindowTitle) after the script. **Add this as a `close_psychopy.ps1` helper if doing more than one round of GUI verification.**
 
-24. **`computer_use` screen capture fails when cua-driver can't see the foreground window (2026-07-01)** — When a foreground user-facing app (e.g. Telegram desktop, chat client) owns the desktop focus, Windows 11 focus-stealing prevention will reject `SetForegroundWindow(PsychoPy)`, and cua-driver's `capture` will return `0x0` for any app. `list_apps` returns `[]`. The Builder process IS alive (PID + hwnd via `Get-Process` works) but cua-driver can't enumerate or capture it. **Workaround**: don't try to bring Builder to foreground — instead use Win32 `PrintWindow` against its known hwnd to capture its contents without going through the compositor. See `scripts/screenshot_window.ps1`. Verified: captures PsychoPy Builder (wxPython + DWM composition) correctly even when Telegram is the foreground app.
+24. **`computer_use` screen capture fails when cua-driver can't see the foreground window (2026-07-01)** — When a foreground user-facing app (e.g. chat desktop, chat client) owns the desktop focus, Windows 11 focus-stealing prevention will reject `SetForegroundWindow(PsychoPy)`, and cua-driver's `capture` will return `0x0` for any app. `list_apps` returns `[]`. The Builder process IS alive (PID + hwnd via `Get-Process` works) but cua-driver can't enumerate or capture it. **Workaround**: don't try to bring Builder to foreground — instead use Win32 `PrintWindow` against its known hwnd to capture its contents without going through the compositor. See `scripts/screenshot_window.ps1`. Verified: captures PsychoPy Builder (wxPython + DWM composition) correctly even when chat is the foreground app.
 
 25. **Git remote is configured — push when the user asks, don't force-push without asking (2026-07-01)** — This project is a local git repo at `~/.hermes/skills/research/psyclaw/`. Remote `origin` points to `https://github.com/Paradeluxe/PsyClaw.git`. Branch layout:
 
@@ -661,12 +661,12 @@ Verified: builder (PID 9428) cleanly exited without any "Save?" dialog hanging. 
 
 26. **APA (10.1037) is a hard paywall — Sci-Hub CDP is now the primary path (2026-07-02, updated 2026-07-11)** — Most classic experimental psychology papers are in APA/T&F/Springer journals behind paywalls. **Previous sessions claimed Sci-Hub DNS was blocked; this is now proven wrong.** Sci-Hub CDP batch via Chrome `--remote-debugging-port=9222` + `scihub_cdp_pdf.py` (from `academic-pdf-fetch` skill) works for ALL major psychology publishers (APA/T&F/Elsevier/Springer/Science/OUP). 45/50 Category 1 papers downloaded 2026-07-11. For PsyToolkit-derived experiment parameters, the original papers are still secondary to textbook/PsyToolkit descriptions — but they CAN now be acquired when needed. See `references/classic-paper-acquisition.md` and `references/category1-pdfs.md`.
 
-27. **Workspace is on E:, skill source is on C: (2026-07-02)** — Skill source lives at `C:\Users\User\AppData\Local\hermes\skills\research\psyclaw\` (required by Hermes for skill discovery). Project workspace (papers, specs, generated outputs) lives at `E:\hermes_playground\psyclaw\`. Do not move the skill to E: — it breaks skill discovery. Do not put large PDFs or generated experiment output in the skill directory. See `references/workspace-layout.md` for the full directory structure.
+27. **Workspace is on E:, skill source is on C: (2026-07-02)** — Skill source lives at `~/.hermes/skills/research/psyclaw\` (required by Hermes for skill discovery). Project workspace (papers, specs, generated outputs) lives at `<psyclaw-workspace>\`. Do not move the skill to E: — it breaks skill discovery. Do not put large PDFs or generated experiment output in the skill directory. See `references/workspace-layout.md` for the full directory structure.
 
-28. **`psychopy.exe` launcher fails in MSYS/bash environments (2026-07-02)** — The `D:\Software\P\Scripts\psychopy.exe` launcher reads a shebang pointing to a Python path that may not exist, and its path canonicalization fails with "Failed to canonicalize script path" when called from MSYS/bash. **Always use `D:\Software\P\python.exe` or `pythonw.exe` directly** — never `psychopy.exe`. This applies to Builder launches AND experiment runs:
+28. **`psychopy.exe` launcher fails in MSYS/bash environments (2026-07-02)** — The `<psychopy-install>\Scripts\psychopy.exe` launcher reads a shebang pointing to a Python path that may not exist, and its path canonicalization fails with "Failed to canonicalize script path" when called from MSYS/bash. **Always use `<psychopy-python>` or `pythonw.exe` directly** — never `psychopy.exe`. This applies to Builder launches AND experiment runs:
 ```bash
-cd /d/Software/P && PYTHONPATH= PYTHONHOME= ./python.exe <script.py>
-cd /d/Software/P && PYTHONPATH= PYTHONHOME= ./pythonw.exe -m psychopy.app <path.psyexp>
+PYTHONPATH= PYTHONHOME= <psychopy-python> <script.py>
+PYTHONPATH= PYTHONHOME= <psychopy-pythonw> -m psychopy.app <path.psyexp>
 ```
 The `PYTHONPATH=` and `PYTHONHOME=` clearing is critical — see pitfall #19.
 
@@ -686,10 +686,10 @@ for cond in conditions:
     stim.draw(); win.flip(); core.wait(0.5)  # auto-advance
 win.close()
 ```
-Run with `PYTHONPATH= PYTHONHOME= /d/Software/P/python.exe _auto_run.py`. The full template with CSV logging, feedback, and correctness checking is in `references/runtime-validation.md`. **Do NOT use `psychopy.app.runner`** — it is a wxPython GUI module and will crash with `TypeError: 'module' object is not callable` outside a wx.App loop.
+Run with `PYTHONPATH= PYTHONHOME= <psychopy-python> _auto_run.py`. The full template with CSV logging, feedback, and correctness checking is in `references/runtime-validation.md`. **Do NOT use `psychopy.app.runner`** — it is a wxPython GUI module and will crash with `TypeError: 'module' object is not callable` outside a wx.App loop.
 
-31. **Faithful paper→experiment means hand-writing the YAML from the paper's Method section — NEVER substitute the convenience template (2026-07-02)** — User explicitly rejected the default behavior of `harness_cli.py --paradigm stroop` for paper-replication work, asking "你做了什么？" with frustration when the output was a modern 3-color congruent/incongruent Stroop instead of Stroop's 1935 Exp 2 (5 colors, NC vs NCWd, **no congruent condition**, sequential trials not page-grid). The lesson: the 6 built-in templates (`templates/stroop.yaml.tmpl`, etc.) are modern cognitive-psychology conventions, NOT faithful replications of the 1935/1966/1980 originals. **Workflow when user provides a paper or says "做 X 实验" referring to a specific paper:**
-    1. `pymupdf` extract the Method/Stimuli/Procedure sections (use `D:\Software\P\python.exe`, not hermes venv — pymupdf is in PsychoPy's site-packages)
+31. **Faithful paper→experiment means hand-writing the YAML from the paper's Method section — NEVER substitute the convenience template (2026-07-02)** — Prefer not to the default behavior of `harness_cli.py --paradigm stroop` for paper-replication work, asking "你做了什么？" with frustration when the output was a modern 3-color congruent/incongruent Stroop instead of Stroop's 1935 Exp 2 (5 colors, NC vs NCWd, **no congruent condition**, sequential trials not page-grid). The lesson: the 6 built-in templates (`templates/stroop.yaml.tmpl`, etc.) are modern cognitive-psychology conventions, NOT faithful replications of the 1935/1966/1980 originals. **Workflow when user provides a paper or says "做 X 实验" referring to a specific paper:**
+    1. `pymupdf` extract the Method/Stimuli/Procedure sections (use `<psychopy-python>`, not hermes venv — pymupdf is in PsychoPy's site-packages)
     2. Hand-fill a spec YAML matching these paper parameters exactly: color count, condition labels, condition distribution, response mapping, trial timing
     3. Save it as `specs/<paper_shortname>_exp<n>.yaml` — NOT pass `--paradigm`
     4. Generate, validate, runtime-test, and produce a side-by-side comparison table showing which paper parameters match and which are approximated (e.g. PsychoPy's sequential trials vs original's 10×10 page grid)
@@ -749,7 +749,7 @@ Run with `PYTHONPATH= PYTHONHOME= /d/Software/P/python.exe _auto_run.py`. The fu
 39. **Batch testing workflow (2026-07-11)** — When testing many specs through builder.py + loadFromXML:
    1. Generate spec.yaml for each paper (existing paradigms get custom specs, rest use generic `fixation → stimulus → keyboard` template)
    2. Run `python builder.py replications/<slug>/spec.yaml` for each
-   3. Verify with `D:\\Software\\P\\python.exe -c "from psychopy.experiment import Experiment; e=Experiment(); e.loadFromXML(r'<path>'); print('OK')"`
+   3. Verify with `<psychopy-python> -c "from psychopy.experiment import Experiment; e=Experiment(); e.loadFromXML(r'<path>'); print('OK')"`
    4. 50/50 Category 1 specs passed builder.py + loadFromXML on 2026-07-11.
    See `references/batch-spec-testing.md` for the full script.
 
@@ -766,11 +766,11 @@ Run with `PYTHONPATH= PYTHONHOME= /d/Software/P/python.exe _auto_run.py`. The fu
 
 44. **ISI placement must distinguish until_response vs fixed-duration (2026-07-12)** — Old `_build_generic_routine` hardcoded ISI start at `stim_start + 3.0` regardless of trial type. For response-terminated trials, this placed ISI visibly at a fixed 3s mark instead of after the actual response. **Fix**: if `until_response`, ISI starts at `stim_start` (short blank after response ends routine); if fixed duration, ISI starts at `stim_start + max_wait_s`.
 
-45. **Every experiment must have instructions + thanks routines (2026-07-12)** — User flagged that none of the generated .psyexp files had participant instructions or debriefing screens. **Fix**: Added `_build_instructions_routine()` and `_build_thanks_routine()` to builder.py. Flow order is now instructions → [trials loop] → thanks. The `spec.yaml` can supply custom text via `instructions:` and `thanks:` fields; defaults are provided. Instructions text is paradigm-aware (Stroop, Flanker, Simon, etc. get tailored text; unknown paradigms get generic text). All 255 experiments rebuilt with this fix.
+45. **Every experiment must have instructions + thanks routines (2026-07-12)** — Note: none of the generated .psyexp files had participant instructions or debriefing screens. **Fix**: Added `_build_instructions_routine()` and `_build_thanks_routine()` to builder.py. Flow order is now instructions → [trials loop] → thanks. The `spec.yaml` can supply custom text via `instructions:` and `thanks:` fields; defaults are provided. Instructions text is paradigm-aware (Stroop, Flanker, Simon, etc. get tailored text; unknown paradigms get generic text). All 255 experiments rebuilt with this fix.
 
 36. **Path B deliverables explicitly reject the stub/analysis stack (2026-07-05)** — When the user said "你不需要模拟被试的反应" / "你说的参数是什么？", they were rejecting the entire reason d'être of the previous session's stub/analyze workflow. The 19 paradigm directories accumulated under `replications/` had `*_stub*.py`, `analyze_*.py`, `run_stub_batch.py`, `paired_t_test`, `cohens_d_paired`, `<30% parameter recovery` — none of which the user wanted. The pipeline-correctness test (does our analyze recover the population slope within X%) is a *test* of the analyze code, not a property of the experiment design; it doesn't belong at build time. **Decision**: the runner is stdlib + PsychoPy only. No `L2Subject`, no `shared/batch.py`, no `shared/stats.py`. Aggregating raw per-trial CSVs and running inference is the analyst's job post-collection, with their own toolchain. `add-paradigm` skill encodes this; `references/yaml-driven-runner.md` documents the YAML alternative.
 
-46. **Multi-routine architecture is the standard (2026-07-12)** — User explicitly rejected the single-routine cram-everything-into-one-timeline pattern. Each phase gets its own routine. Standard Flow: `instructions → [ fixation → trial → isi ] → thanks`. Builder.py provides `_build_fixation_routine()`, `_build_trial_routine()`, `_build_isi_routine()`, `_build_instructions_routine()`, `_build_thanks_routine()`. DO NOT cram fixation, stim, keyboard, and ISI into one routine with overlapping timeline bars. DO NOT use StaticComponent as a timeline overlay — ISI is its own routine. See `references/builder-multi-routine.md`.
+46. **Multi-routine architecture is the standard (2026-07-12)** — Prefer not to the single-routine cram-everything-into-one-timeline pattern. Each phase gets its own routine. Standard Flow: `instructions → [ fixation → trial → isi ] → thanks`. Builder.py provides `_build_fixation_routine()`, `_build_trial_routine()`, `_build_isi_routine()`, `_build_instructions_routine()`, `_build_thanks_routine()`. DO NOT cram fixation, stim, keyboard, and ISI into one routine with overlapping timeline bars. DO NOT use StaticComponent as a timeline overlay — ISI is its own routine. See `references/builder-multi-routine.md`.
 
 47. **Faithful replication: never add features absent from the original paper (2026-07-12)** — If the 1935 Stroop had no response timeout, don't add one. `timeout_ms` defaults to 0 (no timeout). Only add timeouts when the paper explicitly specifies one (e.g. Go/No-Go with 1500ms window). Same principle applies to any parameter: match the paper, don't modernize or "improve" the design arbitrarily.
 
@@ -813,13 +813,13 @@ Run with `PYTHONPATH= PYTHONHOME= /d/Software/P/python.exe _auto_run.py`. The fu
 
     **General lesson for any patches-deployed-as-string code**: every patch assignment lives in a string, so refactoring tools (extract function, rename variable, etc.) cannot reason about what's live code vs string data. **Mandatory verification after any refactor**: (1) the `auto-key + auto-FINISHED injector active` log line at runner startup, (2) `grep _kb\.Keyboard\.getKeys\s*= generated_runner.py` shows the assignment, (3) runtime smoke test runs past the first 2 trials with non-None key values written to CSV.
 
-50. **Two overlap rules, not one (2026-07-12/13, USER-MANDATED — second correction was visual not time)** — A `<Routine>` in a `.psyexp` must satisfy **two distinct** overlap rules. The user's first statement ("一个 routine 里只放同时重复出现的 component") was the time-window rule (pitfall — sees a routine hang because non-overlapping components never let the per-frame loop exit). The user's second statement ("overlap 不符合原著" after running pilot with rating-scale specs) revealed a **separately-needed** rule about visual layout: two components at the same screen position render illegible text-on-text. The first session I shipped only the time-window validator (incomplete); the second session the user called me out on it. Both rules must now ship together — see pitfall #53 below.
+50. **Two overlap rules, not one (2026-07-12/13, product rule — second correction was visual not time)** — A `<Routine>` in a `.psyexp` must satisfy **two distinct** overlap rules. The user's first statement ("一个 routine 里只放同时重复出现的 component") was the time-window rule (pitfall — sees a routine hang because non-overlapping components never let the per-frame loop exit). The user's second statement ("overlap 不符合原著" after running pilot with rating-scale specs) revealed a **separately-needed** rule about visual layout: two components at the same screen position render illegible text-on-text. The first session I shipped only the time-window validator (incomplete); the second session the user called me out on it. Both rules must now ship together — see pitfall #53 below.
 
-53. **Visual layout overlap is the other half (2026-07-13, USER-MANDATED)** — `_validate_routine_visual_overlap(routine_spec)` is the validator the user was actually asking for. It walks every `text`/`rect`/`slider` component, computes an on-screen bounding box (text bbox = `(text length × 0.5 × height)` for width; slider bbox includes tick-label projection by `h/2 + 0.025` above and below the bar), and flags any pair whose bboxes intersect. **Caught and fixed in `specs/kfs_rating.yaml` and `specs/artpics_rating.yaml`** — both had sliders at the default `(0, -0.1)` position with text labels `"1 = …"` and `"7 = …"` at `(-0.15, 0)` and `(0.15, 0)`. The labels horizontally overlap the slider tick labels. Visual validator refused to build until the spec moved sliders to `(0, -0.3)` with `size: [0.7, 0.05]`. **Requires three new helpers in `builder.py`**: `_estimate_text_bbox(comp)` (text length × 0.5 × height), `_slider_bbox(comp)` (with tick-label projection), `_rect_bbox(comp)`, plus `_bbox_overlap(a, b)` (the standard 2D closed-interval box test). Also `_normalize_pos(pos)` to coerce spec `pos` values (list, tuple, or `"(x, y)"` string) into the PsychoPy-native `"(x, y)"` string form — the spec_driven text emit path was previously dropping `pos` entirely, so every text rendered at `(0, 0)` regardless of spec, which IS what made the visual overlap bug look bizarre on the first run. **When designing rating-scale specs**: the slider bar should be at a y that does NOT intersect text labels at the same x. Default slider bbox y range is roughly `[pos.y - h, pos.y + h + 0.025]`. Move text labels either above (y > 0.1) or well below (y < -0.15), never at the same y as the slider. **Tests added**: `test_visual_overlap_two_texts_in_same_place`, `test_visual_overlap_text_and_slider_at_default`, `test_visual_passes_when_texts_dont_overlap`. All in `tests/test_builder_overlap.py`. **Test count now 27/27 (2026-07-13).**
+53. **Visual layout overlap is the other half (2026-07-13, product rule)** — `_validate_routine_visual_overlap(routine_spec)` is the validator the user was actually asking for. It walks every `text`/`rect`/`slider` component, computes an on-screen bounding box (text bbox = `(text length × 0.5 × height)` for width; slider bbox includes tick-label projection by `h/2 + 0.025` above and below the bar), and flags any pair whose bboxes intersect. **Caught and fixed in `specs/kfs_rating.yaml` and `specs/artpics_rating.yaml`** — both had sliders at the default `(0, -0.1)` position with text labels `"1 = …"` and `"7 = …"` at `(-0.15, 0)` and `(0.15, 0)`. The labels horizontally overlap the slider tick labels. Visual validator refused to build until the spec moved sliders to `(0, -0.3)` with `size: [0.7, 0.05]`. **Requires three new helpers in `builder.py`**: `_estimate_text_bbox(comp)` (text length × 0.5 × height), `_slider_bbox(comp)` (with tick-label projection), `_rect_bbox(comp)`, plus `_bbox_overlap(a, b)` (the standard 2D closed-interval box test). Also `_normalize_pos(pos)` to coerce spec `pos` values (list, tuple, or `"(x, y)"` string) into the PsychoPy-native `"(x, y)"` string form — the spec_driven text emit path was previously dropping `pos` entirely, so every text rendered at `(0, 0)` regardless of spec, which IS what made the visual overlap bug look bizarre on the first run. **When designing rating-scale specs**: the slider bar should be at a y that does NOT intersect text labels at the same x. Default slider bbox y range is roughly `[pos.y - h, pos.y + h + 0.025]`. Move text labels either above (y > 0.1) or well below (y < -0.15), never at the same y as the slider. **Tests added**: `test_visual_overlap_two_texts_in_same_place`, `test_visual_overlap_text_and_slider_at_default`, `test_visual_passes_when_texts_dont_overlap`. All in `tests/test_builder_overlap.py`. **Test count now 27/27 (2026-07-13).**
 
 54. **SliderComponent emit path was missing entirely (2026-07-13)** — Older builder.py had no `_slider_component()` function and no `elif ctype == "slider":` branch in `_build_spec_driven_routines`. Both rating-scale specs (kfs, artpics) silently dropped the slider on build — only text + keyboard got emitted, and the validator could not flag the visual overlap because the slider bbox was never present. **Fix**: implement `_slider_component(name, ticks, labels, granularity, pos, size, start_time, force_end, store_rating)` with all SliderComponent Params, plus an emit branch in `_build_spec_driven_routines` that normalizes `spec.get("pos")` (default `"(0, -0.1)"`) and `spec.get("size")` (default `"(1.0, 0.1)"`) via `_normalize_pos`. After the fix, kfs/artpics build produces real SliderComponents in the .psyexp.
 
-59. **Conservative-workflow preference — USER-MANDATED (2026-07-13)** — The default scope for any "this looks wrong" bug report is **one surgical change**: reproduce, smallest fix, one verification, report, **stop**. The user told me twice this session ("等等，你在做什么"; the implicit "you've taken things too far" via running fixes they didn't ask for) that the scope creep pattern is a violation. Detailed rule + decision tree + "annoyed signals to watch for" in `references/user-conservative-workflow-preference.md`. Concrete prior failure mode: the user reported visual text overlap in `kfs_rating` / `artpics_rating` specs. I rebuilt `scripts (run_psyexp; optional local)` from scratch (a file with multiple subtle regex patches the user had confirmed worked) on the side, broke the rewriter with position-drift bugs, and spent 1.5+ hours fixing what should have been a one-line spec change. **Class-wide rule**: when the user reports a symptom in code they didn't write, fix the smallest possible instance; ASK before adding validators, refactoring codepaths, or rewriting working components. **Validated 2026-07-13**: builder.py visual overlap validator, SliderComponent emitter, kfs/artpics spec fixes, and 4 new unit tests in `tests/test_builder_overlap.py` (now 27/27) — these were the right things to build; the wrong things were the run_psyexp.py rewrite and any unrequested mid-turn refactor of `builder.py`'s multi-block or per-block spec_driven routines.
+59. **Conservative-workflow preference — product rule (2026-07-13)** — The default scope for any "this looks wrong" bug report is **one surgical change**: reproduce, smallest fix, one verification, report, **stop**. The user told me twice this session ("等等，你在做什么"; the implicit "you've taken things too far" via running fixes they didn't ask for) that the scope creep pattern is a violation. Detailed rule + decision tree + "annoyed signals to watch for" in `references/user-conservative-workflow-preference.md`. Concrete prior failure mode: the user reported visual text overlap in `kfs_rating` / `artpics_rating` specs. I rebuilt `scripts (run_psyexp; optional local)` from scratch (a file with multiple subtle regex patches the user had confirmed worked) on the side, broke the rewriter with position-drift bugs, and spent 1.5+ hours fixing what should have been a one-line spec change. **Class-wide rule**: when the user reports a symptom in code they didn't write, fix the smallest possible instance; ASK before adding validators, refactoring codepaths, or rewriting working components. **Validated 2026-07-13**: builder.py visual overlap validator, SliderComponent emitter, kfs/artpics spec fixes, and 4 new unit tests in `tests/test_builder_overlap.py` (now 27/27) — these were the right things to build; the wrong things were the run_psyexp.py rewrite and any unrequested mid-turn refactor of `builder.py`'s multi-block or per-block spec_driven routines.
 
 58. **Per-frame recorder: patching `Window.flip` lets you see each frame the participant saw (2026-07-13)** — When the user says "我想要知道这一帧里发生了什么" / "假设我做好了一个 psyexp，你要怎么去理解这每一帧发生了什么", they want a debugging tool that watches what each component displays on each visual flip. The canonical recipe is to monkey-patch `psychopy.visual.Window.flip()`, walk `gc.get_objects()` for active `Routine` instances, and serialize one JSON per flip into `data/frames/frame_<ms>.json`. Then render with the companion `scripts/frames_viz.py` to see ASCII timelines (`#` STARTED, `x` FINISHED, `.` NOT_STARTED) or matplotlib PNG colour maps.
 
@@ -830,7 +830,7 @@ Run with `PYTHONPATH= PYTHONHOME= /d/Software/P/python.exe _auto_run.py`. The fu
 
 ## References
 
-- `references/interaction-flow.md` — product spec (intents, stages, ops, levels, intent discovery, working prefs)
+- `references/interaction-flow.md` — product spec (intents, stages, ops, levels, intent discovery, working preferences)
 - `references/pipeline-architecture.md` — 4-layer model: interface/harness/emitter/schema
 - `references/scripts-inventory.md` — 10-script audit: keep/merge/drop decisions
 - `references/xlsx-bool-and-weighting.md` — bool→int coercion + equal cell-weighting recipe (Stroop case study)
@@ -842,7 +842,7 @@ Run with `PYTHONPATH= PYTHONHOME= /d/Software/P/python.exe _auto_run.py`. The fu
 - `references/paradigm-recipes.md` — paradigm-specific notes (timing, common pitfalls)
 - `references/real-psychopy-validation.md` — bugs lxml validator missed, real PsychoPy `loadFromXML()` test
 - `references/gui-verification-pitfalls.md` — what `computer_use` clicks can and can't do in PsychoPy Builder; the wxPython modal trap; use `scripts/load_psyexp_in_builder.py` instead
-- `references/classic-paper-acquisition.md` — (NEW 2026-07-02) what works and what doesn't for downloading classic psychology papers; APA paywall reality; "textbook > paper" strategy; publisher support matrix; list of successfully acquired papers in `E:\hermes_playground\psyclaw\papers\classics\`
+- `references/classic-paper-acquisition.md` — (NEW 2026-07-02) what works and what doesn't for downloading classic psychology papers; APA paywall reality; "textbook > paper" strategy; publisher support matrix; list of successfully acquired papers in `<psyclaw-workspace>\papers\classics\`
 - `references/workspace-layout.md` — (NEW 2026-07-02) C: skill source vs E: project workspace split; directory structure on both drives
 - `references/runtime-validation.md` — (NEW 2026-07-02) headless auto-advance script pattern for validating experiments actually run end-to-end; standalone PsychoPy core script template with CSV logging
 - `references/osf-dataset-download.md` — (2026-07-02, updated 2026-07-03) OSF API recipe for paper-replication stimuli: image case (art.pics Thieleking 2020 → 32 images, 138s) and audio case (KFS Saraiva 2024 → 26 WAV files, MP4→WAV conversion via ffmpeg); per-file download beats the slow zip endpoint; file naming conventions; `pymupdf` extraction recipe
@@ -859,7 +859,7 @@ Run with `PYTHONPATH= PYTHONHOME= /d/Software/P/python.exe _auto_run.py`. The fu
 - `references/builder-design-principles.md` — (NEW 2026-07-13) the v3.7 canonical reference for both overlap rules. The two rules are now shipped together (time-window + visual-layout), with the kfs/artpics stale-spec fix as the worked example. New helpers (`_estimate_text_bbox`, `_slider_bbox`, `_rect_bbox`, `_bbox_overlap`, `_normalize_pos`, `_slider_component`) listed with API, plus the 27/27 test catalog with what each test asserts. This replaces the older `one-routine-one-time-window.md` which covered only the v3.6 partial fix.
 - `references/frame-recorder.md` — (NEW 2026-07-13) per-frame state dump via `Window.flip` patch, with companion `scripts/frames_viz.py` for ASCII timeline + matplotlib PNG. Use when the user asks "每一帧里发生了什么" / "我看不到屏幕" / debugging text-on-text overlap that doesn't trip the validator — the recorder is the runtime eye.
 - `references/one-routine-one-time-window.md` — (2026-07-12) the v3.6 partial reference (time-window rule only, superseded by `builder-design-principles.md` for v3.7). Keep on disk as historical context but cite the new file for the full picture.
-- `references/output-directory-conventions.md` — (NEW 2026-07-05) per-paradigm `output/` layout, supersedes the old `E:/hermes_playground/psyclaw/output/<slug>/` directory.
+- `references/output-directory-conventions.md` — (NEW 2026-07-05) per-paradigm `output/` layout, supersedes the old `<psyclaw-workspace>/output/<slug>/` directory.
 - `references/path-c-webui-validation.md` — (2026-07-18) **canonical Path C** for paper claims: design.json → run → project CSV gates G0/G1/G2; 50+50+50 benchmark numbers; agent design schema; honest cat2=47 gap.
 - `references/psyclaw-webui.md` — (2026-07-13, **historical early scaffold**) early yaml-form SPA notes. Prefer `path-c-webui-validation.md` + skill `psyclaw-webui` for current product.
 - `references/psychopy-platform-pitfalls.md` — (NEW 2026-07-13) PsychoPy 2026.1.1 platform defects — missing CLI, `writeScript()` broken, `loadFromXML()` passes 15 broken types silently, wxPython modal trap, DLL load failure from MSYS bash. Read this before doing anything that involves `.psyexp` roundtrip or Builder GUI.

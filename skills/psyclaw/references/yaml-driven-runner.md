@@ -1,6 +1,6 @@
 # YAML-driven generic runner (2026-07-05)
 
-> Status: **experimental**. Workspace at `E:\hermes_playground\psyclaw\`
+> Status: **experimental**. Workspace at `<psyclaw-workspace>\`
 > started migrating from per-paradigm hand-written runner.py files to a
 > YAML-driven generic runner on 2026-07-05. Canonical 2-file path
 > (runner.py + README.md, no YAML) is still the default for new

@@ -1,6 +1,6 @@
 # PsychoPy platform — design defects (2026-07-13 audit)
 
-Documented during psyclaw-webui session. All paths verified on `D:\Software\P\python.exe` (PsychoPy 2026.1.1) from WSL.
+Documented during psyclaw-webui session. All paths verified on `<psychopy-python>` (PsychoPy 2026.1.1) from WSL.
 
 ## Why this matters for any PsyClaw path
 
@@ -72,7 +72,7 @@ Or use `scripts/load_psyexp_in_builder.py` to load directly in same process.
 
 ### 5. `Parameter` valType not in any schema docs
 
-For each component, grep `D:\Software\P\lib\site-packages\psychopy\experiment\components\<type>\__init__.py`
+For each component, grep `<psychopy-site-packages>\psychopy\experiment\components\<type>\__init__.py`
 for `self.params['<name>'] = Param(` to see actual supported params.
 
 **Known mismatches (psychoPy source vs vendored generator):**
@@ -84,17 +84,17 @@ for `self.params['<name>'] = Param(` to see actual supported params.
 
 Hermes venv's site-packages leak into subprocess when `PYTHONPATH` is set.
 Symptom: `ImportError: DLL load failed` on Windows when launching
-`D:\Software\P\python.exe` from MSYS bash.
+`<psychopy-python>` from MSYS bash.
 
 **Fix:** Clear env vars before launch:
 ```bash
-cd /d/Software/P && PYTHONPATH= PYTHONHOME= ./pythonw.exe -m psychopy.app
+PYTHONPATH= PYTHONHOME= <psychopy-pythonw> -m psychopy.app
 ```
 
 ### 7. `psychopy.exe` launcher itself is broken
 
 Shebang points to a path that may not exist (e.g. `D:\Pythons\Python312\python.exe`).
-Canonical Python is `D:\Software\P\python.exe` or `pythonw.exe`. Never use `psychopy.exe`.
+Canonical Python is `<psychopy-python>` or `pythonw.exe`. Never use `psychopy.exe`.
 
 ## Validation hierarchy (least to most strict)
 
@@ -115,5 +115,5 @@ Canonical Python is `D:\Software\P\python.exe` or `pythonw.exe`. Never use `psyc
 - psyclaw/builder.py (overlap validators + headless runner, 1972 lines)
 - psyclaw/scripts/run_psyexp.py (PATCH_BLOCK for 15 bug classes)
 - psyclaw-webui (skips `.psyexp` entirely, pure Python output)
-- D:\Software\P\lib\site-packages\psychopy\experiment\components\*\__init__.py
+- <psychopy-site-packages>\psychopy\experiment\components\*\__init__.py
   (ground truth for supported params, must grep this every time)

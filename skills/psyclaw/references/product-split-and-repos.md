@@ -17,8 +17,8 @@
 | GitHub skill repo | `https://github.com/Paradeluxe/psyclaw-skill` (renamed from `PsyClaw`; redirect keeps old links) |
 | GitHub webui (local origin) | `https://github.com/Paradeluxe/psyclaw-webui.git` (may be private; not in public list) |
 | Hermes skill checkout | `~/.hermes/skills/research/psyclaw` · `origin` → `…/psyclaw-skill.git` |
-| WebUI tree | `E:\hermes_playground\psyclaw-webui` |
-| Papers / replications workspace | under `E:\hermes_playground\` (names `psyclaw` / `psyclaw-skill` may both appear after local copy); **not** the published skill contents |
+| WebUI tree | `<psyclaw-webui-repo>` |
+| Papers / replications workspace | under `<workspace>\` (names `psyclaw` / `psyclaw-skill` may both appear after local copy); **not** the published skill contents |
 
 ## Path C success gate (unchanged)
 
@@ -31,7 +31,7 @@ Full 150 benchmark: `output/webui_batch_validate_150/FINAL_SUMMARY.json` (pass_b
 
 - Need: stable design/spec schema (JSON Schema), installable CLI (`validate` / `compile` / `run`), zero hardcoded `E:\` / `~/.hermes` paths, examples that run without an agent.
 - Optional: MCP adapter.
-- SKILL.md is Hermes runbook (pitfalls, user prefs) — keep it; do not ship it as the only API.
+- SKILL.md is Hermes runbook (pitfalls, operator prefs) — keep it; do not ship it as the only API.
 
 ## GitHub rename SOP (already done once)
 
@@ -50,7 +50,7 @@ Full 150 benchmark: `output/webui_batch_validate_150/FINAL_SUMMARY.json` (pass_b
 
 ## Handoff note (CLI ↔ QQ)
 
-CLI and QQ are different chat pipes. `/resume <session_id>` if supported; else paste handoff summary. `hermes send` to qqbot: text OK, MEDIA attachments may fail — send body as message text.
+CLI and QQ are different chat pipes. `/resume <session_id>` if supported; else paste handoff summary. `hermes send` to messaging: text OK, MEDIA attachments may fail — send body as message text.
 
 ## Slash vs repo name
 

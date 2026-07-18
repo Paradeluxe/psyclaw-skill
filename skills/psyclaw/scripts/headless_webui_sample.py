@@ -8,8 +8,8 @@ import urllib.request
 from pathlib import Path
 
 BASE = "http://127.0.0.1:8876"
-OUT = Path(r"E:/hermes_playground/psyclaw/output/webui_batch_validate")
-REPS = Path(r"E:/hermes_playground/psyclaw/replications")
+OUT = Path(r"<psyclaw-workspace>/output/webui_batch_validate")
+REPS = Path(r"<psyclaw-workspace>/replications")
 OUT.mkdir(parents=True, exist_ok=True)
 
 # Stratified sample: classic cat1 + materials cat2 + manual cat3

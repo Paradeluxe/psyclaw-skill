@@ -36,7 +36,7 @@ To make short name work for others:
 Full id (always): `Paradeluxe/psyclaw-skill/skills/psyclaw`  
 Short: `hermes skills install psyclaw` after unique skills.sh/tap resolve.
 
-Dev: edit `E:\hermes_playground\psyclaw-skill-src\skills\psyclaw`; hub install is for clean machines.
+Dev: edit `<psyclaw-skill-repo>\skills\psyclaw`; hub install is for clean machines.
 
 ## Orchestrator steps (when script exists)
 

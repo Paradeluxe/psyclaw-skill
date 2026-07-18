@@ -16,12 +16,12 @@ or a matplotlib PNG so you can see the experiment at a glance.
 ### Step 1 — Run with the recorder on
 
 ```bash
-cd /d/Software/P && PYTHONPATH= PYTHONHOME= ./python.exe \
-    E:/hermes_playground/psyclaw/scripts/run_psyexp.py \
-    E:/hermes_playground/psyclaw/replications/my_paradigm/my_paradigm.psyexp \
+PYTHONPATH= PYTHONHOME= <psychopy-python> \
+    <psyclaw-workspace>/scripts/run_psyexp.py \
+    <psyclaw-workspace>/replications/my_paradigm/my_paradigm.psyexp \
     --timeout 60
 PSYCLAW_FRAME_LOG=1 \
-PSYCLAW_FRAME_DIR=E:/hermes_playground/psyclaw/replications/my_paradigm/data/frames \
+PSYCLAW_FRAME_DIR=<psyclaw-workspace>/replications/my_paradigm/data/frames \
 PSYCLAW_FRAME_KEEP=500 \
 ```
 
@@ -41,8 +41,8 @@ zero-pad timestamp keeps lexicographic order matching write order.
 ASCII (terminal-friendly, default):
 
 ```bash
-python E:/hermes_playground/psyclaw/scripts/frames_viz.py \
-    E:/hermes_playground/psyclaw/replications/my_paradigm/data/frames
+python <psyclaw-workspace>/scripts/frames_viz.py \
+    <psyclaw-workspace>/replications/my_paradigm/data/frames
 ```
 
 Output looks like:
@@ -61,8 +61,8 @@ that routine's view (or the routine's frame interval was zero).
 PNG (matplotlib, color-coded):
 
 ```bash
-python E:/hermes_playground/psyclaw/scripts/frames_viz.py \
-    E:/hermes_playground/psyclaw/replications/my_paradigm/data/frames \
+python <psyclaw-workspace>/scripts/frames_viz.py \
+    <psyclaw-workspace>/replications/my_paradigm/data/frames \
     --png out.png
 ```
 
@@ -70,8 +70,8 @@ Inspect a single frame's full JSON (useful when a specific frame looks
 suspicious in the ASCII timeline):
 
 ```bash
-python E:/hermes_playground/psyclaw/scripts/frames_viz.py \
-    E:/hermes_playground/psyclaw/replications/my_paradigm/data/frames \
+python <psyclaw-workspace>/scripts/frames_viz.py \
+    <psyclaw-workspace>/replications/my_paradigm/data/frames \
     --frame 23
 ```
 

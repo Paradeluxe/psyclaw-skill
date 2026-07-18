@@ -33,4 +33,4 @@
 
 - `emit.js` 的 normalize 逻辑可以挪到 `flow_gen_transform.py` 末尾 (Python 实现), 减少 Node 依赖。但目前能跑, 不紧急。
 - `nl_intake.py` 的 paradigm keyword 列表 (9 个) 可以拆出来到 YAML config, 方便加 paradigm。但目前 9 个够用, 不紧急。
-- `validate_psyexp.py` L6 (真实 PsychoPy load) 跳过了, 是 verify 意图时手动跑 (`D:\Software\P\python.exe`)。可以让 harness_main 加一个 `--verify` flag 自动跑 L6。
+- `validate_psyexp.py` L6 (真实 PsychoPy load) 跳过了, 是 verify 意图时手动跑 (`<psychopy-python>`)。可以让 harness_main 加一个 `--verify` flag 自动跑 L6。

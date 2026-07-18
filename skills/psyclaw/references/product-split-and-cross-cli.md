@@ -5,15 +5,15 @@
 | Product | Canonical location | Hermes | Audience |
 |---------|-------------------|--------|----------|
 | **Skill** | GitHub **`Paradeluxe/psyclaw-skill`**; local **`~/.hermes/skills/research/psyclaw`** (origin → that repo) | id + slash **`/psyclaw`** (`name: psyclaw` — **not** `/psyclaw-skill`) | Agents: intent → **`<folderName>.psyclaw`** |
-| **WebUI** | `E:\hermes_playground\psyclaw-webui` · `Paradeluxe/psyclaw-webui` | **`/psyclaw-webui`** | Humans: GUI → run → CSV |
+| **WebUI** | `<psyclaw-webui-repo>` · `Paradeluxe/psyclaw-webui` | **`/psyclaw-webui`** | Humans: GUI → run → CSV |
 
 ### Path confusion (session 2026-07-18)
 
 | Path | Role | Edit for `/psyclaw`? |
 |------|------|----------------------|
 | Hermes `skills/research/psyclaw` + GitHub `psyclaw-skill` | **Skill package** (SKILL.md, scripts, templates) | **YES** |
-| `E:\hermes_playground\psyclaw-skill` (papers / replications / builder) | **Research workspace** — name collision risk; often no skill remote | **NO** |
-| Legacy `E:\hermes_playground\psyclaw` | Old workspace alias | NO |
+| `<psyclaw-workspace>` (papers / replications / builder) | **Research workspace** — name collision risk; often no skill remote | **NO** |
+| Legacy `<psyclaw-workspace>` | Old workspace alias | NO |
 
 User: product/repo name may be `psyclaw-skill`; **slash stays `/psyclaw`**.
 

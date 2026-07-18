@@ -20,7 +20,7 @@ NOT `writeScript()`, NOT Builder's green Run button.
 """
 Auto-run experiment validation — no human required.
 Auto-advances through all trials, simulates responses, logs results.
-Usage: PYTHONPATH= PYTHONHOME= D:\Software\P\python.exe _auto_run.py
+Usage: PYTHONPATH= PYTHONHOME= <psychopy-python> _auto_run.py
 """
 import sys, os, random, datetime
 os.chdir(r'<project_dir>')  # cd to the generated experiment folder
@@ -109,8 +109,8 @@ print(f"ALL CHECKS PASSED")
 
 From Hermes MSYS/bash terminal:
 ```bash
-cd /e/hermes_playground/psyclaw/output/<experiment_name> && \
-PYTHONPATH= PYTHONHOME= /d/Software/P/python.exe _auto_run.py
+cd <psyclaw-workspace>/output/<experiment_name> && \
+PYTHONPATH= PYTHONHOME= <psychopy-python> _auto_run.py
 ```
 
 The `PYTHONPATH=` and `PYTHONHOME=` clearing prevents Hermes venv contamination (#19).

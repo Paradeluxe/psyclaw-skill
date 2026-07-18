@@ -83,8 +83,8 @@ First paper solves Altcha PoW (~5s), subsequent papers reuse the session cookie 
 
 ## Full article list JSON
 
-`E:\hermes_playground\psyclaw\papers\category1_articles.json` — machine-readable list with paradigm/author/year/doi.
+`<psyclaw-workspace>\papers\category1_articles.json` — machine-readable list with paradigm/author/year/doi.
 
 ## PDF storage
 
-`E:\hermes_playground\psyclaw\papers\category1\` — 48 PDFs (47 unique papers, 1 duplicate cleaned), 56MB total.
+`<psyclaw-workspace>\papers\category1\` — 48 PDFs (47 unique papers, 1 duplicate cleaned), 56MB total.

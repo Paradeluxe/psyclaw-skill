@@ -15,7 +15,7 @@ what works instead.
 Builder instance is already running in the same desktop session:
 
 ```
-File "D:\Software\P\lib\site-packages\psychopy\app\builder\builder.py", line 124, in __init__
+File "<psychopy-site-packages>\psychopy\app\builder\builder.py", line 124, in __init__
     self.dpi = self.app.dpi
 AttributeError: 'NoneType' object has no attribute 'dpi'
 ```
@@ -36,7 +36,7 @@ file-picker dialog ever opens.
 powershell -ExecutionPolicy Bypass -File scripts/close_psychopy.ps1
 
 # Step 2: open the target file directly
-cd /d/Software/P && PYTHONPATH= PYTHONHOME= PYTHONNOUSERSITE=1 ./pythonw.exe \
+ PYTHONPATH= PYTHONHOME= PYTHONNOUSERSITE=1 ./pythonw.exe \
     -m psychopy.app "<absolute/path/to/file.psyexp>"
 
 # Step 3: poll for the title bar to confirm load
@@ -57,7 +57,7 @@ Builder", use the `pythonw.exe -m psychopy.app <path>` form above.
 ## What was tried (and failed) on 2026-07-01
 
 Setup:
-- PsychoPy 2026.1.1 in `D:\Software\P\`
+- PsychoPy 2026.1.1 in `<psychopy-install>\`
 - Builder already running (`pythonw.exe` PID 9428), window `untitled.psyexp - PsychoPy Builder (v2026.1.1)`
 - Target: load `examples/parallel_loops_out/_work/parallel_loops.psyexp`
 - Tool: `computer_use(action='click', element=N)` with ref IDs from SOM capture
@@ -74,7 +74,7 @@ Attempts:
    → Builder stayed open, capture unchanged. The "Save before quitting?"
    modal was likely blocking but invisible in the AX tree (no nodes surfaced
    for it).
-5. Direct `D:\Software\P\python.exe -c "from psychopy.app import builder; ..."`
+5. Direct `<psychopy-python> -c "from psychopy.app import builder; ..."`
    → `ImportError: cannot import name '_imaging' from 'PIL'` because Hermes's
    venv site-packages (containing a Linux PIL wheel) was prepended to sys.path
    via PYTHONPATH or sys.path[0] pollution.
@@ -88,7 +88,7 @@ as ground truth. Use GUI capture ONLY for the post-load visual sanity check
 ### Headless validation (canonical, use this for CI/regression)
 
 ```bash
-D:/Software/P/python.exe scripts/validate_load_from_xml.py <file.psyexp
+<psychopy-python> scripts/validate_load_from_xml.py <file.psyexp
 ```
 
 Returns 0 on zero warnings, 1 on warnings, 2 on exceptions. No GUI needed.
@@ -98,7 +98,7 @@ This is what `regression_suite.sh` runs.
 
 ```bash
 # From any clean environment (no hermes venv on sys.path):
-D:/Software/P/python.exe scripts/load_psyexp_in_builder.py <file.psyexp
+<psychopy-python> scripts/load_psyexp_in_builder.py <file.psyexp
 ```
 
 Use this ONLY when you need to construct an `Experiment` in-process and
@@ -110,7 +110,7 @@ does NOT have the second-instance wx.App singleton conflict.
 ### Headless validation (canonical, use this for CI/regression)
 
 ```bash
-D:/Software/P/python.exe scripts/validate_load_from_xml.py <file.psyexp
+<psychopy-python> scripts/validate_load_from_xml.py <file.psyexp
 ```
 
 Returns 0 on zero warnings, 1 on warnings, 2 on exceptions. No GUI needed.

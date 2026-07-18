@@ -7,7 +7,7 @@ or when a validator trips with an error you don't recognize.
 
 ## The two overlap rules
 
-The user-mandated design rule ("一个 routine 里只放同时重复出现的
+The product rule design rule ("一个 routine 里只放同时重复出现的
 component / 只要时间上有 overlap，才可以放入同一个 routine") is
 **two rules**, not one — and the second one was missed in v3.6.
 
