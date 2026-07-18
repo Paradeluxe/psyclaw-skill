@@ -109,7 +109,7 @@ design.json → POST /api/runs (:8876) → design_compiler → PsychoPy
 - Full recipe + design schema + 50+50+50 benchmark: **`references/path-c-webui-validation.md`**
 - Batch scripts: `scripts/spec_to_design_batch.py` (G0), `headless_webui_sample.py` (G1), `data_retention_audit.py` (G2)
 
-**Benchmark 2026-07-18 (full 150):** G0 **150/150** · G1 **150/150 finished** · G2 **150/150** project CSV (cat1/2/3 each 50/50). Evidence: `output/webui_batch_validate_150/FINAL_SUMMARY.json`. Script: `scripts/full150_webui_validate.py`.
+**Benchmark 2026-07-18 (full 150):** G0 **150/150** · G1 **150/150 finished** · G2 **150/150** project CSV (cat1/2/3 each 50/50). Evidence: `output/webui_batch_validate_150/FINAL_SUMMARY.json`. Script: `scripts (webui batch validate; lives in workspace)`.
 
 **Pitfall #61 (conservative workflow):** `references/user-conservative-workflow-preference.md` — one surgical fix per bug report.
 
@@ -209,7 +209,7 @@ python ~/.hermes/skills/research/psyclaw/scripts/harness_cli.py \
 ### Run the full regression suite (after any json2psyexp.js change)
 
 ```bash
-# Uses D:\Software\P\python.exe, strips hermes sys.path, runs all examples/*.yaml
+# Uses D:\Software\P\python.exe, strips hermes sys.path, runs all examples-glob/*.yaml
 # Exit 0 iff all produced .psyexp load with zero warnings
 bash ~/.hermes/skills/research/psyclaw/scripts/regression_suite.sh
 ```
@@ -366,20 +366,20 @@ stimuli:                     # asset generation requests
     foreground: [1, 1, 1]
     generator: text          # text | shape | tone | tts | animated_shape
     text: "+"
-    output: assets/fixation_cross.png
+    output: assets-dir/fixation_cross.png
   - id: correct_tone
     kind: audio
     format: wav
     duration: 0.3
     generator: tone
     frequency: 880
-    output: assets/correct.wav
+    output: assets-dir/correct.wav
   - id: welcome_voice
     kind: audio
     generator: tts
     text: "Welcome to the experiment."
     voice: en-US-AriaNeural
-    output: assets/welcome.wav
+    output: assets-dir/welcome.wav
   - id: expanding_circle
     kind: video
     duration: 2.0
@@ -390,10 +390,10 @@ stimuli:                     # asset generation requests
     start_radius: 10
     end_radius: 100
     color: [1, 0, 0]
-    output: assets/anim.mp4
+    output: assets-dir/anim.mp4
   - id: iaps_image_001
     kind: image
-    external: assets/iaps/001.jpg   # user supplies
+    external: assets-dir/iaps/001.jpg   # user supplies
 ```
 
 ## Component types reference
@@ -556,7 +556,7 @@ uv venv --python 3.11 .venv
 │   ├── validate_load_from_xml.py     # real PsychoPy loadFromXML verifier (gold standard, L6)
 │   ├── check_emit_bugs.py            # detect the 4 known emit-layer bugs in any .psyexp
 │   ├── load_psyexp_in_builder.py     # launch Builder with hermes sys.path stripped + auto-load .psyexp (does NOT work for a second concurrent Builder instance — see pitfall #21)
-│   ├── regression_suite.sh           # one-shot: all examples/*.yaml → harness_cli → loadFromXML 0-warn check
+│   ├── regression_suite.sh           # one-shot: all examples-glob/*.yaml → harness_cli → loadFromXML 0-warn check
 │   ├── checklist_injector.py         # inject pre-experiment hardware checks (headphone/screen/latency) based on component types (see pitfall #34)
 │   ├── close_psychopy.ps1            # PowerShell WM_CLOSE helper, reliable Builder shutdown (see pitfall #23)
 │   └── screenshot_window.ps1         # PowerShell PrintWindow helper, works when cua-driver can't see foreground (see pitfall #24)
@@ -631,7 +631,7 @@ For component-level fields (e.g. `correctAns` on KeyboardComponent), the recipe 
 19. **Launching PsychoPy from Hermes terminal: PYTHONPATH pollution** — Hermes sets `sys.path[0]` to its own venv, and PsychoPy picks up `hermes-agent/venv/Lib/site-packages/cryptography` which is a Linux wheel (.so) → `ImportError: DLL load failed` on Windows. Fix: `cd /d/Software/P && PYTHONPATH= PYTHONHOME= ./pythonw.exe -m psychopy.app` (clears both variables). Do NOT use `psychopy.exe` launcher — its shebang may point to a non-existent Python. Use `pythonw.exe` directly. **First sign of "DLL load failed" when launching any Windows-installed Python from a Hermes terminal: clear PYTHONPATH and PYTHONHOME before re-running.**
 20. **xlsx `bool` column type bug (Stroop)** — old `xlsx_generator.py` wrote Python `bool` (`True`/`False`) into `type: bool` spreadsheet columns. Pavlovia + some PsychoPy versions reject `bool` cells in CSV-converted data files (codec error on upload). **Fix**: coerce `bool` columns to `1`/`0` int. Verified with `openpyxl`: `ws.cell(2,3).value` is `<class 'int'>`, not `bool`. Also fixed a Stroop-specific equal-weighting bug — original template listed 6 congruent rows duplicated (RED/red×2, BLUE/blue×2, GREEN/green×2) and 6 incongruent rows once, giving a 2:1 congruent:incongruent ratio instead of 1:1. Now both conditions get 6 rows each for equal sampling probability under `fullRandom` loop. When writing new paradigm templates, always sanity-check that row counts reflect the design's intended cell weighting — a 6:6 factorial with `n_rounds: 30` will produce ~15 trials per cell, but a 6:12 split will produce ~10 vs ~20. See `references/xlsx-bool-and-weighting.md` for the full recipe.
 21. **`computer_use` PostMessage click is UNRELIABLE on wxPython modals (2026-07-01)** — Earlier docs claimed the canonical GUI verification workflow is `computer_use(action='capture', app='pythonw.exe', mode='som')` after launching PsychoPy with `pythonw.exe -m psychopy.app`. **This is NOT reliable for the wxPython modal lifecycle**: PostMessage clicks on the `关闭 (X)` button, `Open...` menu item, and `Ctrl+O` accelerator all silently fail to dismiss the modal "Save before quitting?" dialog (or the file-picker dialog). Symptoms: capture still shows the same Builder window, no new dialog, no AX nodes surfaced for the missing dialog. **Trust `loadFromXML()` 0 warnings as the ground truth for "would PsychoPy accept this file"** — the GUI capture is fine for title-bar / routine-tab / Flow visual sanity checks AFTER load, but don't rely on it for click-driven interactions. If you must drive wxPython, use `scripts/load_psyexp_in_builder.py` (loads + shows the Builder programmatically in the same Python process — no separate file-picker step needed). **Caveat: load_psyexp_in_builder.py fails when a second Builder instance is started — the first instance owns wx.App.dpi, and the second fails with `'NoneType' object has no attribute 'dpi'`. Close any existing Builder first with `close_psychopy.ps1`, then start a new one.**
-22. **One regression suite per project (2026-07-01)** — `scripts/regression_suite.sh` runs every `examples/*.yaml` (and `examples/*/*.yaml`) through `harness_cli.py` + `validate_load_from_xml.py` and asserts all pass with 0 warnings. After ANY change to `json2psyexp.js`, `flow_gen_transform.py`, `spec_validator.py`, or `xlsx_generator.py`: run the suite first, before the next feature. Currently 8/8 pass (asset_heavy_task, code_probe, code_test, complex_task, parallel_loops, rich_components, stimgen_test, stroop_experiment_spec). Exit code 0 iff all pass.
+22. **One regression suite per project (2026-07-01)** — `scripts/regression_suite.sh` runs every `examples-glob/*.yaml` (and `examples-glob/*/*.yaml`) through `harness_cli.py` + `validate_load_from_xml.py` and asserts all pass with 0 warnings. After ANY change to `json2psyexp.js`, `flow_gen_transform.py`, `spec_validator.py`, or `xlsx_generator.py`: run the suite first, before the next feature. Currently 8/8 pass (asset_heavy_task, code_probe, code_test, complex_task, parallel_loops, rich_components, stimgen_test, stroop_experiment_spec). Exit code 0 iff all pass.
 23. **Closing PsychoPy Builder reliably: PowerShell `SendMessage WM_CLOSE` (2026-07-01)** — `taskkill` kills Hermes; `computer_use` PostMessage on the X button is silently swallowed by wxPython modals (see #21). The reliable path is a small PowerShell snippet that grabs the builder's hwnd via `Get-Process` and sends `WM_CLOSE` (0x0010) to the main window AND to every child window first (in case a modal dialog is sitting on top — the modal owns the focus, sending WM_CLOSE to its own hwnd will dismiss it cleanly, often selecting "Don't Save" by default in PsychoPy):
 
 ```powershell
@@ -669,7 +669,7 @@ The `PYTHONPATH=` and `PYTHONHOME=` clearing is critical — see pitfall #19.
 
 29. **`Experiment.writeScript()` generates buggy Python code — do NOT use for validation (2026-07-02)** — PsychoPy 2026.1.1's `exp.writeScript(target='PsychoPy')` sometimes emits scripts with syntax errors (e.g. empty `if` body after keyboard handling logic at ~line 837). These are known PsychoPy code-generator bugs that do NOT affect Builder runtime execution. **Never use `writeScript()` output as a validation gate** — false negatives will block valid experiments. For runtime validation, write a standalone Python script using PsychoPy core directly (see pitfall #30 and `references/runtime-validation.md`).
 
-    **Counterpart that DOES work**: `psychopy.scripts.psyexpCompile.generateScript(exp, outfile, target='PsychoPy')` — same goal (compile .psyexp → Python script) but the module-level API, not the method. Output is clean (verified axcpt: 6 routines → 57KB runner, no syntax errors). Used by `scripts/run_psyexp.py` (in `add-paradigm` skill) and by Builder's Runner panel internally. **Don't confuse the two APIs — same name family, different reliability.**
+    **Counterpart that DOES work**: `psychopy.scripts.psyexpCompile.generateScript(exp, outfile, target='PsychoPy')` — same goal (compile .psyexp → Python script) but the module-level API, not the method. Output is clean (verified axcpt: 6 routines → 57KB runner, no syntax errors). Used by `scripts (run_psyexp; optional local)` (in `add-paradigm` skill) and by Builder's Runner panel internally. **Don't confuse the two APIs — same name family, different reliability.**
 
 30. **Runtime validation: auto-advance script pattern (2026-07-02)** — When the user says "真正跑一遍" or "run the experiment", the gold standard is a standalone Python script that creates a `visual.Window` (windowed), loads conditions from `.xlsx` via `openpyxl`, runs through all trials with auto-advancing (no human keypresses needed), logs results to CSV in `data/`, and closes cleanly. Key pattern:
 ```python
@@ -717,7 +717,7 @@ Run with `PYTHONPATH= PYTHONHOME= /d/Software/P/python.exe _auto_run.py`. The fu
 
 **Verified**: KFS checked spec (15 routines: instructions → headphone_check → screen_check → fixation → … → thanks) passed `loadFromXML` with 0 warnings on PsychoPy 2026.1.1. 1171 params, lxml 5-layer validation all PASS.
 
-**Asset dependency**: the `headphone_check` template references `assets/check_tone.wav`. This must be generated separately (e.g. via `stimulus_generator.py` or a 440Hz sine tone). When the injector is integrated into `harness_cli.py`, the harness should auto-generate missing check assets.
+**Asset dependency**: the `headphone_check` template references `assets-dir/check_tone.wav`. This must be generated separately (e.g. via `stimulus_generator.py` or a 440Hz sine tone). When the injector is integrated into `harness_cli.py`, the harness should auto-generate missing check assets.
 
 **Extending**: to add a new check type, define its YAML routine template in `CHECK_TEMPLATES`, add a detection rule in `detect_required_checks()`, and order it in the return list. No other changes needed.
 
@@ -734,7 +734,7 @@ Run with `PYTHONPATH= PYTHONHOME= /d/Software/P/python.exe _auto_run.py`. The fu
 | Treisman 1980 | ✓ | 2.8 MB | Local Chrome CDP WebSocket (port 9222) |
 | **Navon 1977** | **✓** | **1.87 MB, 31p** | **Local Chrome CDP WebSocket** |
 
-**The local Chrome CDP WebSocket (port 9222) is the canonical path for Elsevier PDF extraction.** Full recipe in `academic-pdf-fetch` skill → `references/local-chrome-cdp-pdf-extraction.md`.
+**The local Chrome CDP WebSocket (port 9222) is the canonical path for Elsevier PDF extraction.** Full recipe in `academic-pdf-fetch` skill → `see paper PDF tooling notes (local CDP)`.
 
 37. **builder.py `response.keys` accepts both list and dict (2026-07-11)** — `_build_generic_routine()` line 591 originally called `.keys()` on `response.keys`, assuming it was always a dict. But the canonical spec format uses YAML lists (`keys: [left, right]`). Fixed with isinstance check: if dict, use `.keys()`; if list, use directly. When writing new specs, use list format (`keys: [r, g, b]`) — it's simpler and the existing specs all use it. Only use dict format (`keys: {left: left, right: right}`) when key labels differ from key values.
 
@@ -775,9 +775,9 @@ Run with `PYTHONPATH= PYTHONHOME= /d/Software/P/python.exe _auto_run.py`. The fu
     - `psychopy.exe axcpt.psyexp` — runs `psychopy.tools.preferences` CLI by default (returns "PsychoPy Preferences --help" instead of running anything). The launcher expects different arguments.
     - `from psychopy.app.runner import ...` — wxPython GUI module, `TypeError: 'module' object is not callable` outside `wx.App` loop (confirmed pitfall #30).
     - `psychopy --help` returns the Preferences parser, **not** the Runner.
-    The correct CLI runner path is `psychopy.scripts.psyexpCompile.generateScript(Experiment.fromFile(...), outfile, target='PsychoPy')`, then `runpy.run_path(outfile)`. See pitfall #29 (counterpart — `exp.writeScript()` is broken; `generateScript()` works) and `add-paradigm/scripts/run_psyexp.py` for the canonical implementation. **When the user says "跑 psyexp" / "run .psyexp", reach for `generateScript` immediately — don't waste turns probing `psychopy`/`psychopyApp`/`psychopy.exe` CLIs.**
+    The correct CLI runner path is `psychopy.scripts.psyexpCompile.generateScript(Experiment.fromFile(...), outfile, target='PsychoPy')`, then `runpy.run_path(outfile)`. See pitfall #29 (counterpart — `exp.writeScript()` is broken; `generateScript()` works) and `add-paradigm/scripts (run_psyexp; optional local)` for the canonical implementation. **When the user says "跑 psyexp" / "run .psyexp", reach for `generateScript` immediately — don't waste turns probing `psychopy`/`psychopyApp`/`psychopy.exe` CLIs.**
 
-49. **`loadFromXML() 0 warnings` is a schema gate, NOT a runtime gate (2026-07-12, session-critical, updated 2026-07-12)** — The 2026-07-12 headless runner session proved that loadFromXML accepts several classes of broken experiments with 0 warnings. **Always pair loadFromXML with `scripts/run_psyexp.py --timeout 30`** before declaring a paradigm shippable. The **15 bug classes** loadFromXML passes but the runtime catches (full catalog with reproduction transcripts in `add-paradigm/references/headless-runner-real-bugs.md`):
+49. **`loadFromXML() 0 warnings` is a schema gate, NOT a runtime gate (2026-07-12, session-critical, updated 2026-07-12)** — The 2026-07-12 headless runner session proved that loadFromXML accepts several classes of broken experiments with 0 warnings. **Always pair loadFromXML with `scripts (run_psyexp; optional local) --timeout 30`** before declaring a paradigm shippable. The **15 bug classes** loadFromXML passes but the runtime catches (full catalog with reproduction transcripts in `add-paradigm/references/headless-runner-real-bugs.md`):
     - **Bug 1 — Empty `stopVal` infinite loop** — `_build_instructions_routine` passes `max_wait=""` to `_keyboard_component`, which emits `<Param val="" name="stopVal"/>`. Generated runner has no auto-FINISHED block → `keyboard_instructions.status` stays STARTED forever → TIMEOUT after `--timeout`.
     - **Bug 2 — Generic-spec `$`-prefix missing** — `_build_trial_routine` only adds `$` to 7 hardcoded column names. Any other column (`cue_letter`, `probe_letter`, `target`, `flanker`, etc.) is emitted as a bare Python name → `NameError: name 'X' is not defined` at trial setup.
     - **Bug 3 — Legacy stroop `if len(...)` empty body** — `output/stroop_experiment/_stroop_runner.py:837` has empty `if` body → `IndentationError`. Path-A artifact; regenerate with current builder.py.
@@ -793,15 +793,15 @@ Run with `PYTHONPATH= PYTHONHOME= /d/Software/P/python.exe _auto_run.py`. The fu
     - **Bug 13 — `nReps` hardcoded to 1** — fix by reading `spec.get("loops", [{}])[0].get("n_rounds", 1)`.
     - **Bug 14 — Generated runner references `none` but never defines it** — Builder emits `if (keys == str(none)) or (keys == none)` without `none = None`. **Fix**: inject `none = None` at top of generated runner.
     - **Bug 15 — Routine name collision across routines using same component-name pattern** — refine Bug 7 fix: prefix component names with routine name (`f"{name}_{ctype}_{i}"`).
-    Full reproduction transcripts and per-paradigm fix recipes in `add-paradigm/references/headless-runner-real-bugs.md`. The `scripts/run_psyexp.py` harness works around bug 1 (empty stopVal) by mirroring `wrapper.status = FINISHED` after returning keys, and around bugs 9/14 via post-compile source rewriting. Bugs 2-8, 11-13, 15 are builder-side fixes.
-    **General principle**: "schema-valid .psyexp" ≠ "runnable .psyexp". The 4-layer GUI verification workflow (pitfall #21) has been upgraded — add step 6: runtime smoke test via `scripts/run_psyexp.py`. See `add-paradigm/SKILL.md` Step 6 for the canonical recipe.
+    Full reproduction transcripts and per-paradigm fix recipes in `add-paradigm/references/headless-runner-real-bugs.md`. The `scripts (run_psyexp; optional local)` harness works around bug 1 (empty stopVal) by mirroring `wrapper.status = FINISHED` after returning keys, and around bugs 9/14 via post-compile source rewriting. Bugs 2-8, 11-13, 15 are builder-side fixes.
+    **General principle**: "schema-valid .psyexp" ≠ "runnable .psyexp". The 4-layer GUI verification workflow (pitfall #21) has been upgraded — add step 6: runtime smoke test via `scripts (run_psyexp; optional local)`. See `add-paradigm/SKILL.md` Step 6 for the canonical recipe.
 
-51. **`_install()` in `_PATCH_BLOCK` string is data, not code — easy to lose when refactoring (2026-07-13, session-critical)** — `scripts/run_psyexp.py` keeps its entire patch logic (`_device_getKeys`, `_wrapper_getKeys`, the `Keyboard.__init__` setter, `_KEY_Q` env loading, the watchdog, etc.) as a triple-quoted `_PATCH_BLOCK` string, which `compile_psyexp` injects verbatim into the generated `<paradigm>_runner.py`. Two failure modes:
+51. **`_install()` in `_PATCH_BLOCK` string is data, not code — easy to lose when refactoring (2026-07-13, session-critical)** — `scripts (run_psyexp; optional local)` keeps its entire patch logic (`_device_getKeys`, `_wrapper_getKeys`, the `Keyboard.__init__` setter, `_KEY_Q` env loading, the watchdog, etc.) as a triple-quoted `_PATCH_BLOCK` string, which `compile_psyexp` injects verbatim into the generated `<paradigm>_runner.py`. Two failure modes:
     1. **`_install()` call itself is INSIDE the string** — easy to forget. When it is, the generated runner defines `_install` but never calls it, so the patches are never installed. Symptom: the "auto-key + auto-FINISHED injector active" log line is missing at runner startup; **trace_key prints are zero**; `wrapper.getKeys` reaches the un-patched KeyboardDevice.getKeys. **Verification**: the log line MUST appear at runner startup. If it doesn't, no patches are active.
     2. **Specific assignments within the string are easy to drop during refactoring** — e.g. `_kb.Keyboard.getKeys = _wrapper_getKeys`. Symptom: same as (1) but for a single wrapper. Compile-time grep check: `grep '_kb\.Keyboard\.getKeys\s*=' generated_runner.py` must show the assignment.
     **Recipe**: keep `_install()` and all `_kb.X = Y` assignments as a **mandatory checklist** when refactoring `run_psyexp.py`'s patch block. After any edit, compile + run a 30s smoke test and check for the log line + the assignment in the generated runner.
 
-    **Three additional bugs uncovered while plumbing spec-driven multi-loop paradigms (Stroop) end-to-end, all in `scripts/run_psyexp.py`** — full reproduction transcripts in `add-paradigm/references/multi-loop-paradigms.md`:
+    **Three additional bugs uncovered while plumbing spec-driven multi-loop paradigms (Stroop) end-to-end, all in `scripts (run_psyexp; optional local)`** — full reproduction transcripts in `add-paradigm/references/multi-loop-paradigms.md`:
     - **`_wrapper_getKeys` returned `None` implicitly** — captured `keys = _orig_device_getKeys_inner(...)` but no `return keys`. Trial routines then crashed at `theseKeys = None; ... .extend(theseKeys)` with `TypeError: 'NoneType' object is not iterable`. Symptom: 1 trial row written (the time-of-frame N=0 row), then immediate crash.
     - **Rewriter glob `conditions*.xlsx` missed `neutral_conditions.xlsx`** — fnmatch gotcha; the file does not start with "conditions" so the glob returned empty. Symptom: `col_names` empty → no rewrites → `NameError: name 'ink_color'` etc. Fix: `*conditions*.xlsx`.
     - **Rewriter column-name whitelist blocked custom columns** — old code hardcoded a whitelist of common names (`stim_text`, `stim_color`, etc.) and silently skipped everything else. Custom columns like `ink_color`, `fb_text`, `stim_word` were emitted as bare Python identifiers. Fix: always rewrite any column in `col_names`; the regex `(?<![\w."'])(X)(?!\w)` still protects attribute access.
@@ -816,7 +816,7 @@ Run with `PYTHONPATH= PYTHONHOME= /d/Software/P/python.exe _auto_run.py`. The fu
 
 54. **SliderComponent emit path was missing entirely (2026-07-13)** — Older builder.py had no `_slider_component()` function and no `elif ctype == "slider":` branch in `_build_spec_driven_routines`. Both rating-scale specs (kfs, artpics) silently dropped the slider on build — only text + keyboard got emitted, and the validator could not flag the visual overlap because the slider bbox was never present. **Fix**: implement `_slider_component(name, ticks, labels, granularity, pos, size, start_time, force_end, store_rating)` with all SliderComponent Params, plus an emit branch in `_build_spec_driven_routines` that normalizes `spec.get("pos")` (default `"(0, -0.1)"`) and `spec.get("size")` (default `"(1.0, 0.1)"`) via `_normalize_pos`. After the fix, kfs/artpics build produces real SliderComponents in the .psyexp.
 
-59. **Conservative-workflow preference — USER-MANDATED (2026-07-13)** — The default scope for any "this looks wrong" bug report is **one surgical change**: reproduce, smallest fix, one verification, report, **stop**. The user told me twice this session ("等等，你在做什么"; the implicit "you've taken things too far" via running fixes they didn't ask for) that the scope creep pattern is a violation. Detailed rule + decision tree + "annoyed signals to watch for" in `references/user-conservative-workflow-preference.md`. Concrete prior failure mode: the user reported visual text overlap in `kfs_rating` / `artpics_rating` specs. I rebuilt `scripts/run_psyexp.py` from scratch (a file with multiple subtle regex patches the user had confirmed worked) on the side, broke the rewriter with position-drift bugs, and spent 1.5+ hours fixing what should have been a one-line spec change. **Class-wide rule**: when the user reports a symptom in code they didn't write, fix the smallest possible instance; ASK before adding validators, refactoring codepaths, or rewriting working components. **Validated 2026-07-13**: builder.py visual overlap validator, SliderComponent emitter, kfs/artpics spec fixes, and 4 new unit tests in `tests/test_builder_overlap.py` (now 27/27) — these were the right things to build; the wrong things were the run_psyexp.py rewrite and any unrequested mid-turn refactor of `builder.py`'s multi-block or per-block spec_driven routines.
+59. **Conservative-workflow preference — USER-MANDATED (2026-07-13)** — The default scope for any "this looks wrong" bug report is **one surgical change**: reproduce, smallest fix, one verification, report, **stop**. The user told me twice this session ("等等，你在做什么"; the implicit "you've taken things too far" via running fixes they didn't ask for) that the scope creep pattern is a violation. Detailed rule + decision tree + "annoyed signals to watch for" in `references/user-conservative-workflow-preference.md`. Concrete prior failure mode: the user reported visual text overlap in `kfs_rating` / `artpics_rating` specs. I rebuilt `scripts (run_psyexp; optional local)` from scratch (a file with multiple subtle regex patches the user had confirmed worked) on the side, broke the rewriter with position-drift bugs, and spent 1.5+ hours fixing what should have been a one-line spec change. **Class-wide rule**: when the user reports a symptom in code they didn't write, fix the smallest possible instance; ASK before adding validators, refactoring codepaths, or rewriting working components. **Validated 2026-07-13**: builder.py visual overlap validator, SliderComponent emitter, kfs/artpics spec fixes, and 4 new unit tests in `tests/test_builder_overlap.py` (now 27/27) — these were the right things to build; the wrong things were the run_psyexp.py rewrite and any unrequested mid-turn refactor of `builder.py`'s multi-block or per-block spec_driven routines.
 
 58. **Per-frame recorder: patching `Window.flip` lets you see each frame the participant saw (2026-07-13)** — When the user says "我想要知道这一帧里发生了什么" / "假设我做好了一个 psyexp，你要怎么去理解这每一帧发生了什么", they want a debugging tool that watches what each component displays on each visual flip. The canonical recipe is to monkey-patch `psychopy.visual.Window.flip()`, walk `gc.get_objects()` for active `Routine` instances, and serialize one JSON per flip into `data/frames/frame_<ms>.json`. Then render with the companion `scripts/frames_viz.py` to see ASCII timelines (`#` STARTED, `x` FINISHED, `.` NOT_STARTED) or matplotlib PNG colour maps.
 
