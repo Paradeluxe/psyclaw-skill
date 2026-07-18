@@ -1,0 +1,92 @@
+name: parallel_loops_test
+version: "1.0"
+description: Two independent (non-nested) loops over disjoint routine ranges
+
+routines:
+  - name: intro_a
+    duration: 1.0
+    components:
+      - type: text
+        text: "Phase A intro"
+        height: 0.05
+
+  - name: trial_a
+    duration: 1.5
+    components:
+      - type: text
+        text: $word_a
+        height: 0.1
+      - type: keyboard
+        keys: j, k
+        correct_ans: $resp_a
+        store: response
+
+  - name: intro_b
+    duration: 1.0
+    components:
+      - type: text
+        text: "Phase B intro"
+        height: 0.05
+
+  - name: trial_b
+    duration: 1.5
+    components:
+      - type: text
+        text: $word_b
+        height: 0.1
+      - type: keyboard
+        keys: j, k
+        correct_ans: $resp_b
+        store: response
+
+  - name: end
+    duration: 2.0
+    components:
+      - type: text
+        text: "Done"
+        height: 0.05
+
+loops:
+  - name: loop_a
+    start_routine: intro_a
+    end_routine: trial_a
+    n_rounds: 3
+    order: sequential
+    is_trials: true
+    spreadsheet:
+      file: loop_a.xlsx
+      columns:
+        - name: word_a
+          type: str
+        - name: resp_a
+          type: str
+      rows:
+        - word_a: APPLE
+          resp_a: j
+        - word_a: BANANA
+          resp_a: k
+        - word_a: CHERRY
+          resp_a: j
+
+  - name: loop_b
+    start_routine: intro_b
+    end_routine: trial_b
+    n_rounds: 3
+    order: sequential
+    is_trials: true
+    spreadsheet:
+      file: loop_b.xlsx
+      columns:
+        - name: word_b
+          type: str
+        - name: resp_b
+          type: str
+      rows:
+        - word_b: DOG
+          resp_b: j
+        - word_b: CAT
+          resp_b: k
+        - word_b: BIRD
+          resp_b: j
+
+stimuli: []
