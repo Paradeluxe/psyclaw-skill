@@ -26,6 +26,8 @@ merged_skills: [psyclaw-setup]
 **Session canon (2026-07-18) — read these first:**
 
 - `references/skill-pipeline-and-inputs.md` — `/psyclaw` inputs, `<folderName>.psyclaw`, browser as related-only, slash vs GitHub name
+- `references/skill-pipeline.md` — five steps; step 2 = clarify + norms
+- `references/experiment-design-norms.md` — 8-item psych design coach in clarify (IV/DV/control/random/practice/script/response/trial+load)
 - `references/install-orchestrator.md` — one-install-all = `psyclaw setup`/`install.py`; **not** bare `hermes skills install`
 - GitHub skill repo: `Paradeluxe/psyclaw-skill` (package path `skills/psyclaw/`); Hermes slash stays **`/psyclaw`**
 - Install: `hermes skills install psyclaw -y` (short) or `Paradeluxe/psyclaw-skill/skills/psyclaw` (full)
@@ -39,7 +41,7 @@ merged_skills: [psyclaw-setup]
 | **psyclaw-webui** | `E:\hermes_playground\psyclaw-webui` | `psyclaw-webui` | Humans: GUI → run → CSV |
 
 - Shared on-disk IR: **`<folderName>.psyclaw`** (same as webui marker; legacy `design.psyclaw` migrates in webui).
-- Skill pipeline (simple): hear → **clarify until user satisfied** (still one Q per turn) → write marker → validate → optional webui handoff. Detail: **`references/skill-pipeline.md`**.
+- Skill pipeline (simple): hear → **clarify + design norms** (one Q per turn; see `experiment-design-norms.md`) → write marker → validate → optional webui handoff. Detail: **`references/skill-pipeline.md`**.
 - User: product talk in **short plain language** when confused; avoid Path A/B/C walls.
 - **No public / tag / push** without explicit user ok.
 - Cross-CLI ready? → schema + installable CLI (+ optional MCP); Hermes `SKILL.md` alone is **not** enough.

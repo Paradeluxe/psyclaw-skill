@@ -21,13 +21,14 @@ MyStroop/
 ## Default agent pipeline
 
 ```
-INPUT → clarify loop (one Q per turn) until user satisfied / ready
+INPUT → clarify loop (one Q per turn) + experiment-design-norms checklist
      → write/update <folderName>.psyclaw
      → validate → deliver project folder
      → optional handoff to webui (G1/G2)
 ```
 
-Clarify stop signals: 满意 / 就这样 / 开始写 / 可以了 / 别问了按默认 / enough detail that IV·DV·response·trial structure are clear.
+Clarify = user satisfaction **and** norms coach (see `experiment-design-norms.md`).  
+Stop signals: 满意 / 就这样 / 开始写 / 可以了 / 别问了按默认 / IV·DV·response·trial clear with remaining norms defaulted or explicitly waived.
 
 Default success for skill alone = **valid marker + project folder**.  
 Full lab success (finished run + `<project>/data/` CSV) needs webui/runner.
