@@ -1,0 +1,88 @@
+name: stimgen_test
+version: "1.0"
+description: Verify all 4 stimulus generators (text image, tone audio, tts audio, animated video)
+
+routines:
+  - name: show
+    duration: 2.0
+    components:
+      - type: text
+        text: $word
+        height: 0.1
+        color: $color
+
+loops:
+  - name: main
+    start_routine: show
+    end_routine: show
+    n_rounds: 4
+    order: sequential
+    is_trials: true
+    spreadsheet:
+      file: stimgen_conditions.xlsx
+      columns:
+        - {name: word, type: str}
+        - {name: color, type: str}
+      rows:
+        - {word: "RED", color: "red"}
+        - {word: "BLUE", color: "blue"}
+        - {word: "GREEN", color: "green"}
+        - {word: "YELLOW", color: "yellow"}
+
+stimuli:
+  - id: word_image
+    kind: image
+    format: png
+    size: [200, 100]
+    background: [0, 0, 0]
+    foreground: [1, 1, 1]
+    generator: text
+    text: "WORD"
+    output: assets/word_image.png
+
+  - id: shape_circle
+    kind: image
+    format: png
+    size: [100, 100]
+    background: [0, 0, 0]
+    generator: shape
+    shape: circle
+    color: [1, 0, 0]
+    output: assets/shape_circle.png
+
+  - id: correct_tone
+    kind: audio
+    format: wav
+    duration: 0.3
+    generator: tone
+    frequency: 880
+    output: assets/correct_tone.wav
+
+  - id: error_tone
+    kind: audio
+    format: wav
+    duration: 0.5
+    generator: tone
+    frequency: 220
+    output: assets/error_tone.wav
+
+  - id: welcome_voice
+    kind: audio
+    format: wav
+    generator: tts
+    text: "Welcome to the experiment. Press space to begin."
+    voice: en-US-AriaNeural
+    output: assets/welcome_voice.wav
+
+  - id: expanding_circle_video
+    kind: video
+    format: mp4
+    duration: 1.0
+    fps: 15
+    size: [200, 200]
+    generator: animated_shape
+    shape: circle
+    start_radius: 10
+    end_radius: 80
+    color: [1, 0, 0]
+    output: assets/expanding_circle.mp4
