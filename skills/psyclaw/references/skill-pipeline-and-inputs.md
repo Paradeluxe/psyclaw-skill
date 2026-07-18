@@ -22,17 +22,25 @@ MyStroop/
 
 ```
 INPUT → clarify loop (one Q per turn) + experiment-design-norms checklist
-     → write/update <folderName>.psyclaw
+     → lock OutPath (late; default ./experiments/<slug>/)
+     → write/update <projectDir>/<folderName>.psyclaw
      → validate → deliver project folder
      → optional handoff to webui (G1/G2)
 ```
 
 Clarify = user satisfaction **and** norms coach (see `experiment-design-norms.md`).  
-Priority gap: **Design** (几×几 / 被试内·间·混合 / 连续IV) before trial cosmetics.  
-Stop signals: 满意 / 就这样 / 开始写 / 可以了 / 别问了按默认 / Design·IV·DV·response·trial clear with remaining norms defaulted or waived.
+Priority: **Design** first; **OutPath** last before write (skip if editing an existing folder).  
+Stop signals: 满意 / 就这样 / 开始写 / 可以了 / 别问了按默认 / Design·IV·DV·response·trial clear with remaining norms defaulted or waived (OutPath may still use default).
 
-Default success for skill alone = **valid marker + project folder**.  
+Default success for skill alone = **valid marker + project folder at agreed path**.  
 Full lab success (finished run + `<project>/data/` CSV) needs webui/runner.
+
+### OutPath defaults (summary)
+
+- New: `./experiments/<folderName>/` under session cwd (or operator-given base)
+- Marker: `<projectDir>/<folderName>.psyclaw` (`folderName` = basename)
+- Never default to Desktop; never write into `~/.hermes/skills/.../psyclaw`
+- Edit existing project → path already known, do not re-ask
 
 ## Three input classes
 

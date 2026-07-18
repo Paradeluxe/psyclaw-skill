@@ -16,6 +16,7 @@ Skill package and experiment workspace are **separate**.
    - `PSYCLAW_PSYCHOPY_PYTHON` → PsychoPy's Python
    - project path from user / CLI `--out-dir`
 3. Marker handoff: `<projectFolder>/<folderName>.psyclaw` next to the experiment, not under the skill tree.
+4. **OutPath** (clarify item 10): ask late, default `./experiments/<folderName>/` under session cwd or operator workspace; never Desktop; never skill install dir. See `experiment-design-norms.md` § Output location.
 
 ## PsychoPy binary
 

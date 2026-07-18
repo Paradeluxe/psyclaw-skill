@@ -25,8 +25,8 @@ MyStroop/
 ## Five steps
 
 1. **Hear** intent (NL / PDF Method / existing folder)
-2. **Clarify until satisfied + norms gate** — **one question per turn** (never stack Qs). Coach via **`experiment-design-norms.md`**: lock **Design** first (几×几 factorial, within/between/mixed, categorical vs continuous IVs), then IV levels, DV, control, randomize, practice, script, response, trial+load. Keep going until stop signals **or** critical items answered/defaulted. User override wins; log deviations. Not “one question then force-write.”
-3. **Write** `<folderName>.psyclaw`
+2. **Clarify until satisfied + norms gate** — **one question per turn** (never stack Qs). Coach via **`experiment-design-norms.md`**: lock **Design** first (几×几 / within·between·mixed / continuous IVs), then IV→…→trial; **OutPath last** (where to put the project — default `./experiments/<slug>/`, never Desktop / never skill install dir). Keep going until stop signals **or** critical items answered/defaulted. User override wins; log deviations. Not “one question then force-write.”
+3. **Write** project folder + `<folderName>.psyclaw` at the agreed **OutPath**
 4. **Validate** schema / structure (G0)
 5. **Optional handoff** to webui for real run + CSV (G1/G2)
 

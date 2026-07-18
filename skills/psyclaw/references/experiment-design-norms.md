@@ -63,7 +63,7 @@ Examples:
 
 Continuous × continuous (or continuous × categorical) still needs a **task skeleton** (what one trial shows) plus how the continuum is sampled (fixed list, random draw, adaptive — default fixed list from spreadsheet). Analysis model (ANOVA vs regression) is **not** required to write the marker; logging columns should preserve the continuous values.
 
-## The checklist (9 items — ask by priority gap)
+## The checklist (10 items — ask by priority gap)
 
 Agent tracks coverage mentally (or in chat). Order = **default ask priority**. Skip if NL/PDF/folder already answered.
 
@@ -78,6 +78,46 @@ Agent tracks coverage mentally (or in chat). Order = **default ask priority**. S
 | 7 | **Script** | Instructions + thanks (light ethics) | 「开头说明怎么做？结束要谢谢页吗？」 | Short instructions + thanks |
 | 8 | **Response** | Device/keys, deadline or until-response, stored fields | 「哪些键？有无时限？」 | Task-appropriate keys; store key+RT; correct if mapping known |
 | 9 | **Trial+Load** | One-trial skeleton; blocks/breaks if long | 「一题顺序？大概做多久？」 | fixation → stim → response → ITI; >~30–40 min → blocks + rest |
+| 10 | **OutPath** | Project directory locked (absolute or agreed relative). Ask **late** — after design core, right before write | 「项目放哪？默认 `./experiments/<slug>/`，直接回车就用默认」 | See **Output location** below |
+
+### Output location (item 10 — late, short, defaulted)
+
+**When to ask:** after Design + IV + DV + response + trial skeleton are clear (or operator says 开始写), **not** as Q1.
+
+**When to skip:** input class 3 (existing project folder) → edit in place; operator already gave a path in the first message.
+
+**One-Q template (zh):**  
+「说明书要写到哪个文件夹？默认：`./experiments/<folderName>/`（里面是 `<folderName>.psyclaw`）。回车用默认，或丢一个路径/名字。」
+
+**Resolution rules:**
+
+| Operator gives | Agent writes |
+|----------------|--------------|
+| absolute path | that folder; create if missing |
+| folder name / slug only | `<base>/experiments/<slug>/` |
+| “默认 / 就这样 / 回车” | default below |
+| existing project path | use as-is (edit mode) |
+
+**Default base** (first that applies):
+
+1. Explicit workspace from operator / session (`--out-dir`, “放到 X”)
+2. Else current working directory of the session: `./experiments/<folderName>/`
+3. Never default to Desktop
+4. Never write into the Hermes skill install tree (`~/.hermes/skills/.../psyclaw`)
+
+**On disk:**
+
+```
+<projectDir>/
+  <folderName>.psyclaw    # required marker (folderName = project folder basename)
+  data/                   # created on run (webui), not required at write time
+```
+
+`folderName` = basename of `<projectDir>` (filesystem-safe: alnum + `_` + `-`).  
+If operator picks a path whose basename is awkward, propose a safe slug once.
+
+**Recap line before write must include path**, e.g.  
+`out: E:/lab/experiments/my-stroop/` + design tag + DV + N.
 
 ### Design sub-rules (agent)
 
@@ -102,7 +142,8 @@ Agent tracks coverage mentally (or in chat). Order = **default ask priority**. S
 3. **Stop signals**: 满意 / 就这样 / 开始写 / 可以了 / 别问了按默认 · or Design+IV+DV+response+trial clear and rest defaulted.
 4. **PDF / Method**: extract design line from Method first; only ask gaps.
 5. **Edit existing**: re-check only norms touched by the edit.
-6. **Before write**: short recap must include **design tag** (e.g. `2×2 within`) + DV + N + response + deviations.
+6. **Before write**: short recap must include **design tag** (e.g. `2×2 within`) + DV + N + response + **OutPath** + deviations.
+7. **OutPath last among gaps** — do not open with “where to save”; lock design first, then path, then write.
 
 ## What this is not
 
@@ -124,7 +165,8 @@ Agent tracks coverage mentally (or in chat). Order = **default ask priority**. S
 | Script | instructions + thanks |
 | Response | keyboard/slider; stopVal / forceEnd |
 | Trial+Load | routine sequence; rest between blocks |
+| OutPath | project directory on disk; marker `<folderName>.psyclaw` inside it |
 
 ## Kindergarten one-liner
 
-「实验类型不是背名单，是三句话：①比的是几乘几（或连续分数）②每人做全套还是分组③你有没有真的操控/随机。然后再说量什么、怎么按键、一题长什么样。一次问一样，你点头我就写说明书。」
+「实验类型不是背名单，是三句话：①比的是几乘几（或连续分数）②每人做全套还是分组③你有没有真的操控/随机。然后再说量什么、怎么按键、一题长什么样。设计差不多定了再问放哪个文件夹（有默认路径）。一次问一样，你点头我就写说明书。」
