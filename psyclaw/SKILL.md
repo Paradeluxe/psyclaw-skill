@@ -323,7 +323,7 @@ routines:                    # required, list
         color: white
         pos: [0, 0]
       - type: image
-        path: "assets/foo.png"
+        path: "assets-dir/foo.png"
         size: [0.5, 0.5]
       - type: keyboard
         keys: "space, r, b"
@@ -331,10 +331,10 @@ routines:                    # required, list
         correct_ans: $correct_resp   # $col references loop spreadsheet
         store: response
       - type: audio
-        path: "assets/beep.wav"
+        path: "assets-dir/beep.wav"
         volume: 1.0
       - type: video
-        path: "assets/anim.mp4"
+        path: "assets-dir/anim.mp4"
         no_audio: false
 
 loops:                       # optional
