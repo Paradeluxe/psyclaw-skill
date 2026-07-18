@@ -1,8 +1,8 @@
 ---
 name: psyclaw
-version: 0.2.2
+version: 0.2.3
 author: Paradeluxe
-license: proprietary
+license: AGPL-3.0
 platforms: [windows, macos, linux]
 description: >
   PsyClaw — three parallel experiment builders for runnable PsychoPy experiments

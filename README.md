@@ -61,7 +61,7 @@ Checks that core script files exist and prints install identity. Does not requir
 
 ## License
 
-**Proprietary — All Rights Reserved.** See [LICENSE](LICENSE). Unauthorized use, copying, or redistribution is prohibited.
+**AGPL-3.0** — see [LICENSE](LICENSE). Same family as Praasper. PsychoPy is separate third-party software.
 
 
 ## License
