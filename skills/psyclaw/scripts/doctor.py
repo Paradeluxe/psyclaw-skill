@@ -5,14 +5,18 @@ from __future__ import annotations
 import json
 import sys
 from pathlib import Path
+from shutil import which
 
 ROOT = Path(__file__).resolve().parents[1]
 REQUIRED = [
     "SKILL.md",
-    "scripts/harness_cli.py",
-    "scripts/harness_main.py",
-    "scripts/spec_validator.py",
-    "scripts/json2psyexp.js",
+    "scripts/doctor.py",
+    "references/skill-pipeline.md",
+    "references/skill-pipeline-and-inputs.md",
+    "references/experiment-design-norms.md",
+    "references/install-orchestrator.md",
+    "references/path-c-webui-validation.md",
+    "references/user-conservative-workflow-preference.md",
 ]
 
 
@@ -43,10 +47,7 @@ def main() -> int:
         if desc:
             print(f"  description: {desc[:80]}{'…' if len(desc) > 80 else ''}")
 
-    # optional tools
-    for cmd, label in (("node", "node (json2psyexp)"), ("python", "python")):
-        from shutil import which
-
+    for cmd, label in (("python", "python"),):
         path = which(cmd)
         print(f"  [{'OK' if path else '—'}] {label}: {path or 'not on PATH'}")
 
@@ -55,6 +56,7 @@ def main() -> int:
         "root": str(ROOT),
         "name": name,
         "slash": f"/{name}" if name else None,
+        "deliverable": "<folderName>.psyclaw",
     }
     print("  json:", json.dumps(report, ensure_ascii=False))
     return 0 if ok else 1

@@ -1,51 +1,54 @@
-# Path C — psyclaw-webui (canonical GUI + pure-Python runner)
+# WebUI handoff — compile / run / CSV (canonical)
 
-**Status (2026-07-18, publication-facing):** product path, not scaffold.
+Skill writes **`<folderName>.psyclaw`**. Lab software **psyclaw-webui** opens it, runs subjects, mirrors CSV.
 
 ## Architecture
 
 ```
-Builder SPA (design.json / design.psyexp marker file)
+<folderName>.psyclaw  (design JSON; same schema as design object)
         │
         ▼
 Flask 127.0.0.1:8876
   POST /api/runs { design, session, headless, project_path }
         │
         ▼
-design_compiler.compile_any → pure PsychoPy .py
+design_compiler → pure PsychoPy .py
         │
         ▼
-PsychoPyProcess (<psychopy-python>)
-  • runs/<id>/data/*.csv                 (internal harvest)
+PsychoPyProcess
+  • runs/<id>/data/*.csv                 (internal)
   • <project_path>/data/{id}_s{sess}_{ts}.csv   (REQUIRED mirror)
 ```
 
-- Repo: `<psyclaw-webui-repo>` · GitHub `Paradeluxe/psyclaw-webui`
-- Port **8876** only (never 8765 / Mentor)
-- SPA contract skill: **`psyclaw-webui`** (Builder / System / Run / Settings / Guide)
-- Open duration canonical value: **`-1`**
-- Platform > named paradigms: no hardcoding Stroop field sets in the SPA
+- Repo: `Paradeluxe/psyclaw-webui` · port **8876** only
+- SPA skill: **`psyclaw-webui`**
+- Open duration canonical: **`-1`**
+- Platform > named paradigms (no Stroop-hardcoded SPA fields)
+- Marker name: **`<folderName>.psyclaw`** (not fixed `design.psyclaw`; webui migrates legacy)
 
-## Success criteria (paper gate)
+## Gates
 
 | Gate | Pass means |
 |------|------------|
-| G0 Compile | `design_compiler.compile_design` emits parseable Python with `Window` |
-| G1 Run | `/api/runs` → status `finished` (headless/autopilot or participant) |
-| G2 Data retention | CSV under **`<project_path>/data/`** with: |
+| G0 Compile | `design_compiler` emits parseable Python with `Window` |
+| G1 Run | `/api/runs` → status `finished` |
+| G2 Data | CSV under **`<project_path>/data/`** |
 
-Required CSV columns (minimum):
+Skill alone → through G0 structure of marker. G1/G2 need webui + PsychoPy.
+
+### CSV minimum columns
+
 - Session: `participant_id`, `session`, `participant_name`, `notes`, `session_date`
 - Trial: `trial`, `routine`, `response`, `rt`, `keys`
-- Condition columns from stimlist (e.g. `word`, `color`, `corrAns`, or paradigm-specific)
+- Condition columns from stimlist
 
-**Compile-only is not success.** "Run finished" without project-mirrored CSV is not success.
+Compile-only ≠ success. Finished without project-mirrored CSV ≠ desktop-parity success.
 
-## design.json (agent-generatable)
+## design object (agent-generatable)
 
 ```json
 {
-  "name": "cat1_flanker",
+  "name": "example_flanker",
   "display": { "size": [1024, 768], "fullscreen": false, "screen": 0, "bgcolor": "#000000" },
   "devices": { "keyboard": true },
   "routines": [
@@ -89,80 +92,36 @@ Required CSV columns (minimum):
 }
 ```
 
-Component types used in compiler path: `text`, `keyboard`, `image`, `sound`/`audio`, `video`, `rect`, `code`.
-
-## Paper library bridge (50+50+50)
-
-| Category | Papers on disk | Built replications (`spec.yaml`) | Notes |
-|----------|----------------|----------------------------------|-------|
-| 1 Pure PsychoPy | 50 | **50** (`cat1_*`) | text/shapes/keys only |
-| 2 Downloadable materials | 50 | **50** (`cat2_*`) | +3 scaffolded 2026-07-18 for pipeline completeness |
-| 3 Manual materials | 50 | **50** (`cat3_*`) | framework OK; stimuli user-supplied |
-
-PDFs: `<psyclaw-workspace>\papers\category{1,2,3}\`
-Replications: `<psyclaw-workspace>\replications\cat{1,2,3}_*`
-
-### Conversion + batch scripts
-
-| Script | Role |
-|--------|------|
-| `scripts/spec_to_design_batch.py` | `spec.yaml` → `design.psyexp` + compile G0 for all cat* |
-| `scripts/headless_webui_sample.py` | stratified POST /api/runs headless G1 |
-| `scripts/data_retention_audit.py` | G2 project CSV column/path audit |
-
-Skill copy of converter: `~/.hermes/skills/research/psyclaw/scripts/spec_to_design_batch.py`
-Workspace copies: `<psyclaw-workspace>\scripts\`
-
-### Benchmark results (2026-07-18)
-
-**Full battery (paper gate):** evidence `<psyclaw-workspace>\output\webui_batch_validate_150\`
-
-| Gate | N | Result | Artifact |
-|------|---|--------|----------|
-| G0 design_compiler | **150** | **150/150 ok** | run log + per-folder `design.psyexp` |
-| G1 headless full | **150** | **150/150 finished** | `g1g2_state.json` |
-| G2 data retention full | **150** | **150/150 pass** | project `data/*.csv` + `FINAL_SUMMARY.json` |
-
-Pass-by-cat: cat1 **50/50**, cat2 **50/50**, cat3 **50/50**. `fail_n: 0`.
-
-Script: `scripts/full150_webui_validate.py` (resumable).
-
-Each pass = run `finished` **and** CSV under `replications/<slug>/data/` with session cols + `response`/`rt` + condition cols.
-
-Earlier stratified smoke (15/15) remains under `output/webui_batch_validate/` as warm-up.
+Compiler component types (typical): `text`, `keyboard`, `image`, `sound`/`audio`, `video`, `rect`, `slider`, `code`. Prefer types the live webui compiler accepts — check webui if unsure.
 
 ## Run API (minimal)
 
 ```json
 {
-  "design": { "...": "design.json object" },
+  "design": { "...": "same object as marker JSON" },
   "headless": true,
-  "project_path": "E:\\\\<workspace>\\\\psyclaw\\\\replications\\\\cat1_flanker",
+  "project_path": "C:\\\\path\\\\to\\\\MyExp",
   "session": {
     "participant_id": "P_autopilot",
     "session": "1",
-    "participant_name": "batch_validate",
-    "notes": "publication validation sample"
+    "participant_name": "batch",
+    "notes": ""
   }
 }
 ```
 
-- Pilot live keys: `participant_id: "P_pilot"` (does not consume production IDs)
+- Pilot: `participant_id: "P_pilot"` (does not consume production IDs)
 - Formal: sequential IDs from project `participants.json`
-- `project_path` omitted → only internal `runs/` CSV (fails G2 for desktop-parity claims)
+- Omit `project_path` → only internal `runs/` CSV (fails G2)
 
-## Pitfalls specific to Path C paper claims
+## Pitfalls
 
-1. **G0 ≠ shippable** — always G1+G2.
-2. **Missing `project_path`** — Instrument may show internal path; Open folder looks empty.
-3. **Legacy yaml-form docs** — `/api/paradigms` form SPA is superseded; design.json is primary.
-4. **cat2 count honesty** — 47 replications built as of 2026-07-18.
-5. **Headless caps** — sample scripts slice conditions ≤2 and nReps=1 for speed; full nReps is separate full-battery work.
-6. **Port collision** — 8876 only.
+1. G0 ≠ shippable — need G1+G2 for lab claims.
+2. Missing `project_path` — Open folder looks empty.
+3. Port **8876** only (not Mentor 8787).
+4. Do not emit Builder `.psyexp` as the skill deliverable.
 
-## Related skill files
+## Related
 
-- `psyclaw-webui` skill — full SPA IA, pitfalls, System/Run layout
-- `references/paper-library-classification.md` — 50+50+50 definition
-- `references/batch-spec-testing.md` — Path B loadFromXML era (historical 50/50 cat1)
-- `references/psychopy-platform-pitfalls.md` — why Path C skips .psyexp runtime
+- Skill: `psyclaw-webui` — SPA IA, System/Run layout
+- Skill pipeline: `skill-pipeline.md`
