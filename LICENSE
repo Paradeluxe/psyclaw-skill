@@ -19,13 +19,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
----------------------------------------------------------------------------
-Notes
-
-1. This repository is the Hermes / agent **skill** package (`/psyclaw`).
-   The lab GUI product is separate: `psyclaw-webui`.
-
-2. Generated experiments may be run with the PsychoPy library, which is
-   third-party software with its own license. This skill does not redistribute
-   PsychoPy.

@@ -1,0 +1,12 @@
+# Notices
+
+## This package
+
+Hermes / agent skill for PsyClaw (`/psyclaw`). Lab GUI is a separate product:
+`psyclaw-webui`.
+
+## Third-party
+
+PsychoPy is separate software with its own license. This repository does not
+redistribute PsychoPy. Users install PsychoPy independently when running
+generated experiments.
