@@ -61,8 +61,9 @@ Checks that core script files exist and prints install identity. Does not requir
 
 ## License
 
-See repository / skill metadata (MIT intended for the skill package; third-party PsychoPy is separate).
+**Proprietary — All Rights Reserved.** See [LICENSE](LICENSE). Unauthorized use, copying, or redistribution is prohibited.
+
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+**Proprietary — All Rights Reserved.** See [LICENSE](LICENSE). No use without written permission.
