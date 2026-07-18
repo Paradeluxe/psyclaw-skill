@@ -2,7 +2,7 @@
 
 | Path | Role |
 |------|------|
-| `E:\hermes_playground\psyclaw-skill-src` | Git clone of `Paradeluxe/psyclaw-skill` (edit + push here) |
+| `E:\hermes_playground\psyclaw-skill` | Git clone of `Paradeluxe/psyclaw-skill` (edit + push here) |
 | `skills/psyclaw/` | Published skill package (this repo) |
 | `~\.hermes\skills\psyclaw-dev` | Local Hermes skill **`/psyclaw-dev`** (DEV checkout; not published name) |
 | `~\.hermes\skills\psyclaw` | Hub install **`/psyclaw`** from GitHub |
@@ -10,7 +10,7 @@
 ## Daily publish
 
 ```bash
-cd /e/hermes_playground/psyclaw-skill-src
+cd /e/hermes_playground/psyclaw-skill
 # edit skills/psyclaw/
 git add skills/psyclaw
 git commit -m "..."
@@ -31,7 +31,7 @@ Short name (`hermes skills install psyclaw`) needs skills.sh unique index — se
 # from git bash
 rm -rf "$HOME/AppData/Local/hermes/skills/psyclaw-dev"
 mkdir -p "$HOME/AppData/Local/hermes/skills/psyclaw-dev"
-cp -a /e/hermes_playground/psyclaw-skill-src/skills/psyclaw/. "$HOME/AppData/Local/hermes/skills/psyclaw-dev/"
+cp -a /e/hermes_playground/psyclaw-skill/skills/psyclaw/. "$HOME/AppData/Local/hermes/skills/psyclaw-dev/"
 # then set name: psyclaw-dev in SKILL.md frontmatter
 ```
 
