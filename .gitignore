@@ -1,36 +1,36 @@
-# PsyClaw skill — gitignore
-# Local-only git repo; no remote.
+# PsyClaw skill (GitHub: Paradeluxe/psyclaw-skill)
 
-# Harness output directories (generated .psyexp, xlsx, assets)
-examples/*_out/
-examples/parallel_loops_out/
-examples/code_probe_out/
-
-# Regression output
-.regression_out/
-
-# Python cache
+# Local env / caches
+.venv/
+venv/
 __pycache__/
 *.pyc
 *.pyo
 *.egg-info/
+.pytest_cache/
+node_modules/
 
-# Screenshot artifacts (debug captures)
+# Generated / debug
+.regression_out/
+examples/*_out/
+examples/parallel_loops_out/
+examples/code_probe_out/
 examples/*.png
 examples/*.jpg
-
-# Temp files
 *.tmp
 *.log
 *.bak
 
-# OS
+# Secrets / machine-local notes (never publish)
+*secret*
+*credentials*
+*github-pat*
+*.pem
+.env
+.env.*
+
+# OS / IDE
 .DS_Store
 Thumbs.db
-
-# Node (if any)
-node_modules/
-
-# IDE
 .vscode/
 .idea/
