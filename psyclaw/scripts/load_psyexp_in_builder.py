@@ -4,23 +4,25 @@
 Usage:
     load_psyexp_in_builder.py <path.psyexp>
 
-Must be run with PsychoPy's python.exe (D:\\Software\\P\\python.exe).
+Must be run with PsychoPy's python.exe.
 """
-import sys, os
+import sys
+from os import environ
 
 # Strip hermes-agent pollution from sys.path BEFORE importing psychopy
-for p in (
-    r"C:\Users\User\AppData\Local\hermes\hermes-agent\venv\Lib\site-packages",
-    r"C:\Users\User\AppData\Local\hermes\hermes-agent\venv\Lib",
-):
-    while p in sys.path:
-        sys.path.remove(p)
+for p in list(sys.path):
+    norm = p.replace("\\", "/").lower()
+    if "hermes-agent" in norm and "site-packages" in norm:
+        while p in sys.path:
+            sys.path.remove(p)
+    elif "hermes-agent" in norm and norm.rstrip("/").endswith("/lib"):
+        while p in sys.path:
+            sys.path.remove(p)
 
-# Also strip from os.environ
+# Clear interpreter override vars via environ mapping only
 for k in ("PYTHONPATH", "PYTHONHOME"):
-    if k in os.environ:
-        del os.environ[k]
-os.environ["PYTHONNOUSERSITE"] = "1"
+    environ.pop(k, None)
+environ["PYTHONNOUSERSITE"] = "1"
 
 from psychopy.experiment import Experiment
 from psychopy.app import builder
