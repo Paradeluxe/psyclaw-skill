@@ -1,6 +1,6 @@
 ---
 name: psyclaw
-version: 0.2.0
+version: 0.2.1
 author: Paradeluxe
 license: MIT
 platforms: [windows, macos, linux]
@@ -38,7 +38,7 @@ merged_skills: [psyclaw-setup]
 | **psyclaw-webui** | `E:\hermes_playground\psyclaw-webui` | `psyclaw-webui` | Humans: GUI → run → CSV |
 
 - Shared on-disk IR: **`<folderName>.psyclaw`** (same as webui marker; legacy `design.psyclaw` migrates in webui).
-- Skill pipeline (simple): hear → clarify once → write marker → validate → optional webui handoff. Detail: **`references/skill-pipeline.md`**.
+- Skill pipeline (simple): hear → **clarify until user satisfied** (still one Q per turn) → write marker → validate → optional webui handoff. Detail: **`references/skill-pipeline.md`**.
 - User: product talk in **short plain language** when confused; avoid Path A/B/C walls.
 - **No public / tag / push** without explicit user ok.
 - Cross-CLI ready? → schema + installable CLI (+ optional MCP); Hermes `SKILL.md` alone is **not** enough.

@@ -9,7 +9,7 @@ Product talk = 菜谱(skill) vs 厨房(webui); 装全部 = 总开关.
 
 ```
 /psyclaw
-  S0 clarify if vague (one question)
+  S0 clarify until user satisfied (one Q per turn)
   S1 intake: NL | PDF/HTML text | existing <folder>.psyclaw
   S2 IR: <folderName>.psyclaw
   S3 validate

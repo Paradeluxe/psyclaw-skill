@@ -25,7 +25,7 @@ MyStroop/
 ## Five steps
 
 1. **Hear** intent (NL / PDF Method / existing folder)
-2. **Clarify** only if vague — **one question per turn**
+2. **Clarify until the user is satisfied** — still **one question per turn** (never stack Qs); keep going until they say ready / 就这样 / 开始写 / 满意, or give enough detail that nothing critical is missing. Not “one question then force-write.”
 3. **Write** `<folderName>.psyclaw`
 4. **Validate** schema / structure (G0)
 5. **Optional handoff** to webui for real run + CSV (G1/G2)

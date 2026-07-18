@@ -62,3 +62,7 @@ Checks that core script files exist and prints install identity. Does not requir
 ## License
 
 See repository / skill metadata (MIT intended for the skill package; third-party PsychoPy is separate).
+
+## License
+
+MIT — see [LICENSE](LICENSE).
