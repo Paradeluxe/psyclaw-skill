@@ -68,4 +68,4 @@ Do **not** rename slash to `/psyclaw-skill` unless user asks.
 
 ## Market / short name
 
-`hermes skills install psyclaw` works when searchable sources have exactly one skill named `psyclaw`. Prefer tap layout `skills/psyclaw/`. See `product-pipeline-and-hermes-market.md` + `install-orchestrator.md`.
+`hermes skills install psyclaw` works when searchable sources have exactly one skill named `psyclaw`. Repo layout is `skills/psyclaw/`. Full fallback: `Paradeluxe/psyclaw-skill/skills/psyclaw`. See `product-pipeline-and-hermes-market.md` + `install-orchestrator.md`.

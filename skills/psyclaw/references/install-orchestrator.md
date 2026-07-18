@@ -29,13 +29,14 @@ Resolver: no `/` → search all sources → **exact** `name == psyclaw` → exac
 To make short name work for others:
 
 1. `name: psyclaw` in SKILL.md  
-2. Publish where Hermes can search (tap / public GitHub / skills.sh / official)  
-3. Prefer tap layout: `skills/psyclaw/SKILL.md` under the GitHub repo  
+2. Repo layout: `skills/psyclaw/` (this repo — tap + skills.sh friendly)  
+3. Public git push; bootstrap skills.sh: `npx skills add Paradeluxe/psyclaw-skill --skill psyclaw -y`  
 4. Avoid multiple exact name collisions  
 
-Until then: full id e.g. `Paradeluxe/psyclaw-skill/skills/psyclaw` (after layout) or local copy already in Hermes skills.
+Full id (always): `Paradeluxe/psyclaw-skill/skills/psyclaw`  
+Short: `hermes skills install psyclaw` after unique skills.sh/tap resolve.
 
-Dev machine: skill already at `skills/research/psyclaw` — **edit in place**; install is for clean machines.
+Dev: edit `E:\hermes_playground\psyclaw-skill-src\skills\psyclaw`; hub install is for clean machines.
 
 ## Orchestrator steps (when script exists)
 

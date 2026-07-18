@@ -9,25 +9,32 @@ AI / agent skill for psychology experiments: turn a description (or paper Method
 ## Repo layout
 
 ```text
-psyclaw-skill/           # GitHub repo root
+psyclaw-skill/              # GitHub repo root
   README.md
-  psyclaw/               # installable skill directory
-    SKILL.md
-    scripts/
-    references/
-    templates/
-    examples/
+  LICENSE
+  skills.sh.json            # skills.sh category sidecar
+  skills/
+    psyclaw/                # installable skill directory
+      SKILL.md
+      scripts/
+      references/
+      templates/
+      examples/
 ```
 
-Hermes GitHub install needs `owner/repo/<skill-dir>` (not repo root alone).
+Tap-compatible (`skills/` parent). Hermes needs `owner/repo/<skill-dir>` (≥3 path segments).
 
 ## Install (Hermes)
 
 ```bash
-hermes skills install Paradeluxe/psyclaw-skill/psyclaw
+# preferred — after skills.sh indexes unique name: psyclaw
+hermes skills install psyclaw -y
+
+# always works after git push (no tap)
+hermes skills install Paradeluxe/psyclaw-skill/skills/psyclaw -y
 ```
 
-Then start a **new** chat session (or reload skills) and run:
+New chat session (or reload skills), then:
 
 ```text
 /psyclaw
@@ -36,7 +43,25 @@ Then start a **new** chat session (or reload skills) and run:
 Inspect without installing:
 
 ```bash
-hermes skills inspect Paradeluxe/psyclaw-skill/psyclaw
+hermes skills inspect Paradeluxe/psyclaw-skill/skills/psyclaw
+# or, after short-name resolve:
+hermes skills inspect psyclaw
+```
+
+Optional lab share (per machine):
+
+```bash
+hermes skills tap add Paradeluxe/psyclaw-skill
+hermes skills install psyclaw -y
+```
+
+## Bootstrap short-name index (authors / first installs)
+
+skills.sh lists skills from install telemetry — no separate submit form:
+
+```bash
+npx skills add Paradeluxe/psyclaw-skill --skill psyclaw -y
+hermes skills search psyclaw --json
 ```
 
 ## What you get
@@ -54,16 +79,11 @@ To run subjects on a PC, install **psyclaw-webui** separately (Flask + local Psy
 ## Doctor
 
 ```bash
-python psyclaw/scripts/doctor.py
+python skills/psyclaw/scripts/doctor.py
 ```
 
 Checks that core script files exist and prints install identity. Does not require network.
 
 ## License
 
-**AGPL-3.0** — see [LICENSE](LICENSE). Same family as Praasper. PsychoPy is separate third-party software.
-
-
-## License
-
-**Proprietary — All Rights Reserved.** See [LICENSE](LICENSE). No use without written permission.
+**AGPL-3.0** — see [LICENSE](LICENSE). Same family as Praasper. PsychoPy is separate third-party software (see [NOTICE](NOTICE)).
