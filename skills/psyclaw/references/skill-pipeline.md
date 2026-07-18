@@ -25,7 +25,7 @@ MyStroop/
 ## Five steps
 
 1. **Hear** intent (NL / PDF Method / existing folder)
-2. **Clarify until satisfied + norms gate** — **one question per turn** (never stack Qs). Coach toward a paper-defensible design using the 8-item checklist in **`experiment-design-norms.md`** (IV, DV, control, randomize, practice, instructions/thanks, response logging, trial skeleton + session load). Keep going until stop signals **or** critical items are answered/defaulted. User override always wins; log deviations. Not “one question then force-write.”
+2. **Clarify until satisfied + norms gate** — **one question per turn** (never stack Qs). Coach via **`experiment-design-norms.md`**: lock **Design** first (几×几 factorial, within/between/mixed, categorical vs continuous IVs), then IV levels, DV, control, randomize, practice, script, response, trial+load. Keep going until stop signals **or** critical items answered/defaulted. User override wins; log deviations. Not “one question then force-write.”
 3. **Write** `<folderName>.psyclaw`
 4. **Validate** schema / structure (G0)
 5. **Optional handoff** to webui for real run + CSV (G1/G2)

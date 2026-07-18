@@ -28,7 +28,8 @@ INPUT → clarify loop (one Q per turn) + experiment-design-norms checklist
 ```
 
 Clarify = user satisfaction **and** norms coach (see `experiment-design-norms.md`).  
-Stop signals: 满意 / 就这样 / 开始写 / 可以了 / 别问了按默认 / IV·DV·response·trial clear with remaining norms defaulted or explicitly waived.
+Priority gap: **Design** (几×几 / 被试内·间·混合 / 连续IV) before trial cosmetics.  
+Stop signals: 满意 / 就这样 / 开始写 / 可以了 / 别问了按默认 / Design·IV·DV·response·trial clear with remaining norms defaulted or waived.
 
 Default success for skill alone = **valid marker + project folder**.  
 Full lab success (finished run + `<project>/data/` CSV) needs webui/runner.
