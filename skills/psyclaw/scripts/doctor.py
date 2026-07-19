@@ -15,7 +15,7 @@ REQUIRED = [
     "references/skill-pipeline-and-inputs.md",
     "references/experiment-design-norms.md",
     "references/install-orchestrator.md",
-    "references/path-c-webui-validation.md",
+    "references/webui-handoff.md",
     "references/user-conservative-workflow-preference.md",
 ]
 

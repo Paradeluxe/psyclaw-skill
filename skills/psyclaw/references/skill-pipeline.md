@@ -6,8 +6,8 @@
 |---|---|---|
 | Role | Write experiment “说明书” for agents | Lab software: draw / run / CSV |
 | Slash | **`/psyclaw`** (Hermes skill id; keep this name) | `/psyclaw-webui` |
-| GitHub | `Paradeluxe/psyclaw-skill` (renamed from PsyClaw) | `Paradeluxe/psyclaw-webui` (private) |
-| Disk | Hermes `skills/research/psyclaw` + workspace `psyclaw-skill` | `<psyclaw-webui-repo>` |
+| GitHub | `Paradeluxe/psyclaw-skill` | `Paradeluxe/psyclaw-webui` |
+| Disk | Hermes `skills/psyclaw` · edit `Paradeluxe/psyclaw-skill` | `Paradeluxe/psyclaw-webui` |
 
 ## Shared IR (single track)
 
@@ -20,7 +20,7 @@ MyStroop/
 
 - Content = design JSON (routines + flow), **not** Builder XML.
 - Skill goal: **produce / edit this file**.
-- Do **not** lead with Path A/B/C jargon in operator-facing chat — use kitchen/recipe language if needed.
+- Single track only: marker → optional webui. No alternate “paths.”
 
 ## Five steps
 
@@ -45,7 +45,7 @@ Run/CSV only when user asks 「能跑吗 / 帮我跑」.
 
 - Prefer short lists and concrete file names when the operator is confused
 - No multi-path architecture dumps in chat; keep technical detail in `references/`
-- Kitchen/recipe metaphors OK; Path A/B/C jargon only if asked
+- Prefer concrete file names over architecture lectures
 
 ## Cross-CLI later
 

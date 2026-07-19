@@ -87,14 +87,14 @@ browser-skill = related only; do not silent-install or run browser every turn.
 | `references/skill-pipeline-and-inputs.md` | inputs, marker, OutPath |
 | `references/experiment-design-norms.md` | clarify checklist (Design first, OutPath last) |
 | `references/install-orchestrator.md` | install / doctor / short name |
-| `references/path-c-webui-validation.md` | G0/G1/G2 + webui handoff gates |
+| `references/webui-handoff.md` | G0/G1/G2 + webui handoff gates |
 | `references/user-conservative-workflow-preference.md` | one surgical fix per bug report |
 
 ## Marker content (minimal)
 
 Emit design JSON the webui runner accepts: routines, flow/loops, components (text/image/keyboard/slider/…), conditions columns, session metadata as required by webui schema. Prefer fields already used by psyclaw-webui `design_compiler`; do not invent a second parallel schema.
 
-When unsure of a field: read webui schema / `path-c-webui-validation.md`, not legacy YAML→psyexp docs.
+When unsure of a field: read webui schema / `webui-handoff.md`, not legacy YAML→psyexp docs.
 
 ## Out of scope (this skill)
 

@@ -1,6 +1,6 @@
 # /psyclaw pipeline + inputs (2026-07-18+)
 
-User wants **simple** explanations first (plain language when stuck); A/B/C paths are implementation detail.
+User wants **simple** explanations first (plain language when stuck). One pipeline only.
 
 ## Two products (one line each)
 
@@ -71,11 +71,11 @@ Like `nature-figure`: skills install = light cookbook; large runtime external; m
 |------|---------|
 | Slash / skill id | **`/psyclaw`** / `psyclaw` |
 | GitHub skill repo | **`Paradeluxe/psyclaw-skill`** (edit this package) |
-| Hermes local | `~/.hermes/skills/research/psyclaw` |
-| `<psyclaw-workspace>` | **Papers/replications workspace** — NOT skill package |
+| Hermes local | `~/.hermes/skills/psyclaw` (or profile skills dir) |
+| Papers vault (optional) | separate data folder — **not** the skill package |
 
 Do **not** rename slash to `/psyclaw-skill` unless user asks.
 
 ## Market / short name
 
-`hermes skills install psyclaw` works when searchable sources have exactly one skill named `psyclaw`. Repo layout is `skills/psyclaw/`. Full fallback: `Paradeluxe/psyclaw-skill/skills/psyclaw`. See `product-pipeline-and-hermes-market.md` + `install-orchestrator.md`.
+`hermes skills install psyclaw` works when searchable sources have exactly one skill named `psyclaw`. Repo layout is `skills/psyclaw/`. Full fallback: `Paradeluxe/psyclaw-skill/skills/psyclaw`. See `install-orchestrator.md`.

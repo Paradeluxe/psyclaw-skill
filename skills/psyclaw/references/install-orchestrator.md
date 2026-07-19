@@ -57,7 +57,7 @@ Agent on「帮我全装」: run orchestrator order; do not random soup. Network/
 - `hermes bundles` = multi-skill slash load only — not webui install  
 - `related_skills` recommends; does not auto-install  
 
-Detail market checklist: `references/product-pipeline-and-hermes-market.md`.
+Market/short-name notes: this file.
 
 ## Layer roadmap
 
