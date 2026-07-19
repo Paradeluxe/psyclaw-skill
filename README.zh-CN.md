@@ -11,6 +11,8 @@
 
 把自然语言描述（或论文 Method）变成项目文件夹里的 **`<folderName>.psyclaw`**。
 
+**宗旨：拿起来就能用。** 论文/自然语言 → 可跑标记 → webui 跑被试 → `data/` 长表+汇总+指标长表。
+
 - **斜杠命令：** `/psyclaw`
 - **GitHub：** https://github.com/Paradeluxe/psyclaw-skill
 - **不是**实验室 GUI——那是 **[psyclaw-webui](https://github.com/Paradeluxe/psyclaw-webui)**（跑被试 → CSV）。

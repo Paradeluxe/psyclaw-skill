@@ -44,11 +44,29 @@ Skill alone → through G0 structure of marker. G1/G2 need webui + PsychoPy.
 
 ### CSV minimum columns
 
-- Session: `participant_id`, `session`, `participant_name`, `notes`, `session_date`
-- Trial: `trial`, `routine`, `response`, `rt`, `keys`
-- Condition columns from stimlist
+- Session: `participant_id`, `session`, `participant_name`, `notes`, `session_date`, `uid`
+- Trial: `trial`, `routine`, `response`, `corrAns`, `corr` (0/1/""), `rt`, `keys` + stimlist cols
+- Pack: `{stem}.csv` (long trials) + `_summary.json` + `_by_condition.csv` + `_metrics_long.csv`
+- Instrument: accuracy / mean RT / hit·FA when Go-NoGo
+- Detail (webui repo): `references/trial-metrics.md`
 
 Compile-only ≠ success. Finished without project-mirrored CSV ≠ desktop-parity success.
+
+### Classic metrics (when Method has precedent)
+
+When writing from classic literature, put **paper factors on the stimlist** and optional:
+
+```json
+"metrics": { "group_by": ["congruent"] }
+```
+
+| Example | Stimlist | metrics.group_by |
+|---------|----------|------------------|
+| Stroop | `congruent` yes/no + `corrAns` | `["congruent"]` |
+| Flanker | `congruency` + `corrAns` | `["congruency"]` |
+| Go/NoGo | `trialType` go/nogo (+ go has `corrAns`) | `["trialType"]` |
+
+Generic scoring only — no paradigm-named compiler branches.
 
 ## design object (agent-generatable)
 

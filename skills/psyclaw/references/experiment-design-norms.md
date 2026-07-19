@@ -158,13 +158,14 @@ If operator picks a path whose basename is awkward, propose a safe slug once.
 |------|--------------------------------|
 | Design | `design_notes` / meta: `factorial`, `assignment` (within\|between\|mixed), factor list |
 | IV | conditions spreadsheet columns; one column per factor; rows = cells or sampled continuum |
-| DV | keyboard/slider/mouse store; correct_ans if any |
+| DV | keyboard/slider/mouse store; **`corrAns`** if mapping known → runner writes `corr` + summary accuracy/RT |
 | Control | extra level or baseline routine |
 | Random | loop `order` / nReps / nesting; between = group field not in within-loop |
 | Practice | practice loop vs main loop |
 | Script | instructions + thanks |
 | Response | keyboard/slider; stopVal / forceEnd |
 | Trial+Load | routine sequence; rest between blocks |
+| Metrics | classic factors on stimlist (`congruent`, `trialType`, …) + optional `metrics.group_by`; see webui `trial-metrics.md` |
 | OutPath | project directory on disk; marker `<folderName>.psyclaw` inside it |
 
 ## Kindergarten one-liner

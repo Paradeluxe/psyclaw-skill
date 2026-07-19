@@ -11,6 +11,8 @@
 
 Turn a description (or paper Method) into a project folder with **`<folderName>.psyclaw`**.
 
+**Ethos: pick up and use.** Paper / NL → runnable marker → hand off to [psyclaw-webui](https://github.com/Paradeluxe/psyclaw-webui) for subjects → trial long CSV + summary + by-condition + metrics_long under `data/`.
+
 - **Slash:** `/psyclaw`
 - **GitHub:** https://github.com/Paradeluxe/psyclaw-skill
 - **Not** the lab GUI — that is **[psyclaw-webui](https://github.com/Paradeluxe/psyclaw-webui)** (run subjects → CSV).
