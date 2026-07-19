@@ -1,6 +1,12 @@
 # WebUI handoff — compile / run / CSV (canonical)
 
-Skill writes **`<folderName>.psyclaw`**. Lab software **psyclaw-webui** opens it, runs subjects, mirrors CSV.
+Skill writes **`<folderName>.psyclaw`**. After G0 the agent **asks** 要跑被试吗 (do not only wait for 能跑吗). If yes, lab software **psyclaw-webui** opens the project, runs subjects **in order**, mirrors CSV.
+
+**Multi-subject:** sequential Start runs; auto participant ID + UID; formal finished → next ID. No separate batch product.
+
+**Agent-driven session:** set `session.experimenter` to the AI identity (e.g. `Hermes` / `PsyClaw-AI`). Pilot = `P_pilot` (does not consume production IDs).
+
+**Out of scope:** half-run / play-only-N-trials lab mode (Builder component PREVIEW ≠ participant run).
 
 ## Architecture
 

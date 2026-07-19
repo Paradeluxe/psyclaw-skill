@@ -18,22 +18,27 @@ MyStroop/
 - Not fixed `design.psyclaw` for new work (webui migrates legacy on open/save).
 - Not PsychoPy Builder XML.
 
-## Default agent pipeline
+## Default agent pipeline (user usage)
 
-```
+```text
 INPUT → clarify loop (one Q per turn) + experiment-design-norms checklist
      → lock OutPath (late; default ./experiments/<slug>/)
      → write/update <projectDir>/<folderName>.psyclaw
-     → validate → deliver project folder
-     → optional handoff to webui (G1/G2)
+     → validate G0 → deliver project folder
+     → agent ASKS: 要跑被试吗？
+          No  → stop
+          Yes → webui sequential subjects (G1/G2)
+                auto ID/UID · P_pilot free · finished → next ID
+                agent-driven → session.experimenter = AI identity
 ```
 
-Clarify = user satisfaction **and** norms coach (see `experiment-design-norms.md`).  
+Clarify = user satisfaction **and** norms coach (see `experiment-design-norms.md`) — give defaults when unsure.  
 Priority: **Design** first; **OutPath** last before write (skip if editing an existing folder).  
 Stop signals: 满意 / 就这样 / 开始写 / 可以了 / 别问了按默认 / Design·IV·DV·response·trial clear with remaining norms defaulted or waived (OutPath may still use default).
 
-Default success for skill alone = **valid marker + project folder at agreed path**.  
-Full lab success (finished run + `<project>/data/` CSV) needs webui/runner.
+Write success = **valid marker + project folder at agreed path** (G0), then **ask run**.  
+Full lab success (finished run + `<project>/data/` CSV) needs webui/runner.  
+Multi-subject = sequential runs (not a special batch mode). No half-run product mode.
 
 ### OutPath defaults (summary)
 
