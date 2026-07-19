@@ -73,12 +73,30 @@ Agent tracks coverage mentally (or in chat). Order = **default ask priority**. S
 | 2 | **IV** | Each factor named + levels (or continuous range + how sampled) | 「第一个因素叫什么、有几档？还有别的因素吗？」 | Infer labels from description; continuous → spreadsheet column of values |
 | 3 | **DV** | Dependent measure + how logged (RT, accuracy, rating, choice, …) | 「你主要看什么结果？反应时、对错、还是评分？」 | RT + correct if keyboard; rating if slider |
 | 4 | **Control** | Baseline / control cell exists, or user waives | 「有没有对照/基线条件？」 | Add control/neutral if typical; else `no control — user OK` |
-| 5 | **Random** | Order rule: random / fullRandom / blocked / counterbalance / fixed | 「试次顺序打乱吗？要不要抵消平衡？」 | Within: `fullRandom` in block; between: randomize trial order inside arm; counterbalance condition order if few blocks |
-| 6 | **Practice** | Practice vs main separated, or waived | 「正式前要不要几题练习？」 | 8–12 practice; main N from user or cell-count rule of thumb |
-| 7 | **Script** | Instructions + thanks (light ethics) | 「开头说明怎么做？结束要谢谢页吗？」 | Short instructions + thanks |
+| 5 | **Random** | Order rule + counterbalance scheme chosen | 「试次顺序怎么排？随机 / 拉丁方 / 分块 / 固定？要不要抵消平衡？」 | See **Counterbalance schemes** below |
+| 6 | **Practice** | Practice vs main separated, and pass threshold | 「正式前要不要几题练习？准确率要多少才进正式？」 | 8–12 practice; pass threshold 60% (allow one redo, else exclude); n-back 3-back 等 high-load → 70%+ |
+| 7 | **Script** | Instructions + thanks (light ethics) | 「开头说明怎么做？结束要谢谢页吗？要不要藏设计委婉版？」 | Short instructions + thanks; 若有 filler/掩蔽设计 → 指导语委婉版，不告诉被试真实假设留余地 |
 | 8 | **Response** | Device/keys, deadline or until-response, stored fields | 「哪些键？有无时限？」 | Task-appropriate keys; store key+RT; correct if mapping known |
-| 9 | **Trial+Load** | One-trial skeleton; blocks/breaks if long | 「一题顺序？大概做多久？」 | fixation → stim → response → ITI; >~30–40 min → blocks + rest |
+| 9 | **Trial+Load** | One-trial skeleton + timing defaults; blocks/breaks if long | 「一题顺序？大概做多久？」 | fixation 500ms → stim → response → ITI 600~1500ms 抖动; >~30–40 min → blocks + rest. 帧取整提示仅 fMRI/ERP/眼动/TMS 触发 |
 | 10 | **OutPath** | Project directory locked (absolute or agreed relative). Ask **late** — after design core, right before write | 「项目放哪？默认 `./experiments/<slug>/`，直接回车就用默认」 | See **Output location** below |
+
+### Counterbalance schemes (item 5 — pick one)
+
+Item 5 over random / Latin square / blocked / fixed, agent should also tell user which fits:
+
+| Scheme | When it fits | When it doesn't |
+|--------|--------------|-----------------|
+| **random / fullRandom** | Within-subject, 大量 trial（>40），单次顺序扰动可接受；ERP 也常用于 jittered ITI | 短 block；少量条件（≤3）→ 顺序效应没洗掉 |
+| **Latin square** | Within-subject，条件数 2~5，每被试看不同顺序抵消顺序效应；study-test / memory / 序列学习必选 | 完全随机已够；条件之间相互独立、无顺序依赖 |
+| **blocked** | 练习 vs 正式分块；homogeneous block 减少切换成本；between 设计分组施测 | 想要"每一试次随机抽条件"，block 会变成连续同类 |
+| **fixed / sequential** | 教学演示；demo；渐进难度/Stroop 检查 | 真正数据收集——固定顺序=无法控制顺序效应 |
+
+**一对多（between 因素）**：分组层用 randomize 分组（被试随机分到 arm），arm 内 trial 顺序再选 random / Latin square / blocked 之一。
+
+**默认推荐**：
+- >3 因素 levels 或 trial 数 ≥40 → `random`
+- 2~3 levels 且想发表 → `Latin square`
+- 含 practice/main 或 high-load 任务 → `blocked`（practice/main block 分开）
 
 ### Output location (item 10 — late, short, defaulted)
 
@@ -103,7 +121,7 @@ Agent tracks coverage mentally (or in chat). Order = **default ask priority**. S
 1. Explicit workspace from operator / session (`--out-dir`, “放到 X”)
 2. Else current working directory of the session: `./experiments/<folderName>/`
 3. Never default to Desktop
-4. Never write into the Hermes skill install tree (`~/.hermes/skills/.../psyclaw`)
+4. Never write into the agent skill install tree
 
 **On disk:**
 
@@ -147,7 +165,7 @@ If operator picks a path whose basename is awkward, propose a safe slug once.
 
 ## What this is not
 
-- Not sample-size power analysis (only if user asks).
+- Not sample-size power analysis. **But if user asks N**: give G*Power reference + recommended parameters (paired-t: dz=0.5 medium, α=0.05, power 0.80; repeated-measures ANOVA: f=0.25 medium, ε=1, α=0.05, power 0.80) without self-computing. Tell user: 「装 G*Power，tabs选 t-test / F-test → Means: Within/Repeated measures → 打这几个默认参数，G*Power 会给你最小 N」。Never fake a sample-size calc.
 - Not full IRB.
 - Not statistical analysis plan (ANOVA vs LMM vs regression — mention only if useful for logging columns).
 - Not “must be a named classic paradigm.”
@@ -161,12 +179,14 @@ If operator picks a path whose basename is awkward, propose a safe slug once.
 | DV | keyboard/slider/mouse store; **`corrAns`** if mapping known → runner writes `corr` + summary accuracy/RT |
 | Control | extra level or baseline routine |
 | Random | loop `order` / nReps / nesting; between = group field not in within-loop |
-| Practice | practice loop vs main loop |
-| Script | instructions + thanks |
+| Practice | practice loop vs main loop; `pass_threshold` (default 0.60) + `max_redo` (default 1) |
+| Script | instructions + thanks; `debrief_text` optional — present real hypothesis only at run end |
 | Response | keyboard/slider; stopVal / forceEnd |
-| Trial+Load | routine sequence; rest between blocks |
+| Trial+Load | routine sequence; fixation 500ms / ITI 600~1500ms jitter defaults; rest between blocks |
 | Metrics | classic factors on stimlist (`congruent`, `trialType`, …) + optional `metrics.group_by`; see webui `trial-metrics.md` |
 | OutPath | project directory on disk; marker `<folderName>.psyclaw` inside it |
+| **Seed** | optional `seed` (int) at design root; if absent → runner randomizes. Write once in marker, reuse across reruns for reproducibility |
+| **Exclusion rules** | optional `exclusion_rules` block (trial-level: RT outside ±2.5 SD → `rt_outlier: true` flag; participant-level: overall accuracy < threshold). Default: flag only, do not drop. Logged but applied in analysis, not at run time |
 
 ## Kindergarten one-liner
 

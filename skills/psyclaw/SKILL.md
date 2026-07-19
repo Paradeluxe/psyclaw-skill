@@ -14,7 +14,7 @@ tags: [psychology, psychopy, experiment-design, stimuli-generation, conversation
 related_skills: [browser-skill, psyclaw-webui]
 ---
 
-# PsyClaw (`/psyclaw`)
+# PsyClaw (`psyclaw`)
 
 Write the experiment **说明书** (marker file). Run subjects in **psyclaw-webui**.
 
@@ -22,8 +22,8 @@ Write the experiment **说明书** (marker file). Run subjects in **psyclaw-webu
 |---|--------|--------|
 | Role | design → `<folderName>.psyclaw` | draw / run / CSV |
 | GitHub | `Paradeluxe/psyclaw-skill` | `Paradeluxe/psyclaw-webui` |
-| Install | `hermes skills install Paradeluxe/psyclaw-skill/skills/psyclaw -y` | separate lab install |
-| Slash | **`/psyclaw`** | `/psyclaw-webui` |
+| Install | skill installer (`Paradeluxe/psyclaw-skill/skills/psyclaw`) | separate lab install |
+| Names | **`psyclaw`** | `psyclaw-webui` |
 
 Never merge install narratives. Skill install ≠ GUI deploy.
 
@@ -96,7 +96,7 @@ browser-skill = related only; do not silent-install or run browser every turn.
 - Platform > paradigm-specific hardcoding (Stroop/GoNoGo as data labels OK; do not hardcode paradigm compilers)
 - User override wins; log design deviations in marker notes
 - No public release / tag / push without explicit approval
-- First `/psyclaw` or 全装: doctor gaps → consent → install only missing pieces
+- First use or 全装: doctor gaps → consent → install only missing pieces
 - After every successful G0 write/edit: **ask** 要跑被试吗 (unless user already said run/don't-run this turn)
 
 ## References (load on demand)
@@ -113,6 +113,17 @@ browser-skill = related only; do not silent-install or run browser every turn.
 ## Marker content (minimal)
 
 Emit design JSON the webui runner accepts: routines, flow/loops, components (text/image/keyboard/slider/…), conditions columns, session metadata as required by webui schema. Prefer fields already used by psyclaw-webui `design_compiler`; do not invent a second parallel schema.
+
+Optional reproducibility / analysis fields (write only when the user opts in or asks):
+
+- `seed` (int, optional) — randomize trial/order generation. Absent → runner randomizes every run. Present → reproducible order. Saved into marker for paper methods section.
+- `exclusion_rules` (object, optional) — pre-registered exclusion plan, default flag-only (runner does not drop rows):
+  ```json
+  "exclusion_rules": {
+    "trial_level": {"rt_outlier_sd": 2.5, "rt_min_ms": 100, "rt_max_ms": 3000, "action": "flag"},
+    "participant_level": {"overall_accuracy_min": 0.60, "action": "exclude_after_run"}
+  }
+  ```
 
 When unsure of a field: read webui schema / `webui-handoff.md`, not legacy YAML→psyexp docs.
 
