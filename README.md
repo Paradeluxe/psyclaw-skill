@@ -2,6 +2,13 @@
 
 [English](README.md) · [中文](README.zh-CN.md)
 
+[![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL--3.0-blue.svg)](LICENSE)
+[![Hermes skill](https://img.shields.io/badge/Hermes-%2Fpsyclaw-8B5CF6)](https://github.com/Paradeluxe/psyclaw-skill)
+[![Marker](https://img.shields.io/badge/marker-.psyclaw-0ea5e9)](https://github.com/Paradeluxe/psyclaw-skill)
+[![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey)](https://github.com/Paradeluxe/psyclaw-skill)
+[![Lab GUI](https://img.shields.io/badge/lab%20GUI-psyclaw--webui-22c55e)](https://github.com/Paradeluxe/psyclaw-webui)
+[![GitHub stars](https://img.shields.io/github/stars/Paradeluxe/psyclaw-skill?style=social)](https://github.com/Paradeluxe/psyclaw-skill)
+
 Turn a description (or paper Method) into a project folder with **`<folderName>.psyclaw`**.
 
 - **Slash:** `/psyclaw`
