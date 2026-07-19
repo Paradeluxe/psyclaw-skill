@@ -1,11 +1,11 @@
-# /psyclaw pipeline + inputs (2026-07-18+)
+# psyclaw pipeline + inputs (2026-07-18+)
 
 User wants **simple** explanations first (plain language when stuck). One pipeline only.
 
 ## Two products (one line each)
 
-- **`/psyclaw`** = write the experiment “说明书” (marker file).
-- **`/psyclaw-webui`** = lab software that opens that file, runs subjects, writes CSV.
+- **`psyclaw`** = write the experiment “说明书” (marker file).
+- **`psyclaw-webui`** = lab software that opens that file, runs subjects, writes CSV.
 
 ## Marker (shared contract)
 
@@ -44,7 +44,7 @@ Multi-subject = sequential runs (not a special batch mode). No half-run product 
 
 - New: `./experiments/<folderName>/` under session cwd (or operator-given base)
 - Marker: `<projectDir>/<folderName>.psyclaw` (`folderName` = basename)
-- Never default to Desktop; never write into `~/.hermes/skills/.../psyclaw`
+- Never default to Desktop; never write into the agent skill install tree
 - Edit existing project → path already known, do not re-ask
 
 ## Three input classes
@@ -52,17 +52,17 @@ Multi-subject = sequential runs (not a special batch mode). No half-run product 
 | # | Input | Companion skill |
 |---|--------|-----------------|
 | 1 | User NL description of the experiment | none |
-| 2 | Materials (PDF Method, HTML, pasted text) | **`browser-skill`** (and/or academic-search) to **fetch** — then return to `/psyclaw` |
+| 2 | Materials (PDF Method, HTML, pasted text) | **`browser-skill`** (and/or academic-search) to **fetch** — then return to `psyclaw` |
 | 3 | Existing project folder with marker | edit in place |
 
 ## browser-skill = related, not core
 
 - Put in `related_skills`; tell agent: load when class-2 needs net download.
-- **Do not** merge browser into psyclaw package or run browser on every `/psyclaw`.
-- `hermes skills install` of browser is separate from installing this skill.
+- **Do not** merge browser into psyclaw package or run browser on every `psyclaw` invoke.
+- Installing browser skill is separate from installing this skill.
 - Skill may **recommend** related installs; does not silent-install them.
 
-## First `/psyclaw` = doctor (user confirmed)
+## First use = doctor (user confirmed)
 
 Detect missing small deps / webui / PsychoPy when needed → report → consent → install only gaps. Not every turn. See `install-orchestrator.md`.
 
@@ -74,13 +74,13 @@ Like `nature-figure`: skills install = light cookbook; large runtime external; m
 
 | Name | Meaning |
 |------|---------|
-| Slash / skill id | **`/psyclaw`** / `psyclaw` |
+| Skill id | **`psyclaw`** |
 | GitHub skill repo | **`Paradeluxe/psyclaw-skill`** (edit this package) |
-| Hermes local | `~/.hermes/skills/psyclaw` (or profile skills dir) |
+| Agent local | skill directory (e.g. `~/.agents/skills/psyclaw`) |
 | Papers vault (optional) | separate data folder — **not** the skill package |
 
-Do **not** rename slash to `/psyclaw-skill` unless user asks.
+Do **not** rename the skill id to `psyclaw-skill` unless user asks.
 
 ## Market / short name
 
-`hermes skills install psyclaw` works when searchable sources have exactly one skill named `psyclaw`. Repo layout is `skills/psyclaw/`. Full fallback: `Paradeluxe/psyclaw-skill/skills/psyclaw`. See `install-orchestrator.md`.
+Installing `psyclaw` works when searchable sources have exactly one skill named `psyclaw`. Repo layout is `skills/psyclaw/`. Full fallback: `Paradeluxe/psyclaw-skill/skills/psyclaw`. See `install-orchestrator.md`.

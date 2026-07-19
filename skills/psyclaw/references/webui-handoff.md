@@ -4,7 +4,7 @@ Skill writes **`<folderName>.psyclaw`**. After G0 the agent **asks** 要跑被�
 
 **Multi-subject:** sequential Start runs; auto participant ID + UID; formal finished → next ID. No separate batch product.
 
-**Agent-driven session:** set `session.experimenter` to the AI identity (e.g. `Hermes` / `PsyClaw-AI`). Pilot = `P_pilot` (does not consume production IDs).
+**Agent-driven session:** set `session.experimenter` to the AI agent identity (e.g. `PsyClaw-AI`). Pilot = `P_pilot` (does not consume production IDs).
 
 **Out of scope:** half-run / play-only-N-trials lab mode (Builder component PREVIEW ≠ participant run).
 

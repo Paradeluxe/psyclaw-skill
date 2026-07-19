@@ -1,13 +1,13 @@
-# `/psyclaw` skill pipeline (product, 2026-07-19)
+# `psyclaw` skill pipeline (product, 2026-07-19)
 
 ## Two products (do not merge)
 
-| | `/psyclaw` | `/psyclaw-webui` |
+| | `psyclaw` | `psyclaw-webui` |
 |---|---|---|
 | Role | Write experiment “说明书” for agents | Lab software: draw / run / CSV |
-| Slash | **`/psyclaw`** (Hermes skill id; keep this name) | `/psyclaw-webui` |
+| Skill id | **`psyclaw`** | `psyclaw-webui` |
 | GitHub | `Paradeluxe/psyclaw-skill` | `Paradeluxe/psyclaw-webui` |
-| Disk | Hermes `skills/psyclaw` · edit `Paradeluxe/psyclaw-skill` | `Paradeluxe/psyclaw-webui` |
+| Disk | repo `skills/psyclaw/` · edit `Paradeluxe/psyclaw-skill` | `Paradeluxe/psyclaw-webui` |
 
 ## Shared IR (single track)
 
@@ -66,4 +66,4 @@ Write success = through step **4**. Lab success = through step **6**.
 
 ## Cross-CLI later
 
-Enough product: **schema + CLI around same IR**. Hermes `SKILL.md` alone ≠ cross-CLI package.
+Enough product: **schema + CLI around same IR**. `SKILL.md` alone ≠ cross-CLI package.
