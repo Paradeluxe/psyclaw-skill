@@ -51,7 +51,7 @@ Multi-subject = sequential runs (not a special batch mode). No half-run product 
 3. **Write** project folder + `<folderName>.psyclaw` at the agreed **OutPath**
 4. **Validate** schema / structure (**marker ready**)
 5. **Ask run** — agent asks once the marker is ready (do not only wait for the user to say 能跑吗). Skip ask only if this turn already answered run/don't-run.
-6. **Handoff** (if yes) → start/use lab app **psyclaw-webui** (not a skill load) → run status `finished` + CSV under `<project>/data/`
+6. **Handoff** (if yes) → **run prep checklist** (project · webui · which PsychoPy path/source · System gate; same facts as webui System) → start/use **psyclaw-webui** → `finished` + CSV under `<project>/data/`
 
 Write success = through step **4**. Lab success = through step **6**.
 

@@ -42,6 +42,29 @@ PsychoPyProcess
 
 Skill alone → marker ready. Run finished + data on disk need webui + PsychoPy.
 
+## Run prep checklist (tell the user — same facts as System)
+
+Before starting subjects (after user says 要跑 / agent handoff), agent **states a short checklist** so the operator knows what will actually run. Prefer the same facts the webui **System** tab shows (host / PsychoPy path / source). Do not invent a second probe story.
+
+| # | Item | Say plainly |
+|---|------|-------------|
+| 1 | **Project** | folder path + marker name |
+| 2 | **WebUI** | up at `http://127.0.0.1:8876` or starting it |
+| 3 | **PsychoPy runtime** | which python will run trials: path + source (`env` / `library` / `standalone`) — from `describe_resolution` or System probe, **not** guesswork |
+| 4 | **Gate** | System overall pass/warn/fail if available; fail → fix before formal run |
+
+Example recap (user language):
+
+```text
+准备跑被试：
+- 项目：E:\labs\MyStroop\（MyStroop.psyclaw）
+- 实验室软件：http://127.0.0.1:8876
+- 实验引擎：C:\...\python.exe（library / 可 import psychopy）
+- System 预检：通过
+```
+
+If resolution fails or System fails PsychoPy check → stop and point at webui INSTALL / System Re-run; skill does not freestyle-upgrade PsychoPy.
+
 ### CSV minimum columns
 
 - Session: `participant_id`, `session`, `participant_name`, `notes`, `session_date`, `uid`

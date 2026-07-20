@@ -17,12 +17,29 @@
 On first use (or when user says 全装 / 部署):
 
 1. Check skill-side small deps / scripts runnable.
-2. Check webui present (path or import) **if** lab software needed this turn.
-3. **If run needed:** only probe whether a PsychoPy interpreter resolves (env → library → standalone). Missing → point at **webui** `docs/INSTALL.md` (do not invent a skill-side PsychoPy upgrade path).
-4. Missing skill/webui → report + **ask consent** → install only those gaps.
-5. Present → skip; do the task (write `<folderName>.psyclaw`).
+2. Check webui present **if** lab software needed this turn — resolve path in order:
+   - `PSYCLAW_WEBUI_ROOT` if set and exists  
+   - default **`~/psyclaw/psyclaw-webui`** (Windows: `%USERPROFILE%\psyclaw\psyclaw-webui`)  
+   - else ask  
+3. **If webui already found (git clone / runnable tree):** **do not re-install.** Prefer **update** (INSTALL § Update: pull + deps + conditional PsychoPy). Never clone a second copy on top without asking.  
+4. **If webui missing:** ask once (consent + location):
+   - **Default (recommended):** install to `~/psyclaw/psyclaw-webui`  
+   - **Custom:** user gives any writable path (also fine) → clone there  
+   After install, prefer setting/remembering `PSYCLAW_WEBUI_ROOT` so later updates do not re-ask.
+5. **If run needed:** probe PsychoPy only (env → library → standalone). Missing → **webui** `docs/INSTALL.md` (skill does not freestyle-upgrade PsychoPy).
+6. Missing skill → install skill gap with consent.
+7. All present / updated → do the task (write `<folderName>.psyclaw`).
 
-Not every turn reinstalls. See **Update stack** below when the user asks to update.
+Not every turn reinstalls. See **Updates** below when the user asks to update.
+
+### Webui location policy
+
+| | |
+|--|--|
+| **Default** | `~/psyclaw/psyclaw-webui` — every OS user has a home dir; create `psyclaw\` on first install |
+| **Override** | User names another folder → allowed; clone/update there |
+| **Env** | `PSYCLAW_WEBUI_ROOT` = canonical path when set |
+| **Never default to** | Desktop · skill install tree · `Program Files` (no admin story) |
 
 ## Two update entry points (nested)
 
@@ -56,7 +73,7 @@ Not every turn reinstalls. See **Update stack** below when the user asks to upda
 
 1. **Skill 本身** — 本 CLI 的 `psyclaw` 对齐上游（`Paradeluxe/psyclaw-skill` → `skills/psyclaw/`）。
 2. **Related** — `related_skills`（如 browser-skill）已装或本轮需要 → 一并更新；不用则跳过并注明。
-3. **Webui 整段** — 执行下面 **B**（同一轮，不是只甩一句提醒）。找不到 clone → 问路径或按 INSTALL 部署，不得静默跳过。
+3. **Webui 整段** — 执行下面 **B**（同一轮）。路径：`PSYCLAW_WEBUI_ROOT` → `~/psyclaw/psyclaw-webui` → 问用户。没有安装 → 全装式询问默认/自定义路径后再 B，不得静默跳过。
 4. 汇报表：skill / related / webui（+ 若 B 动了 PsychoPy）— 已新 / 已更 / 失败 / 跳过原因。
 5. 禁止在 webui 未处理时声称「psyclaw 已更新完成」（用户明确放弃 webui 除外）。
 
