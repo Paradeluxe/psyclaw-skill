@@ -12,7 +12,6 @@ REQUIRED = [
     "SKILL.md",
     "scripts/doctor.py",
     "references/skill-pipeline.md",
-    "references/skill-pipeline-and-inputs.md",
     "references/experiment-design-norms.md",
     "references/install-orchestrator.md",
     "references/webui-handoff.md",
