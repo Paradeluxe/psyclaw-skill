@@ -36,7 +36,7 @@
   • 停止信号：满意 / 就这样 / 开始写 / 按默认 / 核心项已清
 
         ▼
-写入 + 校验（G0）
+写入 + 校验（说明书就绪）
   <projectDir>/<folderName>.psyclaw     # 设计 JSON，不是 Builder 的 .psyexp
 
         ▼
@@ -45,7 +45,7 @@
 
         ├─ 否  → 结束（有标记文件即可）
         │
-        └─ 是  → 交接 psyclaw-webui（G1 finished → G2 project/data/*.csv）
+        └─ 是  → 交接 psyclaw-webui（运行完成 → CSV 落在 project/data/）
                    • 按顺序逐个跑被试
                    • 被试编号 / UID 自动分配
                    • P_pilot 不占用正式编号
@@ -55,10 +55,10 @@
 
 | 用户意图 | 行为 |
 |----------|------|
-| 做一个实验 | 澄清 → 写 G0 → **问是否开跑** |
-| 改已有设计 | 改标记 → G0 → **问是否开跑** |
+| 做一个实验 | 澄清 → 写说明书 → **问是否开跑** |
+| 改已有设计 | 改标记 → 校验 → **问是否开跑** |
 | 要跑 / 多人 | webui 顺序跑；自动编号；智能体开跑则 experimenter=AI |
-| 不要跑 / 只要说明书 | G0 后停止 |
+| 不要跑 / 只要说明书 | 说明书就绪后停止 |
 | 全装 / 首次部署 | doctor → 征得同意 → 只补缺项 |
 
 **本技能不做：** 半跑 /「只预览几题」作为产品模式（webui 的 Builder 有组件 PREVIEW；实验室交付是完整 Start/Pilot + CSV）。不做 CSV 后的统计分析。不做 Builder `.psyexp`。
@@ -72,13 +72,13 @@ MyExp/
   participants.json      # 名册（webui）
 ```
 
-| 门禁 | 含义 |
+| 检查 | 含义 |
 |------|------|
-| **G0** | 标记可编译（合法设计 JSON → PsychoPy 脚本形态） |
-| **G1** | 运行状态为 `finished` |
-| **G2** | CSV 落在 **`<project>/data/`** |
+| **说明书就绪** | 标记可编译（合法设计 JSON → PsychoPy 脚本形态） |
+| **运行完成** | 运行状态为 `finished` |
+| **数据落盘** | CSV 落在 **`<project>/data/`** |
 
-仅技能 = 到 G0 + 询问是否开跑。完整实验室成功需要 webui + PsychoPy。
+仅技能 = 说明书就绪 + 询问是否开跑。完整实验室成功需要 webui + PsychoPy。
 
 ## 安装（不是使用管线）
 

@@ -1,6 +1,6 @@
 # WebUI handoff — compile / run / CSV (canonical)
 
-Skill writes **`<folderName>.psyclaw`**. After G0 the agent **asks** 要跑被试吗 (do not only wait for 能跑吗). If yes, lab software **psyclaw-webui** opens the project, runs subjects **in order**, mirrors CSV.
+Skill writes **`<folderName>.psyclaw`**. Once the marker is ready the agent **asks** 要跑被试吗 (do not only wait for 能跑吗). If yes, lab software **psyclaw-webui** opens the project, runs subjects **in order**, mirrors CSV.
 
 **Multi-subject:** sequential Start runs; auto participant ID + UID; formal finished → next ID. No separate batch product.
 
@@ -32,15 +32,15 @@ PsychoPyProcess
 - Platform > named paradigms (no Stroop-hardcoded SPA fields)
 - Marker name: **`<folderName>.psyclaw`** (not fixed `design.psyclaw`; webui migrates legacy)
 
-## Gates
+## Success checks
 
-| Gate | Pass means |
-|------|------------|
-| G0 Compile | `design_compiler` emits parseable Python with `Window` |
-| G1 Run | `/api/runs` → status `finished` |
-| G2 Data | CSV under **`<project_path>/data/`** |
+| Check | Pass means |
+|-------|------------|
+| **Marker ready** | `design_compiler` emits parseable Python with `Window` |
+| **Run finished** | `/api/runs` → status `finished` |
+| **Data on disk** | CSV under **`<project_path>/data/`** |
 
-Skill alone → through G0 structure of marker. G1/G2 need webui + PsychoPy.
+Skill alone → marker ready. Run finished + data on disk need webui + PsychoPy.
 
 ### CSV minimum columns
 
@@ -136,11 +136,11 @@ Compiler component types (typical): `text`, `keyboard`, `image`, `sound`/`audio`
 
 - Pilot: `participant_id: "P_pilot"` (does not consume production IDs)
 - Formal: sequential IDs from project `participants.json`
-- Omit `project_path` → only internal `runs/` CSV (fails G2)
+- Omit `project_path` → only internal `runs/` CSV (fails **data on disk**)
 
 ## Pitfalls
 
-1. G0 ≠ shippable — need G1+G2 for lab claims.
+1. Marker ready ≠ full lab delivery — need **run finished** + **data on disk**.
 2. Missing `project_path` — Open folder looks empty.
 3. Port **8876** only (not Mentor 8787).
 4. Do not emit Builder `.psyexp` as the skill deliverable.

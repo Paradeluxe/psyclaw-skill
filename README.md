@@ -36,7 +36,7 @@ CLARIFY  (one question per turn · coach)
   • Stop when the user is satisfied, says write/defaults, or core items are clear
 
         ▼
-WRITE + VALIDATE (G0)
+WRITE + VALIDATE (marker ready)
   <projectDir>/<folderName>.psyclaw     # design JSON, not Builder .psyexp
 
         ▼
@@ -45,7 +45,7 @@ ASK RUN  (agent asks — do not wait for the user to invent the run request)
 
         ├─ No  → stop (marker is enough)
         │
-        └─ Yes → handoff psyclaw-webui (G1 finished → G2 project/data/*.csv)
+        └─ Yes → handoff psyclaw-webui (run finished → CSV in project/data/)
                    • Run subjects in order (one after another)
                    • Participant ID / UID auto-assigned
                    • P_pilot does not consume production IDs
@@ -55,10 +55,10 @@ ASK RUN  (agent asks — do not wait for the user to invent the run request)
 
 | User intent | What happens |
 |-------------|--------------|
-| Create an experiment | clarify → write G0 → **ask run** |
-| Edit an existing design | edit marker → G0 → **ask run** |
+| Create an experiment | clarify → write marker → **ask run** |
+| Edit an existing design | edit marker → validate → **ask run** |
 | Run / multi-subject | sequential webui runs; auto ID; experimenter=AI if agent-run |
-| Design only / do not run | stop after G0 |
+| Design only / do not run | stop once marker is ready |
 | First-time full setup | doctor → consent → install gaps only |
 
 **Not in scope for this skill:** half-run / “preview only a few trials” as a product mode (webui has Builder PREVIEW for components; lab success is full Start/Pilot + CSV). Statistics after CSV. Builder `.psyexp`.
@@ -72,13 +72,13 @@ MyExp/
   participants.json      # roster (webui)
 ```
 
-| Gate | Meaning |
-|------|---------|
-| **G0** | Marker compiles (valid design JSON → PsychoPy script shape) |
-| **G1** | Run status `finished` |
-| **G2** | CSV under **`<project>/data/`** |
+| Check | Meaning |
+|-------|---------|
+| **Marker ready** | Marker compiles (valid design JSON → PsychoPy script shape) |
+| **Run finished** | Run status `finished` |
+| **Data on disk** | CSV under **`<project>/data/`** |
 
-Skill alone = through G0 + the run question. Full lab success needs webui + PsychoPy.
+Skill alone = marker ready + the run question. Full lab success needs webui + PsychoPy.
 
 ## Install (not the usage pipeline)
 

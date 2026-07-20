@@ -1,13 +1,13 @@
 ---
 name: psyclaw
-version: 0.3.3
+version: 0.3.4
 author: Paradeluxe
 license: AGPL-3.0
 platforms: [windows, macos, linux]
 description: >
   PsyClaw skill — turn NL or paper Method into a project folder with
   <folderName>.psyclaw (design JSON). Clarify + experiment-design norms,
-  then write marker. After G0, ask the user whether to run subjects;
+  then write marker. After the marker is ready, ask whether to run subjects;
   handoff psyclaw-webui for sequential runs + CSV (experimenter=AI when
   agent-driven). Not the lab GUI; not PsychoPy Builder XML.
 tags: [psychology, psychopy, experiment-design, stimuli-generation, conversational]
@@ -36,15 +36,15 @@ MyStroop/
 
 - Content = design JSON (routines + flow), **not** `.psyexp`.
 - New work: **`<folderName>.psyclaw`** (webui migrates legacy `design.psyclaw`).
-- Skill write success = project folder + valid marker (G0).
-- Full lab success (finished run + `<project>/data/` CSV) needs webui (G1/G2).
+- Skill write success = project folder + valid marker (**marker ready**).
+- Full lab success = run finished + CSV under `<project>/data/` (needs webui).
 
 ## Pipeline (summary)
 
 ```text
 INPUT (NL | PDF/Method | existing folder)
   → Clarify (1 Q/turn, coach + defaults; Design first, OutPath last)
-  → Write + Validate G0
+  → Write + validate marker
   → Agent ASKS: 要跑被试吗？
        No  → stop
        Yes → webui sequential subjects
@@ -60,10 +60,10 @@ No half-run product mode. Multi-subject = normal sequential runs, not a special 
 
 | User | Do |
 |------|-----|
-| 做一个… | clarify → write G0 → **ask run** |
-| 改… | edit marker → G0 → **ask run** |
+| 做一个… | clarify → write marker → **ask run** |
+| 改… | edit marker → validate → **ask run** |
 | 要跑 / 跑一下 / 多人 | handoff webui; sequential; experimenter=AI if agent-run |
-| 不要跑 / 只要说明书 | stop after G0 |
+| 不要跑 / 只要说明书 | stop once marker is ready |
 | 全装 / 首次 | doctor — `references/install-orchestrator.md` |
 
 Edit path: open existing marker → change → rewrite → validate → **ask run again**. Do not re-ask OutPath.
@@ -78,7 +78,7 @@ Edit path: open existing marker → change → rewrite → validate → **ask ru
 - User override wins; log design deviations in marker notes.
 - No public release / tag / push without explicit approval.
 - First use or 全装: doctor gaps → consent → install only missing pieces.
-- After every successful G0 write/edit: **ask** 要跑被试吗 (unless user already said run/don't-run this turn).
+- After every successful marker write/edit: **ask** 要跑被试吗 (unless user already said run/don't-run this turn).
 - browser-skill = related only (class-2 PDF fetch); do not silent-install or run browser every turn.
 
 ## Marker content (minimal)
@@ -105,7 +105,7 @@ When unsure of a field: read webui schema / `webui-handoff.md`, not legacy YAML�
 | `references/skill-pipeline.md` | pipeline detail, inputs, OutPath, naming |
 | `references/experiment-design-norms.md` | clarify checklist (Design first, OutPath last) |
 | `references/install-orchestrator.md` | install / doctor / short name |
-| `references/webui-handoff.md` | G0/G1/G2 + webui handoff gates |
+| `references/webui-handoff.md` | compile / run finished / data on disk + webui handoff |
 | `references/user-conservative-workflow-preference.md` | one surgical fix per bug report |
 
 ## Out of scope (this skill)

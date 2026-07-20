@@ -28,10 +28,10 @@ MyStroop/
 ```text
 INPUT (NL | PDF/Method | existing folder)
   → Clarify (1 Q/turn · coach + defaults · Design first · OutPath last)
-  → Write + Validate G0
+  → Write + validate marker
   → Agent ASKS: 要跑被试吗？
        No  → stop at marker
-       Yes → webui sequential subjects (G1/G2)
+       Yes → webui sequential subjects (run finished + data on disk)
              auto ID/UID · P_pilot free · finished → next ID
              agent-driven → session.experimenter = AI identity
 ```
@@ -40,8 +40,8 @@ Clarify = user satisfaction **and** norms coach (see `experiment-design-norms.md
 Priority: **Design** first; **OutPath** last before write (skip if editing an existing folder).  
 Stop signals: 满意 / 就这样 / 开始写 / 可以了 / 别问了按默认 / Design·IV·DV·response·trial clear with remaining norms defaulted or waived.
 
-Write success = **valid marker + project folder at agreed path** (G0), then **ask run**.  
-Full lab success (finished run + `<project>/data/` CSV) needs webui/runner.  
+Write success = **valid marker + project folder at agreed path** (**marker ready**), then **ask run**.  
+Full lab success (run finished + `<project>/data/` CSV) needs webui/runner.  
 Multi-subject = sequential runs (not a special batch mode). No half-run product mode.
 
 ## Six steps
@@ -49,9 +49,9 @@ Multi-subject = sequential runs (not a special batch mode). No half-run product 
 1. **Hear** intent (NL / PDF Method / existing folder)
 2. **Clarify until satisfied + norms gate** — **one question per turn** (never stack Qs). Coach via **`experiment-design-norms.md`**: suggest defaults when unsure; lock **Design** first (几×几 / within·between·mixed / continuous IVs), then IV→…→trial; **OutPath last** (default `./experiments/<slug>/`, never Desktop / never skill install dir). Stop signals or critical items answered/defaulted. User override wins; log deviations.
 3. **Write** project folder + `<folderName>.psyclaw` at the agreed **OutPath**
-4. **Validate** schema / structure (G0)
-5. **Ask run** — agent asks after G0 (do not only wait for the user to say 能跑吗). Skip ask only if this turn already answered run/don't-run.
-6. **Handoff** (if yes) → load `psyclaw-webui` → G1 finished + G2 `<project>/data/*.csv`
+4. **Validate** schema / structure (**marker ready**)
+5. **Ask run** — agent asks once the marker is ready (do not only wait for the user to say 能跑吗). Skip ask only if this turn already answered run/don't-run.
+6. **Handoff** (if yes) → load `psyclaw-webui` → run status `finished` + CSV under `<project>/data/`
 
 Write success = through step **4**. Lab success = through step **6**.
 
@@ -59,10 +59,10 @@ Write success = through step **4**. Lab success = through step **6**.
 
 | User says | Do |
 |-----------|-----|
-| 做一个… | 1→5 (ask run after G0) |
+| 做一个… | 1→5 (ask run after marker ready) |
 | 改… | open existing marker → edit → 3→5 |
 | 要跑 / 跑一下 / 多人 | handoff webui; sequential; experimenter=AI if agent-run |
-| 不要跑 / 只要说明书 | stop after G0 |
+| 不要跑 / 只要说明书 | stop once marker is ready |
 | 全装 / 首次 | doctor — `install-orchestrator.md` |
 
 ## Three input classes
