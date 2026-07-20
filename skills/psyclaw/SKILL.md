@@ -79,7 +79,7 @@ Edit path: open existing marker → change → rewrite → validate → **ask ru
 - Platform > paradigm-specific hardcoding (Stroop/GoNoGo as data labels OK; do not hardcode paradigm compilers).
 - User override wins; log design deviations in marker notes.
 - No public release / tag / push without explicit approval.
-- First use or 全装: doctor gaps → consent → install only missing pieces. Webui default path `~/psyclaw/psyclaw-webui`; user may choose another. Remember via `PSYCLAW_WEBUI_ROOT`.
+- First use or 全装: doctor gaps → consent → install only missing pieces. Webui path order: `PSYCLAW_WEBUI_ROOT` → `~/.psyclaw/config.json` (`webui_root`) → `~/psyclaw/psyclaw-webui` → ask. After install/update **always** remember (`python scripts/user_config.py remember` or start.py).
 - **更新两入口（嵌套）**:「更新 skill/psyclaw」= skill 本身 + related + **执行 webui 更新全段**。「更新 webui」= webui 代码 + 其库（PsychoPy 仅 webui 要求时）。Skill 禁止自行升 PsychoPy。Detail: `references/install-orchestrator.md`.
 - After every successful marker write/edit: **ask** 要跑被试吗 (unless user already said run/don't-run this turn).
 - Before run handoff: short **run prep checklist** (project, webui URL, **which PsychoPy python + source**, System gate) — same facts as webui System tab. Detail: `references/webui-handoff.md`.
