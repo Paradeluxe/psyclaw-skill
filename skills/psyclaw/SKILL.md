@@ -43,7 +43,8 @@ MyStroop/
 
 ```text
 INPUT (NL | PDF/Method | existing folder)
-  → Clarify (1 Q/turn; Design first, OutPath last; lit → paper-anchored)
+  → [if lit intent] FIND lit FIRST (search → browser-skill → file on disk)
+  → Clarify (1 Q/turn; Design first, OutPath last; paper-anchored if lit)
   → Write + validate marker
   → Agent ASKS: 要跑被试吗？
        No  → stop
@@ -60,8 +61,9 @@ No half-run product mode. Multi-subject = normal sequential runs, not a special 
 
 | User | Do |
 |------|-----|
-| 做一个… | clarify → write marker → **ask run** |
-| 按这篇/参考/复现/Method/搜一下… | **host search first** → else browser-skill → **article on disk** → paper-anchored clarify → write → **ask run** |
+| 做一个…（无文献） | clarify → write → **ask run** |
+| 做一个… + 参考/复现/文献/Method/某文/DOI… | **Turn 1 = 找文献**（先搜后 browser-skill，文章落地）→ 再 paper-anchored clarify → write → **ask run** |
+| 按这篇/搜一下/只要文献… | 同上：先找全再问设计 |
 | 改… | edit marker → validate → **ask run** |
 | 要跑 / 跑一下 / 多人 | handoff lab app webui; sequential; experimenter=AI if agent-run |
 | 不要跑 / 只要说明书 | stop once marker is ready |
@@ -74,13 +76,13 @@ Edit path: open existing marker → change → rewrite → validate → **ask ru
 ## Agent rules
 
 - **Language = user's language.** Match the language of the user's **first substantive message** for all chat (clarify, recap, ask-run) **and** marker-facing text (instructions, thanks, on-screen prompts, `design_notes` if prose). Mixed code-switch → follow the language used for the task description. Explicit override («用中文 / in English») wins for the rest of the session. Do not default to Chinese or English by agent habit.
-- **One question per turn.** Coach with defaults; Design first, OutPath last (`./experiments/<slug>/`; never Desktop; never skill install tree).
-- **Literature anchor:** if user points at prior work (paper/Method/复现/参考X), extract Method first; **ask only gaps**; **defaults = paper**, not generic table, unless paper silent or user overrides. Log reference + deviations in marker notes. Detail: `references/experiment-design-norms.md` § Literature-anchored.
-- **Net / literature fetch (ordered, must land a file):** when user needs a paper / Method / DOI / “搜一下…”, **do not** only ask paste. Same session order:
-  1. **Host web search / fetch first** (this CLI’s built-in search, WebFetch, academic search — whatever is already available). Aim to **download or save** PDF/HTML/Method text under the project or a clear temp path.
-  2. If search finds nothing useful, paywall, or no full text → **browser-skill** next (if missing → **ask once** to install; never silent-install). Use it to open publisher/OS page and **get the article down**.
-  3. **Done only when the article (or Method extract) is on disk or fully in context from a saved file** — path told to user. If still fail → say why + paste fallback.
-  Detail: `references/skill-pipeline.md` § Net fetch.
+- **One question per turn** (after lit gate). Coach with defaults; Design first, OutPath last (`./experiments/<slug>/`; never Desktop; never skill install tree).
+- **Lit gate — 先识别意图，再找文献，再问设计。**  
+  **识别：** 扫描用户需求；命中 参考/复现/文献/论文/Method/DOI/按某文/前人/经典…出处/作者年份 等 → lit-first **开**（详见 `skill-pipeline.md` § Intent recognition）。埋在「做一个…」长句里也算。  
+  **未命中：** 纯做任务 → 正常澄清，不强制搜论文。  
+  **模糊**（只说专业/标准）：一句确认要不要按文献；要 → 立刻搜。  
+  **禁止：** 已有文献意图却先问 Design；只让用户粘贴却不搜；口头参考文献却用通用默认。  
+  **动作顺序：** host 搜索 → browser-skill → 文件进 `refs/` → 复盘 → paper-anchored clarify。落地前不写 marker。
 - Stop clarify: 满意 / 就这样 / 开始写 / 别问了按默认 / OK go ahead / defaults please / core items clear (rest defaulted / paper-filled).
 - Plain language when operator is confused; no multi-path architecture dumps.
 - Platform > paradigm-specific hardcoding (Stroop/GoNoGo as data labels OK; do not hardcode paradigm compilers).

@@ -27,40 +27,80 @@ MyStroop/
 
 ```text
 INPUT (NL | PDF/Method | existing folder)
-  → Clarify (1 Q/turn · coach + defaults · Design first · OutPath last)
+  → [LIT INTENT?] ──yes──► FIND literature FIRST (search → browser → file on disk)
+  │                         then paper-anchored clarify
+  └──no───────────────────► Clarify (1 Q/turn · Design first · OutPath last)
   → Write + validate marker
   → Agent ASKS: 要跑被试吗？
-       No  → stop at marker
-       Yes → webui sequential subjects (run finished + data on disk)
-             auto ID/UID · P_pilot free · finished → next ID
-             agent-driven → session.experimenter = AI identity
 ```
 
+### Lit-first gate (do not skip)
+
+If **literature intent** is detected in the user need, the agent’s **first real work** is retrieval — **not** the design checklist.
+
+#### Intent recognition (必做，读用户原话)
+
+Scan the **first substantive message** and later turns. Hit **any** row → lit-first **on**.
+
+| Signal class | Examples (zh / en, not exhaustive) |
+|--------------|-------------------------------------|
+| **Explicit ref** | 参考、依据、按照、基于、改编自、复现、复制、跟…一样、照着…做 |
+| **Paper words** | 文献、论文、研究、Method、方法部分、前人、经典实验、发表、期刊 |
+| **Citation shape** | 作者+年份、et al.、DOI、PMID、arxiv、URL 到 publisher/PDF |
+| **Named paradigm + source** | 「经典 Stroop」「Eriksen 侧翼」「按 Posner 线索」且带出处/文献意味 |
+| **Search ask** | 搜一下、找一篇、帮我查、有没有现成 paradigm 论文 |
+| **File already there** | 用户给了 PDF/路径/粘贴 Method → lit on, **read file** (search optional) |
+
+| **Not** lit intent (stay on normal clarify) | Examples |
+|-----------------------------------------------|----------|
+| Pure task ask | 「做一个红绿字色 Stroop」「2×2 按键实验」且无参考/文献/复现 |
+| Only tool/run | 「更新 webui」「跑被试」 |
+| Vague “专业一点” | 无具体文献指向 → 用 norms 默认，**不**乱搜论文 |
+
+**Ambiguous:** e.g. 「做一个专业的 Stroop」→ **one short Q**: 要不要按某篇经典文献做，还是按通用默认？  
+- 要文献 → lit-first immediately  
+- 通用 → normal clarify  
+
+**Do not** wait for the user to say the magic word `搜一下` if they already said 参考/复现/文献.
+
+| Detect | First actions | Do **not** yet |
+|--------|---------------|----------------|
+| Lit intent on | Web search → save under `refs/` → short recap | Ask 几×几 / IV / trial N |
+| User gave PDF/path/paste | Read → recap | Ignore file; generic defaults |
+| Lit intent off | Normal clarify | Random paper search |
+
+**Pass lit-first when:** local path under `./refs/` or `<project>/refs/` (PDF/HTML/`method-extract.md`) **or** user waived net and pasted Method.  
+**Fail:** claimed “按文献” but no search/read and no file — **invalid**; search/read **now**.
+
+**Where files go:** before OutPath → `./refs/` (or `~/psyclaw/refs/` if you already use that home); after project chosen → `<project>/refs/` and note path in marker.
+
 Clarify = user satisfaction **and** norms coach (see `experiment-design-norms.md`) — give defaults when unsure.  
-Priority: **Design** first; **OutPath** last before write (skip if editing an existing folder).  
+Priority after lit gate: **Design** first; **OutPath** last before write (skip if editing an existing folder).  
 Stop signals: 满意 / 就这样 / 开始写 / 可以了 / 别问了按默认 / Design·IV·DV·response·trial clear with remaining norms defaulted or waived.
 
 Write success = **valid marker + project folder at agreed path** (**marker ready**), then **ask run**.  
 Full lab success (run finished + `<project>/data/` CSV) needs webui/runner.  
 Multi-subject = sequential runs (not a special batch mode). No half-run product mode.
 
-## Six steps
+## Steps
 
 1. **Hear** intent (NL / PDF Method / existing folder)
-2. **Clarify until satisfied + norms gate** — **one question per turn** (never stack Qs). Coach via **`experiment-design-norms.md`**: suggest defaults when unsure; lock **Design** first (几×几 / within·between·mixed / continuous IVs), then IV→…→trial; **OutPath last** (default `./experiments/<slug>/`, never Desktop / never skill install dir). Stop signals or critical items answered/defaulted. User override wins; log deviations.
-3. **Write** project folder + `<folderName>.psyclaw` at the agreed **OutPath**
-4. **Validate** schema / structure (**marker ready**)
-5. **Ask run** — agent asks once the marker is ready (do not only wait for the user to say 能跑吗). Skip ask only if this turn already answered run/don't-run.
-6. **Handoff** (if yes) → **run prep checklist** (project · webui · which PsychoPy path/source · System gate; same facts as webui System) → start/use **psyclaw-webui** → `finished` + CSV under `<project>/data/`
+2. **Lit-first (conditional but hard)** — if lit intent in user need → **search/fetch until article or Method extract is landed** (or user waived). **No design Qs before this passes.** See § Lit-first + § Net fetch.
+3. **Clarify until satisfied + norms gate** — **one question per turn**. If lit landed → **paper-anchored** (`experiment-design-norms.md`). Else coach generics. Design first; OutPath last.
+4. **Write** project folder + `<folderName>.psyclaw` at the agreed **OutPath**
+5. **Validate** schema / structure (**marker ready**)
+6. **Ask run** — once marker ready (unless user already said run/don't-run).
+7. **Handoff** (if yes) → run prep checklist → **psyclaw-webui** → `finished` + CSV under `<project>/data/`
 
-Write success = through step **4**. Lab success = through step **6**.
+Write success = through step **5**. Lab success = through step **7**.
 
 ## Intent map
 
 | User says | Do |
 |-----------|-----|
-| 做一个… | 1→5 (ask run after marker ready) |
-| 改… | open existing marker → edit → 3→5 |
+| 做一个…（无文献） | 1→3→…→6 |
+| 做一个…且要文献/复现/参考 | **2 first (find lit)** → 3 paper-anchored → …→6 |
+| 改… | open existing marker → edit → 4→6 |
 | 要跑 / 跑一下 / 多人 | handoff webui; sequential; experimenter=AI if agent-run |
 | 不要跑 / 只要说明书 | stop once marker is ready |
 | 全装 / 首次 | doctor — `install-orchestrator.md` |
@@ -77,15 +117,15 @@ Write success = through step **4**. Lab success = through step **6**.
 
 ### Class-2 / literature mode
 
-When the user **names prior literature as the reference** (复现、参考、按 Method、跟某文一样) **or** asks to search online:
+When the user **names prior literature** (复现、参考、按 Method、跟某文一样) **or** asks to search online — **including when buried inside “帮我做一个…参考经典…”**:
 
-1. **Acquire Method / paper (proactive net path)** — see below; do not stall on “请自己粘贴” as the only option.
-2. Recap what the paper fixes (design, IV/DV, trial N, keys, timing…).
-3. **Clarify only what the paper leaves open or what the user wants to change.**
-4. Shrug defaults → **paper values first** (see `experiment-design-norms.md` § Literature-anchored).
-5. Write marker; note citation + any deviations.
+0. **Immediate lit-first** (same turn as detection): run § Net fetch until file lands.  
+1. Recap what the paper fixes (design, IV/DV, trial N, keys, timing…).  
+2. **Clarify only gaps / user changes** (paper-anchored).  
+3. Shrug → **paper values first**.  
+4. Write marker; citation + file path + deviations in notes.
 
-Do **not** run a generic 10-question interview that ignores the Method.
+Do **not** start the generic interview before step 0 completes.
 
 ### Net fetch — search first, then browser-skill; article must land
 

@@ -89,11 +89,12 @@ Not every turn reinstalls. See **Updates** below when the user asks to update.
 
 Follow **psyclaw-webui `docs/INSTALL.md` § Update** (canonical):
 
-1. `git pull` webui 仓库。
-2. 其 venv：`pip install -r requirements.txt`（pull 后例行一次）。
-3. **PsychoPy** — **仅当** 该节 / changelog / 可选 req 写明要升；否则 **不动**。
-4. 若 Flask 在跑 → 重启。
-5. **不**更新 skill。
+1. **Stop old server first** (if running): `python scripts/stop_server.py` or `stop.bat` — **bounded ≤20s**. Never loop on “Old server still running / forcing clean restart”; if stop fails once, report PIDs/port and ask user (Task Manager) — do not hang the update.
+2. `git pull` webui 仓库。
+3. 其 venv：`pip install -r requirements.txt`（pull 后例行一次）。
+4. **PsychoPy** — **仅当** 该节 / changelog / 可选 req 写明要升；否则 **不动**。
+5. Start again: `python start.py` or `python start.py --restart`.
+6. **不**更新 skill。
 
 ### Rules
 
