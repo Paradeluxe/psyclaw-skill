@@ -103,6 +103,10 @@ Do **not** rename the skill id to `psyclaw-skill` unless user asks.
 
 Installing `psyclaw` works when searchable sources have exactly one skill named `psyclaw`. Repo layout is `skills/psyclaw/`. Full fallback: `Paradeluxe/psyclaw-skill/skills/psyclaw`. See `install-orchestrator.md`.
 
+## Language
+
+Match the **user's first substantive message** for chat + on-screen experiment text (instructions / thanks / prompts). Override if they ask to switch. No agent-default language. Detail: `SKILL.md` Agent rules.
+
 ## Explain preference
 
 - Prefer short lists and concrete file names when the operator is confused

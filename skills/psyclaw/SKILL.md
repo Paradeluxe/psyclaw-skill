@@ -1,6 +1,6 @@
 ---
 name: psyclaw
-version: 0.3.2
+version: 0.3.3
 author: Paradeluxe
 license: AGPL-3.0
 platforms: [windows, macos, linux]
@@ -70,8 +70,9 @@ Edit path: open existing marker → change → rewrite → validate → **ask ru
 
 ## Agent rules
 
+- **Language = user's language.** Match the language of the user's **first substantive message** for all chat (clarify, recap, ask-run) **and** marker-facing text (instructions, thanks, on-screen prompts, `design_notes` if prose). Mixed code-switch → follow the language used for the task description. Explicit override («用中文 / in English») wins for the rest of the session. Do not default to Chinese or English by agent habit.
 - **One question per turn.** Coach with defaults; Design first, OutPath last (`./experiments/<slug>/`; never Desktop; never skill install tree).
-- Stop clarify: 满意 / 就这样 / 开始写 / 别问了按默认 / core items clear (rest defaulted).
+- Stop clarify: 满意 / 就这样 / 开始写 / 别问了按默认 / OK go ahead / defaults please / core items clear (rest defaulted).
 - Plain language when operator is confused; no multi-path architecture dumps.
 - Platform > paradigm-specific hardcoding (Stroop/GoNoGo as data labels OK; do not hardcode paradigm compilers).
 - User override wins; log design deviations in marker notes.

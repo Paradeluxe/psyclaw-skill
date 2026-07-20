@@ -1,4 +1,4 @@
-# Experiment design norms (clarify gate, 2026-07-18)
+# Experiment design norms (clarify gate, 2026-07-20)
 
 Guide the user toward a **paper-defensible** design during the clarify loop.
 Not a second product path. Not a rigid quiz. **Coach, then write.**
@@ -75,9 +75,9 @@ Agent tracks coverage mentally (or in chat). Order = **default ask priority**. S
 | 4 | **Control** | Baseline / control cell exists, or user waives | 「有没有对照/基线条件？」 | Add control/neutral if typical; else `no control — user OK` |
 | 5 | **Random** | Order rule + counterbalance scheme chosen | 「试次顺序怎么排？随机 / 拉丁方 / 分块 / 固定？要不要抵消平衡？」 | See **Counterbalance schemes** below |
 | 6 | **Practice** | Practice vs main separated, and pass threshold | 「正式前要不要几题练习？准确率要多少才进正式？」 | 8–12 practice; pass threshold 60% (allow one redo, else exclude); n-back 3-back 等 high-load → 70%+ |
-| 7 | **Script** | Instructions + thanks (light ethics) | 「开头说明怎么做？结束要谢谢页吗？要不要藏设计委婉版？」 | Short instructions + thanks; 若有 filler/掩蔽设计 → 指导语委婉版，不告诉被试真实假设留余地 |
+| 7 | **Script** | Instructions + thanks (light ethics); **same language as user session** | 「开头说明怎么做？结束要谢谢页吗？要不要藏设计委婉版？」 | Short instructions + thanks **in the user's language** (see SKILL language rule); 若有 filler/掩蔽设计 → 指导语委婉版，不告诉被试真实假设留余地 |
 | 8 | **Response** | Device/keys, deadline or until-response, stored fields | 「哪些键？有无时限？」 | Task-appropriate keys; store key+RT; correct if mapping known |
-| 9 | **Trial+Load** | One-trial skeleton + timing defaults; blocks/breaks if long | 「一题顺序？大概做多久？」 | fixation 500ms → stim → response → ITI 600~1500ms 抖动; >~30–40 min → blocks + rest. 帧取整提示仅 fMRI/ERP/眼动/TMS 触发 |
+| 9 | **Trial+Load** | One-trial skeleton + timing; **per-condition trial N**; session length; blocks if long | 「一题顺序？每个条件大概多少题？整段大概多久？」 | See **Trial N** below; fixation 500ms → stim → response → ITI 600~1500ms 抖动; >~30–40 min → blocks + rest. 帧取整提示仅 fMRI/ERP/眼动/TMS 触发 |
 | 10 | **OutPath** | Project directory locked (absolute or agreed relative). Ask **late** — after design core, right before write | 「项目放哪？默认 `./experiments/<slug>/`，直接回车就用默认」 | See **Output location** below |
 
 ### Counterbalance schemes (item 5 — pick one)
@@ -97,6 +97,60 @@ Item 5 over random / Latin square / blocked / fixed, agent should also tell user
 - >3 因素 levels 或 trial 数 ≥40 → `random`
 - 2~3 levels 且想发表 → `Latin square`
 - 含 practice/main 或 high-load 任务 → `blocked`（practice/main block 分开）
+
+### Trial N (item 9 — per condition, not participant N)
+
+**Trial N** = how many formal trials **each condition/cell** gets.  
+**Participant N** = how many people — separate; do not fake power (see below).
+
+#### Defaults when user shrugs (behavioral RT / accuracy)
+
+| Layer | Default | Notes |
+|-------|---------|--------|
+| **Practice** | 8–12 trials | High-load (n-back…) → 12–20; pass ≥60% (one redo) |
+| **Per condition (cell)** | **24** | Lab norm for stable mean RT after light exclusions |
+| **Demo / classroom only** | 8–12 per cell | Say once this is not publishable density |
+| **Individual-diff / heavy exclusion** | 30–40 per cell | Optional upgrade if user asks reliability |
+| **Exclusion buffer** | design × **1.15** | Plan extra so post-reject cells still ≈ target |
+
+**Total formal trials** (within, fully crossed):
+
+```text
+total = (product of level counts) × trials_per_cell
+# e.g. 2×2 × 24 = 96 formal
+```
+
+- User gives **total only** → split equal across cells (round; say the per-cell number).
+- User gives **per-cell** → compute total; recap both.
+- **Many cells** (≥6): still default 24 unless duration blows past ~35–40 min — then offer 16–20 per cell or blocks+rest, don’t silently starve cells.
+- Continuous IV: “per cell” = per sampled value bin / row in the conditions list; same 24 default per row unless list is long (then shorten list or lower reps).
+- Marker: conditions rows × loop `nReps` should realize the agreed total (prefer explicit rows for each cell × reps, or rows=cells and `nReps` = trials_per_cell).
+
+#### Duration estimate (recap before write)
+
+Rough task-core minutes (no instructions/breaks):
+
+```text
+minutes ≈ total_formal_trials × seconds_per_trial / 60
+```
+
+Default skeleton ≈ **2.5–3.5 s/trial** (fix 0.5 + stim/RT ~1–2 + ITI ~1) → **~20–25 trials/min**.
+
+| Total formal | ≈ task core | Session note |
+|--------------|-------------|--------------|
+| 48 (e.g. 2×2×12 demo) | ~2–3 min | classroom OK |
+| **96 (2×2×24)** | **~4–6 min** | common lab core |
+| 192 (2×4×24 or 2×2×48) | ~8–12 min | still light |
+| 300–400 | ~15–20 min | add mid rest if fragile pop |
+| ≥600 or **>~35 min wall** | — | **blocks + rest**; reconsider per-cell or factors |
+
+Always recap: `per-cell N · total formal · ≈ minutes · practice n`.  
+Wall time includes instructions, practice, breaks — add ~5–10 min overhead in the spoken estimate.
+
+#### Not this
+
+- Not participant sample-size power (G*Power only if user asks **被试 N**).
+- Not ERP/fMRI trial minima (those need modality-specific floors; if user says ERP, prefer ≥40 presented/cell before reject, else stay behavioral defaults).
 
 ### Output location (item 10 — late, short, defaulted)
 
@@ -145,7 +199,7 @@ If operator picks a path whose basename is awkward, propose a safe slug once.
 4. **Mixed** → state which factors are within vs between in the recap line.
 5. **Continuous IV** → not fake-forced into 2-level unless user wants median-split (discourage silent median-split; prefer keep continuous or explicit bins).
 6. **Continuous × continuous** → still emit trials that present pairs (or one axis manipulated per trial); log both values as columns. Analysis can be regression later — skill does not run stats.
-7. **Cell N** — if user gives total trials only, offer split equal across cells; if they give per-cell N, compute total.
+7. **Cell N** — default **24 formal trials per condition**; if user gives total only, split equal across cells; if per-cell, compute total; always recap per-cell + total + ≈minutes (see **Trial N**).
 
 ### Pass / soft-fail
 
@@ -182,7 +236,7 @@ If operator picks a path whose basename is awkward, propose a safe slug once.
 | Practice | practice loop vs main loop; `pass_threshold` (default 0.60) + `max_redo` (default 1) |
 | Script | instructions + thanks; `debrief_text` optional — present real hypothesis only at run end |
 | Response | keyboard/slider; stopVal / forceEnd |
-| Trial+Load | routine sequence; fixation 500ms / ITI 600~1500ms jitter defaults; rest between blocks |
+| Trial+Load | routine sequence; **24/cell default** (practice 8–12); nReps×conditions = total; fixation 500ms / ITI 600~1500ms jitter; rest if long |
 | Metrics | classic factors on stimlist (`congruent`, `trialType`, …) + optional `metrics.group_by`; see webui `trial-metrics.md` |
 | OutPath | project directory on disk; marker `<folderName>.psyclaw` inside it |
 | **Seed** | optional `seed` (int) at design root; if absent → runner randomizes. Write once in marker, reuse across reruns for reproducibility |
