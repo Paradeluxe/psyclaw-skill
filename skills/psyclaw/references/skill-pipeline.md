@@ -4,12 +4,12 @@ User wants **simple** explanations first (plain language when stuck). One pipeli
 
 ## Two products (do not merge)
 
-| | `psyclaw` | `psyclaw-webui` |
+| | `psyclaw` (skill) | `psyclaw-webui` (lab app, **not** a skill) |
 |---|---|---|
 | Role | Write experiment “说明书” for agents | Lab software: draw / run / CSV |
-| Skill id | **`psyclaw`** | `psyclaw-webui` |
+| Id | skill id **`psyclaw`** | product name `psyclaw-webui` |
 | GitHub | `Paradeluxe/psyclaw-skill` | `Paradeluxe/psyclaw-webui` |
-| Disk | repo `skills/psyclaw/` · edit `Paradeluxe/psyclaw-skill` | `Paradeluxe/psyclaw-webui` |
+| Disk | repo `skills/psyclaw/` | clone + venv; `docs/INSTALL.md` |
 
 ## Shared IR (single track)
 
@@ -51,7 +51,7 @@ Multi-subject = sequential runs (not a special batch mode). No half-run product 
 3. **Write** project folder + `<folderName>.psyclaw` at the agreed **OutPath**
 4. **Validate** schema / structure (**marker ready**)
 5. **Ask run** — agent asks once the marker is ready (do not only wait for the user to say 能跑吗). Skip ask only if this turn already answered run/don't-run.
-6. **Handoff** (if yes) → load `psyclaw-webui` → run status `finished` + CSV under `<project>/data/`
+6. **Handoff** (if yes) → start/use lab app **psyclaw-webui** (not a skill load) → run status `finished` + CSV under `<project>/data/`
 
 Write success = through step **4**. Lab success = through step **6**.
 
@@ -64,6 +64,8 @@ Write success = through step **4**. Lab success = through step **6**.
 | 要跑 / 跑一下 / 多人 | handoff webui; sequential; experimenter=AI if agent-run |
 | 不要跑 / 只要说明书 | stop once marker is ready |
 | 全装 / 首次 | doctor — `install-orchestrator.md` |
+| 更新 skill / 升级 psyclaw | skill + related + **webui 整段** — `install-orchestrator.md` |
+| 更新 webui | webui + 其依赖（条件 PsychoPy）；不动 skill |
 
 ## Three input classes
 

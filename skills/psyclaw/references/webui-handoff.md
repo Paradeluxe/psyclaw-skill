@@ -27,7 +27,7 @@ PsychoPyProcess
 ```
 
 - Repo: `Paradeluxe/psyclaw-webui` · port **8876** only
-- SPA skill: **`psyclaw-webui`**
+- Product: lab Flask GUI **psyclaw-webui** — **not** an agent skill (companion skill is only `psyclaw`)
 - Open duration canonical: **`-1`**
 - Platform > named paradigms (no Stroop-hardcoded SPA fields)
 - Marker name: **`<folderName>.psyclaw`** (not fixed `design.psyclaw`; webui migrates legacy)
@@ -147,5 +147,5 @@ Compiler component types (typical): `text`, `keyboard`, `image`, `sound`/`audio`
 
 ## Related
 
-- Skill: `psyclaw-webui` — SPA IA, System/Run layout
+- Lab app: `Paradeluxe/psyclaw-webui` — Builder / System / Run SPA
 - Skill pipeline: `skill-pipeline.md`

@@ -1,6 +1,6 @@
 ---
 name: psyclaw
-version: 0.3.4
+version: 0.3.5
 author: Paradeluxe
 license: AGPL-3.0
 platforms: [windows, macos, linux]
@@ -8,24 +8,24 @@ description: >
   PsyClaw skill — turn NL or paper Method into a project folder with
   <folderName>.psyclaw (design JSON). Clarify + experiment-design norms,
   then write marker. After the marker is ready, ask whether to run subjects;
-  handoff psyclaw-webui for sequential runs + CSV (experimenter=AI when
+  handoff lab app psyclaw-webui for sequential runs + CSV (experimenter=AI when
   agent-driven). Not the lab GUI; not PsychoPy Builder XML.
 tags: [psychology, psychopy, experiment-design, stimuli-generation, conversational]
-related_skills: [browser-skill, psyclaw-webui]
+related_skills: [browser-skill]
 ---
 
 # PsyClaw (`psyclaw`)
 
-Write the experiment **说明书** (marker file). Run subjects in **psyclaw-webui**.
+Write the experiment **说明书** (marker file). Run subjects in the lab app **psyclaw-webui** (not a skill).
 
-| | Skill | WebUI |
+| | This skill | Lab software |
 |---|--------|--------|
 | Role | design → `<folderName>.psyclaw` | draw / run / CSV |
+| Name | **`psyclaw`** | **psyclaw-webui** (Flask GUI) |
 | GitHub | `Paradeluxe/psyclaw-skill` | `Paradeluxe/psyclaw-webui` |
-| Install | skill installer (`Paradeluxe/psyclaw-skill/skills/psyclaw`) | separate lab install |
-| Names | **`psyclaw`** | `psyclaw-webui` |
+| Install | agent skill installer | git/venv — see webui `docs/INSTALL.md` |
 
-Never merge install narratives. Skill install ≠ GUI deploy.
+Never merge install narratives. Skill install ≠ GUI deploy. Do not list webui under `related_skills`.
 
 ## Shared IR
 
@@ -62,9 +62,11 @@ No half-run product mode. Multi-subject = normal sequential runs, not a special 
 |------|-----|
 | 做一个… | clarify → write marker → **ask run** |
 | 改… | edit marker → validate → **ask run** |
-| 要跑 / 跑一下 / 多人 | handoff webui; sequential; experimenter=AI if agent-run |
+| 要跑 / 跑一下 / 多人 | handoff lab app webui; sequential; experimenter=AI if agent-run |
 | 不要跑 / 只要说明书 | stop once marker is ready |
 | 全装 / 首次 | doctor — `references/install-orchestrator.md` |
+| 更新 skill / 升级 psyclaw | **Skill 入口**: skill 本身 + related + **整段 webui 更新** — `references/install-orchestrator.md` |
+| 更新 webui | **Webui 入口**: webui 代码 + 其依赖（PsychoPy 仅当 webui 要求）；不动 skill |
 
 Edit path: open existing marker → change → rewrite → validate → **ask run again**. Do not re-ask OutPath.
 
@@ -78,6 +80,7 @@ Edit path: open existing marker → change → rewrite → validate → **ask ru
 - User override wins; log design deviations in marker notes.
 - No public release / tag / push without explicit approval.
 - First use or 全装: doctor gaps → consent → install only missing pieces.
+- **更新两入口（嵌套）**:「更新 skill/psyclaw」= skill 本身 + related + **执行 webui 更新全段**。「更新 webui」= webui 代码 + 其库（PsychoPy 仅 webui 要求时）。Skill 禁止自行升 PsychoPy。Detail: `references/install-orchestrator.md`.
 - After every successful marker write/edit: **ask** 要跑被试吗 (unless user already said run/don't-run this turn).
 - browser-skill = related only (class-2 PDF fetch); do not silent-install or run browser every turn.
 
