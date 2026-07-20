@@ -43,7 +43,7 @@ MyStroop/
 
 ```text
 INPUT (NL | PDF/Method | existing folder)
-  → Clarify (1 Q/turn, coach + defaults; Design first, OutPath last)
+  → Clarify (1 Q/turn; Design first, OutPath last; lit → paper-anchored)
   → Write + validate marker
   → Agent ASKS: 要跑被试吗？
        No  → stop
@@ -61,6 +61,7 @@ No half-run product mode. Multi-subject = normal sequential runs, not a special 
 | User | Do |
 |------|-----|
 | 做一个… | clarify → write marker → **ask run** |
+| 按这篇/参考/复现/Method/搜一下… | **host search first** → else browser-skill → **article on disk** → paper-anchored clarify → write → **ask run** |
 | 改… | edit marker → validate → **ask run** |
 | 要跑 / 跑一下 / 多人 | handoff lab app webui; sequential; experimenter=AI if agent-run |
 | 不要跑 / 只要说明书 | stop once marker is ready |
@@ -74,7 +75,13 @@ Edit path: open existing marker → change → rewrite → validate → **ask ru
 
 - **Language = user's language.** Match the language of the user's **first substantive message** for all chat (clarify, recap, ask-run) **and** marker-facing text (instructions, thanks, on-screen prompts, `design_notes` if prose). Mixed code-switch → follow the language used for the task description. Explicit override («用中文 / in English») wins for the rest of the session. Do not default to Chinese or English by agent habit.
 - **One question per turn.** Coach with defaults; Design first, OutPath last (`./experiments/<slug>/`; never Desktop; never skill install tree).
-- Stop clarify: 满意 / 就这样 / 开始写 / 别问了按默认 / OK go ahead / defaults please / core items clear (rest defaulted).
+- **Literature anchor:** if user points at prior work (paper/Method/复现/参考X), extract Method first; **ask only gaps**; **defaults = paper**, not generic table, unless paper silent or user overrides. Log reference + deviations in marker notes. Detail: `references/experiment-design-norms.md` § Literature-anchored.
+- **Net / literature fetch (ordered, must land a file):** when user needs a paper / Method / DOI / “搜一下…”, **do not** only ask paste. Same session order:
+  1. **Host web search / fetch first** (this CLI’s built-in search, WebFetch, academic search — whatever is already available). Aim to **download or save** PDF/HTML/Method text under the project or a clear temp path.
+  2. If search finds nothing useful, paywall, or no full text → **browser-skill** next (if missing → **ask once** to install; never silent-install). Use it to open publisher/OS page and **get the article down**.
+  3. **Done only when the article (or Method extract) is on disk or fully in context from a saved file** — path told to user. If still fail → say why + paste fallback.
+  Detail: `references/skill-pipeline.md` § Net fetch.
+- Stop clarify: 满意 / 就这样 / 开始写 / 别问了按默认 / OK go ahead / defaults please / core items clear (rest defaulted / paper-filled).
 - Plain language when operator is confused; no multi-path architecture dumps.
 - Platform > paradigm-specific hardcoding (Stroop/GoNoGo as data labels OK; do not hardcode paradigm compilers).
 - User override wins; log design deviations in marker notes.
@@ -83,7 +90,7 @@ Edit path: open existing marker → change → rewrite → validate → **ask ru
 - **更新两入口（嵌套）**:「更新 skill/psyclaw」= skill 本身 + related + **执行 webui 更新全段**。「更新 webui」= webui 代码 + 其库（PsychoPy 仅 webui 要求时）。Skill 禁止自行升 PsychoPy。Detail: `references/install-orchestrator.md`.
 - After every successful marker write/edit: **ask** 要跑被试吗 (unless user already said run/don't-run this turn).
 - Before run handoff: short **run prep checklist** (project, webui URL, **which PsychoPy python + source**, System gate) — same facts as webui System tab. Detail: `references/webui-handoff.md`.
-- browser-skill = related only (class-2 PDF fetch); do not silent-install or run browser every turn.
+- browser-skill = **related**, not core — load on class-2 / 联网需要; **offer install when missing**; do not silent-install; do not run browser on pure NL designs with no lit/net need.
 
 ## Marker content (minimal)
 

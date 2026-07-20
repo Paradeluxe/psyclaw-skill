@@ -72,14 +72,50 @@ Write success = through step **4**. Lab success = through step **6**.
 | # | Input | Companion skill |
 |---|--------|-----------------|
 | 1 | User NL description of the experiment | none |
-| 2 | Materials (PDF Method, HTML, pasted text) | **`browser-skill`** (and/or academic-search) to **fetch** — then return to `psyclaw` |
+| 2 | Materials (PDF Method, HTML, pasted text) **or user says follow/replicate a paper** | **`browser-skill`** (and/or academic-search) to **fetch** — then return to `psyclaw` |
 | 3 | Existing project folder with marker | edit in place |
 
-### browser-skill = related, not core
+### Class-2 / literature mode
 
-- Put in `related_skills`; load when class-2 needs net download.
-- **Do not** merge browser into psyclaw package or run browser on every `psyclaw` invoke.
-- Installing browser skill is separate; skill may **recommend** related installs, never silent-install.
+When the user **names prior literature as the reference** (复现、参考、按 Method、跟某文一样) **or** asks to search online:
+
+1. **Acquire Method / paper (proactive net path)** — see below; do not stall on “请自己粘贴” as the only option.
+2. Recap what the paper fixes (design, IV/DV, trial N, keys, timing…).
+3. **Clarify only what the paper leaves open or what the user wants to change.**
+4. Shrug defaults → **paper values first** (see `experiment-design-norms.md` § Literature-anchored).
+5. Write marker; note citation + any deviations.
+
+Do **not** run a generic 10-question interview that ignores the Method.
+
+### Net fetch — search first, then browser-skill; article must land
+
+**Triggers:** 参考/复现某文 · DOI/URL/标题要全文或 Method · 「搜一下」「联网查」· 只有引用没有正文.
+
+**Strict order (same session):**
+
+| Step | Action |
+|------|--------|
+| 1 | Detect need for literature / network |
+| 2 | **First: host联网搜索 / fetch** — use this CLI’s built-in web search, URL fetch, academic search, etc. Prefer open PDF/HTML; **save file** when possible (e.g. `experiments/<slug>/refs/` or user-agreed path). |
+| 3 | **If step 2 fails** (no hit, abstract-only, paywall, broken link) → **browser-skill**: |
+| 3a | Already installed → drive browser to publisher / OS / Sci-Hub-policy-compliant sources the user allows → download PDF or copy Method |
+| 3b | Not installed → **ask once** to install `browser-skill` (why: 抓全文). Yes → install then fetch. No → paste / local file only |
+| 4 | **Success gate:** agent can point to a **local path** (PDF/HTML/txt extract) **or** an explicitly saved Method excerpt file. “I looked online” without content **does not count**. |
+| 5 | Tell user the path + one-line source. Then paper-anchored clarify. |
+| 6 | Still fail → honest reason + paste fallback; **do not invent Method details** |
+
+**Landing rules:**
+
+- Prefer: `<project>/refs/<slug>.pdf` (or `.html` / `method-extract.md`) once OutPath known; if project not chosen yet → `./refs/` under cwd or temp then move into project on write.
+- Record citation + file path in marker `design_notes`.
+- Paywall: try legal OA (author manuscript, OSF, PubMed Central) before giving up; never claim you have the PDF if you do not.
+
+**Rules:**
+
+- Host search **before** browser-skill; browser-skill is the **escalation**, not the first toy.
+- `related_skills: [browser-skill]` — offer when step 3 needs it; **never silent-install**.
+- Do not merge browser into psyclaw package.
+- Do not net-browse pure NL designs with no lit/search ask.
 
 ## OutPath defaults
 
