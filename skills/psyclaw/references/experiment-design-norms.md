@@ -1,53 +1,29 @@
-# Experiment design norms (clarify gate, 2026-07-20)
+# Experiment design norms (clarify gate, 2026-07-21)
 
-Guide the user toward a **paper-defensible** design during the clarify loop.
-Not a second product path. Not a rigid quiz. **Coach, then write.**
-
-## Where it sits
+**Coach, then write.** One Q/turn. User override + logged deviation wins.  
+Lit fetch / intent → `skill-pipeline.md` (not duplicated here).
 
 ```
-Hear → Clarify (one Q/turn) + norms checklist → Write marker → Validate → [webui]
+[lit landed?] → Clarify + this checklist → Write marker → Validate → [ask run]
 ```
-
-- Default success still = valid `<folderName>.psyclaw`.
-- Norms live in **step 2** only. Do not block write forever; user override wins with a logged deviation.
-
-## Role
 
 | Do | Don't |
 |----|--------|
-| Ask the next missing norm item in plain language | Dump all items at once |
-| Lock **design structure** early (× factors, within/between, continuous) | Lead with paradigm names (Stroop/…) |
-| Suggest a standard default when user is unsure | Refuse nonstandard designs |
-| Mark deliberate deviations before write | Domain menus ("注意/记忆/情绪…") |
-| When user cites **prior literature** as reference → **anchor Qs + defaults on that paper** | Ignore the Method and fall back to generic coach defaults |
+| Next missing item, plain language | Dump all items |
+| Lock design structure early (× / within-between / continuous) | Lead with paradigm brand names |
+| Default when unsure; paper values if lit | Refuse nonstandard; ignore Method |
 
-## Literature-anchored clarify (用户指定前人文献时)
+## Literature-anchored clarify
 
-**Trigger (any, including inside a longer “做一个实验” request):**  
-按这篇 / 参考 / 复现 / 改编自 / Method / 前人文献 / 经典…出处 / DOI / 文献链接 / 「跟 paper 一样」/ replication / follow X et al.
+**After** Method is on disk (pipeline lit-first): paper-first, not generic-first.
 
-**Goal:** clarify is **paper-first**, not generic-first.  
-**Hard rule:** on trigger → **find literature before any checklist question** (see `skill-pipeline.md` § Lit-first). No Design/IV Q until Method is landed or user waived.
+1. **Extract** — design tag, IVs, DV, trial skeleton/timing, N/blocks, keys, practice, counterbalance, specials (SOA/mask/language).
+2. **Recap** — 「按 [作者/年份]，读到：… 默认按这个；要改再说。」
+3. **Gaps only** — paper-clear → don't re-ask; ambiguous → paper A / variant B; user change → log deviation.
+4. **Shrug** → paper value, then checklist Safe default only if paper silent.
+5. **Citation** in marker `design_notes` (+ path).
 
-### Order
-
-1. **Obtain text FIRST (must land)** — **host web search immediately** on the same turn → if fail **browser-skill** → save PDF/HTML/extract → tell path. Paste = last resort only after search attempted. Detail: `skill-pipeline.md` § Net fetch.
-2. **Extract once (silent or short recap)** — design tag, IVs/levels, DV, trial skeleton + timing, trial N / blocks, response mapping, practice, counterbalance, special constraints (SOAs, masks, language of stimuli).
-3. **Recap anchor** (brief, user language): 「按 [作者/年份] Method，我读到的是：… 默认按这个走；你要改的再说。」
-4. **Clarify only gaps / conflicts**
-   - Already clear in paper → **do not re-ask**; treat as answered.
-   - Paper ambiguous → one Q, options framed as *paper says A / common variant B*.
-   - User wants change → confirm delta; log in `design_notes` as deviation from reference.
-5. **Defaults when user shrugs** → **paper value first**, then table “Safe default” only if paper silent.
-6. **Citation** — put reference id (APA-ish or filename) in marker `design_notes` / session notes so the 说明书 records the anchor.
-
-### What not to do
-
-- Do not replace paper trial N / keys / timing with skill generic defaults without saying so.
-- Do not quiz the user on items the Method already fixed.
-- Do not claim perfect replication if stimuli/fonts/display cannot match — say what is matched vs approximate.
-- Replication vs extension: if user says 改编, ask **one** Q on what stays vs what changes, then anchor the rest on paper.
+Don't silently replace paper N/keys/timing; don't claim perfect replication if display/stimuli can't match. 改编 → one Q stays vs changes.
 
 ## Design structure first (what “实验类型” means here)
 
@@ -270,6 +246,6 @@ If operator picks a path whose basename is awkward, propose a safe slug once.
 | **Seed** | optional `seed` (int) at design root; if absent → runner randomizes. Write once in marker, reuse across reruns for reproducibility |
 | **Exclusion rules** | optional `exclusion_rules` block (trial-level: RT outside ±2.5 SD → `rt_outlier: true` flag; participant-level: overall accuracy < threshold). Default: flag only, do not drop. Logged but applied in analysis, not at run time |
 
-## Kindergarten one-liner
+## One-liner
 
-「实验类型不是背名单，是三句话：①比的是几乘几（或连续分数）②每人做全套还是分组③你有没有真的操控/随机。然后再说量什么、怎么按键、一题长什么样。设计差不多定了再问放哪个文件夹（有默认路径）。一次问一样，你点头我就写说明书。」
+几×几 + 全套/分组 + 量什么/按键/一题长什么样 → 再问文件夹。一次问一样。
