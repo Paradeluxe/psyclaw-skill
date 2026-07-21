@@ -1,6 +1,6 @@
 ---
 name: psyclaw
-version: 0.3.10
+version: 0.3.11
 author: Paradeluxe
 license: AGPL-3.0
 platforms: [windows, macos, linux]
@@ -47,7 +47,7 @@ INPUT → [lit intent?] FIND lit first → Clarify (1 Q/turn) → Write+validate
 | 做一个…（无文献） | `norms-core.md` (+ `session-state.md`) |
 | 参考/复现/文献/Method/DOI/搜… | `skill-pipeline.md` → lit gate → `norms-core.md` |
 | 改… | marker + `norms-core.md` (touched) + `marker-validate.md` |
-| 要跑 / 多人 | `webui-handoff.md` |
+| 要跑 / 多人 | `run-prep.md`（+ `api-notes.md` if calling webui） |
 | 不要跑 / 只要说明书 | — (stop; session `ask_run=no`) |
 | 全装 / 首次 / 更新 skill·webui | `install-orchestrator.md` |
 
@@ -60,7 +60,7 @@ INPUT → [lit intent?] FIND lit first → Clarify (1 Q/turn) → Write+validate
 5. **Stop clarify** on 满意/就这样/开始写/按默认, or core Design·IV·DV·response·trial clear (rest defaulted/paper-filled).
 6. **User override wins**; log deviations in marker notes. Plain language; no architecture dumps.
 7. **After every marker write/edit** → validate (`marker-validate.md`) → ask 要跑被试吗 only if `ask_run` still `null`.
-8. **Before run** → short prep checklist (project, webui URL, PsychoPy python+source, System gate) — `webui-handoff.md`.
+8. **Before run** → user checklist only — `run-prep.md`. API/compile → `api-notes.md`. Failures → `failure-playbooks.md`.
 9. **browser-skill** = related; offer install if missing; never silent-install; no browse on pure-NL no-lit.
 10. **Platform > paradigm hardcoding.** No release/tag/push without approval.
 11. **Bug / narrow ask** → one surgical fix — `user-conservative-workflow-preference.md`.
@@ -90,7 +90,10 @@ Optional (only if user asks): `seed`, `exclusion_rules` (flag-only default).
 | `references/experiment-design-norms.md` | index only (points at norms-*) |
 | `references/marker-stub.psyclaw` | starting a new marker |
 | `references/marker-validate.md` | after every write/edit |
-| `references/webui-handoff.md` | ask-run yes / handoff |
+| `references/webui-handoff.md` | handoff index |
+| `references/run-prep.md` | ask-run yes — user checklist |
+| `references/api-notes.md` | webui API / compile / CSV |
+| `references/failure-playbooks.md` | paywall / webui down / compile / CSV / session |
 | `references/install-orchestrator.md` | 全装 / 更新 / doctor |
 | `references/user-conservative-workflow-preference.md` | bug / narrow fix |
 

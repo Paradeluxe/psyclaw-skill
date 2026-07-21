@@ -23,6 +23,9 @@ REQUIRED = [
     "references/session-stub.json",
     "references/install-orchestrator.md",
     "references/webui-handoff.md",
+    "references/run-prep.md",
+    "references/api-notes.md",
+    "references/failure-playbooks.md",
     "references/user-conservative-workflow-preference.md",
 ]
 

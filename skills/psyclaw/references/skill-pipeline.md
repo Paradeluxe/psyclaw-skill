@@ -40,7 +40,7 @@ INPUT (NL | PDF/Method | existing folder)
 4. **Write** folder + `<folderName>.psyclaw` at OutPath — new files: start from `marker-stub.psyclaw`; move session file into project if needed  
 5. **Validate** — `marker-validate.md` hard checks 1–7 (optional compile if webui up) → marker ready  
 6. **Ask run** only if session `ask_run` is still `null`; then set `yes`/`no`  
-7. **Handoff** if yes → prep checklist → webui → `finished` + CSV → `state=done`  
+7. **Handoff** if yes → `run-prep.md` checklist → webui (`api-notes.md` if calling) → `finished` + CSV → `state=done`; failures → `failure-playbooks.md`  
 
 Write success = step 5. Lab success = step 7. Multi-subject = sequential runs. No half-run mode.  
 **Resume:** if session file exists, continue from its `state` — do not restart clarify from zero.

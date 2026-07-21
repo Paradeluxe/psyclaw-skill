@@ -150,17 +150,17 @@ Next gains: **checkable steps, safer defaults, less load** — not another flowc
 
 ### P3 — product boundaries
 
-- [ ] **Split handoff** — `run-prep` (4 lines for the user) vs `api-notes` (load only when calling webui)
-- [ ] **Failure playbooks** — paywall + user gone; webui won’t start; compile error — one standard reply + next step each
-- [ ] **Done checklist (5 ticks)** before close — path, marker name, design tag, deviations, ask-run asked
+- [x] **Split handoff** — `run-prep.md` vs `api-notes.md`; `webui-handoff.md` = index (0.3.11)
+- [x] **Failure playbooks** — `failure-playbooks.md` (paywall, browser-skill, webui, compile, CSV, session)
+- [x] **Done checklist (5 ticks)** — in `run-prep.md`
 
 ### Suggested order
 
-1. Validate checklist + minimal stub  
-2. Split norms core / appendices  
-3. Session state line  
-4. Intent dedupe + lit negative examples  
-5. Handoff layering + failure playbooks  
+1. ~~Validate + stub~~  
+2. ~~Split norms~~  
+3. ~~Session state file~~  
+4. ~~Intent dedupe + lit negatives~~  
+5. ~~Handoff + failure playbooks~~ — **done (0.3.11)**  
 
 ## License
 

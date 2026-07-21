@@ -150,17 +150,17 @@ python skills/psyclaw/scripts/doctor.py
 
 ### P3 — 产品边界
 
-- [ ] **Handoff 分层** — `run-prep`（给用户的 4 条）vs `api-notes`（调 webui 时再读）
-- [ ] **失败剧本** — paywall 后失联 / webui 起不来 / compile 报错 — 各一条标准话术 + 下一步
-- [ ] **收工 5 勾** — path、marker 名、design tag、deviations、已问 ask-run
+- [x] **Handoff 分层** — `run-prep.md` vs `api-notes.md`；`webui-handoff.md` 为索引（0.3.11）
+- [x] **失败剧本** — `failure-playbooks.md`
+- [x] **收工 5 勾** — 见 `run-prep.md`
 
 ### 建议排期
 
-1. Validate 清单 + 最小 stub  
-2. norms 拆 core / 附录  
-3. 会话状态一行  
-4. Intent 去重 + lit 负面样例  
-5. Handoff 分层 + 失败剧本  
+1. ~~Validate + stub~~  
+2. ~~拆 norms~~  
+3. ~~会话状态文件~~  
+4. ~~Intent 去重 + lit 负面样例~~  
+5. ~~Handoff + 失败剧本~~ — **已完成（0.3.11）**  
 
 ## 许可证
 
