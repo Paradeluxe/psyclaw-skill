@@ -19,6 +19,8 @@ REQUIRED = [
     "references/norms-marker-map.md",
     "references/marker-stub.psyclaw",
     "references/marker-validate.md",
+    "references/session-state.md",
+    "references/session-stub.json",
     "references/install-orchestrator.md",
     "references/webui-handoff.md",
     "references/user-conservative-workflow-preference.md",

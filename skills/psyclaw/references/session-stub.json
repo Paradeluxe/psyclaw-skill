@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "state": "hear",
+  "lit": "off",
+  "lit_path": null,
+  "gaps": ["Design", "IV", "DV", "Control", "Random", "Practice", "Script", "Response", "Trial", "OutPath"],
+  "ask_run": null,
+  "marker": null,
+  "project_dir": null,
+  "design_tag": null,
+  "notes": "",
+  "updated": null
+}

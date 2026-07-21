@@ -130,7 +130,7 @@ Next gains: **checkable steps, safer defaults, less load** — not another flowc
 
 ### P0 — execution (agent failure modes)
 
-- [ ] **Session state line** — track `hear | lit | clarify | write | ask_run | handoff` in chat or beside the project; update when a step finishes
+- [x] **Session state file** — `<projectDir>/.psyclaw-session.json` (cwd before OutPath); `session-state.md` + stub (0.3.9); file wins over chat
 - [x] **Validate is executable** — `references/marker-validate.md` (hard 1–7 + soft + optional compile)
 - [x] **Minimal legal stub** — `references/marker-stub.psyclaw`; SKILL/pipeline point here (0.3.7)
 - [ ] **Dedupe intent tables** — SKILL keeps “Load first” only; full flow lives in `skill-pipeline.md` only
@@ -140,7 +140,7 @@ Next gains: **checkable steps, safer defaults, less load** — not another flowc
 - [ ] **One topic cluster / turn** (not always one atomic Q) — e.g. Design+IV or Response+Trial in one confirm
 - [ ] **Lit false-positive examples** — exploratory “能不能做…” ≠ replication; lit-on only with source / Method / DOI / full-text search intent
 - [ ] **Ambiguous「专业」default** — no preference quickly → norms defaults (don’t stall)
-- [ ] **Ask-run once per session** — remember answer; small edits may skip re-prompt (one-line reminder OK)
+- [x] **Ask-run once per session** — session field `ask_run`; skip re-prompt when set (0.3.9)
 
 ### P2 — norms load weight (~251 lines)
 

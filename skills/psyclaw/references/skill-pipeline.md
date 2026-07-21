@@ -34,15 +34,16 @@ INPUT (NL | PDF/Method | existing folder)
 
 ### Steps
 
-1. **Hear** intent  
-2. **Lit-first** (if lit intent) — land article/Method before design Qs  
-3. **Clarify** — norms coach; paper-anchored if lit landed  
-4. **Write** folder + `<folderName>.psyclaw` at OutPath — new files: start from `marker-stub.psyclaw`  
+1. **Hear** intent — create/update `.psyclaw-session.json` (`session-state.md`; stub: `session-stub.json`)  
+2. **Lit-first** (if lit intent) — land article/Method before design Qs; `lit=pending`→`landed`/`waived`  
+3. **Clarify** — norms coach; paper-anchored if lit landed; shrink `gaps`  
+4. **Write** folder + `<folderName>.psyclaw` at OutPath — new files: start from `marker-stub.psyclaw`; move session file into project if needed  
 5. **Validate** — `marker-validate.md` hard checks 1–7 (optional compile if webui up) → marker ready  
-6. **Ask run** (unless user already said run/don't-run)  
-7. **Handoff** if yes → prep checklist → webui → `finished` + CSV  
+6. **Ask run** only if session `ask_run` is still `null`; then set `yes`/`no`  
+7. **Handoff** if yes → prep checklist → webui → `finished` + CSV → `state=done`  
 
-Write success = step 5. Lab success = step 7. Multi-subject = sequential runs. No half-run mode.
+Write success = step 5. Lab success = step 7. Multi-subject = sequential runs. No half-run mode.  
+**Resume:** if session file exists, continue from its `state` — do not restart clarify from zero.
 
 ## Lit-first gate
 

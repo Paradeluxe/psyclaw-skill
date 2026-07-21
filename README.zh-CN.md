@@ -130,7 +130,7 @@ python skills/psyclaw/scripts/doctor.py
 
 ### P0 — 执行层（agent 最易翻车）
 
-- [ ] **会话状态一行** — 维护 `hear | lit | clarify | write | ask_run | handoff`（聊天或项目旁）；每步结束更新
+- [x] **会话状态文件** — `<projectDir>/.psyclaw-session.json`（OutPath 前用 cwd）；`session-state.md` + stub（0.3.9）；以文件为准
 - [x] **Validate 可执行** — `references/marker-validate.md`（硬检查 1–7 + 软警告 + 可选 compile）
 - [x] **最小合法 stub** — `references/marker-stub.psyclaw`；SKILL/pipeline 已挂接（0.3.7）
 - [ ] **Intent 表去重** — SKILL 只留「Load first」；完整流程仅 `skill-pipeline.md`
@@ -140,7 +140,7 @@ python skills/psyclaw/scripts/doctor.py
 - [ ] **每轮一个 topic cluster**（不必永远单原子问）— 如 Design+IV 或 Response+Trial 同轮确认
 - [ ] **Lit 误触发负面样例** — 探索性「能不能做…」≠ 复现；仅有出处/Method/DOI/搜全文意图才 lit-on
 - [ ] **Ambiguous「专业」默认** — 无偏好时快速走 norms 默认，避免卡死
-- [ ] **Ask-run 每会话一次** — 记住已答；小改可不再弹问（一句提醒即可）
+- [x] **Ask-run 每会话一次** — session 字段 `ask_run`；已设置则不再弹问（0.3.9）
 
 ### P2 — norms 加载重量（约 251 行）
 

@@ -1,6 +1,6 @@
 ---
 name: psyclaw
-version: 0.3.8
+version: 0.3.9
 author: Paradeluxe
 license: AGPL-3.0
 platforms: [windows, macos, linux]
@@ -26,7 +26,8 @@ related_skills: [browser-skill]
 
 ```text
 MyStroop/
-  └── MyStroop.psyclaw
+  ├── MyStroop.psyclaw
+  └── .psyclaw-session.json   # pipeline state (file wins over chat)
 ```
 
 ## Pipeline
@@ -37,7 +38,7 @@ INPUT → [lit intent?] FIND lit first → Clarify (1 Q/turn) → Write+validate
          run yes → webui sequential (experimenter=AI if agent-driven)
 ```
 
-No half-run mode. Multi-subject = sequential runs.
+**State file:** read/write `.psyclaw-session.json` each step — `session-state.md`. No half-run mode. Multi-subject = sequential runs.
 
 ## Intent → action
 
@@ -55,16 +56,17 @@ No half-run mode. Multi-subject = sequential runs.
 ## Hard rules
 
 1. **Language** = user's first substantive message (chat + on-screen text). Override if they switch.
-2. **One question per turn** after lit gate. Design first, OutPath last (`./experiments/<slug>/`; never Desktop; never skill tree).
-3. **Lit gate** — 参考/复现/文献/论文/Method/DOI/按某文/作者年份… → **search/fetch until file in `refs/`** before any Design Q. Pure task ask → no forced search. Ambiguous「专业」→ one Q: 文献 or 默认. Detail: `skill-pipeline.md`.
-4. **Stop clarify** on 满意/就这样/开始写/按默认, or core Design·IV·DV·response·trial clear (rest defaulted/paper-filled).
-5. **User override wins**; log deviations in marker notes. Plain language; no architecture dumps.
-6. **After every marker write/edit** → validate (`marker-validate.md`) → ask 要跑被试吗 (unless already said run/don't-run).
-7. **Before run** → short prep checklist (project, webui URL, PsychoPy python+source, System gate) — `webui-handoff.md`.
-8. **browser-skill** = related; offer install if missing; never silent-install; no browse on pure-NL no-lit.
-9. **Platform > paradigm hardcoding.** No release/tag/push without approval.
-10. **Bug / narrow ask** → one surgical fix — `user-conservative-workflow-preference.md`.
-11. **Install/update** → `install-orchestrator.md` only. Skill never freestyle-upgrades PsychoPy.
+2. **Session state file** — on start, read `.psyclaw-session.json` (project dir if known, else cwd). After every step, update it. Never under skill install tree. Schema/transitions: `session-state.md`. File wins over chat memory.
+3. **One question per turn** after lit gate (topic cluster OK). Design first, OutPath last (`./experiments/<slug>/`; never Desktop; never skill tree).
+4. **Lit gate** — 参考/复现/文献/论文/Method/DOI/按某文/作者年份… → **search/fetch until file in `refs/`** before any Design Q (`lit=pending` until landed/waived). Pure task ask → no forced search. Ambiguous「专业」→ one Q: 文献 or 默认. Detail: `skill-pipeline.md`.
+5. **Stop clarify** on 满意/就这样/开始写/按默认, or core Design·IV·DV·response·trial clear (rest defaulted/paper-filled).
+6. **User override wins**; log deviations in marker notes. Plain language; no architecture dumps.
+7. **After every marker write/edit** → validate (`marker-validate.md`) → ask 要跑被试吗 only if `ask_run` still `null`.
+8. **Before run** → short prep checklist (project, webui URL, PsychoPy python+source, System gate) — `webui-handoff.md`.
+9. **browser-skill** = related; offer install if missing; never silent-install; no browse on pure-NL no-lit.
+10. **Platform > paradigm hardcoding.** No release/tag/push without approval.
+11. **Bug / narrow ask** → one surgical fix — `user-conservative-workflow-preference.md`.
+12. **Install/update** → `install-orchestrator.md` only. Skill never freestyle-upgrades PsychoPy.
 
 ## Marker (minimal)
 
@@ -81,6 +83,8 @@ Optional (only if user asks): `seed`, `exclusion_rules` (flag-only default).
 | File | When |
 |------|------|
 | `references/skill-pipeline.md` | lit-first, net fetch, OutPath, naming, full steps |
+| `references/session-state.md` | start/resume + every step (state file) |
+| `references/session-stub.json` | first create of `.psyclaw-session.json` |
 | `references/norms-core.md` | every clarify / write (default norms) |
 | `references/norms-counterbalance.md` | item 5 / 随机·拉丁方·分块 |
 | `references/norms-trial-n.md` | item 9 / trial N · 时长 · 被试 N |
