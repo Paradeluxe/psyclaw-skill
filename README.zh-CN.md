@@ -120,6 +120,48 @@ psyclaw-skill/
 python skills/psyclaw/scripts/doctor.py
 ```
 
+## 管线优化计划（todo）
+
+0.3.6 瘦身后评审。主干不动：
+
+`输入 → 文献？ → 澄清 → 写入 → 校验 → 问是否开跑 → 交接 webui`
+
+下一波收益在 **每步可检查、可默认、可少加载**，不再重画流程图。
+
+### P0 — 执行层（agent 最易翻车）
+
+- [ ] **会话状态一行** — 维护 `hear | lit | clarify | write | ask_run | handoff`（聊天或项目旁）；每步结束更新
+- [x] **Validate 可执行** — `references/marker-validate.md`（硬检查 1–7 + 软警告 + 可选 compile）
+- [x] **最小合法 stub** — `references/marker-stub.psyclaw`；SKILL/pipeline 已挂接（0.3.7）
+- [ ] **Intent 表去重** — SKILL 只留「Load first」；完整流程仅 `skill-pipeline.md`
+
+### P1 — 对话 / 闸门
+
+- [ ] **每轮一个 topic cluster**（不必永远单原子问）— 如 Design+IV 或 Response+Trial 同轮确认
+- [ ] **Lit 误触发负面样例** — 探索性「能不能做…」≠ 复现；仅有出处/Method/DOI/搜全文意图才 lit-on
+- [ ] **Ambiguous「专业」默认** — 无偏好时快速走 norms 默认，避免卡死
+- [ ] **Ask-run 每会话一次** — 记住已答；小改可不再弹问（一句提醒即可）
+
+### P2 — norms 加载重量（约 251 行）
+
+- [x] **拆分 norms** — `norms-core.md` / `norms-trial-n.md` / `norms-counterbalance.md` / `norms-marker-map.md`（0.3.8）
+- [x] **默认只 load core**；N/平衡/字段映射再 load 附录；旧文件改为索引
+- [x] **checklist #1–3 可合并** — core 允许快速用户一句 design one-liner
+
+### P3 — 产品边界
+
+- [ ] **Handoff 分层** — `run-prep`（给用户的 4 条）vs `api-notes`（调 webui 时再读）
+- [ ] **失败剧本** — paywall 后失联 / webui 起不来 / compile 报错 — 各一条标准话术 + 下一步
+- [ ] **收工 5 勾** — path、marker 名、design tag、deviations、已问 ask-run
+
+### 建议排期
+
+1. Validate 清单 + 最小 stub  
+2. norms 拆 core / 附录  
+3. 会话状态一行  
+4. Intent 去重 + lit 负面样例  
+5. Handoff 分层 + 失败剧本  
+
 ## 许可证
 
 **AGPL-3.0** — [LICENSE](LICENSE)。PsychoPy 另计 — [NOTICE](NOTICE)。

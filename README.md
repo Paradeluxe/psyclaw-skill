@@ -120,6 +120,48 @@ psyclaw-skill/
 python skills/psyclaw/scripts/doctor.py
 ```
 
+## Pipeline optimization plan (todo)
+
+Post-0.3.6 review. Trunk stays:
+
+`INPUT → lit? → clarify → write → validate → ask_run → handoff`
+
+Next gains: **checkable steps, safer defaults, less load** — not another flowchart.
+
+### P0 — execution (agent failure modes)
+
+- [ ] **Session state line** — track `hear | lit | clarify | write | ask_run | handoff` in chat or beside the project; update when a step finishes
+- [x] **Validate is executable** — `references/marker-validate.md` (hard 1–7 + soft + optional compile)
+- [x] **Minimal legal stub** — `references/marker-stub.psyclaw`; SKILL/pipeline point here (0.3.7)
+- [ ] **Dedupe intent tables** — SKILL keeps “Load first” only; full flow lives in `skill-pipeline.md` only
+
+### P1 — dialogue / gates
+
+- [ ] **One topic cluster / turn** (not always one atomic Q) — e.g. Design+IV or Response+Trial in one confirm
+- [ ] **Lit false-positive examples** — exploratory “能不能做…” ≠ replication; lit-on only with source / Method / DOI / full-text search intent
+- [ ] **Ambiguous「专业」default** — no preference quickly → norms defaults (don’t stall)
+- [ ] **Ask-run once per session** — remember answer; small edits may skip re-prompt (one-line reminder OK)
+
+### P2 — norms load weight (~251 lines)
+
+- [x] **Split norms** — `norms-core.md` / `norms-trial-n.md` / `norms-counterbalance.md` / `norms-marker-map.md` (0.3.8)
+- [x] **Default-load core only**; appendices on N / balance / field mapping; old file = index
+- [x] **Merge checklist #1–3** — core allows one design one-liner cluster when user is fast
+
+### P3 — product boundaries
+
+- [ ] **Split handoff** — `run-prep` (4 lines for the user) vs `api-notes` (load only when calling webui)
+- [ ] **Failure playbooks** — paywall + user gone; webui won’t start; compile error — one standard reply + next step each
+- [ ] **Done checklist (5 ticks)** before close — path, marker name, design tag, deviations, ask-run asked
+
+### Suggested order
+
+1. Validate checklist + minimal stub  
+2. Split norms core / appendices  
+3. Session state line  
+4. Intent dedupe + lit negative examples  
+5. Handoff layering + failure playbooks  
+
 ## License
 
 **AGPL-3.0** — [LICENSE](LICENSE). PsychoPy is separate — [NOTICE](NOTICE).

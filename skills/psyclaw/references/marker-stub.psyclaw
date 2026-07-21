@@ -1,0 +1,99 @@
+{
+  "name": "MinimalDemo",
+  "display": {
+    "size": [1024, 768],
+    "fullscreen": false,
+    "screen": 0,
+    "bgcolor": "#000000"
+  },
+  "devices": { "keyboard": true },
+  "design_notes": "stub: 1-way within · replace conditions/text/keys before formal run",
+  "routines": [
+    {
+      "name": "instructions",
+      "components": [
+        {
+          "id": "c1",
+          "type": "text",
+          "name": "instr",
+          "start": 0,
+          "duration": -1,
+          "params": { "text": "Press SPACE to start", "color": "white" }
+        },
+        {
+          "id": "c2",
+          "type": "keyboard",
+          "name": "kb_start",
+          "start": 0,
+          "duration": -1,
+          "params": { "keys": "space", "force_end": true }
+        }
+      ]
+    },
+    {
+      "name": "trial",
+      "components": [
+        {
+          "id": "c3",
+          "type": "text",
+          "name": "fix",
+          "start": 0,
+          "duration": 0.5,
+          "params": { "text": "+", "color": "white" }
+        },
+        {
+          "id": "c4",
+          "type": "text",
+          "name": "stim",
+          "start": 0.5,
+          "duration": 2.0,
+          "params": { "text": "$stim", "color": "white" }
+        },
+        {
+          "id": "c5",
+          "type": "keyboard",
+          "name": "resp",
+          "start": 0.5,
+          "duration": 2.0,
+          "params": { "keys": "left,right", "force_end": true, "store_correct": true }
+        }
+      ]
+    },
+    {
+      "name": "thanks",
+      "components": [
+        {
+          "id": "c6",
+          "type": "text",
+          "name": "bye",
+          "start": 0,
+          "duration": -1,
+          "params": { "text": "Thanks", "color": "white" }
+        },
+        {
+          "id": "c7",
+          "type": "keyboard",
+          "name": "kb_end",
+          "start": 0,
+          "duration": -1,
+          "params": { "keys": "space", "force_end": true }
+        }
+      ]
+    }
+  ],
+  "flow": [
+    { "kind": "routine", "routine": "instructions" },
+    {
+      "kind": "loop",
+      "name": "trials",
+      "nReps": 1,
+      "loopType": "random",
+      "conditions": [
+        { "stim": "LEFT", "corrAns": "left" },
+        { "stim": "RIGHT", "corrAns": "right" }
+      ],
+      "children": [{ "kind": "routine", "routine": "trial" }]
+    },
+    { "kind": "routine", "routine": "thanks" }
+  ]
+}

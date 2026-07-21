@@ -37,8 +37,8 @@ INPUT (NL | PDF/Method | existing folder)
 1. **Hear** intent  
 2. **Lit-first** (if lit intent) — land article/Method before design Qs  
 3. **Clarify** — norms coach; paper-anchored if lit landed  
-4. **Write** folder + `<folderName>.psyclaw` at OutPath  
-5. **Validate** → marker ready  
+4. **Write** folder + `<folderName>.psyclaw` at OutPath — new files: start from `marker-stub.psyclaw`  
+5. **Validate** — `marker-validate.md` hard checks 1–7 (optional compile if webui up) → marker ready  
 6. **Ask run** (unless user already said run/don't-run)  
 7. **Handoff** if yes → prep checklist → webui → `finished` + CSV  
 
@@ -121,7 +121,7 @@ Prefer OA (author MS, OSF, PMC) before giving up. Host search before browser. No
 
 - Priority: **Design** first; **OutPath** last (skip if editing existing).  
 - Stop: 满意 / 就这样 / 开始写 / 可以了 / 别问了按默认 / core items clear.  
-- Norms: `experiment-design-norms.md`.
+- Norms: default `norms-core.md`; appendices `norms-counterbalance.md` / `norms-trial-n.md` / `norms-marker-map.md` (index: `experiment-design-norms.md`).
 
 ## OutPath
 
