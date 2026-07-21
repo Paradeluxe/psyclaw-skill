@@ -133,13 +133,13 @@ Next gains: **checkable steps, safer defaults, less load** — not another flowc
 - [x] **Session state file** — `<projectDir>/.psyclaw-session.json` (cwd before OutPath); `session-state.md` + stub (0.3.9); file wins over chat
 - [x] **Validate is executable** — `references/marker-validate.md` (hard 1–7 + soft + optional compile)
 - [x] **Minimal legal stub** — `references/marker-stub.psyclaw`; SKILL/pipeline point here (0.3.7)
-- [ ] **Dedupe intent tables** — SKILL keeps “Load first” only; full flow lives in `skill-pipeline.md` only
+- [x] **Dedupe intent tables** — SKILL = Load first only; flow in `skill-pipeline.md` (0.3.10)
 
 ### P1 — dialogue / gates
 
-- [ ] **One topic cluster / turn** (not always one atomic Q) — e.g. Design+IV or Response+Trial in one confirm
-- [ ] **Lit false-positive examples** — exploratory “能不能做…” ≠ replication; lit-on only with source / Method / DOI / full-text search intent
-- [ ] **Ambiguous「专业」default** — no preference quickly → norms defaults (don’t stall)
+- [x] **One topic cluster / turn** — allowed in hard rules + norms-core (earlier)
+- [x] **Lit false-positive examples** — feasibility/概念/空专业 ≠ lit; pipeline Not lit table (0.3.10)
+- [x] **Ambiguous「专业」default** — one Q then norms defaults if no answer (0.3.10)
 - [x] **Ask-run once per session** — session field `ask_run`; skip re-prompt when set (0.3.9)
 
 ### P2 — norms load weight (~251 lines)

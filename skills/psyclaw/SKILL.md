@@ -1,6 +1,6 @@
 ---
 name: psyclaw
-version: 0.3.9
+version: 0.3.10
 author: Paradeluxe
 license: AGPL-3.0
 platforms: [windows, macos, linux]
@@ -40,25 +40,23 @@ INPUT → [lit intent?] FIND lit first → Clarify (1 Q/turn) → Write+validate
 
 **State file:** read/write `.psyclaw-session.json` each step — `session-state.md`. No half-run mode. Multi-subject = sequential runs.
 
-## Intent → action
+## Intent → load (flow detail: `skill-pipeline.md` only)
 
-| User | Do | Load first |
-|------|-----|------------|
-| 做一个…（无文献） | clarify → write → ask run | `norms-core.md` |
-| 参考/复现/文献/Method/DOI/搜… | **lit first** → paper clarify → write → ask run | `skill-pipeline.md` then `norms-core.md` |
-| 改… | edit marker → validate → ask run | marker + `norms-core.md` (touched only) |
-| 要跑 / 多人 | handoff webui | `webui-handoff.md` |
-| 不要跑 / 只要说明书 | stop at marker ready | — |
-| 全装 / 首次 | doctor | `install-orchestrator.md` |
-| 更新 skill / psyclaw | skill + related + **webui 整段** | `install-orchestrator.md` |
-| 更新 webui | webui only（PsychoPy 仅 webui 要求时） | same |
+| User | Load first |
+|------|------------|
+| 做一个…（无文献） | `norms-core.md` (+ `session-state.md`) |
+| 参考/复现/文献/Method/DOI/搜… | `skill-pipeline.md` → lit gate → `norms-core.md` |
+| 改… | marker + `norms-core.md` (touched) + `marker-validate.md` |
+| 要跑 / 多人 | `webui-handoff.md` |
+| 不要跑 / 只要说明书 | — (stop; session `ask_run=no`) |
+| 全装 / 首次 / 更新 skill·webui | `install-orchestrator.md` |
 
 ## Hard rules
 
 1. **Language** = user's first substantive message (chat + on-screen text). Override if they switch.
 2. **Session state file** — on start, read `.psyclaw-session.json` (project dir if known, else cwd). After every step, update it. Never under skill install tree. Schema/transitions: `session-state.md`. File wins over chat memory.
 3. **One question per turn** after lit gate (topic cluster OK). Design first, OutPath last (`./experiments/<slug>/`; never Desktop; never skill tree).
-4. **Lit gate** — 参考/复现/文献/论文/Method/DOI/按某文/作者年份… → **search/fetch until file in `refs/`** before any Design Q (`lit=pending` until landed/waived). Pure task ask → no forced search. Ambiguous「专业」→ one Q: 文献 or 默认. Detail: `skill-pipeline.md`.
+4. **Lit gate** — only real lit intent (出处/Method/DOI/复现/搜全文) → fetch until `refs/` before Design Q. **Not lit:** pure task、可行性聊聊、工具/开跑、空「专业」— 见 pipeline 负面样例. Ambiguous → one Q; no quick answer → **norms defaults** (don't stall).
 5. **Stop clarify** on 满意/就这样/开始写/按默认, or core Design·IV·DV·response·trial clear (rest defaulted/paper-filled).
 6. **User override wins**; log deviations in marker notes. Plain language; no architecture dumps.
 7. **After every marker write/edit** → validate (`marker-validate.md`) → ask 要跑被试吗 only if `ask_run` still `null`.

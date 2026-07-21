@@ -51,25 +51,33 @@ If literature intent → **first real work is retrieval**, not the design checkl
 
 ### Intent recognition
 
-Scan first substantive message + later turns. **Any** hit → lit-first **on**.
+Scan first substantive message + later turns. Real lit signal → lit-first **on**.  
+Do **not** treat every academic-sounding word as lit (see **Not lit**).
 
-| Class | Examples |
-|-------|----------|
+| Class | Examples → lit **on** |
+|-------|------------------------|
 | Explicit ref | 参考、依据、按照、基于、改编自、复现、复制、跟…一样、照着…做 |
-| Paper words | 文献、论文、研究、Method、方法部分、前人、经典实验、发表、期刊 |
+| Paper + source intent | 文献、论文、Method、方法部分、前人、发表、期刊 — **and** want that paper's method |
 | Citation | 作者+年份、et al.、DOI、PMID、arxiv、publisher/PDF URL |
-| Named + source | 「经典 Stroop」「按 Posner」且带出处意味 |
-| Search ask | 搜一下、找一篇、帮我查 |
+| Named + source | 「经典 Stroop / 按 Posner」**且**带出处/复现意味 |
+| Search ask | 搜一下、找一篇、帮我查（全文/Method） |
 | File given | PDF/路径/粘贴 Method → lit on, **read file** |
 
-| Not lit | Examples |
-|---------|----------|
-| Pure task | 「做一个红绿 Stroop」无参考/文献 |
-| Tool/run only | 「更新 webui」「跑被试」 |
-| Vague「专业」 | no paper → norms defaults, **don't** random-search |
+| Not lit (lit **off**) | Examples — **do not** search |
+|----------------------|------------------------------|
+| Pure task | 「做一个红绿 Stroop」无参考/文献/DOI |
+| Feasibility / chat | 「研究一下能不能做 Stroop」「这实验靠谱吗」「我想了解一下」— 探索 ≠ 复现 |
+| Teach-me / 概念 | 「什么是被试内」「Stroop 是什么」— 先答概念；用户说「按某文做」再 lit-on |
+| Tool / run / install | 「更新 webui」「跑被试」「doctor」「装一下」 |
+| Edit only | 「把按键改成 f/j」on existing marker |
+| Empty「专业/正式」 | 「做一个专业的 Stroop」无出处 → **not** random paper grab |
 
-**Ambiguous**（「做一个专业的 Stroop」）→ one Q: 文献 or 通用默认？  
-**Do not** wait for magic word `搜一下` if 参考/复现/文献 already said.
+**Ambiguous**（「专业的 / 标准的 / 正式点」且无出处）→ **one Q**: 跟文献走还是通用默认？  
+- User picks 文献 → lit-on  
+- User picks 默认 / 不答 / 含糊 → **norms defaults immediately** (don't stall, don't search)  
+
+**Do not** wait for magic word `搜一下` if 参考/复现/文献+出处 already said.  
+**Do not** lit-on on lone「研究」when it means “想想/看看行不行”.
 
 | Detect | First actions | Do not yet |
 |--------|---------------|------------|
@@ -105,18 +113,19 @@ Prefer OA (author MS, OSF, PMC) before giving up. Host search before browser. No
 3. Shrug → **paper values first**  
 4. Write; citation + path + deviations in notes  
 
-## Intent map
+## Intent map (canonical — SKILL only lists Load first)
 
-| User | Flow |
-|------|------|
-| 做一个…（无文献） | 1→3→…→6 |
-| 做一个…+文献/复现 | **2 first** → 3 paper-anchored → …→6 |
-| 改… | open marker → edit → 4→6 |
-| 要跑 / 多人 | handoff webui; experimenter=AI if agent-run |
-| 不要跑 / 只要说明书 | stop at marker ready |
-| 全装 / 首次 | `install-orchestrator.md` |
-| 更新 skill / psyclaw | skill + related + webui 整段 |
-| 更新 webui | webui only |
+| User | Flow (step #s above) | Notes |
+|------|----------------------|--------|
+| 做一个…（无文献） | 1→3→4→5→6 | lit off |
+| 做一个…+文献/复现 | 1→**2**→3 paper-anchored→…→6 | lit on |
+| 可行性/概念聊聊 | answer; stay hear/clarify light | lit off until they say 按文献做 |
+| 改… | open marker → edit → 4→5→6 | gaps = touched only |
+| 要跑 / 多人 | handoff webui; experimenter=AI if agent-run | `ask_run=yes` |
+| 不要跑 / 只要说明书 | stop at marker ready | `ask_run=no` · `done` |
+| 全装 / 首次 | `install-orchestrator.md` | outside design pipeline |
+| 更新 skill / psyclaw | skill + related + webui 整段 | same |
+| 更新 webui | webui only | PsychoPy only if webui requires |
 
 ## Clarify stop / priority
 
