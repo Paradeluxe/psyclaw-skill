@@ -1,0 +1,153 @@
+{
+  "_meta": {
+    "fileName": "example_experiment.psyclaw",
+    "format": "psyclaw-design",
+    "savedAt": "2026-07-19T12:00:00",
+    "version": 1
+  },
+  "display": {
+    "bgcolor": "#000000",
+    "fullscreen": true,
+    "size": [1920, 1080],
+    "aspectFilter": "all",
+    "screen": 0
+  },
+  "flow": [
+    {
+      "kind": "routine",
+      "routine": "instructions"
+    },
+    {
+      "children": [
+        {
+          "kind": "routine",
+          "routine": "trial"
+        }
+      ],
+      "conditions": [
+        {"word": "RED", "color": "red", "corrAns": "r", "congruent": "yes"},
+        {"word": "GREEN", "color": "green", "corrAns": "g", "congruent": "yes"},
+        {"word": "BLUE", "color": "blue", "corrAns": "b", "congruent": "yes"},
+        {"word": "YELLOW", "color": "yellow", "corrAns": "y", "congruent": "yes"},
+        {"word": "RED", "color": "green", "corrAns": "g", "congruent": "no"},
+        {"word": "GREEN", "color": "red", "corrAns": "r", "congruent": "no"},
+        {"word": "BLUE", "color": "yellow", "corrAns": "y", "congruent": "no"},
+        {"word": "YELLOW", "color": "blue", "corrAns": "b", "congruent": "no"}
+      ],
+      "conditionsFile": "stroop_trials.csv",
+      "kind": "loop",
+      "loopType": "random",
+      "nReps": 1,
+      "name": "trials"
+    },
+    {
+      "kind": "routine",
+      "routine": "thanks"
+    }
+  ],
+  "name": "stroop_example_x",
+  "metrics": {
+    "group_by": ["congruent"],
+    "note": "Stroop classic: accuracy + mean RT overall and by congruent/incongruent"
+  },
+  "routines": [
+    {
+      "components": [
+        {
+          "duration": -1,
+          "id": "c_1",
+          "name": "instr_text",
+          "params": {
+            "color": "white",
+            "height": 0.045,
+            "text": "Press SPACE to begin!!"
+          },
+          "start": 0,
+          "type": "text"
+        },
+        {
+          "duration": -1,
+          "id": "c_2",
+          "name": "instr_key",
+          "params": {
+            "force_end": true,
+            "keys": "space"
+          },
+          "start": 0,
+          "type": "keyboard"
+        }
+      ],
+      "name": "instructions"
+    },
+    {
+      "components": [
+        {
+          "duration": 0.5,
+          "id": "c_3",
+          "name": "fix",
+          "params": {
+            "height": 0.08,
+            "text": "+"
+          },
+          "start": 0,
+          "type": "fixation"
+        },
+        {
+          "duration": 1.5,
+          "id": "c_4",
+          "name": "stim",
+          "params": {
+            "color": "$color",
+            "height": 0.15,
+            "text": "$word"
+          },
+          "start": 0.5,
+          "type": "text"
+        },
+        {
+          "duration": 1.5,
+          "id": "c_5",
+          "name": "resp",
+          "params": {
+            "force_end": true,
+            "keys": "r,g,b,y"
+          },
+          "start": 0.5,
+          "type": "keyboard"
+        }
+      ],
+      "name": "trial"
+    },
+    {
+      "components": [
+        {
+          "duration": 2,
+          "id": "c_6",
+          "name": "thanks_text",
+          "params": {
+            "color": "white",
+            "height": 0.05,
+            "text": "Thank you."
+          },
+          "start": 0,
+          "type": "text"
+        }
+      ],
+      "name": "thanks"
+    }
+  ],
+  "devices": {
+    "keyboard": true,
+    "microphone": true,
+    "speaker": true,
+    "keyboardDevice": "",
+    "mouseDevice": "",
+    "mouseSampleRate": 125,
+    "micDevice": "",
+    "micLabel": "",
+    "micSampleRate": 44100,
+    "speakerDevice": "",
+    "speakerLabel": "",
+    "speakerSampleRate": 44100
+  }
+}

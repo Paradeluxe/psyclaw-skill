@@ -1,0 +1,45 @@
+# PsyClaw WebUI — product source only
+
+# --- runtime / generated ---
+runs/
+**/data/
+**/participants.json
+designs/_save_smoke/
+designs/_save_test/
+designs/_welcome_smoke/
+designs/**/__pycache__/
+*.psyexp
+*.csv
+!examples/**/*.csv
+# trial metrics pack siblings (written next to CSV under project data/)
+*_summary.json
+*_by_condition.csv
+*_metrics_long.csv
+
+# --- python / env ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.venv/
+.venv-debug/
+venv/
+.mypy_cache/
+.ruff_cache/
+.probe-html.txt
+.hermes/
+
+# --- secrets ---
+.env
+.env.*
+*.pem
+*secret*
+*credentials*
+
+# --- OS / IDE ---
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*~
+~$*

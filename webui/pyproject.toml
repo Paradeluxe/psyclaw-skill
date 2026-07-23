@@ -1,0 +1,20 @@
+[project]
+name = "psyclaw-webui"
+version = "0.1.0"
+description = "Local lab UI for designing and running PsychoPy experiments (part of psyclaw monorepo)"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { file = "LICENSE" }
+authors = [{ name = "PsyClaw contributors" }]
+keywords = ["psychology", "psychopy", "experiment-builder"]
+dependencies = [
+  "flask>=3.0",
+  "pyyaml",
+  "lxml",
+]
+
+[project.optional-dependencies]
+test = ["pytest"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

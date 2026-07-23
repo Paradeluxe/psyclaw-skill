@@ -1,0 +1,28 @@
+{
+  "name": "demo_proj",
+  "display": {
+    "size": [
+      800,
+      600
+    ],
+    "fullscreen": false
+  },
+  "routines": [
+    {
+      "name": "trial",
+      "components": []
+    }
+  ],
+  "flow": [
+    {
+      "kind": "routine",
+      "routine": "trial"
+    }
+  ],
+  "_meta": {
+    "format": "psyclaw-design",
+    "version": 1,
+    "fileName": "demo_proj.psyclaw",
+    "savedAt": "2026-07-15T21:11:32"
+  }
+}

@@ -1,0 +1,46 @@
+id: stroop
+label: "Stroop (example)"
+description: "Colour-word interference task"
+version: "1.0"
+order: 1
+
+fields:
+  - name: participant_id
+    label: "Participant ID"
+    type: text
+    default: "P01"
+    required: true
+  - name: n_trials
+    label: "Total trials"
+    type: number
+    default: 30
+    min: 4
+    max: 500
+  - name: n_congruent
+    label: "Congruent trials"
+    type: number
+    default: 15
+    min: 0
+  - name: n_incongruent
+    label: "Incongruent trials"
+    type: number
+    default: 15
+    min: 0
+  - name: stimulus_duration_ms
+    label: "Stimulus duration (ms)"
+    type: number
+    default: 1500
+    min: 100
+  - name: fullscreen
+    label: "Fullscreen"
+    type: checkbox
+    default: true
+  - name: instructions_text
+    label: "Instructions"
+    type: textarea
+    default: "Welcome. Press SPACE to begin."
+
+runtime:
+  script_template: "stroop_runner.py.j2"
+  timing: { fixation_ms: 500, iti_ms: 500 }
+  loop: { type: random }

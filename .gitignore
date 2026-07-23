@@ -1,0 +1,37 @@
+# PsyClaw skill (GitHub: Paradeluxe/psyclaw)
+
+# Local env / caches
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.pytest_cache/
+node_modules/
+
+# Generated / debug
+.regression_out/
+examples/*_out/
+examples/parallel_loops_out/
+examples/code_probe_out/
+examples/*.png
+examples/*.jpg
+*.tmp
+*.log
+*.bak
+
+# Secrets / machine-local notes (never publish)
+*secret*
+*credentials*
+*github-pat*
+*.pem
+.env
+.env.*
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+dev-archive/

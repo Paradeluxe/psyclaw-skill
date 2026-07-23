@@ -1,0 +1,7 @@
+{
+  "format": "psyclaw-project",
+  "version": 1,
+  "design": "example_experiment.psyclaw",
+  "savedAt": "2026-07-18T00:01:52",
+  "name": "stroop_example_x"
+}

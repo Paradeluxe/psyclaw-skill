@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>psyclaw-webui</title>
+    <link rel="icon" href="favicon.ico" sizes="any">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="stylesheet" href="style.css?v=250">
+    </head>
+  <body class="no-project">
+    <!-- Workspace gate: must open/create a folder before Builder/System/Run -->
+    <div id="welcome" class="welcome" role="dialog" aria-modal="true" aria-labelledby="welcome-title">
+      <div class="welcome-card">
+        <div class="welcome-brand">
+          <span class="eyebrow">psyclaw</span>
+          <h1 id="welcome-title" data-i18n="welcome.title">Open experiment folder</h1>
+          <p class="muted welcome-lead" data-i18n="welcome.lead">Choose a project folder to enter Builder · System · Run. Marker: <folderName>.psyclaw</p>
+        </div>
+        <div class="welcome-actions">
+          <button type="button" class="btn btn-primary" id="welcome-open-btn" data-i18n="welcome.open">Open folder</button>
+          <button type="button" class="btn btn-secondary" id="welcome-new-btn" data-i18n="welcome.new">New project</button>
+        </div>
+        <p class="welcome-status" id="welcome-status" hidden role="status" aria-live="polite"></p>
+        <div class="welcome-recent">
+          <div class="welcome-recent-head">
+            <span class="eyebrow" data-i18n="welcome.recent">recent</span>
+          </div>
+          <ul class="welcome-recent-list" id="welcome-recent-list"></ul>
+          <p class="muted welcome-recent-empty" id="welcome-recent-empty" data-i18n="welcome.recentEmpty">No recent projects</p>
+        </div>
+      </div>
+    </div>
+
+    <div id="workspace" class="workspace" hidden>
+    <header class="app-header">
+      <h1>psyclaw</h1>
+      <span class="header-tag" data-i18n="header.tag">mission control · local</span>
+      <div class="header-lang-switch" role="group" data-i18n-aria="header.langAria" aria-label="Language">
+        <button type="button" class="header-lang-btn" data-lang-opt="en" id="header-lang-en" aria-pressed="false">EN</button>
+        <button type="button" class="header-lang-btn" data-lang-opt="zh" id="header-lang-zh" aria-pressed="false">中</button>
+      </div>
+    </header>
+
+    <nav class="tabs" role="tablist" data-i18n-aria="nav.primary" aria-label="Primary">
+        <button class="tab-btn active" role="tab" aria-selected="true" data-tab="flow" data-i18n="tab.builder">Builder</button>
+              <button class="tab-btn" role="tab" aria-selected="false" data-tab="system" data-i18n="tab.system">System</button>
+              <button class="tab-btn" role="tab" aria-selected="false" data-tab="run" data-i18n="tab.run">Run</button>
+              <button class="tab-btn" role="tab" aria-selected="false" data-tab="settings" data-i18n="tab.settings">Settings</button>
+              <button class="tab-btn" role="tab" aria-selected="false" data-tab="guide" data-i18n="tab.guide">Guide</button>
+      </nav>
+
+    <main class="app-main">
+    <!-- ============================================================ -->
+    <!-- System tab: hardware / host / browser preflight               -->
+    <!-- ============================================================ -->
+    <section id="tab-system" class="tab-panel" role="tabpanel" aria-labelledby="system" hidden>
+      <div class="panel-heading-row sys-heading">
+                    <div>
+                      <span class="eyebrow" data-i18n="sys.eyebrow">system</span>
+                      <h2 data-i18n="sys.title">Host & engine</h2>
+                      <p class="muted sys-sub" data-i18n="sys.sub">Machine profile · PsychoPy readiness · live RT / path tests.</p>
+                    </div>
+                    <div class="sys-actions">
+                      <div class="sys-gate" id="sys-gate">
+                        <span id="sys-summary" class="sys-summary status-idle">—</span>
+                        <span class="sys-gate-reason muted" id="sys-gate-reason"></span>
+                      </div>
+                      <span class="sys-meta-inline muted" id="sys-meta-inline">—</span>
+                      <button type="button" class="btn btn-secondary" id="sys-rerun-btn">
+                        <span class="sys-rerun-ico" aria-hidden="true">&#8634;</span>
+                        <span data-i18n="sys.rerun">Re-check host</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- left: form_factor silhouette · right: hardware / input / engine info -->
+                  <div class="sys-device-card" id="sys-device-card">
+                                      <div class="sys-host-row">
+                                        <div class="sys-device-side">
+                                          <div class="sys-device-stage" id="sys-device-art" aria-hidden="true"></div>
+                                          <div class="sys-device-foot">
+                                            <div class="sys-device-label" id="sys-device-label">—</div>
+                                            <div class="sys-device-detail muted" id="sys-device-detail"></div>
+                                          </div>
+                                        </div>
+                                        <div class="sys-host-panels" id="sys-host-panels"></div>
+                                      </div>
+                                    </div>
+
+                                    <!-- Display | Mic / Speaker — same peer-card language; alignment-tight -->
+                  <div class="sys-host-devices" id="sys-host-devices">
+                    <section class="sys-display-card sys-io-channel sys-io-channel-display" id="sys-display-card" data-i18n-aria="builder.displayAria" aria-label="Display / output screen">
+                      <div class="panel-heading">
+                        <span class="eyebrow" data-i18n="builder.displayEyebrow">output</span>
+                        <h3 data-i18n="builder.displayTitle">Display</h3>
+                      </div>
+
+                      <!-- Win11/game video settings: sim screen | mon/res/fs side-by-side -->
+                      <div class="sys-display-body">
+                        <div class="sys-display-preview" aria-hidden="true">
+                          <!-- Nested: outer = host monitor aspect; inner = design size.
+                                                         HOST badge on stage (not inside host) so red window never covers it. -->
+                          <div class="sys-display-preview-stage" id="disp-preview-stage">
+                            <span class="sys-display-preview-host-badge" id="disp-preview-host-badge">HOST</span>
+                            <div class="sys-display-preview-host" id="disp-preview-host">
+                              <div class="sys-display-preview-window" id="disp-preview-inner">
+                                <div class="sys-display-preview-pixel">
+                                  <span class="sys-display-preview-res" id="disp-preview-res">—</span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="sys-display-preview-meta">
+                            <strong class="sys-display-preview-size" id="disp-preview-size">—</strong>
+                            <span class="sys-display-preview-ratio" id="disp-ratio-label">—</span>
+                            <span class="sys-display-preview-fs" id="disp-preview-fs" hidden data-i18n="builder.fullscreen">Fullscreen</span>
+                          </div>
+                        </div>
+
+                        <div class="builder-display-form sys-io-fields" id="builder-display-form">
+                          <div class="sys-setting-row sys-io-field">
+                            <label class="sys-setting-lab" for="disp-monitor" data-i18n="builder.dispMonitor">Monitor</label>
+                            <div class="sys-setting-ctrl">
+                              <select id="disp-monitor" class="builder-display-select builder-display-select-full" title="Participant output monitor"></select>
+                            </div>
+                          </div>
+                          <div class="sys-setting-row sys-io-field">
+                            <label class="sys-setting-lab" for="disp-res" data-i18n="builder.dispRes">Resolution</label>
+                            <div class="sys-setting-ctrl">
+                              <select id="disp-res" class="builder-display-select builder-display-select-full" title="Window resolution"></select>
+                            </div>
+                          </div>
+                          <div class="sys-setting-row sys-io-field builder-display-custom" id="disp-custom-row" hidden>
+                            <label class="sys-setting-lab" data-i18n="builder.dispCustom">Custom size</label>
+                            <div class="sys-setting-ctrl sys-setting-custom-wh">
+                              <input type="number" id="disp-w" class="builder-display-in" min="320" max="7680" step="1" aria-label="Width" />
+                              <span class="builder-display-x" aria-hidden="true">×</span>
+                              <input type="number" id="disp-h" class="builder-display-in" min="240" max="4320" step="1" aria-label="Height" />
+                              <span class="muted builder-display-px">px</span>
+                            </div>
+                          </div>
+                          <div class="sys-setting-row sys-io-field sys-io-field-fs-refresh">
+                            <span class="sys-setting-lab" data-i18n="builder.fullscreen">Fullscreen</span>
+                            <div class="sys-setting-ctrl builder-display-actions builder-display-fs-refresh">
+                              <label class="settings-toggle" for="disp-fs" title="Fullscreen when running participant">
+                                <input type="checkbox" id="disp-fs" checked />
+                                <span class="settings-toggle-ui" aria-hidden="true"></span>
+                              </label>
+                              <span class="sys-io-inline-lab" data-i18n="builder.dispRefresh">Refresh rate</span>
+                              <span class="sys-setting-value" id="disp-refresh-label" title="Host-reported; PsychoPy cannot set OS refresh">—</span>
+                            </div>
+                          </div>
+                          <div class="sys-setting-row sys-io-field">
+                            <label class="sys-setting-lab" for="disp-bgcolor-picker" data-i18n="builder.dispBg">Background</label>
+                            <div class="sys-setting-ctrl bg-color-row">
+                              <select id="disp-bgcolor-picker" class="builder-display-select bg-color-select" data-i18n-title="builder.dispBgPickerTitle" title="Pick color"></select>
+                              <input type="text" id="disp-bgcolor" class="builder-display-select builder-display-select-full bg-color-text" value="#000000" spellcheck="false" autocomplete="off" data-i18n-placeholder="builder.dispBgPlaceholder" data-i18n-title="builder.dispBgTitle" placeholder="#000000 / rgb(0,0,0)" title="Hex, rgb(r,g,b), or r,g,b (0–255). Window color is fixed at start — not $stimlist vars.">
+                              <span class="bg-color-name" id="disp-bgcolor-label" aria-live="polite" hidden></span>
+                            </div>
+                          </div>
+                          <div class="builder-display-host muted" id="disp-host-hint">—</div>
+                        </div>
+                      </div>
+                    </section>
+
+                    <div class="sys-io-audio-col" id="sys-io-audio-col" aria-label="Audio I/O">
+                      <section class="sys-io-card sys-io-card-standalone sys-io-channel sys-io-channel-mic" id="disp-mic-card" aria-label="Microphone">
+                        <div class="panel-heading">
+                          <span class="eyebrow" data-i18n="builder.ioMicEyebrow">input</span>
+                          <h3 data-i18n="builder.ioMicTitle">Microphone</h3>
+                        </div>
+                        <div class="sys-io-fields">
+                          <div class="sys-setting-row sys-io-field">
+                            <label class="sys-setting-lab" for="disp-mic-device" data-i18n="builder.ioMicDevice">Device</label>
+                            <div class="sys-setting-ctrl">
+                              <select id="disp-mic-device" class="builder-display-select builder-display-select-full"></select>
+                            </div>
+                          </div>
+                          <div class="sys-setting-row sys-io-field">
+                            <label class="sys-setting-lab" for="disp-mic-rate" data-i18n="builder.ioMicRate">Sample rate</label>
+                            <div class="sys-setting-ctrl">
+                              <select id="disp-mic-rate" class="builder-display-select builder-display-select-full" title="Microphone sample rate (Hz)">
+                                <option value="8000">8000 Hz</option>
+                                <option value="16000">16000 Hz</option>
+                                <option value="22050">22050 Hz</option>
+                                <option value="32000">32000 Hz</option>
+                                <option value="44100" selected>44100 Hz</option>
+                                <option value="48000">48000 Hz</option>
+                              </select>
+                            </div>
+                          </div>
+                        </div>
+                      </section>
+
+                      <section class="sys-io-card sys-io-card-standalone sys-io-channel sys-io-channel-spk" id="disp-spk-card" aria-label="Speaker output">
+                        <div class="panel-heading">
+                          <span class="eyebrow" data-i18n="builder.ioSpkEyebrow">output</span>
+                          <h3 data-i18n="builder.ioSpkTitle">Speaker</h3>
+                        </div>
+                        <div class="sys-io-fields">
+                          <div class="sys-setting-row sys-io-field">
+                            <label class="sys-setting-lab" for="disp-spk-device" data-i18n="builder.ioSpkDevice">Device</label>
+                            <div class="sys-setting-ctrl">
+                              <select id="disp-spk-device" class="builder-display-select builder-display-select-full"></select>
+                            </div>
+                          </div>
+                          <div class="sys-setting-row sys-io-field">
+                            <label class="sys-setting-lab" for="disp-spk-rate" data-i18n="builder.ioSpkRate">Sample rate</label>
+                            <div class="sys-setting-ctrl">
+                              <select id="disp-spk-rate" class="builder-display-select builder-display-select-full" title="Speaker sample rate (Hz)">
+                                <option value="22050">22050 Hz</option>
+                                <option value="44100" selected>44100 Hz</option>
+                                <option value="48000">48000 Hz</option>
+                                <option value="96000">96000 Hz</option>
+                              </select>
+                            </div>
+                          </div>
+                        </div>
+                      </section>
+                    </div>
+                  </div>
+
+                  <div class="sys-stack">
+                    <div class="sys-group sys-interactive">
+                      <div class="panel-heading sys-group-head">
+                        <span class="eyebrow" data-i18n="sys.liveProbes">live probes</span>
+                        <h3 data-i18n="sys.deviceTests">Device tests (RT / path)</h3>
+                      </div>
+                      <div class="sys-probe-row">
+                        <div class="sys-probe-card" id="probe-keyboard">
+                          <div class="sys-probe-title" data-i18n="sys.kbTitle">Keyboard RT</div>
+                          <button type="button" class="btn btn-secondary" id="sys-key-arm" data-i18n="sys.kbArm">Arm key</button>
+                          <div class="sys-probe-result" id="sys-key-result" data-i18n="sys.kbIdle">idle — Arm then press a key</div>
+                        </div>
+                        <div class="sys-probe-card" id="probe-mouse">
+                          <div class="sys-probe-title" data-i18n="sys.mouseTitle">Mouse RT</div>
+                          <button type="button" class="btn btn-secondary" id="sys-mouse-arm" data-i18n="sys.mouseArm">Arm click</button>
+                          <div class="sys-probe-result" id="sys-mouse-result" data-i18n="sys.mouseIdle">idle — Arm then click anywhere</div>
+                        </div>
+                        <div class="sys-probe-card" id="probe-audio">
+                          <div class="sys-probe-title" data-i18n="sys.audioTitle">Audio path</div>
+                          <button type="button" class="btn btn-secondary" id="sys-audio-beep" data-i18n="sys.audioBeep">Beep 440Hz</button>
+                          <div class="sys-probe-result" id="sys-audio-result" data-i18n="sys.audioIdle">idle — hear a short tone?</div>
+                        </div>
+                        <div class="sys-probe-card" id="probe-fullscreen">
+                          <div class="sys-probe-title" data-i18n="sys.fsTitle">Fullscreen</div>
+                          <button type="button" class="btn btn-secondary" id="sys-fs-btn" data-i18n="sys.fsToggle">Toggle FS</button>
+                          <div class="sys-probe-result" id="sys-fs-result" data-i18n="sys.fsIdle">idle — participant window path</div>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- checklist removed (info lives in host panels); keep hidden sinks for any leftover ids -->
+                                        <ul id="sys-checks-all" hidden></ul>
+                                        <ul id="sys-checks-host" hidden></ul>
+                                        <ul id="sys-checks-browser" hidden></ul>
+                                      </div>
+                              </section>
+
+    <!-- ============================================================ -->
+    <!-- Flow tab: drag-drop Builder                                   -->
+    <!-- ============================================================ -->
+    <section id="tab-flow" class="tab-panel active" role="tabpanel" aria-labelledby="flow">
+          <div class="panel-heading-row">
+            <div class="builder-title-block">
+              <span class="eyebrow" data-i18n="builder.eyebrow">vehicle config</span>
+              <h2 data-i18n="builder.title">Builder</h2>
+              <p class="muted builder-lead" data-i18n="builder.lead">Timeline · Flow loops under the rail (Insert Loop → drag)</p>
+              <div class="builder-file-bar" id="builder-file-bar">
+                              <div class="builder-file-status" id="builder-file-status" title="Project folder">
+                                <span class="builder-dirty-dot" id="builder-dirty-dot" title="File status" aria-hidden="true">●</span>
+                                <div class="builder-file-meta">
+                                  <span class="builder-file-name" id="builder-file-name" data-i18n="builder.untitled">untitled</span>
+                                  <span class="builder-file-state" id="builder-file-state" data-i18n="builder.notSaved">not saved</span>
+                                </div>
+                                <!-- keep id for any leftover refs; filled by updateFileUi for title/path -->
+                                <span class="builder-file-label" id="builder-file-label" hidden></span>
+                              </div>
+                              <div class="builder-file-actions" role="group" data-i18n-aria="builder.fileActions" aria-label="Project file actions">
+                                <div class="builder-file-seg">
+                                                                  <button type="button" class="builder-file-btn" id="builder-new-btn" data-i18n="builder.new">New</button>
+                                                                  <button type="button" class="builder-file-btn" id="builder-open-btn" data-i18n="builder.open">Open</button>
+                                                                </div>
+                                                                <div class="builder-file-seg">
+                                                                                                  <button type="button" class="builder-file-btn is-emphasis" id="builder-save-btn" data-i18n="builder.save">Save</button>
+                                                                                                  <button type="button" class="builder-file-btn" id="builder-saveas-btn" data-i18n="builder.saveAs">Save as</button>
+                                                                                                </div>
+
+                                                                                              </div>
+                            </div>
+            </div>
+          </div>
+
+          <div class="builder-layout">
+              <div class="builder-main-stack">
+                <aside class="builder-col builder-col-parts" data-i18n-aria="builder.paletteAria" aria-label="Component palette">
+                  <div class="panel-heading">
+                    <span class="eyebrow" data-i18n="builder.parts">parts</span>
+                    <h3 data-i18n="builder.components">Components</h3>
+                  </div>
+                  <div id="builder-palette" class="builder-palette builder-palette-row"></div>
+                </aside>
+
+                <section class="builder-col builder-col-main" data-i18n-aria="builder.timelineAria" aria-label="Routine timeline">
+                  <div class="panel-heading">
+                    <span class="eyebrow" data-i18n="builder.sequence">sequence</span>
+                    <h3 data-i18n="builder.timeline">Timeline</h3>
+                  </div>
+                  <div id="builder-routine-tabs" class="builder-routine-tabs"></div>
+                  <div id="builder-timeline" class="builder-timeline"></div>
+                </section>
+
+                <section class="builder-col builder-col-flow" data-i18n-aria="builder.flowAria" aria-label="Experiment flow">
+                                  <div class="panel-heading">
+                                    <span class="eyebrow" data-i18n="builder.mission">mission</span>
+                                    <h3 data-i18n="builder.flow">Flow</h3>
+                                  </div>
+                                  <div id="builder-flow-list" class="builder-flow-list"></div>
+                                </section>
+
+                                <section class="builder-col builder-col-conditions" id="builder-conditions-card" hidden data-i18n-aria="builder.conditionsAria" aria-label="Loop conditions stimlist">
+                                  <div class="panel-heading">
+                                    <span class="eyebrow" data-i18n="builder.stimlist">stimlist</span>
+                                    <h3 id="builder-conditions-title" data-i18n="builder.conditions">Conditions</h3>
+                                  </div>
+                                  <div id="builder-conditions-panel" class="builder-conditions-panel"></div>
+                                </section>
+                              </div>
+
+              <aside class="builder-col builder-col-inspector" data-i18n-aria="builder.inspectorAria" aria-label="Inspector">
+                <div class="panel-heading">
+                  <span class="eyebrow" data-i18n="builder.avionics">avionics</span>
+                  <h3 data-i18n="builder.properties">Properties</h3>
+                </div>
+                <div id="builder-inspector" class="builder-inspector"></div>
+              </aside>
+            </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- Run tab: Start / status / log shell                          -->
+    <!-- ============================================================ -->
+    <section id="tab-run" class="tab-panel" role="tabpanel" aria-labelledby="run" hidden>
+      <div class="panel-heading-row">
+              <div>
+                <span class="eyebrow" data-i18n="run.eyebrow">flight</span>
+                <h2 data-i18n="run.title">Run</h2>
+                <p class="muted" data-i18n="run.lead">Start = live · Pilot = manual live · Autopilot = auto keys. Telemetry below.</p>
+              </div>
+              <div class="run-status-line">
+                <span class="muted" data-i18n="run.status">Status:</span>
+                <span id="run-status-badge" class="status-badge status-idle" data-i18n="run.ready">ready to compile</span>
+              </div>
+            </div>
+
+            <div class="run-controls-row">
+                    <button id="start-run-btn" class="btn btn-primary" type="button">
+                      <span aria-hidden="true">&#9654;</span> <span data-i18n="run.start">Start</span>
+                    </button>
+                    <button id="pilot-run-btn" class="btn btn-pilot" type="button" data-i18n-title="run.pilotTitle" title="Pilot — live window, manual keys (does not consume IDs)">
+                      <svg class="btn-ico" viewBox="0 0 24 24" width="15" height="15" aria-hidden="true" focusable="false">
+                        <path d="M22 2 11 13" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M22 2 15 22 11 13 2 9 22 2z" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      <span data-i18n="run.pilot">Pilot</span>
+                    </button>
+                    <button id="autopilot-run-btn" class="btn btn-autopilot" type="button" data-i18n-title="run.autopilotTitle" title="Autopilot — auto-simulate keys, capped loops">
+                      <svg class="btn-ico" viewBox="0 0 24 24" width="15" height="15" aria-hidden="true" focusable="false">
+                        <circle cx="12" cy="12" r="2.5" fill="none" stroke="currentColor" stroke-width="1.75"/>
+                        <path d="M12 3v2.5M12 18.5V21M3 12h2.5M18.5 12H21M5.6 5.6l1.8 1.8M16.6 16.6l1.8 1.8M5.6 18.4l1.8-1.8M16.6 7.4l1.8-1.8" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+                      </svg>
+                      <span data-i18n="run.autopilot">Autopilot</span>
+                    </button>
+                    <button id="stop-run-btn" class="btn btn-danger" type="button" disabled>
+                      <span aria-hidden="true">&#9632;</span> <span data-i18n="run.stop">Stop</span>
+                    </button>
+                    <button id="open-project-folder-btn" class="btn btn-secondary btn-open-folder" type="button" data-i18n-title="run.openFolderTitle" title="Open experiment folder in Explorer" disabled>
+                                          <svg class="btn-ico" viewBox="0 0 24 24" width="15" height="15" aria-hidden="true" focusable="false">
+                                            <path d="M3 7.5A1.5 1.5 0 0 1 4.5 6H9l1.8 1.8H19.5A1.5 1.5 0 0 1 21 9.3v8.2a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 17.5v-10z" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"/>
+                                          </svg>
+                                          <span data-i18n="run.openFolder">Open folder</span>
+                                        </button>
+                  </div>
+                  <p class="muted run-mode-hint" id="run-mode-hint" data-i18n="run.modeHint">Start = live participant · Pilot = live manual · Autopilot = auto key simulation. Session form replaces PsychoPy expInfo.</p>
+
+                        <div class="run-telemetry" id="run-telemetry" aria-label="Run telemetry">
+                          <div class="run-telemetry-item">
+                            <span class="run-telemetry-k" data-i18n="run.source">Source</span>
+                            <span class="run-telemetry-v" id="run-paradigm">&mdash;</span>
+                          </div>
+                          <div class="run-telemetry-item">
+                            <span class="run-telemetry-k" data-i18n="run.participant">Participant</span>
+                            <span class="run-telemetry-v" id="run-session-chip">&mdash;</span>
+                          </div>
+                          <div class="run-telemetry-item">
+                            <span class="run-telemetry-k" data-i18n="run.runId">Run ID</span>
+                            <span class="run-telemetry-v" id="run-id">&mdash;</span>
+                          </div>
+                          <div class="run-telemetry-item">
+                            <span class="run-telemetry-k" data-i18n="run.trials">Trials</span>
+                            <span class="run-telemetry-v" id="run-progress">0 / 0</span>
+                          </div>
+                          <div class="run-telemetry-item">
+                            <span class="run-telemetry-k" data-i18n="run.started">Started</span>
+                            <span class="run-telemetry-v" id="run-started">&mdash;</span>
+                          </div>
+                          <div class="run-telemetry-item">
+                            <span class="run-telemetry-k" data-i18n="run.elapsed">Elapsed</span>
+                            <span class="run-telemetry-v" id="run-elapsed">00:00</span>
+                          </div>
+                        </div>
+
+                        <section class="run-session-card" aria-label="Participant session">
+                          <div class="run-session-head">
+                            <div class="panel-heading">
+                              <span class="eyebrow" data-i18n="run.crew">crew</span>
+                              <h3 data-i18n="run.session">Session</h3>
+                            </div>
+                            <span class="muted run-id-hint" id="run-participant-hint"></span>
+                          </div>
+
+                          <!-- locked auto strip: ID + timestamp -->
+                          <div class="run-session-auto" aria-label="Auto session identity">
+                            <label class="run-field run-field-locked">
+                              <span data-i18n="run.participantId">Participant ID (auto)</span>
+                              <input type="text" id="run-participant" class="is-readonly" readonly tabindex="-1" autocomplete="off" data-i18n-title="run.participantIdTitle" title="Auto · sequential next free ID" value="P01">
+                            </label>
+                            <label class="run-field run-field-locked">
+                              <span data-i18n="run.timestamp">Timestamp (auto)</span>
+                              <input type="text" id="run-session-timestamp" class="is-readonly" readonly tabindex="-1" value="" data-i18n-title="run.timestampTitle" title="Auto at Start / Pilot">
+                            </label>
+                            <label class="run-field run-field-locked">
+                              <span data-i18n="run.uid">UID (auto)</span>
+                              <input type="text" id="run-session-uid" class="is-readonly" readonly tabindex="-1" value="" data-i18n-title="run.uidTitle" title="Auto · unique experiment id (date + hash)">
+                            </label>
+                          </div>
+
+                          <!-- optional open fields -->
+                          <div class="run-session-grid run-session-optional">
+                            <label class="run-field">
+                              <span data-i18n="run.participantName">Name</span>
+                              <input type="text" id="run-participant-name" autocomplete="off" data-i18n-placeholder="run.participantNamePh" placeholder="optional">
+                            </label>
+                            <label class="run-field">
+                              <span data-i18n="run.sessionN">Session</span>
+                              <input type="text" id="run-session-n" autocomplete="off" data-i18n-placeholder="run.sessionPh" placeholder="optional · default 1" value="1">
+                            </label>
+                            <label class="run-field">
+                              <span data-i18n="run.experimenter">Experimenter</span>
+                              <input type="text" id="run-experimenter" autocomplete="off" data-i18n-placeholder="run.experimenterPh" placeholder="optional">
+                            </label>
+                            <label class="run-field run-field-wide">
+                              <span data-i18n="run.notes">Notes</span>
+                              <input type="text" id="run-notes" autocomplete="off" data-i18n-placeholder="run.notesPh" placeholder="optional">
+                            </label>
+                          </div>
+
+                          <div class="run-extra-fields" id="run-extra-fields">
+                            <div class="run-extra-head">
+                              <span class="run-extra-title" data-i18n="run.extraTitle">Extra fields</span>
+                              <button type="button" class="btn btn-secondary run-extra-add" id="run-extra-add" data-i18n="run.extraAdd">+ Field</button>
+                            </div>
+                            <p class="muted run-extra-lead" data-i18n="run.extraLead">Optional CSV columns. Keys = column names.</p>
+                            <div class="run-extra-list" id="run-extra-list"></div>
+                          </div>
+                        </section>
+
+                                                    <section class="run-roster-card" aria-label="Recorded participants">
+                                                      <div class="panel-heading run-roster-head">
+                                                        <div class="run-roster-title">
+                                                          <span class="eyebrow" data-i18n="run.rosterEyebrow">recorded</span>
+                                                          <h3 data-i18n="run.rosterTitle">Participants</h3>
+                                                        </div>
+                                                        <span class="muted run-roster-summary" id="run-roster-summary">—</span>
+                                                      </div>
+                                                      <p class="muted run-roster-lead" data-i18n="run.rosterLead">Project run log — who already finished (blocks reuse of same ID+session). Not CSV files.</p>
+                                                      <div class="run-roster-wrap">
+                                                        <table class="run-roster-table" id="run-roster-table">
+                                                          <thead>
+                                                            <tr>
+                                                              <th data-i18n="run.rosterId">ID</th>
+                                                              <th data-i18n="run.rosterName">Name</th>
+                                                              <th data-i18n="run.rosterExperimenter">Experimenter</th>
+                                                              <th data-i18n="run.rosterSess">Session</th>
+                                                              <th data-i18n="run.rosterWhen">When</th>
+                                                              <th data-i18n="run.rosterMode">Mode</th>
+                                                              <th data-i18n="run.rosterEnd">End</th>
+                                                              <th data-i18n="run.rosterRun">Run</th>
+                                                              <th class="run-roster-actions" data-i18n="run.rosterActions"></th>
+                                                            </tr>
+                                                          </thead>
+                                                          <tbody id="run-roster-body">
+                                                            <tr class="run-roster-empty"><td colspan="9" data-i18n="run.rosterEmpty">No recorded participants yet</td></tr>
+                                                          </tbody>
+                                                        </table>
+                                                      </div>
+                                                    </section>
+
+                        <!-- GitHub-style type-to-confirm delete -->
+                        <div id="roster-del-modal" class="roster-del-modal" hidden role="dialog" aria-modal="true" aria-labelledby="roster-del-title">
+                          <div class="roster-del-panel">
+                            <h3 id="roster-del-title" data-i18n="run.rosterDelTitle">Delete roster record</h3>
+                            <p class="roster-del-warn" id="roster-del-warn"></p>
+                            <p class="muted roster-del-note" data-i18n="run.rosterDelNote">Removes registry only · does not delete trial CSV files on disk.</p>
+                            <label class="roster-del-label">
+                              <span id="roster-del-prompt"></span>
+                              <input type="text" id="roster-del-input" autocomplete="off" spellcheck="false">
+                            </label>
+                            <div class="roster-del-actions">
+                              <button type="button" class="btn btn-secondary" id="roster-del-cancel" data-i18n="run.rosterDelCancel">Cancel</button>
+                              <button type="button" class="btn btn-danger" id="roster-del-confirm" disabled data-i18n="run.rosterDelConfirm">I understand, delete</button>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="run-grid">
+                          <section class="run-panel run-instrument-panel" aria-label="Last run instrument" id="pilot-instrument-card">
+                            <div class="panel-heading">
+                              <span class="eyebrow" data-i18n="run.bench">bench</span>
+                              <h3 data-i18n="run.instrument">Instrument</h3>
+                            </div>
+                            <dl class="status-list" id="pilot-instrument-list">
+                                                          <div><dt data-i18n="run.instrStatus">Status</dt><dd id="instr-status">—</dd></div>
+                                                          <div><dt data-i18n="run.instrMode">Mode</dt><dd id="instr-mode">—</dd></div>
+                                                          <div><dt data-i18n="run.instrHeadless">Headless</dt><dd id="instr-headless">—</dd></div>
+                                                          <div><dt data-i18n="run.instrDesign">Design</dt><dd id="instr-design">—</dd></div>
+                                                          <div><dt data-i18n="run.instrPid">Participant</dt><dd id="instr-pid">—</dd></div>
+                                                          <div><dt data-i18n="run.instrPname">Name</dt><dd id="instr-pname">—</dd></div>
+                                                          <div><dt data-i18n="run.instrSess">Session</dt><dd id="instr-sess">—</dd></div>
+                                                          <div><dt data-i18n="run.instrDate">Timestamp</dt><dd id="instr-date">—</dd></div>
+                                                          <div><dt data-i18n="run.instrExp">Experimenter</dt><dd id="instr-exp">—</dd></div>
+                                                          <div><dt data-i18n="run.instrTrials">Trials</dt><dd id="instr-rows">—</dd></div>
+                                                          <div><dt data-i18n="run.instrAcc">Accuracy</dt><dd id="instr-acc">—</dd></div>
+                                                          <div><dt data-i18n="run.instrMeanRt">Mean RT</dt><dd id="instr-mean-rt">—</dd></div>
+                                                          <div data-instr-span="1"><dt data-i18n="run.instrHit">Hit rate</dt><dd id="instr-hit">—</dd></div>
+                                                          <div data-instr-span="1"><dt data-i18n="run.instrFa">FA rate</dt><dd id="instr-fa">—</dd></div>
+                                                          <div class="instr-span-2" data-instr-span="2"><dt data-i18n="run.instrFps">FPS</dt><dd id="instr-fps">—</dd></div>
+                                                          <div class="instr-span-2" data-instr-span="2"><dt data-i18n="run.instrDisplay">Display</dt><dd id="instr-display">—</dd></div>
+                                                          <div><dt data-i18n="run.instrKb">Keyboard</dt><dd id="instr-kb">—</dd></div>
+                                                          <div><dt data-i18n="run.instrMic">Microphone</dt><dd id="instr-mic">—</dd></div>
+                                                          <div><dt data-i18n="run.instrSound">Sound</dt><dd id="instr-sound">—</dd></div>
+                                                          <div class="instr-span-2" data-instr-span="2"><dt data-i18n="run.instrNeeds">Needs</dt><dd id="instr-needs">—</dd></div>
+                                                          <div class="instr-span-2" data-instr-span="2"><dt data-i18n="run.instrFolder">Folder</dt><dd id="instr-folder">—</dd></div>
+                                                          <div class="instr-span-2" data-instr-span="2"><dt data-i18n="run.instrCsv">CSV</dt><dd id="instr-csv">—</dd></div>
+                                                          <div data-instr-span="1"><dt data-i18n="run.instrWhen">When</dt><dd id="instr-when">—</dd></div>
+                                                          <div data-instr-span="1"><dt data-i18n="run.instrRun">Run</dt><dd id="instr-run">—</dd></div>
+                                                        </dl>
+                            <pre class="run-instrument-notes muted" id="instr-notes" hidden></pre>
+                          </section>
+
+                          <section class="run-panel run-log-panel" aria-label="Run log">
+                            <div class="panel-heading">
+                              <span class="eyebrow" data-i18n="run.eventStream">Event stream</span>
+                              <h3 data-i18n="run.liveLog">Live log</h3>
+                            </div>
+                            <div id="run-log" class="log-area" role="log" aria-live="polite">
+                              <div class="log-line"><time>00:00:00</time><span class="log-tag log-tag-info">INFO</span><span data-i18n="run.logInit">Run monitor initialized.</span></div>
+                            </div>
+                            <div class="log-footer">
+                              <span class="muted" data-i18n="run.logFooter">Log updates as the run progresses.</span>
+                              <button id="download-csv-btn" class="btn btn-secondary" type="button" disabled>&#8609; <span data-i18n="run.downloadCsv">Download CSV</span></button>
+                            </div>
+                          </section>
+                        </div>
+                            </section>
+
+          <!-- ============================================================ -->
+                    <!-- Settings                                                    -->
+                    <!-- ============================================================ -->
+                    <section id="tab-settings" class="tab-panel" role="tabpanel" aria-labelledby="settings" hidden>
+                      <div class="panel-heading-row settings-heading">
+                        <div>
+                          <span class="eyebrow" data-i18n="settings.eyebrow">config</span>
+                          <h2 data-i18n="settings.title">Settings</h2>
+                          <p class="muted" data-i18n="settings.lead">Builder &amp; run preferences for this machine.</p>
+                        </div>
+                      </div>
+
+                      <div class="settings-layout">
+                        <nav class="settings-nav" aria-label="Settings sections">
+                          <button type="button" class="settings-nav-btn is-active" data-settings-panel="timeline" data-i18n="settings.navTimeline">Timeline</button>
+                          <button type="button" class="settings-nav-btn" data-settings-panel="run" data-i18n="settings.navRun">Run</button>
+                          <button type="button" class="settings-nav-btn" data-settings-panel="files" data-i18n="settings.navFiles">Files</button>
+                          <button type="button" class="settings-nav-btn" data-settings-panel="language" data-i18n="settings.navLanguage">Language</button>
+                        </nav>
+
+                        <div class="settings-panels">
+                          <section class="settings-panel is-active" id="settings-panel-timeline" data-settings-panel="timeline">
+                            <div class="settings-card">
+                              <label class="settings-item" for="settings-snap">
+                                <span class="settings-item-text">
+                                  <span class="settings-item-title" data-i18n="settings.snap">Snap grid</span>
+                                  <span class="settings-item-desc" id="settings-snap-desc" data-i18n="settings.snapDesc">Drag &amp; arrow keys quantize to 50 ms. Typed inspector values stay exact.</span>
+                                </span>
+                                <span class="settings-toggle">
+                                  <input type="checkbox" id="settings-snap" checked>
+                                  <span class="settings-toggle-ui" aria-hidden="true"></span>
+                                </span>
+                              </label>
+                              <label class="settings-item" for="settings-preview-onset">
+                                <span class="settings-item-text">
+                                  <span class="settings-item-title" data-i18n="settings.previewOnset">Visual onset click</span>
+                                  <span class="settings-item-desc" data-i18n="settings.previewOnsetDesc">Inspector PREVIEW only: short click when a visual component starts. Off by default. Never for keyboard.</span>
+                                </span>
+                                <span class="settings-toggle">
+                                  <input type="checkbox" id="settings-preview-onset">
+                                  <span class="settings-toggle-ui" aria-hidden="true"></span>
+                                </span>
+                              </label>
+                              <div class="settings-item is-static">
+                                <span class="settings-item-text">
+                                  <span class="settings-item-title" data-i18n="settings.scale">Scale</span>
+                                  <span class="settings-item-desc" data-i18n="settings.scaleDesc">Auto from content. Finite = longest edge + 1 s; open-ended fills to end.</span>
+                                </span>
+                                <span class="settings-pill" data-i18n="settings.scalePill">auto</span>
+                              </div>
+                              <div class="settings-item is-static">
+                                <span class="settings-item-text">
+                                  <span class="settings-item-title" data-i18n="settings.handles">Handles</span>
+                                  <span class="settings-item-desc" data-i18n="settings.handlesDesc">Left = start (all bars). Right = duration (finite only). Body moves start.</span>
+                                </span>
+                                <span class="settings-pill" data-i18n="settings.handlesPill">L · R</span>
+                              </div>
+                            </div>
+                          </section>
+
+                          <section class="settings-panel" id="settings-panel-run" data-settings-panel="run" hidden>
+                            <div class="settings-card">
+                              <div class="settings-item is-static">
+                                <span class="settings-item-text">
+                                  <span class="settings-item-title" data-i18n="settings.startTitle">Start</span>
+                                  <span class="settings-item-desc" data-i18n="settings.startDesc">Live participant PsychoPy window on this PC.</span>
+                                </span>
+                                <span class="settings-pill">▶</span>
+                              </div>
+                              <div class="settings-item is-static">
+                                <span class="settings-item-text">
+                                  <span class="settings-item-title" data-i18n="settings.pilotTitle">Pilot</span>
+                                  <span class="settings-item-desc" data-i18n="settings.pilotDesc">Paper plane — live window, manual keys (does not consume IDs).</span>
+                                </span>
+                                <span class="settings-pill">✈</span>
+                              </div>
+                              <div class="settings-item is-static">
+                                                              <span class="settings-item-text">
+                                                                <span class="settings-item-title" data-i18n="settings.autopilotTitle">Autopilot</span>
+                                                                <span class="settings-item-desc" data-i18n="settings.autopilotDesc">Auto-simulate keys · capped loops · no manual input.</span>
+                                                              </span>
+                                                              <span class="settings-pill">◎</span>
+                                                            </div>
+                                                            <label class="settings-item" for="settings-force-en-ime">
+                                                              <span class="settings-item-text">
+                                                                <span class="settings-item-title" data-i18n="settings.forceEnIme">Force English IME</span>
+                                                                <span class="settings-item-desc" data-i18n="settings.forceEnImeDesc">Start/Pilot: switch keyboard to en-US so CJK candidate windows cannot swallow response keys. Restored when the run ends. Default on (Windows).</span>
+                                                              </span>
+                                                              <span class="settings-toggle">
+                                                                <input type="checkbox" id="settings-force-en-ime" checked>
+                                                                <span class="settings-toggle-ui" aria-hidden="true"></span>
+                                                              </span>
+                                                            </label>
+                                                          </div>
+                                                        </section>
+
+                          <section class="settings-panel" id="settings-panel-files" data-settings-panel="files" hidden>
+                            <div class="settings-card">
+                              <div class="settings-item is-static">
+                                <span class="settings-item-text">
+                                  <span class="settings-item-title" data-i18n="settings.saveOpen">Save / Open</span>
+                                  <span class="settings-item-desc" data-i18n="settings.saveOpenDesc">Native folder browser. Project = folder with <folderName>.psyclaw (or empty folder to init).</span>
+                                </span>
+                                <span class="settings-pill">OS</span>
+                              </div>
+                              <div class="settings-item is-static">
+                                <span class="settings-item-text">
+                                  <span class="settings-item-title" data-i18n="settings.foreign">Foreign folders</span>
+                                  <span class="settings-item-desc" data-i18n="settings.foreignDesc">Other files without <folderName>.psyclaw → refused (no half-support).</span>
+                                </span>
+                                <span class="settings-pill">strict</span>
+                              </div>
+                            </div>
+                          </section>
+
+                          <section class="settings-panel" id="settings-panel-language" data-settings-panel="language" hidden>
+                            <div class="settings-card">
+                              <div class="settings-item is-static settings-item-lang">
+                                <span class="settings-item-text">
+                                  <span class="settings-item-title" data-i18n="settings.langTitle">Language</span>
+                                  <span class="settings-item-desc" data-i18n="settings.langDesc">UI language. Preference is saved on this machine.</span>
+                                </span>
+                              </div>
+                              <div class="settings-lang-row" role="group" aria-label="Language">
+                                <button type="button" class="settings-lang-btn" data-lang-opt="en" id="settings-lang-en" data-i18n="settings.langEn">English</button>
+                                <button type="button" class="settings-lang-btn" data-lang-opt="zh" id="settings-lang-zh" data-i18n="settings.langZh">中文</button>
+                              </div>
+                            </div>
+                          </section>
+                        </div>
+                      </div>
+                    </section>
+
+                    <!-- ============================================================ -->
+                    <!-- Guide: shortcuts & operations (not inline in Builder)         -->
+                    <!-- ============================================================ -->
+                    <section id="tab-guide" class="tab-panel" role="tabpanel" aria-labelledby="guide" hidden>
+            <div class="panel-heading-row">
+              <div>
+                <span class="eyebrow" data-i18n="guide.eyebrow">manual</span>
+                <h2 data-i18n="guide.title">Guide</h2>
+                <p class="muted" data-i18n="guide.lead">Keyboard shortcuts and Builder operations. Working UI stays clean.</p>
+              </div>
+            </div>
+
+            <div class="guide-grid">
+              <section class="guide-card">
+                <div class="panel-heading">
+                  <span class="eyebrow" data-i18n="guide.keys">keys</span>
+                  <h3 data-i18n="guide.keyboard">Keyboard</h3>
+                </div>
+                <dl class="guide-dl">
+                  <div><dt data-i18n="guide.del">Del / Backspace</dt><dd data-i18n="guide.delDesc">Delete selected component or unwrap/remove flow selection</dd></div>
+                  <div><dt data-i18n="guide.esc">Esc</dt><dd data-i18n="guide.escDesc">Deselect · cancel Insert Loop draw</dd></div>
+                  <div><dt data-i18n="guide.lr">← →</dt><dd data-i18n="guide.lrDesc">Nudge selected component start (Snap if on)</dd></div>
+                  <div><dt data-i18n="guide.ud">↑ ↓</dt><dd data-i18n="guide.udDesc">Nudge selected component duration (finite only)</dd></div>
+                </dl>
+              </section>
+
+              <section class="guide-card">
+                <div class="panel-heading">
+                  <span class="eyebrow" data-i18n="guide.timeline">timeline</span>
+                  <h3 data-i18n="guide.sequence">Sequence</h3>
+                </div>
+                <dl class="guide-dl">
+                  <div><dt data-i18n="guide.palette">Palette</dt><dd data-i18n="guide.paletteDesc">Drag parts onto timeline, or double-click to add</dd></div>
+                  <div><dt data-i18n="guide.barBody">Bar body</dt><dd data-i18n="guide.barBodyDesc">Drag to move start time</dd></div>
+                  <div><dt data-i18n="guide.handles">Left / right handle</dt><dd data-i18n="guide.handlesDesc">Finite only — left trims start (end fixed), right sets duration</dd></div>
+                  <div><dt data-i18n="guide.barX">Bar ×</dt><dd data-i18n="guide.barXDesc">Delete that component</dd></div>
+                                    <div><dt data-i18n="guide.longPressRoutine">Long-press routine tab</dt><dd data-i18n="guide.longPressRoutineDesc">iOS-style edit: jiggle + circular × to delete routine (and Flow refs). Done / Esc exits. Keeps ≥1 routine.</dd></div>
+                                    <div><dt data-i18n="guide.reclick">Re-click / empty lane</dt><dd data-i18n="guide.reclickDesc">Deselect</dd></div>
+                  <div><dt data-i18n="guide.durNeg1">Duration = -1</dt><dd data-i18n="guide.durNeg1Desc">Open-ended (∞ until key / force end)</dd></div>
+                  <div><dt data-i18n="guide.snap">Snap</dt><dd data-i18n="guide.snapDesc">Settings tab — drag &amp; arrows only; typed inspector values stay exact</dd></div>
+                </dl>
+              </section>
+
+              <section class="guide-card">
+                <div class="panel-heading">
+                  <span class="eyebrow" data-i18n="guide.mission">mission</span>
+                  <h3 data-i18n="guide.flowLoops">Flow &amp; loops</h3>
+                </div>
+                <dl class="guide-dl">
+                  <div><dt data-i18n="guide.insRoutine">Insert Routine</dt><dd data-i18n="guide.insRoutineDesc">Append a routine pill</dd></div>
+                  <div><dt data-i18n="guide.insLoop">Insert Loop</dt><dd data-i18n="guide.insLoopDesc">Arm draw mode → drag A→B to wrap</dd></div>
+                  <div><dt data-i18n="guide.loopX">Loop bracket ×</dt><dd data-i18n="guide.loopXDesc">Unwrap loop (children expand)</dd></div>
+                  <div><dt data-i18n="guide.clickLoop">Click loop label</dt><dd data-i18n="guide.clickLoopDesc">Edit nReps, loopType in Properties; edit stimlist table under Flow</dd></div>
+                  <div><dt data-i18n="guide.stimTable">Stimlist table</dt><dd data-i18n="guide.stimTableDesc">Full edit in GUI: cells, + Row / + Col, delete row/col. Optional Import of a valid xlsx/csv (rows embedded in design).</dd></div>
+                  <div><dt data-i18n="guide.colParams">$colName params</dt><dd data-i18n="guide.colParamsDesc">Component params: $colName (e.g. text=$word, color=$color). Rows are embedded — run is self-contained. Preview resolves $var to the first value of that column.</dd></div>
+                  <div><dt data-i18n="guide.importTable">Import table</dt><dd data-i18n="guide.importTableDesc">Only for loading an existing conditions file; after import, edit in the table — no separate conditions-file field.</dd></div>
+                </dl>
+              </section>
+
+              <section class="guide-card">
+                <div class="panel-heading">
+                  <span class="eyebrow" data-i18n="guide.flight">flight</span>
+                  <h3 data-i18n="guide.run">Run</h3>
+                </div>
+                <dl class="guide-dl">
+                  <div><dt data-i18n="guide.headlessOn">Headless ON</dt><dd data-i18n="guide.headlessOnDesc">Smoke test with auto keys; caps long loops</dd></div>
+                  <div><dt data-i18n="guide.headlessOff">Headless OFF</dt><dd data-i18n="guide.headlessOffDesc">Live participant window on this PC</dd></div>
+                  <div><dt data-i18n="guide.start">Start</dt><dd data-i18n="guide.startDesc">Compiles Builder design → PsychoPy</dd></div>
+                  <div><dt data-i18n="guide.pid">Participant ID</dt><dd data-i18n="guide.pidDesc">Project registry blocks reused id+session. Use Next for free P##. Pilot uses P_pilot and does not consume IDs.</dd></div>
+                  <div><dt data-i18n="guide.pilotInstr">Pilot Instrument</dt><dd data-i18n="guide.pilotInstrDesc">After Pilot: measured FPS + only devices this design uses (keyboard / mic / sound). Last report kept on this page.</dd></div>
+                  <div><dt data-i18n="guide.csv">Download CSV</dt><dd data-i18n="guide.csvDesc">After finished run</dd></div>
+                </dl>
+              </section>
+            </div>
+          </section>
+        </main>
+
+                <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+          </div><!-- /#workspace -->
+
+    <!-- Always-on top-right language (welcome gate has no header) -->
+    <div class="global-lang-switch" id="global-lang-switch" role="group" data-i18n-aria="header.langAria" aria-label="Language">
+      <button type="button" class="header-lang-btn" data-lang-opt="en" aria-pressed="false">EN</button>
+      <button type="button" class="header-lang-btn" data-lang-opt="zh" aria-pressed="false">中</button>
+    </div>
+
+    <!-- Footer: green-square lamp · online / offline (all pages) -->
+    <footer class="app-footer" id="app-footer">
+      <span id="net-status" class="net-status">checking…</span>
+    </footer>
+
+    <script src="i18n.js?v=222"></script>
+                                    <script src="builder.js?v=218"></script>
+                                    <script src="app.js?v=227"></script>
+  </body>
+</html>

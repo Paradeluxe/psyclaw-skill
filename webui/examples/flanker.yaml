@@ -1,0 +1,63 @@
+id: flanker
+label: "Flanker (example)"
+description: "Eriksen flanker — respond to centre arrow, ignore flanks"
+version: "1.0"
+order: 3
+
+fields:
+  - name: participant_id
+    label: "Participant ID"
+    type: text
+    default: "P01"
+    required: true
+
+  - name: n_congruent
+    label: "Congruent trials"
+    type: number
+    default: 20
+    min: 0
+
+  - name: n_incongruent
+    label: "Incongruent trials"
+    type: number
+    default: 20
+    min: 0
+
+  - name: stimulus_duration_ms
+    label: "Stimulus duration (ms)"
+    type: number
+    default: 1000
+    min: 100
+
+  - name: iti_ms
+    label: "Inter-trial interval (ms)"
+    type: number
+    default: 500
+    min: 0
+
+  - name: fullscreen
+    label: "Fullscreen (live window)"
+    type: checkbox
+    default: true
+
+  - name: instructions_text
+    label: "Instructions"
+    type: textarea
+    default: "Respond to the CENTRE arrow. Left = left arrow key, Right = right arrow key. Ignore the surrounding arrows. Press SPACE to begin."
+
+  - name: thanks_text
+    label: "Thanks message"
+    type: textarea
+    default: "Thank you. Press SPACE to exit."
+
+runtime:
+  script_template: "flanker_runner.py.j2"
+  timing:
+    fixation_ms: 500
+    iti_ms: 500
+  loop:
+    type: random
+  flow:
+    - { name: instructions, kind: screen }
+    - { name: trial_loop, kind: loop, children: [fixation, stimulus, isi] }
+    - { name: thanks, kind: screen }

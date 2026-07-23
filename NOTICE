@@ -1,0 +1,13 @@
+# Notices
+
+## License
+
+PsyClaw skill (`/psyclaw`) is licensed under the **GNU Affero General Public
+License v3.0** (AGPL-3.0). See [LICENSE](LICENSE).
+
+Same family as Paradeluxe/Praasper (AGPL-3.0).
+
+## Third-party
+
+PsychoPy is separate software with its own license (GPL family). This repository
+does not redistribute PsychoPy.

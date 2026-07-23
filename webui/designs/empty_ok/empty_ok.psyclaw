@@ -1,0 +1,28 @@
+{
+  "name": "empty_ok",
+  "display": {
+    "size": [
+      1024,
+      768
+    ],
+    "fullscreen": true
+  },
+  "routines": [
+    {
+      "name": "trial",
+      "components": []
+    }
+  ],
+  "flow": [
+    {
+      "kind": "routine",
+      "routine": "trial"
+    }
+  ],
+  "_meta": {
+    "format": "psyclaw-design",
+    "version": 1,
+    "fileName": "empty_ok.psyclaw",
+    "savedAt": "2026-07-15T21:11:32"
+  }
+}

@@ -1,0 +1,5 @@
+# Debug mode only — separate venv (.venv-debug)
+# Production venv uses requirements.txt; do not merge.
+-r requirements.txt
+flask-debugtoolbar>=0.14
+watchdog>=4.0

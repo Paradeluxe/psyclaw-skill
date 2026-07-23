@@ -1,0 +1,9 @@
+word,color,corrAns,congruent
+RED,red,r,yes
+GREEN,green,g,yes
+BLUE,blue,b,yes
+YELLOW,yellow,y,yes
+RED,green,g,no
+GREEN,red,r,no
+BLUE,yellow,y,no
+YELLOW,blue,b,no

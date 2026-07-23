@@ -1,0 +1,11 @@
+{
+  "mode": "debug",
+  "port": 8877,
+  "venv": ".venv-debug",
+  "entrypoint": "backend/debug_app.py",
+  "env": {
+    "PSYCLAW_DEBUG": "1",
+    "PSYCLAW_FORCE_MOCK": "1"
+  },
+  "notes": "Completely separate from production (port 8876, .venv). Debug mode uses Flask reloader + toolbar + mock PsychoPy."
+}

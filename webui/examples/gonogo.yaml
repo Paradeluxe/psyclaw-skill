@@ -1,0 +1,82 @@
+id: gonogo
+label: "Go/No-Go (example)"
+description: "Inhibitory control task — respond to go stimuli, withhold to no-go"
+version: "1.0"
+order: 2
+
+fields:
+  - name: participant_id
+    label: "Participant ID"
+    type: text
+    default: "P01"
+    required: true
+
+  - name: n_go
+    label: "Go trials"
+    type: number
+    default: 40
+    min: 4
+
+  - name: n_nogo
+    label: "No-Go trials"
+    type: number
+    default: 20
+    min: 0
+
+  - name: go_probability
+    label: "Go probability (0-1)"
+    type: number
+    default: 0.7
+    min: 0
+    max: 1
+
+  - name: stimulus_duration_ms
+    label: "Stimulus duration (ms)"
+    type: number
+    default: 250
+    min: 50
+    max: 5000
+
+  - name: iti_ms
+    label: "Inter-trial interval (ms)"
+    type: number
+    default: 1500
+    min: 200
+
+  - name: go_label
+    label: "Go stimulus label"
+    type: text
+    default: "X"
+
+  - name: nogo_label
+    label: "No-Go stimulus label"
+    type: text
+    default: "O"
+
+  - name: response_key
+    label: "Response key"
+    type: text
+    default: "space"
+
+  - name: fullscreen
+    label: "Fullscreen"
+    type: checkbox
+    default: true
+
+  - name: instructions_text
+    label: "Instructions"
+    type: textarea
+    default: "Press SPACE when you see X. Do NOT press when you see O. Press SPACE to begin."
+
+  - name: thanks_text
+    label: "Thanks message"
+    type: textarea
+    default: "Thank you for participating. Press SPACE to exit."
+
+runtime:
+  script_template: "gonogo_runner.py.j2"
+  timing:
+    fixation_ms: 500
+    iti_ms: 1500
+  loop:
+    type: random

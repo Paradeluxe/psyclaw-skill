@@ -1,0 +1,15 @@
+# Notices
+
+## License
+
+PsyClaw WebUI is licensed under the **GNU Affero General Public License v3.0**
+(AGPL-3.0). See [LICENSE](LICENSE).
+
+Aligned with Paradeluxe/Praasper (AGPL-3.0).
+
+The agent skill is in the same repo: `skills/psyclaw/` (AGPL-3.0).
+
+## Third-party
+
+PsychoPy is separate software with its own license. This repository does not
+redistribute PsychoPy. Install independently; set PSYCLAW_PSYCHOPY_PYTHON as needed.

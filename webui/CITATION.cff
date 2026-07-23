@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+title: "PsyClaw WebUI"
+message: "If you use this software, please cite it as below."
+type: software
+authors:
+  - name: "PsyClaw contributors"
+repository-code: "https://github.com/Paradeluxe/psyclaw"
+license: AGPL-3.0
+version: "0.1.0"
+date-released: "2026-07-19"
+abstract: >-
+  Local lab UI for designing and running PsychoPy experiments on a lab PC:
+  visual Builder (<folderName>.psyclaw JSON), host preflight, Pilot / Start /
+  Autopilot, and project-mirrored CSV data.
+keywords:
+  - psychology
+  - psychopy
+  - experiment-builder
+  - reaction-time
+  - open-source
