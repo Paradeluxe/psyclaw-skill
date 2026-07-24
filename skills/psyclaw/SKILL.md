@@ -31,10 +31,19 @@ MyStroop/
   └── .psyclaw-session.json   # pipeline state (file wins over chat)
 ```
 
+## Pre-flight (every load)
+
+Before the pipeline, a quick dep check (≤5s). Skip if already done this session.
+
+1. **Skill-side deps**: check Python, scripts runnable.
+2. **WebUI present?** Fast path: first try `~/.psyclaw/config.json` → `webui_root` (cached by `start.py` / `user_config.py remember`). If valid → instant hit. Else fall back to full resolution (`install-orchestrator.md` § Webui location policy).
+3. **Missing?** Ask **one** question: "PsyClaw webui 还没装，现在装吗？" — yes → `install-orchestrator.md` § First use doctor. no → continue with skill-only mode.
+4. **All OK** → silent, proceed to pipeline.
+
 ## Pipeline
 
 ```text
-INPUT → [lit intent?] FIND lit first → Clarify (1 Q/turn) → Write+validate → ASK 要跑被试吗？
+[pre-flight OK?] → INPUT → [lit intent?] FIND lit first → Clarify (1 Q/turn) → Write+validate → ASK 要跑被试吗？
          yes: search→browser-skill→file on disk → paper-anchored clarify
          run yes → webui sequential (experimenter=AI if agent-driven)
 ```
